@@ -18,7 +18,7 @@ public class PdfWriter {
         b.writeToFile(os);
         xref.fillTableWithIndirectObjects(b.getAllIndirectObjects());
         xref.writeToFile(os);
-        t.setObjectAmount(b.getTotalIndirectObjectsAmount());
+        t.setObjectAmount(b.getTotalIndirectObjectsAmount() + 1);
         t.setCrossReferenceStartByte(xref.getStartByte());
         t.fillObjectSpecification(b.getCatalogReference());
         t.writeToFile(os);

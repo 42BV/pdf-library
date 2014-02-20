@@ -9,29 +9,29 @@ import java.util.ArrayList;
  * 
  * @author Dylan de Wolff
  */
-public class PdfArray extends PdfObject {
-    private ArrayList<PdfObject> values;
+public class PdfArray extends AbstractPdfObject {
+    private ArrayList<AbstractPdfObject> values;
 
     /**
      * Creates a new instance of PdfArray
      */
     public PdfArray() {
-        super();
-        this.values = new ArrayList<PdfObject>();
+        super(PdfObjectType.ARRAY);
+        this.values = new ArrayList<AbstractPdfObject>();
     }
 
-    public void addValue(PdfObject value) {
+    public void addValue(AbstractPdfObject value) {
         this.values.add(value);
     }
 
-    public void addValues(ArrayList<PdfObject> values) {
+    public void addValues(ArrayList<AbstractPdfObject> values) {
         this.values.addAll(values);
     }
 
     /**
      * Writes this PDF Array to the given OutputStream.
      * 
-     * @see nl.pdflibrary.pdf.object.PdfObject#writeToFile(java.io.OutputStream)
+     * @see nl.pdflibrary.pdf.object.AbstractPdfObject#writeToFile(java.io.OutputStream)
      * @param os OutputStream that will be written to
      * @throws IOException
      */
@@ -49,7 +49,7 @@ public class PdfArray extends PdfObject {
         return values.size();
     }
 
-    public ArrayList<PdfObject> getValues() {
+    public ArrayList<AbstractPdfObject> getValues() {
         return values;
     }
 }

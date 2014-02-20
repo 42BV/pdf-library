@@ -2,59 +2,61 @@ package nl.pdflibrary.document;
 
 import java.awt.Font;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Calendar;
 
 import nl.pdflibrary.pdf.PdfDocument;
 
-
 /**
- * Document is the class responsible for collecting all the document parts and passing them on to the PdfDocument.
+ * Document is the class responsible for passing document parts on to the PdfDocument.
  * It also stores properties of the document such as page width/height and the author.
  * @author Dylan de Wolff
  */
 public class Document {
     private String author;
     private String title;
+    private String subject;
     private PdfDocument pdfDocument;
+    /**
+     * Default font. This is used when no font is specified.
+     */
     public static final Font DEFAULT_FONT = new Font(Font.SERIF, Font.PLAIN, 12);
     private int pageNumber = 0;
-    private final static int A4_WIDTH = 795;
-    private final static int A4_HEIGHT = 842;
+    /**
+     * A4 page width.
+     */
+    public static final int A4_WIDTH = 795;
+    /**
+     * A4 page height.
+     */
+    public static final int A4_HEIGHT = 842;
     private int width = A4_WIDTH;
     private int height = A4_HEIGHT;
-    private ArrayList<AbstractDocumentPart> content;
-    private ArrayList<Font> fonts;
     private boolean finished;
 
     /**
-     * Creates a new document object.
+     * Creates a new instance of Document.
      */
     public Document() {
-        pdfDocument = new PdfDocument();
-        content = new ArrayList<AbstractDocumentPart>();
-        fonts = new ArrayList<Font>();
-        finished = false;
-        this.width = A4_WIDTH;
-        this.height = A4_HEIGHT;
-        addFont(DEFAULT_FONT);
-        addNewPage();
+        this(A4_WIDTH, A4_HEIGHT, "", "", "");
     }
 
-    public Document(int width, int height) {
+    /**
+     * Creates a new instance of Document.
+     * @param width Default page width for this document
+     * @param height Default page height for this document
+     * @param author Writer of this document
+     * @param title Title of this document
+     * @param subject Subject of this document
+     */
+    public Document(int width, int height, String author, String title, String subject) {
         pdfDocument = new PdfDocument();
-        content = new ArrayList<AbstractDocumentPart>();
-        fonts = new ArrayList<Font>();
         finished = false;
-        addFont(DEFAULT_FONT);
         this.width = width;
         this.height = height;
+        this.author = author;
+        this.title = title;
+        this.subject = subject;
         addNewPage();
-    }
-
-    public void addFont(Font font) {
-        if (!finished && !this.fonts.contains(font)) {
-            fonts.add(font);
-        }
     }
 
     /**
@@ -65,16 +67,6 @@ public class Document {
      */
     public void addPart(AbstractDocumentPart part) {
         if (!finished) {
-            if (part.getType().equals(DocumentPartType.TEXT)) {
-                Text text = (Text) part;
-                this.addFont(text.getFont());
-            }
-            if (part.getType().equals(DocumentPartType.PARAGRAPH)) {
-                for (Text text : ((Paragraph) (part)).getTextCollection()) {
-                    this.addFont(text.getFont());
-                }
-            }
-            this.content.add(part);
             pdfDocument.add(part);
         }
     }
@@ -90,13 +82,13 @@ public class Document {
     }
 
     /**
-     * Adds a new page to the document with the given width and height
-     * @param width
-     * @param height
+     * Adds a new page to the document with the given width and height.
+     * @param pageWidth 
+     * @param pageHeight 
      */
-    public void addNewPage(int width, int height) {
+    public void addNewPage(int pageWidth, int pageHeight) {
         if (!finished) {
-            pdfDocument.addPage(width, height);
+            pdfDocument.addPage(pageWidth, pageHeight);
             ++this.pageNumber;
         }
     }
@@ -105,21 +97,13 @@ public class Document {
         return this.pageNumber;
     }
 
-    public ArrayList<AbstractDocumentPart> getDocumentParts() {
-        return this.content;
-    }
-
-    public ArrayList<Font> getFonts() {
-        return this.fonts;
-    }
-
     /**
-     * Prints the document to a pdf file and no longer allows editing of the document.
-     * 
+     * Prints the document to a PDF file and no longer allows editing of the document. 
      * @throws IOException 
      */
     public void finish() throws IOException {
         if (!finished) {
+            this.pdfDocument.addDocumentInfo(author, title, subject, Calendar.getInstance());
             this.pdfDocument.finish();
             finished = true;
         }
@@ -127,6 +111,30 @@ public class Document {
 
     public boolean getFinished() {
         return this.finished;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
 }

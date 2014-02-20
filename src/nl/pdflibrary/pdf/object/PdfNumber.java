@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Dylan de Wolff
  */
-public class PdfNumber extends PdfObject {
+public class PdfNumber extends AbstractPdfObject {
     private double number;
     /**
      * Specifies buffer size, used to convert the number value to bytes
@@ -21,7 +21,7 @@ public class PdfNumber extends PdfObject {
      * @param number 
      */
     public PdfNumber(double number) {
-        super();
+        super(PdfObjectType.NUMBER);
         setNumber(number);
     }
 
@@ -36,7 +36,7 @@ public class PdfNumber extends PdfObject {
      * Writes the number to the given OutputStream
      * @param os
      * @throws IOException 
-     * @see nl.pdflibrary.pdf.object.PdfObject#writeToFile(java.io.OutputStream)
+     * @see nl.pdflibrary.pdf.object.AbstractPdfObject#writeToFile(java.io.OutputStream)
      */
     @Override
     public void writeToFile(OutputStream os) throws IOException {

@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
  * 
  * @author Dylan de Wolff
  */
-public class PdfName extends PdfObject {
+public class PdfName extends AbstractPdfObject {
     private String name;
 
     /**
@@ -15,7 +15,7 @@ public class PdfName extends PdfObject {
      * @param name
      */
     public PdfName(String name) {
-        super();
+        super(PdfObjectType.NAME);
         this.setName(name);
     }
 
@@ -25,7 +25,7 @@ public class PdfName extends PdfObject {
      * @see PdfNameValue
      */
     public PdfName(PdfNameValue name) {
-        super();
+        super(PdfObjectType.NAME);
         this.setName(name);
     }
 

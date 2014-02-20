@@ -3,17 +3,22 @@ package nl.pdflibrary.pdf;
 import java.awt.Font;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import nl.pdflibrary.document.AbstractDocumentPart;
 import nl.pdflibrary.document.Paragraph;
 import nl.pdflibrary.document.Text;
-import nl.pdflibrary.pdf.factory.PdfObjectFactory;
+import nl.pdflibrary.pdf.object.PdfDictionary;
 import nl.pdflibrary.pdf.object.PdfFont;
 import nl.pdflibrary.pdf.object.PdfIndirectObject;
+import nl.pdflibrary.pdf.object.PdfName;
+import nl.pdflibrary.pdf.object.PdfNameValue;
+import nl.pdflibrary.pdf.object.PdfObjectType;
 import nl.pdflibrary.pdf.object.PdfPage;
-import nl.pdflibrary.pdf.object.PdfTextStream;
-
+import nl.pdflibrary.pdf.object.PdfStream;
+import nl.pdflibrary.pdf.object.PdfString;
+import nl.pdflibrary.pdf.object.PdfText;
 
 /**
  * Represents the PDF document itself, containing the four different sections of a PDF document.
@@ -30,10 +35,14 @@ public class PdfDocument {
     private PdfWriter writer;
     private PdfPage currentPage;
     private static HashMap<Font, PdfIndirectObject> fontList;
+    /**
+     * The default line separator.
+     */
     public static final byte[] LINE_SEPARATOR = System.lineSeparator().getBytes();
+    private static final String CREATOR = "PDF-Library";
 
     /**
-     * Creates a new instance of PdfDocument
+     * Creates a new instance of PdfDocument.
      */
     public PdfDocument() {
         header = new PdfHeader();
@@ -45,7 +54,7 @@ public class PdfDocument {
     }
 
     /**
-     * Passes the given document part over to the PdfObjectFactory and adds the resulting PdfObject to the document
+     * Passes the given document part over to the PdfObjectFactory and adds the resulting PdfObject to the document.
      * @param part Document part that is to be added
      * @see PdfObjectFactory
      */
@@ -57,12 +66,22 @@ public class PdfDocument {
         case PARAGRAPH:
             Paragraph paragraph = (Paragraph) part;
             ArrayList<Text> textCollection = paragraph.getTextCollection();
-            for (int i = 0; i < textCollection.size(); ++i) {
-                boolean ignorePosition = true;
-                if (i == 0) {
-                    ignorePosition = false;
+            if (paragraph.getTextCollection().size() != 0) {
+                //if we're using custom paragraph positioning, adjust the first text object
+                if (paragraph.getCustomPositioning() && textCollection.get(0) != null) {
+                    textCollection.get(0).setPositionX(paragraph.getPositionX());
+                    textCollection.get(0).setPositionY(paragraph.getPositionY());
                 }
-                this.addText(textCollection.get(i), ignorePosition);
+                for (int i = 0; i < textCollection.size(); ++i) {
+                    boolean ignorePosition = true;
+                    //if we're not using custom paragraph positioning, try to use the first text object position
+                    if (!paragraph.getCustomPositioning()) {
+                        if (i == 0) {
+                            ignorePosition = false;
+                        }
+                    }
+                    this.addText(textCollection.get(i), ignorePosition);
+                }
             }
             break;
         default:
@@ -70,31 +89,41 @@ public class PdfDocument {
         }
     }
 
+    /**
+     * Adds the given text object to the PdfTextStream of the current page.
+     * @param text
+     * @param overridePosition if true the position of the text will be disregarded. When using a paragraph, this should be true 
+     * for every text object besides the first one.
+     */
     private void addText(Text text, boolean overridePosition) {
-        //TODO: DIT KAN NETTER, OOK WERKT JE FONT LIMIET DINGES TOEVOEGEN HIERO NIET
-        //OOK MOET PAGE ANDERE FONTS DENK IK AAN DEZELFDE RESOURCES DICT GEVEN, NIET APARTE /Font DICS in DE RESOURCES DICT
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
+        //if the page has no content yet
         if (currentPage.streamEmpty()) {
-            PdfTextStream ts = PdfObjectFactory.createTextStream(text);
+            //create new stream object and add the text
+            PdfStream ts = new PdfStream();
+            ts.add(new PdfText(text));
             currentPage.add(body.addObject(ts));
         } else if (!overridePosition) {
-            currentPage.getCurrentStream().addCommands(text);
+            //if we want to keep the text position, we simply convert the text object
+            currentPage.getCurrentStream().add(new PdfText(text));
         } else {
-            PdfTextStream ts = (PdfTextStream) currentPage.getCurrentStream();
-            ts.addCommand(PdfDocument.getPdfFont(text.getFont()), text.getFont().getSize());
-            ts.addCommand(text.getText());
+            //if we do not want to keep the test position we avoid the position method
+            PdfText pdfText = new PdfText();
+            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getFont().getSize());
+            pdfText.addText(text.getText());
+            currentPage.getCurrentStream().add(pdfText);
         }
     }
 
     /**
-     * Creates an indirectObject for the given font and adds it to the font list
-     * @param font
+     * Creates an indirectObject for the given font and adds it to the font list.
+     * @param font 
      * @return indirect object for the given font
      */
     public PdfIndirectObject addFont(Font font) {
         if (!fontList.containsKey(font) && font != null) {
-            PdfFont newFont = PdfObjectFactory.createPdfFont(font);
+            PdfFont newFont = new PdfFont(font);
             PdfIndirectObject indirectFont = body.addObject(newFont);
             fontList.put(font, indirectFont);
             return indirectFont;
@@ -104,8 +133,8 @@ public class PdfDocument {
     }
 
     /**
-     * Returns the indirect object representing the given font
-     * @param font
+     * Returns the indirect object representing the given font.
+     * @param font 
      * @return PdfIndirectObject representing the font or null if the font is not in the list
      */
     public static PdfIndirectObject getPdfFont(Font font) {
@@ -113,19 +142,39 @@ public class PdfDocument {
     }
 
     /**
-     * Adds a new page and changes the current page
-     * @param width
-     * @param height
+     * Adds a new page and changes the current page.
+     * @param width 
+     * @param height 
      */
     public void addPage(int width, int height) {
-        PdfPage page = PdfObjectFactory.createPdfPage(width, height);
+        PdfPage page = new PdfPage(width, height);
         currentPage = (PdfPage) body.addPage(page).getObject();
     }
 
     /**
-     * Make the writer start writing the document
+     * Adds the given document info to the PDF trailer.
+     * @param author Writer of the document
+     * @param title Title of the document
+     * @param subject Subject of the document
+     * @param creationDate Creation date of the document
+     * @see PdfTrailer
+     */
+    public void addDocumentInfo(String author, String title, String subject, Calendar creationDate) {
+        PdfDictionary trailerInfo = new PdfDictionary(PdfObjectType.DICTIONARY);
+        PdfIndirectObject info = body.addObject(trailerInfo);
+
+        if (author.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.AUTHOR), new PdfString(author));
+        if (title.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.TITLE), new PdfString(title));
+        if (subject.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.SUBJECT), new PdfString(subject));
+        if (creationDate != null) trailerInfo.put(new PdfName(PdfNameValue.CREATION_DATE), new PdfString(creationDate));
+        trailerInfo.put(new PdfName(PdfNameValue.CREATOR), new PdfString(CREATOR));
+        trailer.setInfo(info);
+    }
+
+    /**
+     * Make the writer start writing the document.
      * 
-     * @throws IOException
+     * @throws IOException 
      */
     public void finish() throws IOException {
         this.writer.write(header, body, xref, trailer);

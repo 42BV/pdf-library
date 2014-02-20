@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Dylan de Wolff
  */
 public class PdfPageTree extends PdfIndirectObject {
-    ArrayList<PdfIndirectObject> kids;
+    private ArrayList<PdfIndirectObject> kids;
 
     /**
      * Creates a new instance of PdfPageTree.
@@ -42,8 +42,8 @@ public class PdfPageTree extends PdfIndirectObject {
     public int getSize() {
         int size = 1;
         for (PdfIndirectObject kid : kids) {
-            PdfDictionaryType type = ((PdfDictionary) kid.getObject()).getType();
-            if (type.equals(PdfDictionaryType.PAGE)) {
+            PdfObjectType type = kid.getObject().getType();
+            if (type.equals(PdfObjectType.PAGE)) {
                 ++size;
             } else if (kid instanceof PdfPageTree) {
                 size += ((PdfPageTree) kid).getSize();
@@ -60,8 +60,8 @@ public class PdfPageTree extends PdfIndirectObject {
         ArrayList<PdfIndirectObject> objects = new ArrayList<PdfIndirectObject>();
         objects.add(this);
         for (PdfIndirectObject kid : kids) {
-            PdfDictionaryType type = ((PdfDictionary) kid.getObject()).getType();
-            if (type.equals(PdfDictionaryType.PAGE)) {
+            PdfObjectType type = kid.getObject().getType();
+            if (type.equals(PdfObjectType.PAGE)) {
                 objects.add(kid);
             } else if (kid instanceof PdfPageTree) {
                 objects.addAll(((PdfPageTree) kid).getPageTreeObjects());

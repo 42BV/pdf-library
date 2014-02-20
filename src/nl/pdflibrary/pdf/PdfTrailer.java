@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.pdflibrary.pdf.object.PdfDictionary;
-import nl.pdflibrary.pdf.object.PdfDictionaryType;
+import nl.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.pdflibrary.pdf.object.PdfIndirectObjectReference;
 import nl.pdflibrary.pdf.object.PdfName;
 import nl.pdflibrary.pdf.object.PdfNameValue;
 import nl.pdflibrary.pdf.object.PdfNumber;
-
+import nl.pdflibrary.pdf.object.PdfObjectType;
 
 /**
  * PdfTrailer represents the trailer section of a PDF. The trailer specifies the amount of objects in the document,
@@ -19,6 +19,7 @@ import nl.pdflibrary.pdf.object.PdfNumber;
 public class PdfTrailer extends PdfDictionary {
     private int objectAmount;
     private byte[] crossReferenceStartByte;
+    private PdfIndirectObject info;
     /**
      *  Specifies the syntax used to indicate the start of the trailer
      */
@@ -39,7 +40,7 @@ public class PdfTrailer extends PdfDictionary {
      * @param catalogReference The catalog object reference
      */
     public PdfTrailer(int objectAmount, byte[] crossReferenceStartByte, PdfIndirectObjectReference catalogReference) {
-        super(PdfDictionaryType.TRAILER);
+        super(PdfObjectType.TRAILER);
         this.objectAmount = objectAmount + 1;
         this.crossReferenceStartByte = crossReferenceStartByte;
         this.fillObjectSpecification(catalogReference);
@@ -49,7 +50,7 @@ public class PdfTrailer extends PdfDictionary {
      * Used to create a new instance of PdfTrailer
      */
     public PdfTrailer() {
-        super(PdfDictionaryType.TRAILER);
+        super(PdfObjectType.TRAILER);
     }
 
     public void setObjectAmount(int objectAmount) {
@@ -67,6 +68,7 @@ public class PdfTrailer extends PdfDictionary {
     public void fillObjectSpecification(PdfIndirectObjectReference root) {
         this.put(new PdfName(PdfNameValue.SIZE), new PdfNumber(objectAmount));
         this.put(new PdfName(PdfNameValue.ROOT), root);
+        this.put(new PdfName(PdfNameValue.INFO), info.getReference());
     }
 
     /** 
@@ -86,5 +88,9 @@ public class PdfTrailer extends PdfDictionary {
         os.write(crossReferenceStartByte);
         os.write(PdfDocument.LINE_SEPARATOR);
         os.write(END_OF_FILE_INDICATOR);
+    }
+
+    public void setInfo(PdfIndirectObject info) {
+        this.info = info;
     }
 }

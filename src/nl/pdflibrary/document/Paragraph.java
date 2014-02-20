@@ -9,11 +9,20 @@ import java.util.ArrayList;
  */
 public class Paragraph extends AbstractDocumentPart {
     private ArrayList<Text> textCollection;
+    private boolean customPositioning = true;
 
     /**
-     * Creates a new instance of Paragraph
-     * @param positionX
-     * @param positionY
+     * Creates a new instance of Paragraph.
+     */
+    public Paragraph() {
+        this(0, 0);
+        customPositioning = false;
+    }
+
+    /**
+     * Creates a new instance of Paragraph.
+     * @param positionX x-position from the lower left corner
+     * @param positionY y-position from the lower left corner
      */
     public Paragraph(int positionX, int positionY) {
         super(DocumentPartType.PARAGRAPH);
@@ -23,8 +32,6 @@ public class Paragraph extends AbstractDocumentPart {
     }
 
     public void addText(Text text) {
-        text.setPositionX(this.getPositionX());
-        text.setPositionY(this.getPositionY());
         this.textCollection.add(text);
     }
 
@@ -32,4 +39,7 @@ public class Paragraph extends AbstractDocumentPart {
         return this.textCollection;
     }
 
+    public boolean getCustomPositioning() {
+        return this.customPositioning;
+    }
 }

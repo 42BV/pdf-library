@@ -10,6 +10,10 @@ import java.io.OutputStream;
  */
 public class PdfHeader {
     private static final byte[] VERSION = "%PDF-1.7".getBytes();
+    /**
+     * Indicates to file readers that this document contains binary data.
+     */
+    private static final byte[] BINARY_INDICATOR = "%âãÏÓ".getBytes();
 
     /**
      * Creates a new instance of PdfHeader
@@ -24,6 +28,8 @@ public class PdfHeader {
      */
     public void writeToFile(OutputStream os) throws IOException {
         os.write(VERSION);
+        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(BINARY_INDICATOR);
         os.write(PdfDocument.LINE_SEPARATOR);
     }
 }

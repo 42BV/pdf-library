@@ -6,7 +6,7 @@ package nl.pdflibrary.pdf.object;
  * indirect object
  * @author Dylan de Wolff
  */
-public class PdfIndirectObjectReference extends PdfObject {
+public class PdfIndirectObjectReference extends AbstractPdfObject {
     private String reference;
     /**
      * The syntax used in PDF to specify a reference
@@ -23,7 +23,7 @@ public class PdfIndirectObjectReference extends PdfObject {
      * @param generation Generation number of the object being reffered to
      */
     public PdfIndirectObjectReference(int number, int generation) {
-        super();
+        super(PdfObjectType.REFERENCE);
         this.updateReference(number, generation);
     }
 

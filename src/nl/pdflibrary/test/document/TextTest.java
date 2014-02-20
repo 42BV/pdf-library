@@ -10,8 +10,6 @@ import nl.pdflibrary.document.Text;
 import org.junit.Before;
 import org.junit.Test;
 
-
-
 public class TextTest {
     private Text text;
 
@@ -37,15 +35,5 @@ public class TextTest {
         Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
         text.setFont(f);
         assertEquals("Font was not set correctly.", f, text.getFont());
-    }
-
-    @Test
-    public void testSetPosition() {
-        int posX = 200;
-        int posY = 200;
-        text.setPositionX(posX);
-        assertEquals("Position X was not set correctly.", posX, text.getPositionX());
-        text.setPositionY(posY);
-        assertEquals("Position Y was not set correctly.", posY, text.getPositionY());
     }
 }

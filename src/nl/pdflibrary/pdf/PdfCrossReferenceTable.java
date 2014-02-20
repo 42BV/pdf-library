@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import nl.pdflibrary.pdf.object.PdfIndirectObject;
 
-
 /**
  * 
  * This class represents the cross reference table (hereafter referred to as the 'xref table'). The xref table
@@ -26,7 +25,7 @@ public class PdfCrossReferenceTable {
     private HashMap<Integer, CrossReference> crossReferences;
 
     /**
-     * The pdf syntax used to specify that the xref table is underneath this line
+     * The PDF syntax used to specify that the xref table is underneath this line
      */
     private static final byte[] XREF_INDICATOR = "xref".getBytes();
     //check if this is needed
@@ -70,7 +69,6 @@ public class PdfCrossReferenceTable {
         for (PdfIndirectObject indirectObject : indirectObjects) {
             this.addReferenceToIndirectObject(indirectObject);
         }
-
     }
 
     /**
@@ -202,7 +200,6 @@ public class PdfCrossReferenceTable {
         public void writeToFile(OutputStream os) throws IOException {
             String line = startByte + " " + generation + " " + getInUseSyntax();
             os.write(line.getBytes());
-
         }
 
         private char getInUseSyntax() {

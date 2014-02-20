@@ -8,7 +8,6 @@ package nl.pdflibrary.pdf.object;
 public class PdfPage extends PdfDictionary {
     private int width;
     private int height;
-    private int filledHeight;
     /**
      * The amount of resources this page uses
      */
@@ -27,10 +26,9 @@ public class PdfPage extends PdfDictionary {
      * @param height
      */
     public PdfPage(int width, int height) {
-        super(PdfDictionaryType.PAGE);
+        super(PdfObjectType.PAGE);
         this.width = width;
         this.height = height;
-        this.filledHeight = 0;
         this.resourceCount = 0;
         this.initPage();
     }
@@ -41,7 +39,7 @@ public class PdfPage extends PdfDictionary {
     private void initPage() {
         put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.PAGE));
         put(new PdfName(PdfNameValue.MEDIA_BOX), createMediabox());
-        put(resources, new PdfDictionary(PdfDictionaryType.OTHER));
+        put(resources, new PdfDictionary(PdfObjectType.DICTIONARY));
         put(content, new PdfArray());
     }
 
@@ -64,15 +62,16 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject Object to be added
      */
     public void add(PdfIndirectObject indirectObject) {
-        PdfObject obj = indirectObject.getObject();
+        AbstractPdfObject obj = indirectObject.getObject();
         if (obj instanceof PdfDictionary) {
-            PdfDictionary dicObj = (PdfDictionary) indirectObject.getObject();
-            switch (dicObj.getType()) {
+            switch (indirectObject.getObject().getType()) {
             case STREAM:
                 this.addContent(indirectObject);
                 break;
             case FONT:
                 this.addResource(indirectObject);
+                break;
+            default:
                 break;
             }
         }
@@ -95,7 +94,7 @@ public class PdfPage extends PdfDictionary {
     private void addResource(PdfIndirectObject indirectObject) {
         ++resourceCount;
         PdfDictionary currentResources = (PdfDictionary) this.get(resources);
-        PdfName key = getKeyForType(((PdfDictionary) indirectObject.getObject()).getType());
+        PdfName key = getKeyForType(indirectObject.getObject().getType());
         String resourceReference = RESOURCE_REFERENCE_PREFIX + this.resourceCount;
         indirectObject.getReference().setResourceReference(resourceReference);
         PdfName resourceKey = new PdfName(resourceReference);
@@ -104,7 +103,7 @@ public class PdfPage extends PdfDictionary {
             PdfDictionary keyResourceDictionary = (PdfDictionary) currentResources.get(key);
             keyResourceDictionary.put(resourceKey, indirectObject.getReference());
         } else {
-            PdfDictionary newResource = new PdfDictionary(PdfDictionaryType.OTHER);
+            PdfDictionary newResource = new PdfDictionary(PdfObjectType.DICTIONARY);
             newResource.put(resourceKey, indirectObject.getReference());
             currentResources.put(key, newResource);
         }
@@ -115,12 +114,14 @@ public class PdfPage extends PdfDictionary {
      * @param type
      * @return
      */
-    private PdfName getKeyForType(PdfDictionaryType type) {
+    private PdfName getKeyForType(PdfObjectType type) {
         PdfName key = null;
 
         switch (type) {
         case FONT:
             key = new PdfName(PdfNameValue.FONT);
+            break;
+        default:
             break;
         }
         return key;
@@ -135,7 +136,7 @@ public class PdfPage extends PdfDictionary {
     }
 
     public boolean streamEmpty() {
-        if (this.currentStream != null && this.currentStream.getByteRepresentation().length > 0) {
+        if (this.currentStream != null && this.currentStream.getContentSize() > 0) {
             return false;
         }
         return true;

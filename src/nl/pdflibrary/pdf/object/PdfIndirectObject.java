@@ -5,7 +5,6 @@ import java.io.OutputStream;
 
 import nl.pdflibrary.pdf.PdfCrossReferenceTable;
 
-
 /**
  * This represents a PDF indirect object. This means it contains an object and a object number plus generation number. 
  * Other PDF objects can refer to this object by using it's object number. It also stores a byte start position, this is needed
@@ -16,7 +15,7 @@ import nl.pdflibrary.pdf.PdfCrossReferenceTable;
  *  @see PdfIndirectObjectReference
  */
 public class PdfIndirectObject {
-    protected int number;
+    private int number;
     private int generation;
     /**
      * contains the PDF syntax used to specify an indirect object 
@@ -29,7 +28,7 @@ public class PdfIndirectObject {
     /**
      * The actual PdfObject that is contained within this indirect object
      */
-    private PdfObject object;
+    private AbstractPdfObject object;
     /**
      * This reference should be used by other objects that wish to refer to this indirect object
      */
@@ -47,7 +46,7 @@ public class PdfIndirectObject {
      * @param object The object contained within this indirect object
      * @param objectInUse States if the object is actually used in the document
      */
-    public PdfIndirectObject(int number, int generation, PdfObject object, boolean objectInUse) {
+    public PdfIndirectObject(int number, int generation, AbstractPdfObject object, boolean objectInUse) {
         this.number = number;
         this.generation = generation;
         this.object = object;
@@ -101,7 +100,7 @@ public class PdfIndirectObject {
         return this.objectInUse;
     }
 
-    public PdfObject getObject() {
+    public AbstractPdfObject getObject() {
         return this.object;
     }
 }

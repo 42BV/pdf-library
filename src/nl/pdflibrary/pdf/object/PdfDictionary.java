@@ -11,32 +11,30 @@ import java.util.Map.Entry;
  * 
  * @author Dylan de Wolff
  */
-public class PdfDictionary extends PdfObject {
-    private HashMap<PdfName, PdfObject> content;
+public class PdfDictionary extends AbstractPdfObject {
+    private HashMap<PdfName, AbstractPdfObject> content;
     private static final byte[] OPEN_DICTIONARY = "<<\n".getBytes();
     private static final byte[] CLOSE_DICTIONARY = ">>".getBytes();
-    private PdfDictionaryType type;
 
     /**
      * Creates a new instance of PdfDictionary
      * @param type Specifies the type of dictionary
      */
-    public PdfDictionary(PdfDictionaryType type) {
-        super();
-        this.type = type;
-        content = new HashMap<PdfName, PdfObject>();
+    public PdfDictionary(PdfObjectType type) {
+        super(type);
+        content = new HashMap<PdfName, AbstractPdfObject>();
     }
 
     /**
      * Writes the dictionary to the given OutputStream
      * 
      * @param os OutputStream
-     * @see nl.pdflibrary.pdf.object.PdfObject#writeToFile(java.io.OutputStream) 
+     * @see nl.pdflibrary.pdf.object.AbstractPdfObject#writeToFile(java.io.OutputStream) 
      */
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         os.write(OPEN_DICTIONARY);
-        for (Entry<PdfName, PdfObject> entry : content.entrySet()) {
+        for (Entry<PdfName, AbstractPdfObject> entry : content.entrySet()) {
             entry.getKey().writeToFile(os);
             os.write((byte) ' ');
             entry.getValue().writeToFile(os);
@@ -45,16 +43,12 @@ public class PdfDictionary extends PdfObject {
         os.write(CLOSE_DICTIONARY);
     }
 
-    public void put(PdfName key, PdfObject value) {
+    public void put(PdfName key, AbstractPdfObject value) {
         this.content.put(key, value);
     }
 
-    public PdfObject get(PdfName key) {
+    public AbstractPdfObject get(PdfName key) {
         return this.content.get(key);
-    }
-
-    public PdfDictionaryType getType() {
-        return this.type;
     }
 
 }

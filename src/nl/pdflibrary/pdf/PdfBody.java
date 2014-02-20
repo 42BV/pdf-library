@@ -4,16 +4,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import nl.pdflibrary.pdf.object.AbstractPdfObject;
 import nl.pdflibrary.pdf.object.PdfDictionary;
-import nl.pdflibrary.pdf.object.PdfDictionaryType;
 import nl.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.pdflibrary.pdf.object.PdfIndirectObjectReference;
 import nl.pdflibrary.pdf.object.PdfName;
 import nl.pdflibrary.pdf.object.PdfNameValue;
-import nl.pdflibrary.pdf.object.PdfObject;
+import nl.pdflibrary.pdf.object.PdfObjectType;
 import nl.pdflibrary.pdf.object.PdfPage;
 import nl.pdflibrary.pdf.object.PdfPageTree;
-
 
 /** 
  * Represents the body section of a PDF file. Responsible for creating indirect objects and storing all 
@@ -53,7 +52,7 @@ public class PdfBody {
      * @param object The PdfObject that will be added to the body
      * @return The indirect object created with the PdfObject
      */
-    public PdfIndirectObject addObject(PdfObject object) {
+    public PdfIndirectObject addObject(AbstractPdfObject object) {
         PdfIndirectObject indirectObject = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, object, true);
         this.indirectObjects.add(indirectObject);
         return indirectObject;
@@ -108,7 +107,7 @@ public class PdfBody {
      * @return The indirect object for the catalog
      */
     private PdfIndirectObject createCatalog(PdfPageTree pages) {
-        PdfDictionary catalogDictionary = new PdfDictionary(PdfDictionaryType.CATALOG);
+        PdfDictionary catalogDictionary = new PdfDictionary(PdfObjectType.CATALOG);
         PdfIndirectObject indirectCatalog = new PdfIndirectObject(1, 0, catalogDictionary, true);
         catalogDictionary.put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.CATALOG));
         catalogDictionary.put(new PdfName(PdfNameValue.PAGES), pages.getReference());
@@ -122,7 +121,7 @@ public class PdfBody {
      */
     //TODO: Add new pagetrees to the existing page tree
     private PdfPageTree createPageTree() {
-        PdfDictionary pages = new PdfDictionary(PdfDictionaryType.PAGES);
+        PdfDictionary pages = new PdfDictionary(PdfObjectType.PAGETREE);
         PdfPageTree pageTreeObj = new PdfPageTree(getTotalIndirectObjectsAmount() + 1, 0, pages, true);
         return pageTreeObj;
     }
