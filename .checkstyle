@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
+  <local-check-config name="MAD Checkstyle" location="https://subversion.42.nl/software/settings/checkstyle.xml" type="remote" description="">
+    <additional-data name="cache-file" value="true"/>
+    <additional-data name="cache-props-file-location" value="null_1392632653961_cache.properties"/>
+    <additional-data name="cache-file-location" value="null_1392632653961_cache.xml"/>
+  </local-check-config>
+  <local-check-config name="Copy of MAD Checkstyle" location="internal_config__1392632910601.xml" type="internal" description=""/>
+  <fileset name="all" enabled="true" check-config-name="Copy of MAD Checkstyle" local="true">
+    <file-match-pattern match-pattern="." include-pattern="true"/>
+  </fileset>
+</fileset-config>
