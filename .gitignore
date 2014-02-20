@@ -1,0 +1,9 @@
+.idea
+*.iml
+.settings
+.checkstyle
+.classpath
+.pmd
+.project
+testpdf.pdf
+bin

@@ -1,9 +1,9 @@
 import java.awt.Font;
 import java.io.IOException;
 
-import nl.pdflibrary.document.Document;
-import nl.pdflibrary.document.Paragraph;
-import nl.pdflibrary.document.Text;
+import nl.mad.pdflibrary.document.Document;
+import nl.mad.pdflibrary.document.Paragraph;
+import nl.mad.pdflibrary.document.Text;
 
 public class Main {
 
