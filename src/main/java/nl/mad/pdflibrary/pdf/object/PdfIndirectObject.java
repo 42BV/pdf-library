@@ -19,33 +19,33 @@ public class PdfIndirectObject {
     private int number;
     private int generation;
     /**
-     * contains the PDF syntax used to specify an indirect object 
+     * contains the PDF syntax used to specify an indirect object.
      */
     protected static final String START = "obj\n";
     /**
-     * contains the PDF syntax used to specify the end of an indirect object 
+     * contains the PDF syntax used to specify the end of an indirect object.
      */
     protected static final String END = "\nendobj\n\n";
     /**
-     * The actual PdfObject that is contained within this indirect object
+     * The actual PdfObject that is contained within this indirect object.
      */
     private AbstractPdfObject object;
     /**
-     * This reference should be used by other objects that wish to refer to this indirect object
+     * This reference should be used by other objects that wish to refer to this indirect object.
      */
     private PdfIndirectObjectReference reference;
     /**
-     * The starting position of this object in the PDF file
+     * The starting position of this object in the PDF file.
      */
     private int startByte = 0;
     private boolean objectInUse;
 
     /**
-     * Creates a new instance of PDfIndirectObject
-     * @param number Object number
-     * @param generation Object generation (always 0, unless you are changing an existing object)
-     * @param object The object contained within this indirect object
-     * @param objectInUse States if the object is actually used in the mad
+     * Creates a new instance of PDfIndirectObject.
+     * @param number Object number.
+     * @param generation Object generation (always 0, unless you are changing an existing object).
+     * @param object The object contained within this indirect object.
+     * @param objectInUse States if the object is actually used in the document.
      */
     public PdfIndirectObject(int number, int generation, AbstractPdfObject object, boolean objectInUse) {
         this.number = number;
@@ -56,8 +56,8 @@ public class PdfIndirectObject {
     }
 
     /**
-     * Writes the file to the given OutputStream
-     * @param os
+     * Writes the file to the given OutputStream.
+     * @param os OutputStream to write to.
      * @throws IOException
      */
     public void writeToFile(OutputStream os) throws IOException {

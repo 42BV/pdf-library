@@ -25,20 +25,16 @@ public class PdfString extends AbstractPdfObject {
 
     /**
      * Creates a new instance of PdfString.
-     * @param string 
+     * @param string String to represent in this PdfString.
      */
     public PdfString(String string) {
         this();
-        this.setString(string);
-    }
-
-    public PdfString(Calendar creationDate) {
-        this();
-        this.setString(creationDate);
+        this.string = string;
     }
 
     @Override
     public void writeToFile(OutputStream os) throws IOException {
+        this.setByteRepresentation(ByteEncoder.getBytes(string));
         os.write('(');
         super.writeToFile(os);
         os.write(')');
@@ -55,7 +51,7 @@ public class PdfString extends AbstractPdfObject {
 
     /**
      * Creates a PDF string from the given date.
-     * @param date 
+     * @param date Date to create a string from.
      */
     public void setString(Calendar date) {
         String stringDate = DATE_PREFIX;

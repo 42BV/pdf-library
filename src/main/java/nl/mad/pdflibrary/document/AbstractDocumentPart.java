@@ -1,22 +1,19 @@
 package nl.mad.pdflibrary.document;
 
 /**
- * DocumentPart is the abstract class for all the different mad parts that can be added to an instance of Document
- * 
+ * DocumentPart is the abstract class for all the different document parts that can be added to an instance of Document.
  * @author Dylan de Wolff
  * @see Document
  */
-
 public abstract class AbstractDocumentPart {
     /**
-     * Type of this part
+     * Type of this part.
      */
     private DocumentPartType type;
-    private int positionX;
-    private int positionY;
 
     /**
-     * @param type Type of this part
+     * Creates a new instance of AbstractDocumentPart.
+     * @param type Type of document part.
      */
     public AbstractDocumentPart(DocumentPartType type) {
         this.type = type;
@@ -24,21 +21,5 @@ public abstract class AbstractDocumentPart {
 
     public DocumentPartType getType() {
         return type;
-    }
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public void setPositionX(int positionX) {
-        this.positionX = positionX;
-    }
-
-    public int getPositionY() {
-        return positionY;
-    }
-
-    public void setPositionY(int positionY) {
-        this.positionY = positionY;
     }
 }

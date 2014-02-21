@@ -3,8 +3,9 @@ package nl.mad.pdflibrary.pdf;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
@@ -23,10 +24,10 @@ public class PdfCrossReferenceTable {
     /**
      * All crossreferences are stored in this map. The key is the object number.
      */
-    private HashMap<Integer, CrossReference> crossReferences;
+    private Map<Integer, CrossReference> crossReferences;
 
     /**
-     * The PDF syntax used to specify that the xref table is underneath this line
+     * The PDF syntax used to specify that the xref table is underneath this line.
      */
     private static final String XREF_INDICATOR = "xref";
     //check if this is needed
@@ -45,7 +46,7 @@ public class PdfCrossReferenceTable {
     private byte[] startByte;
 
     /**
-     * Creates a new instance of the cross reference table
+     * Creates a new instance of the cross reference table.
      */
     public PdfCrossReferenceTable() {
         crossReferences = new HashMap<Integer, CrossReference>();
@@ -54,28 +55,28 @@ public class PdfCrossReferenceTable {
     /**
      * Creates a new instance of the cross reference table and directly filling it with the given objects.
      * 
-     * @param indirectObjects The indirect objects that will be referred to in the xref table
+     * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
-    public PdfCrossReferenceTable(ArrayList<PdfIndirectObject> indirectObjects) {
+    public PdfCrossReferenceTable(List<PdfIndirectObject> indirectObjects) {
         crossReferences = new HashMap<Integer, CrossReference>();
         this.fillTableWithIndirectObjects(indirectObjects);
     }
 
     /**
-     * Fills the table with the given indirect objects
+     * Fills the table with the given indirect objects.
      * 
-     * @param indirectObjects
+     * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
-    public void fillTableWithIndirectObjects(ArrayList<PdfIndirectObject> indirectObjects) {
+    public final void fillTableWithIndirectObjects(List<PdfIndirectObject> indirectObjects) {
         for (PdfIndirectObject indirectObject : indirectObjects) {
             this.addReferenceToIndirectObject(indirectObject);
         }
     }
 
     /**
-     * Adds the reference from the given indirect object to the table
+     * Adds the reference from the given indirect object to the table.
      * 
-     * @param indirectObject Object that will be referred to
+     * @param indirectObject Object that will be referred to.
      */
     public void addReferenceToIndirectObject(PdfIndirectObject indirectObject) {
         crossReferences.put(Integer.valueOf(indirectObject.getNumber()), new CrossReference(indirectObject.getStartByte(), indirectObject.getInUse(),
@@ -103,8 +104,8 @@ public class PdfCrossReferenceTable {
     }
 
     /**
-     * Writes the xref table to the given output stream
-     * @param os OutputStream that will be written to
+     * Writes the xref table to the given output stream.
+     * @param os OutputStream that will be written to.
      * @throws IOException 
      */
     public void writeToFile(DataOutputStream os) throws IOException {
@@ -160,10 +161,10 @@ public class PdfCrossReferenceTable {
         private static final char IN_USE = 'n';
 
         /**
-         * Creates a new instance of crossReference
-         * @param byteStart The byte starting point of the indirect object that needs to be referred to
-         * @param inUse Specifies whether the object is actually used in the mad
-         * @param generation The generation number of the object
+         * Creates a new instance of crossReference.
+         * @param byteStart The byte starting point of the indirect object that needs to be referred to.
+         * @param inUse Specifies whether the object is actually used in the document.
+         * @param generation The generation number of the object.
          */
         public CrossReference(int byteStart, boolean inUse, int generation) {
             this.processByteStart(byteStart);
@@ -172,8 +173,8 @@ public class PdfCrossReferenceTable {
         }
 
         /**
-         * Ensures the generation number is stored as the PDF format requires
-         * @param generation
+         * Ensures the generation number is stored as the PDF format requires.
+         * @param generation Generation number of object.
          */
         private void processGeneration(int generation) {
             String generationNumber = String.valueOf(generation);
@@ -181,21 +182,21 @@ public class PdfCrossReferenceTable {
         }
 
         /**
-         * Ensures the byte starting point is stored as the PDF format requires
-         * @param generation
+         * Ensures the byte starting point is stored as the PDF format requires.
+         * @param byteStart Byte start of object.
          */
         private void processByteStart(int byteStart) {
             String bytes = String.valueOf(byteStart);
             this.startByte = START_BYTE_FORMAT.subSequence(0, START_BYTE_FORMAT.length() - bytes.length()) + bytes;
         }
 
-        public void setInUse(boolean inUse) {
+        private void setInUse(boolean inUse) {
             this.inUse = inUse;
         }
 
         /**
-         * Writes the cross reference to the given OutputStream
-         * @param os
+         * Writes the cross reference to the given OutputStream.
+         * @param os OutputStream which will be written to.
          * @throws IOException
          */
         public void writeToFile(OutputStream os) throws IOException {

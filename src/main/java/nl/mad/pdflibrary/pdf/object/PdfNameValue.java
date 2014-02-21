@@ -1,7 +1,7 @@
 package nl.mad.pdflibrary.pdf.object;
 
 /**
- * Contains a list of standard PdfName values
+ * Contains a list of standard PdfName values.
  * 
  * @author Dylan de Wolff 
  * @see PdfName

@@ -9,11 +9,11 @@ public class PdfPage extends PdfDictionary {
     private int width;
     private int height;
     /**
-     * The amount of resources this page uses
+     * The amount of resources this page uses.
      */
     private int resourceCount;
     /**
-     * The current content stream
+     * The current content stream.
      */
     private PdfStream currentStream;
     private static final PdfName content = new PdfName(PdfNameValue.CONTENTS);
@@ -21,9 +21,9 @@ public class PdfPage extends PdfDictionary {
     private static final String RESOURCE_REFERENCE_PREFIX = "R";
 
     /**
-     * Creates a new instance of PdfPage with the given width and height
-     * @param width
-     * @param height
+     * Creates a new instance of PdfPage with the given width and height.
+     * @param width Width of page.
+     * @param height Height of page.
      */
     public PdfPage(int width, int height) {
         super(PdfObjectType.PAGE);
@@ -34,7 +34,7 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Initializes the page by adding type, mediabox, resources and content
+     * Initializes the page by adding type, mediabox, resources and content.
      */
     private void initPage() {
         put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.PAGE));
@@ -44,7 +44,7 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Creates a new Mediabox PdfArray based on the height and width of the page
+     * Creates a new Mediabox PdfArray based on the height and width of the page.
      * The mediabox is responsible for specifying the size/visible area of the page
      * @return
      */
@@ -58,8 +58,8 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Adds an indirect object to the resources or contents of this page
-     * @param indirectObject Object to be added
+     * Adds an indirect object to the resources or contents of this page.
+     * @param indirectObject Object to be added.
      */
     public void add(PdfIndirectObject indirectObject) {
         AbstractPdfObject obj = indirectObject.getObject();
@@ -78,8 +78,8 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Adds a reference to the given object to the contents array
-     * @param indirectObject
+     * Adds a reference to the given object to the contents array.
+     * @param indirectObject IndirectObject to be added.
      */
     private void addContent(PdfIndirectObject indirectObject) {
         PdfArray currentContent = (PdfArray) this.get(content);
@@ -88,8 +88,8 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Adds a resource to the resource array
-     * @param indirectObject
+     * Adds a resource to the resource array.
+     * @param indirectObject Resource to be added.
      */
     private void addResource(PdfIndirectObject indirectObject) {
         ++resourceCount;
@@ -110,9 +110,9 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * Returns dictionary key corresponding to the given type 
-     * @param type
-     * @return
+     * Returns dictionary key corresponding to the given type.
+     * @param type Type of object.
+     * @return Key for the dictionary.
      */
     private PdfName getKeyForType(PdfObjectType type) {
         PdfName key = null;

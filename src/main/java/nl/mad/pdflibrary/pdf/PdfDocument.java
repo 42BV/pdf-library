@@ -3,9 +3,10 @@ package nl.mad.pdflibrary.pdf;
 import java.awt.Font;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import nl.mad.pdflibrary.document.AbstractDocumentPart;
 import nl.mad.pdflibrary.document.Paragraph;
@@ -23,9 +24,9 @@ import nl.mad.pdflibrary.pdf.object.PdfText;
 import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
- * Represents the PDF mad itself, containing the four different sections of a PDF mad.
+ * Represents the PDF document itself, containing the four different sections of a PDF document.
  * This class is responsible for the creation of the four sections (header, body, cross reference table and trailer),
- * passing along new mad parts and storing the used fonts.
+ * passing along new document parts and storing the used fonts.
  * 
  * @author Dylan de Wolff
  */
@@ -36,11 +37,11 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfWriter writer;
     private PdfPage currentPage;
-    private static HashMap<Font, PdfIndirectObject> fontList;
+    private static Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
     /**
      * The default line separator.
      */
-    public static byte[] LINE_SEPARATOR = System.getProperty("line.separator").getBytes();
+    public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
     private static final String CREATOR = "PDF-Library";
 
     /**
@@ -48,18 +49,16 @@ public class PdfDocument {
      * @throws UnsupportedEncodingException 
      */
     public PdfDocument() throws UnsupportedEncodingException {
-        LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
         header = new PdfHeader();
         body = new PdfBody();
         xref = new PdfCrossReferenceTable();
         trailer = new PdfTrailer();
         writer = new PdfWriter();
-        fontList = new HashMap<Font, PdfIndirectObject>();
     }
 
     /**
-     * Passes the given mad part over to the PdfObjectFactory and adds the resulting PdfObject to the mad.
-     * @param part Document part that is to be added
+     * Creates a PdfObject from the given document part and adds it to the document.
+     * @param part Document part that is to be added.
      * @see PdfObjectFactory
      */
     public void add(AbstractDocumentPart part) {
@@ -69,7 +68,7 @@ public class PdfDocument {
             break;
         case PARAGRAPH:
             Paragraph paragraph = (Paragraph) part;
-            ArrayList<Text> textCollection = paragraph.getTextCollection();
+            List<Text> textCollection = paragraph.getTextCollection();
             if (paragraph.getTextCollection().size() != 0) {
                 //if we're using custom paragraph positioning, adjust the first text object
                 if (paragraph.getCustomPositioning() && textCollection.get(0) != null) {
@@ -79,14 +78,15 @@ public class PdfDocument {
                 for (int i = 0; i < textCollection.size(); ++i) {
                     boolean ignorePosition = true;
                     //if we're not using custom paragraph positioning, try to use the first text object position
-                    if (!paragraph.getCustomPositioning()) {
-                        if (i == 0) {
-                            ignorePosition = false;
-                        }
+                    if (!paragraph.getCustomPositioning() && i == 0) {
+                        ignorePosition = false;
                     }
                     this.addText(textCollection.get(i), ignorePosition);
                 }
             }
+            break;
+        case FONT:
+            //TODO: Implementation of direct font adding
             break;
         default:
             break;
@@ -95,7 +95,7 @@ public class PdfDocument {
 
     /**
      * Adds the given text object to the PdfTextStream of the current page.
-     * @param text
+     * @param text Text that needs to be added.
      * @param overridePosition if true the position of the text will be disregarded. When using a paragraph, this should be true 
      * for every text object besides the first one.
      */
@@ -115,14 +115,14 @@ public class PdfDocument {
             //if we do not want to keep the nl position we avoid the position method
             PdfText pdfText = new PdfText();
             pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getFont().getSize());
-            pdfText.addText(text.getText());
+            pdfText.addTextString(text.getText());
             currentPage.getCurrentStream().add(pdfText);
         }
     }
 
     /**
      * Creates an indirectObject for the given font and adds it to the font list.
-     * @param font 
+     * @param font Font that needs to be added.
      * @return indirect object for the given font
      */
     public PdfIndirectObject addFont(Font font) {
@@ -138,7 +138,7 @@ public class PdfDocument {
 
     /**
      * Returns the indirect object representing the given font.
-     * @param font 
+     * @param font Requested font.
      * @return PdfIndirectObject representing the font or null if the font is not in the list
      */
     public static PdfIndirectObject getPdfFont(Font font) {
@@ -147,8 +147,8 @@ public class PdfDocument {
 
     /**
      * Adds a new page and changes the current page.
-     * @param width 
-     * @param height 
+     * @param width Width of page.
+     * @param height Height of page.
      */
     public void addPage(int width, int height) {
         PdfPage page = new PdfPage(width, height);
@@ -156,11 +156,11 @@ public class PdfDocument {
     }
 
     /**
-     * Adds the given mad info to the PDF trailer.
-     * @param author Writer of the mad
-     * @param title Title of the mad
-     * @param subject Subject of the mad
-     * @param creationDate Creation date of the mad
+     * Adds the given document info to the PDF trailer.
+     * @param author Writer of the document.
+     * @param title Title of the document.
+     * @param subject Subject of the document.
+     * @param creationDate Creation date of the document.
      * @see PdfTrailer
      */
     public void addDocumentInfo(String author, String title, String subject, Calendar creationDate) {
@@ -170,13 +170,15 @@ public class PdfDocument {
         if (author.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.AUTHOR), new PdfString(author));
         if (title.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.TITLE), new PdfString(title));
         if (subject.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.SUBJECT), new PdfString(subject));
-        if (creationDate != null) trailerInfo.put(new PdfName(PdfNameValue.CREATION_DATE), new PdfString(creationDate));
+        PdfString dateString = new PdfString();
+        dateString.setString(creationDate);
+        if (creationDate != null) trailerInfo.put(new PdfName(PdfNameValue.CREATION_DATE), dateString);
         trailerInfo.put(new PdfName(PdfNameValue.CREATOR), new PdfString(CREATOR));
         trailer.setInfo(info);
     }
 
     /**
-     * Make the writer start writing the mad.
+     * Make the writer start writing the document.
      * 
      * @throws IOException 
      */

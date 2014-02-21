@@ -9,8 +9,8 @@ public class Main {
 
     /**
      * This is only for testing purposes
-     * @param args
-     * @throws IOException
+     * @param args 
+     * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
         //easyDocumentCreation();

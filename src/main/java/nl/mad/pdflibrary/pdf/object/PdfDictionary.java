@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.pdf.object;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.pdf.PdfDocument;
@@ -15,13 +16,13 @@ import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
  * @author Dylan de Wolff
  */
 public class PdfDictionary extends AbstractPdfObject {
-    private HashMap<PdfName, AbstractPdfObject> content;
+    private Map<PdfName, AbstractPdfObject> content;
     private static final String OPEN_DICTIONARY = "<<\n";
     private static final String CLOSE_DICTIONARY = ">>";
 
     /**
-     * Creates a new instance of PdfDictionary
-     * @param type Specifies the type of dictionary
+     * Creates a new instance of PdfDictionary.
+     * @param type Specifies the type of dictionary.
      */
     public PdfDictionary(PdfObjectType type) {
         super(type);
@@ -29,9 +30,9 @@ public class PdfDictionary extends AbstractPdfObject {
     }
 
     /**
-     * Writes the dictionary to the given OutputStream
+     * Writes the dictionary to the given OutputStream.
      * 
-     * @param os OutputStream
+     * @param os OutputStream.
      * @throws IOException 
      * @see nl.mad.pdflibrary.pdf.object.AbstractPdfObject#writeToFile(java.io.OutputStream)
      */

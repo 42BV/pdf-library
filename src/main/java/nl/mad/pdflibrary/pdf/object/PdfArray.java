@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.pdf.object;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representation of a PDF Array object. Maintains a list of the PDF Objects. 
@@ -10,10 +11,10 @@ import java.util.ArrayList;
  * @author Dylan de Wolff
  */
 public class PdfArray extends AbstractPdfObject {
-    private ArrayList<AbstractPdfObject> values;
+    private List<AbstractPdfObject> values;
 
     /**
-     * Creates a new instance of PdfArray
+     * Creates a new instance of PdfArray.
      */
     public PdfArray() {
         super(PdfObjectType.ARRAY);
@@ -49,7 +50,7 @@ public class PdfArray extends AbstractPdfObject {
         return values.size();
     }
 
-    public ArrayList<AbstractPdfObject> getValues() {
+    public List<AbstractPdfObject> getValues() {
         return values;
     }
 }

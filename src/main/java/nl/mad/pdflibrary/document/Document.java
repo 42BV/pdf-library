@@ -8,8 +8,8 @@ import java.util.Calendar;
 import nl.mad.pdflibrary.pdf.PdfDocument;
 
 /**
- * Document is the class responsible for passing mad parts on to the PdfDocument.
- * It also stores properties of the mad such as page width/height and the author.
+ * Document is the class responsible for passing document parts on to the PdfDocument.
+ * It also stores properties of the document such as page width/height and the author.
  * @author Dylan de Wolff
  */
 public class Document {
@@ -44,11 +44,11 @@ public class Document {
 
     /**
      * Creates a new instance of Document.
-     * @param width Default page width for this mad
-     * @param height Default page height for this mad
-     * @param author Writer of this mad
-     * @param title Title of this mad
-     * @param subject Subject of this mad
+     * @param width Default page width for this document
+     * @param height Default page height for this document
+     * @param author Writer of this document
+     * @param title Title of this document
+     * @param subject Subject of this document
      * @throws UnsupportedEncodingException 
      */
     public Document(int width, int height, String author, String title, String subject) throws UnsupportedEncodingException {
@@ -63,10 +63,10 @@ public class Document {
     }
 
     /**
-     * Adds a new part to the mad.
+     * Adds a new part to the document.
      * 
-     * @param part New mad part to be added to the mad
-     * @see AbstractDocumentPart
+     * @param part New document part to be added to the document.
+     * @see AbstractDocumentPart Part to add.
      */
     public void addPart(AbstractDocumentPart part) {
         if (!finished) {
@@ -75,7 +75,7 @@ public class Document {
     }
 
     /**
-     * Adds a new page to the mad with the default mad width and height.
+     * Adds a new page to the document with the default document width and height.
      */
     public void addNewPage() {
         if (!finished) {
@@ -85,7 +85,7 @@ public class Document {
     }
 
     /**
-     * Adds a new page to the mad with the given width and height.
+     * Adds a new page to the document with the given width and height.
      * @param pageWidth 
      * @param pageHeight 
      */
@@ -101,7 +101,7 @@ public class Document {
     }
 
     /**
-     * Prints the mad to a PDF file and no longer allows editing of the mad.
+     * Prints the document to a PDF file and no longer allows editing of the document.
      * @throws IOException 
      */
     public void finish() throws IOException {

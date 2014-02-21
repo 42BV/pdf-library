@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.pdf.object;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.mad.pdflibrary.pdf.PdfDocument;
 import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
@@ -15,33 +16,37 @@ import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
  */
 public class PdfStream extends PdfDictionary {
     /**
-     * Contains the syntax used to indicate the start of a stream
+     * Contains the syntax used to indicate the start of a stream.
      */
     private static final String START_STREAM = "stream\n";
     /**
-     * Contains the syntax used to indicate the end of a stream
+     * Contains the syntax used to indicate the end of a stream.
      */
     private static final String END_STREAM = "endstream";
     /**
-     * Specifies the command used to specify the start of a text stream
+     * Specifies the command used to specify the start of a text stream.
      */
     private static final String BEGIN_TEXT_STREAM = "BT\n";
     /**
-     * Specifies the command used to specify the end of a text stream
+     * Specifies the command used to specify the end of a text stream.
      */
     private static final String END_TEXT_STREAM = "ET\n";
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
     //somehow limit this to objects that are actually supposed to be part of the contents?
-    private ArrayList<AbstractPdfObject> contents;
+    private List<AbstractPdfObject> contents;
 
     /**
-     * Creates a new instance of PdfStream
+     * Creates a new instance of PdfStream.
      */
     public PdfStream() {
         this(new PdfArray());
     }
 
+    /**
+     * Creates a new instance of PdfStream with the given filters.
+     * @param filters Array containing the filters on the stream.
+     */
     public PdfStream(PdfArray filters) {
         super(PdfObjectType.STREAM);
         contents = new ArrayList<AbstractPdfObject>();
@@ -50,9 +55,9 @@ public class PdfStream extends PdfDictionary {
     }
 
     /** 
-     * Writes the stream to the given OutputStream
+     * Writes the stream to the given OutputStream.
      * @throws IOException
-     * @param os
+     * @param os OutputStream to write to.
      * @see nl.mad.pdflibrary.pdf.object.PdfDictionary#writeToFile(java.io.OutputStream)
      */
     @Override
@@ -81,10 +86,8 @@ public class PdfStream extends PdfDictionary {
      * @return True if a content indicator should be written, false otherwise.
      */
     private boolean checkWriteBefore(int currentObjectNumber) {
-        if (currentObjectNumber != 0) {
-            if (contents.get(currentObjectNumber - 1).getType().equals(contents.get(currentObjectNumber).getType())) {
-                return false;
-            }
+        if (currentObjectNumber != 0 && contents.get(currentObjectNumber - 1).getType().equals(contents.get(currentObjectNumber).getType())) {
+            return false;
         }
         return true;
     }
@@ -96,10 +99,9 @@ public class PdfStream extends PdfDictionary {
      * @return True if a content indicator should be written, false otherwise.
      */
     private boolean checkWriteAfter(int currentObjectNumber) {
-        if (currentObjectNumber != (this.getContentSize() - 1)) {
-            if (contents.get(currentObjectNumber + 1).getType().equals(contents.get(currentObjectNumber).getType())) {
-                return false;
-            }
+        boolean lastEntry = currentObjectNumber != (this.getContentSize() - 1);
+        if (!lastEntry && contents.get(currentObjectNumber + 1).getType().equals(contents.get(currentObjectNumber).getType())) {
+            return false;
         }
         return true;
     }
@@ -125,24 +127,24 @@ public class PdfStream extends PdfDictionary {
 
     /**
      * Returns what needs to be written before the actual content is written.
-     * @return Array of bytes containing what needs to be written
+     * @return Array of bytes containing what needs to be written.
      */
     private byte[] getWriteBeforeStreamContent(AbstractPdfObject object) {
         if (object instanceof PdfText) {
             return ByteEncoder.getBytes(BEGIN_TEXT_STREAM);
         }
-        return null;
+        return new byte[0];
     }
 
     /**
      * Returns what needs to be written after the actual content is written.
-     * @return Array of bytes containing what needs to be written
+     * @return Array of bytes containing what needs to be written.
      */
     private byte[] getWriteAfterStreamContent(AbstractPdfObject object) {
         if (object instanceof PdfText) {
             return ByteEncoder.getBytes(END_TEXT_STREAM);
         }
-        return null;
+        return new byte[0];
     }
 
     public void add(AbstractPdfObject object) {

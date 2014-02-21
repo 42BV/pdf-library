@@ -15,18 +15,18 @@ public abstract class AbstractPdfObject {
     private PdfObjectType type;
 
     /**
-     * Creates a new instance of PdfObject
+     * Creates a new instance of PdfObject.
      */
     public AbstractPdfObject(PdfObjectType type) {
         this.type = type;
     }
 
     /**
-     * Creates a new instance of PdfObject and sets the given byte representation
+     * Creates a new instance of PdfObject and sets the given byte representation.
      * @param byteRepresentation
      */
     public AbstractPdfObject(byte[] byteRepresentation, PdfObjectType type) {
-        this.byteRepresentation = byteRepresentation;
+        this.setByteRepresentation(byteRepresentation);
         this.type = type;
     }
 
@@ -34,7 +34,7 @@ public abstract class AbstractPdfObject {
         return byteRepresentation;
     }
 
-    public void setByteRepresentation(byte[] byteRepresentation) {
+    public final void setByteRepresentation(byte[] byteRepresentation) {
         this.byteRepresentation = byteRepresentation;
     }
 
@@ -43,8 +43,8 @@ public abstract class AbstractPdfObject {
     }
 
     /**
-     * Writes the byte representation to the given OutputStream
-     * @param os
+     * Writes the byte representation to the given OutputStream.
+     * @param os OutputStream which will be written to.
      * @throws IOException
      */
     public void writeToFile(OutputStream os) throws IOException {
@@ -54,8 +54,8 @@ public abstract class AbstractPdfObject {
     }
 
     /**
-     * Adds an array of bytes to the current byte representation
-     * @param bytes Array of bytes to be added
+     * Adds an array of bytes to the current byte representation.
+     * @param bytes Array of bytes to be added.
      */
     public void addToByteRepresentation(byte[] bytes) {
         if (byteRepresentation != null) {

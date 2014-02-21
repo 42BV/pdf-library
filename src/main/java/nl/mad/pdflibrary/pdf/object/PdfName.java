@@ -11,8 +11,8 @@ public class PdfName extends AbstractPdfObject {
     private String name;
 
     /**
-     * Creates a new instance of PdfName with the given String
-     * @param name
+     * Creates a new instance of PdfName with the given String.
+     * @param name String containing the name.
      */
     public PdfName(String name) {
         super(PdfObjectType.NAME);
@@ -20,8 +20,8 @@ public class PdfName extends AbstractPdfObject {
     }
 
     /**
-     * creates a new instance of PdfName with the given PdfNameValue
-     * @param name
+     * creates a new instance of PdfName with the given PdfNameValue.
+     * @param name PdfNameValue containing the name.
      * @see PdfNameValue
      */
     public PdfName(PdfNameValue name) {
@@ -34,10 +34,10 @@ public class PdfName extends AbstractPdfObject {
     }
 
     /**
-     * Sets the name and prefixes the name to conform with the PDF
-     * @param name
+     * Sets the name and prefixes the name to conform with the PDF.
+     * @param name String containing the name.
      */
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = name;
         if (!name.startsWith("/")) {
             String prefixName = "/" + name;
@@ -45,7 +45,7 @@ public class PdfName extends AbstractPdfObject {
         }
     }
 
-    public void setName(PdfNameValue name) {
+    public final void setName(PdfNameValue name) {
         this.setName(name.toString());
     }
 

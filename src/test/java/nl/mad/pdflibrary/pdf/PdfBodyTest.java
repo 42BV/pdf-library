@@ -5,7 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.object.PdfName;
@@ -65,8 +65,8 @@ public class PdfBodyTest {
 
         int expectedTotalSize = 4;
         int expectedSize = 1;
-        ArrayList<PdfIndirectObject> allIndirectObjects = body.getAllIndirectObjects();
-        ArrayList<PdfIndirectObject> indirectObjects = body.getIndirectObjects();
+        List<PdfIndirectObject> allIndirectObjects = body.getAllIndirectObjects();
+        List<PdfIndirectObject> indirectObjects = body.getIndirectObjects();
         assertEquals("The amount of objects retrieved is incorrect. ", expectedTotalSize, body.getTotalIndirectObjectsAmount());
         assertEquals("The amount of objects retrieved is incorrect. ", expectedTotalSize, allIndirectObjects.size());
         assertEquals("The amount of objects retrieved is incorrect. ", expectedSize, indirectObjects.size());

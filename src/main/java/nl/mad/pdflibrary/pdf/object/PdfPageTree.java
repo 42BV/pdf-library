@@ -3,25 +3,26 @@ package nl.mad.pdflibrary.pdf.object;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
- * Represents the page tree of a PDF mad. Page tree's contain pages or other page tree's.
+ * Represents the page tree of a PDF document. Page tree's contain pages or other page tree's.
  * Pages are divided in page tree's to quicken the lookup process.
  * 
  * @author Dylan de Wolff
  */
 public class PdfPageTree extends PdfIndirectObject {
-    private ArrayList<PdfIndirectObject> kids;
+    private List<PdfIndirectObject> kids;
 
     /**
      * Creates a new instance of PdfPageTree.
      * 
-     * @param number
-     * @param generation
-     * @param pages
-     * @param inUse
+     * @param number Number of object.
+     * @param generation Generation of object.
+     * @param pages Object this refers to.
+     * @param inUse Whether the object is used in the document.
      */
     public PdfPageTree(int number, int generation, PdfDictionary pages, boolean inUse) {
         super(number, generation, pages, inUse);
@@ -30,7 +31,7 @@ public class PdfPageTree extends PdfIndirectObject {
     }
 
     /**
-     * Initialize the page tree by setting the type value
+     * Initialize the page tree by setting the type value.
      */
     private void initPageTree() {
         PdfDictionary pages = (PdfDictionary) this.getObject();
@@ -39,7 +40,7 @@ public class PdfPageTree extends PdfIndirectObject {
 
     /**
      * Returns the total size of the page tree.
-     * @return size of page tree
+     * @return size of page tree.
      */
     public int getSize() {
         int size = 1;
@@ -55,11 +56,11 @@ public class PdfPageTree extends PdfIndirectObject {
     }
 
     /**
-     * Returns all the objects in the page tree
-     * @return all objects in the page tree
+     * Returns all the objects in the page tree.
+     * @return all objects in the page tree.
      */
-    public ArrayList<PdfIndirectObject> getPageTreeObjects() {
-        ArrayList<PdfIndirectObject> objects = new ArrayList<PdfIndirectObject>();
+    public List<PdfIndirectObject> getPageTreeObjects() {
+        List<PdfIndirectObject> objects = new ArrayList<PdfIndirectObject>();
         objects.add(this);
         for (PdfIndirectObject kid : kids) {
             PdfObjectType type = kid.getObject().getType();
@@ -77,7 +78,7 @@ public class PdfPageTree extends PdfIndirectObject {
     }
 
     /**
-     * Adds the references to all the pages/page tree's inside this object to the dictionary
+     * Adds the references to all the pages/page tree's inside this object to the dictionary.
      */
     private void setKidReferences() {
         PdfArray kidsReferenceArray = new PdfArray();
@@ -90,9 +91,9 @@ public class PdfPageTree extends PdfIndirectObject {
     }
 
     /**
-     * Writes the object to the given OutputStream
+     * Writes the object to the given OutputStream.
      * 
-     * @param os 
+     * @param os OutputStream to write to.
      * @throws IOException
      * @see nl.mad.pdflibrary.pdf.object.PdfIndirectObject#writeToFile(java.io.OutputStream)
      */

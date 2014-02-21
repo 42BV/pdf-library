@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.pdf;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.mad.pdflibrary.pdf.object.AbstractPdfObject;
 import nl.mad.pdflibrary.pdf.object.PdfDictionary;
@@ -23,17 +24,17 @@ import nl.mad.pdflibrary.pdf.object.PdfPageTree;
  * @see PdfDocument
  */
 public class PdfBody {
-    private ArrayList<PdfIndirectObject> indirectObjects;
+    private List<PdfIndirectObject> indirectObjects;
     /**
-     * Represents the catalog object of the body, stored outside of the general object list to allow for easier updating
+     * Represents the catalog object of the body, stored outside of the general object list to allow for easier updating.
      */
     private PdfIndirectObject catalog;
     /**
-     * Represents the page tree of PDF documents, stored outside of the general object list to allow for easier updating
+     * Represents the page tree of PDF documents, stored outside of the general object list to allow for easier updating.
      */
     private PdfPageTree pageTree;
     /**
-     * Represents the offset caused by storing the catalog separately
+     * Represents the offset caused by storing the catalog separately.
      */
     private static final int OBJECT_NUMBER_OFFSET = 1;
 
@@ -49,8 +50,8 @@ public class PdfBody {
     /**
      * Used to add a PdfObject to the body, automatically creates an indirect object representation for the given PdfObject.
      *
-     * @param object The PdfObject that will be added to the body
-     * @return The indirect object created with the PdfObject
+     * @param object The PdfObject that will be added to the body.
+     * @return The indirect object created with the PdfObject.
      */
     public PdfIndirectObject addObject(AbstractPdfObject object) {
         PdfIndirectObject indirectObject = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, object, true);
@@ -61,8 +62,8 @@ public class PdfBody {
     /**
      * Adds a page object to the body. Also adds the page to the page tree.
      * 
-     * @param page The page object that will be added
-     * @return The indirect object created with the Page
+     * @param page The page object that will be added.
+     * @return The indirect object created with the Page.
      */
     public PdfIndirectObject addPage(PdfPage page) {
         PdfIndirectObject indirectPage = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, page, true);
@@ -74,7 +75,7 @@ public class PdfBody {
      * Writes all the indirect objects stored in the body to the given OutputStream. Also sets the starting byte of
      * the indirect objects. This is needed for the creation of the cross reference table.
      * 
-     * @param os The data output stream that will be written to
+     * @param os The data output stream that will be written to.
      * @throws IOException
      */
     public void writeToFile(DataOutputStream os) throws IOException {
@@ -84,15 +85,15 @@ public class PdfBody {
         }
     }
 
-    public ArrayList<PdfIndirectObject> getIndirectObjects() {
+    public List<PdfIndirectObject> getIndirectObjects() {
         return this.indirectObjects;
     }
 
     /**
-     * Returns the number of indirect objects contained in the body, including the separately stored catalog, pageTree and page objects
+     * Returns the number of indirect objects contained in the body, including the separately stored catalog, pageTree and page objects.
      * @return the number of objects
      */
-    public int getTotalIndirectObjectsAmount() {
+    public final int getTotalIndirectObjectsAmount() {
         if (indirectObjects != null && pageTree != null) {
             return this.indirectObjects.size() + pageTree.getSize() + PdfBody.OBJECT_NUMBER_OFFSET;
         } else {
@@ -101,10 +102,10 @@ public class PdfBody {
     }
 
     /**
-     * Creates the catalog object. The catalog forms the root of the PDF file and refers to the first page tree of the mad.
+     * Creates the catalog object. The catalog forms the root of the PDF file and refers to the first page tree of the document.
      * 
-     * @param pages The first page node that the catalog should refer to
-     * @return The indirect object for the catalog
+     * @param pages The first page node that the catalog should refer to.
+     * @return The indirect object for the catalog.
      */
     private PdfIndirectObject createCatalog(PdfPageTree pages) {
         PdfDictionary catalogDictionary = new PdfDictionary(PdfObjectType.CATALOG);
@@ -117,7 +118,7 @@ public class PdfBody {
     /**
      * Creates a new page tree.
      * 
-     * @return The newly made page tree object
+     * @return The newly made page tree object.
      */
     //TODO: Add new pagetrees to the existing page tree
     private PdfPageTree createPageTree() {
@@ -135,12 +136,12 @@ public class PdfBody {
     }
 
     /**
-     * Returns an arraylist containing all indirect objects contained in the body. This includes the separately stored 
+     * Returns an list containing all indirect objects contained in the body. This includes the separately stored 
      * catalog and page tree objects.
-     * @return an arraylist containing all indirect objects
+     * @return an list containing all indirect objects.
      */
-    public ArrayList<PdfIndirectObject> getAllIndirectObjects() {
-        ArrayList<PdfIndirectObject> allIndirectObjects = new ArrayList<PdfIndirectObject>();
+    public final List<PdfIndirectObject> getAllIndirectObjects() {
+        List<PdfIndirectObject> allIndirectObjects = new ArrayList<PdfIndirectObject>();
         allIndirectObjects.add(catalog);
         allIndirectObjects.addAll(pageTree.getPageTreeObjects());
         allIndirectObjects.addAll(this.indirectObjects);

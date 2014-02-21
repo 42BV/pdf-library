@@ -13,19 +13,19 @@ import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 public class PdfHeader {
     private static final byte[] VERSION = ByteEncoder.getBytes("%PDF-1.7");
     /**
-     * Indicates to file readers that this mad contains binary data.
+     * Indicates to file readers that this document contains binary data.
      */
     private static final byte[] BINARY_INDICATOR = ByteEncoder.getBytes("%âãÏÓ");
 
     /**
-     * Creates a new instance of PdfHeader
+     * Creates a new instance of PdfHeader.
      */
     public PdfHeader() {
     }
 
     /**
-     * Writes the header to the OutputStream
-     * @param os OutputStream
+     * Writes the header to the OutputStream.
+     * @param os OutputStream which will be written to.
      * @throws IOException
      */
     public void writeToFile(OutputStream os) throws IOException {
