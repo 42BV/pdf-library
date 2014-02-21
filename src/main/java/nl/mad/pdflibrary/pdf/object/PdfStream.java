@@ -99,7 +99,7 @@ public class PdfStream extends PdfDictionary {
      * @return True if a content indicator should be written, false otherwise.
      */
     private boolean checkWriteAfter(int currentObjectNumber) {
-        boolean lastEntry = currentObjectNumber != (this.getContentSize() - 1);
+        boolean lastEntry = currentObjectNumber == (this.getContentSize() - 1);
         if (!lastEntry && contents.get(currentObjectNumber + 1).getType().equals(contents.get(currentObjectNumber).getType())) {
             return false;
         }
