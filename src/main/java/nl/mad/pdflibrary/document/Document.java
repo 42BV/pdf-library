@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.document;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
 import nl.mad.pdflibrary.pdf.PdfDocument;
@@ -35,8 +36,9 @@ public class Document {
 
     /**
      * Creates a new instance of Document.
+     * @throws UnsupportedEncodingException 
      */
-    public Document() {
+    public Document() throws UnsupportedEncodingException {
         this(A4_WIDTH, A4_HEIGHT, "", "", "");
     }
 
@@ -47,8 +49,9 @@ public class Document {
      * @param author Writer of this mad
      * @param title Title of this mad
      * @param subject Subject of this mad
+     * @throws UnsupportedEncodingException 
      */
-    public Document(int width, int height, String author, String title, String subject) {
+    public Document(int width, int height, String author, String title, String subject) throws UnsupportedEncodingException {
         pdfDocument = new PdfDocument();
         finished = false;
         this.width = width;

@@ -1,17 +1,20 @@
-package test.java.nl.mad.pdflibrary.pdf;
+package nl.mad.pdflibrary.pdf;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import nl.mad.pdflibrary.pdf.PdfCrossReferenceTable;
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.object.PdfName;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static junit.framework.TestCase.assertEquals;
 
 public class PdfCrossReferenceTableTest {
     private PdfCrossReferenceTable xref;
@@ -24,7 +27,7 @@ public class PdfCrossReferenceTableTest {
     @Test
     public void testFillTableWithIndirectObjects() {
         ArrayList<PdfIndirectObject> testArray = new ArrayList<PdfIndirectObject>();
-        testArray.add(new PdfIndirectObject(1, 0, new PdfName("nl"), true));
+        testArray.add(new PdfIndirectObject(1, 0, new PdfName("Test"), true));
         xref.fillTableWithIndirectObjects(testArray);
 
         assertEquals("Cross reference number is incorrect. ", true, xref.isObjectInTable(1));
@@ -36,12 +39,17 @@ public class PdfCrossReferenceTableTest {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
         ArrayList<PdfIndirectObject> testArray = new ArrayList<PdfIndirectObject>();
-        testArray.add(new PdfIndirectObject(1, 0, new PdfName("nl"), true));
+        testArray.add(new PdfIndirectObject(1, 0, new PdfName("Test"), true));
         xref.fillTableWithIndirectObjects(testArray);
         dos.writeChars("a");
+        int expectedValue = dos.size();
         xref.writeToFile(dos);
 
-        assertEquals("Start byte is incorrect. ", "2".getBytes(), xref.getStartByte());
-        //TODO: nl the writing itself, also nl the inner cross reference class somehow?
+        boolean succeed = false;
+        if (Arrays.equals(ByteEncoder.getBytes(String.valueOf(expectedValue)), xref.getStartByte())) {
+            succeed = true;
+        }
+        assertTrue("The start byte is incorrect.", succeed);
+        //TODO: test the writing itself, also test the inner cross reference class somehow?
     }
 }

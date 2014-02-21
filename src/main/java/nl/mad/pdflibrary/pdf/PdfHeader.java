@@ -3,17 +3,19 @@ package nl.mad.pdflibrary.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 /**
  * This class represents the header section of a PDF file and contains data such as the PDF version.
  * It is also responsible for writing the header.
  * @author Dylan de Wolff
  */
 public class PdfHeader {
-    private static final byte[] VERSION = "%PDF-1.7".getBytes();
+    private static final byte[] VERSION = ByteEncoder.getBytes("%PDF-1.7");
     /**
      * Indicates to file readers that this mad contains binary data.
      */
-    private static final byte[] BINARY_INDICATOR = "%âãÏÓ".getBytes();
+    private static final byte[] BINARY_INDICATOR = ByteEncoder.getBytes("%âãÏÓ");
 
     /**
      * Creates a new instance of PdfHeader

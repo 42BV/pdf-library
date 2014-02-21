@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 /**
  * Represents the page tree of a PDF mad. Page tree's contain pages or other page tree's.
  * Pages are divided in page tree's to quicken the lookup process.
@@ -98,8 +100,8 @@ public class PdfPageTree extends PdfIndirectObject {
     public void writeToFile(OutputStream os) throws IOException {
         setKidReferences();
         String objectLine = getNumber() + " " + getGeneration() + " " + START;
-        os.write(objectLine.getBytes("UTF-8"));
+        os.write(ByteEncoder.getBytes(objectLine));
         this.getObject().writeToFile(os);
-        os.write(END.getBytes());
+        os.write(ByteEncoder.getBytes(END));
     }
 }

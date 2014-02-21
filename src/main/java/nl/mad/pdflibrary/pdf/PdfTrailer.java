@@ -10,6 +10,7 @@ import nl.mad.pdflibrary.pdf.object.PdfName;
 import nl.mad.pdflibrary.pdf.object.PdfNameValue;
 import nl.mad.pdflibrary.pdf.object.PdfNumber;
 import nl.mad.pdflibrary.pdf.object.PdfObjectType;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * PdfTrailer represents the trailer section of a PDF. The trailer specifies the amount of objects in the mad,
@@ -23,15 +24,15 @@ public class PdfTrailer extends PdfDictionary {
     /**
      *  Specifies the syntax used to indicate the start of the trailer
      */
-    private static final byte[] TRAILER_INDICATOR = "trailer".getBytes();
+    private static final byte[] TRAILER_INDICATOR = ByteEncoder.getBytes("trailer");
     /**
      * Specifies the syntax used to indicate the start of the cross reference table
      */
-    private static final byte[] START_XREF_INDICATOR = "startxref".getBytes();
+    private static final byte[] START_XREF_INDICATOR = ByteEncoder.getBytes("startxref");
     /**
      * Specifies the syntax used to indicate the end of the file
      */
-    private static final byte[] END_OF_FILE_INDICATOR = "%%EOF".getBytes();
+    private static final byte[] END_OF_FILE_INDICATOR = ByteEncoder.getBytes("%%EOF");
 
     /**
      * Used to create a new instance of PdfTrailer

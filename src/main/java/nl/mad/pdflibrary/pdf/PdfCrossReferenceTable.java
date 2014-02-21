@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * 
@@ -27,7 +28,7 @@ public class PdfCrossReferenceTable {
     /**
      * The PDF syntax used to specify that the xref table is underneath this line
      */
-    private static final byte[] XREF_INDICATOR = "xref".getBytes();
+    private static final String XREF_INDICATOR = "xref";
     //check if this is needed
     private Integer lowestObjectNumber = 0;
 
@@ -36,7 +37,7 @@ public class PdfCrossReferenceTable {
      * and does not directly represent any of the indirect objects in the body. 
      * Therefore it is stored separately as an attribute.
      */
-    private static final byte[] DEFAULT_FIRST_REFERENCE = "0000000000 65535 f".getBytes();
+    private static final String DEFAULT_FIRST_REFERENCE = "0000000000 65535 f";
 
     /**
      * Stores the byte starting position of the xref table itself.
@@ -108,11 +109,11 @@ public class PdfCrossReferenceTable {
      */
     public void writeToFile(DataOutputStream os) throws IOException {
         setStartByte(os.size());
-        os.write(XREF_INDICATOR);
+        os.write(ByteEncoder.getBytes(XREF_INDICATOR));
         os.write(PdfDocument.LINE_SEPARATOR);
-        os.write(this.getObjectAmountLine().getBytes());
+        os.write(ByteEncoder.getBytes(this.getObjectAmountLine()));
         os.write(PdfDocument.LINE_SEPARATOR);
-        os.write(DEFAULT_FIRST_REFERENCE);
+        os.write(ByteEncoder.getBytes(DEFAULT_FIRST_REFERENCE));
         os.write(PdfDocument.LINE_SEPARATOR);
 
         for (Entry<Integer, CrossReference> xref : crossReferences.entrySet()) {
@@ -122,7 +123,7 @@ public class PdfCrossReferenceTable {
     }
 
     private void setStartByte(int start) {
-        this.startByte = ("" + start).getBytes();
+        this.startByte = ByteEncoder.getBytes(("" + start));
     }
 
     public byte[] getStartByte() {
@@ -199,7 +200,7 @@ public class PdfCrossReferenceTable {
          */
         public void writeToFile(OutputStream os) throws IOException {
             String line = startByte + " " + generation + " " + getInUseSyntax();
-            os.write(line.getBytes());
+            os.write(ByteEncoder.getBytes(line));
         }
 
         private char getInUseSyntax() {

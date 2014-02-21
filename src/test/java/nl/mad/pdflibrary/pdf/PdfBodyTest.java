@@ -1,18 +1,18 @@
 package nl.mad.pdflibrary.pdf;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import nl.mad.pdflibrary.pdf.PdfBody;
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.object.PdfName;
 import nl.mad.pdflibrary.pdf.object.PdfPage;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static junit.framework.TestCase.assertEquals;
 
 public class PdfBodyTest {
     private PdfBody body;
@@ -30,9 +30,9 @@ public class PdfBodyTest {
 
     @Test
     public void testAddObject() {
-        PdfName test = new PdfName("nl");
+        PdfName test = new PdfName("Test");
         body.addObject(test);
-        int expectedObjectPos = 1;
+        int expectedObjectPos = 2;
         assertEquals("Object has not been correctly added to the body.", test, body.getAllIndirectObjects().get(expectedObjectPos).getObject());
     }
 

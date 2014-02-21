@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 /**
  * Represents a PDF String object. It contains a single string and is able to write this string to an OutputStream.
  * @author Dylan de Wolff
@@ -48,7 +50,7 @@ public class PdfString extends AbstractPdfObject {
 
     public void setString(String string) {
         this.string = string;
-        this.setByteRepresentation(string.getBytes());
+        this.setByteRepresentation(ByteEncoder.getBytes(string));
     }
 
     /**

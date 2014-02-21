@@ -14,7 +14,7 @@ public class PdfWriter {
     public void write(PdfHeader h, PdfBody b, PdfCrossReferenceTable xref, PdfTrailer t) throws UnsupportedEncodingException, IOException {
         DataOutputStream os = new DataOutputStream(new FileOutputStream("testpdf.pdf"));
         h.writeToFile(os);
-        os.write(System.lineSeparator().getBytes());
+        os.write(PdfDocument.LINE_SEPARATOR);
         b.writeToFile(os);
         xref.fillTableWithIndirectObjects(b.getAllIndirectObjects());
         xref.writeToFile(os);

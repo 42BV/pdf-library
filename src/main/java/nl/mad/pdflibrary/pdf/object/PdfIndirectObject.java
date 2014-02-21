@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.mad.pdflibrary.pdf.PdfCrossReferenceTable;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * This represents a PDF indirect object. This means it contains an object and a object number plus generation number. 
@@ -61,9 +62,9 @@ public class PdfIndirectObject {
      */
     public void writeToFile(OutputStream os) throws IOException {
         String objectLine = number + " " + generation + " " + START;
-        os.write(objectLine.getBytes("UTF-8"));
+        os.write(ByteEncoder.getBytes(objectLine));
         this.object.writeToFile(os);
-        os.write(END.getBytes());
+        os.write(ByteEncoder.getBytes(END));
     }
 
     public PdfIndirectObjectReference getReference() {

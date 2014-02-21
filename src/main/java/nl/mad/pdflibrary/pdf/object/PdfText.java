@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.pdf.object;
 
 import nl.mad.pdflibrary.document.Text;
 import nl.mad.pdflibrary.pdf.PdfDocument;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * PdfText stores the pdf stream version of a Text object. 
@@ -30,7 +31,7 @@ public class PdfText extends AbstractPdfObject {
      */
     public void addPosition(int positionX, int positionY) {
         String byteRep = "1 0 0 1 " + positionX + " " + positionY + " Tm\n";
-        this.addToByteRepresentation(byteRep.getBytes());
+        this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
     }
 
     //TODO: How to avoid hardcoding these strings?
@@ -42,7 +43,7 @@ public class PdfText extends AbstractPdfObject {
      */
     public void addFont(PdfIndirectObject font, int fontSize) {
         String byteRep = "/" + font.getReference().getResourceReference() + " " + fontSize + " Tf\n";
-        this.addToByteRepresentation(byteRep.getBytes());
+        this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
     }
 
     /**
@@ -51,6 +52,6 @@ public class PdfText extends AbstractPdfObject {
      */
     public void addText(String text) {
         String byteRep = "(" + text + ") Tj\n";
-        this.addToByteRepresentation(byteRep.getBytes());
+        this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
     }
 }

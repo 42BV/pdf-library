@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import nl.mad.pdflibrary.pdf.PdfDocument;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * Represents a PDF stream object. Stream objects are dictionaries that contain a sequence of bytes. 
@@ -16,19 +17,19 @@ public class PdfStream extends PdfDictionary {
     /**
      * Contains the syntax used to indicate the start of a stream
      */
-    private static final byte[] START_STREAM = "stream\n".getBytes();
+    private static final String START_STREAM = "stream\n";
     /**
      * Contains the syntax used to indicate the end of a stream
      */
-    private static final byte[] END_STREAM = "endstream".getBytes();
+    private static final String END_STREAM = "endstream";
     /**
      * Specifies the command used to specify the start of a text stream
      */
-    private static final byte[] BEGIN_TEXT_STREAM = "BT\n".getBytes();
+    private static final String BEGIN_TEXT_STREAM = "BT\n";
     /**
      * Specifies the command used to specify the end of a text stream
      */
-    private static final byte[] END_TEXT_STREAM = "ET\n".getBytes();
+    private static final String END_TEXT_STREAM = "ET\n";
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
     //somehow limit this to objects that are actually supposed to be part of the contents?
@@ -59,7 +60,7 @@ public class PdfStream extends PdfDictionary {
         updateLength();
         super.writeToFile(os);
         os.write(PdfDocument.LINE_SEPARATOR);
-        os.write(START_STREAM);
+        os.write(ByteEncoder.getBytes(START_STREAM));
 
         for (int i = 0; i < contents.size(); ++i) {
             if (checkWriteBefore(i)) {
@@ -70,7 +71,7 @@ public class PdfStream extends PdfDictionary {
                 os.write(getWriteAfterStreamContent(contents.get(i)));
             }
         }
-        os.write(END_STREAM);
+        os.write(ByteEncoder.getBytes(END_STREAM));
     }
 
     /**
@@ -128,7 +129,7 @@ public class PdfStream extends PdfDictionary {
      */
     private byte[] getWriteBeforeStreamContent(AbstractPdfObject object) {
         if (object instanceof PdfText) {
-            return BEGIN_TEXT_STREAM;
+            return ByteEncoder.getBytes(BEGIN_TEXT_STREAM);
         }
         return null;
     }
@@ -139,7 +140,7 @@ public class PdfStream extends PdfDictionary {
      */
     private byte[] getWriteAfterStreamContent(AbstractPdfObject object) {
         if (object instanceof PdfText) {
-            return END_TEXT_STREAM;
+            return ByteEncoder.getBytes(END_TEXT_STREAM);
         }
         return null;
     }

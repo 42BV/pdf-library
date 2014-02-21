@@ -1,5 +1,7 @@
 package nl.mad.pdflibrary.pdf.object;
 
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 /**
  *
  * Holds the reference to an indirect object, this class should be used whenever another object wishes to refer to an
@@ -20,7 +22,7 @@ public class PdfIndirectObjectReference extends AbstractPdfObject {
     /**
      * Generates a new instance of PdfIndirectObjectReference
      * @param number Object number of the object being referred to
-     * @param generation Generation number of the object being reffered to
+     * @param generation Generation number of the object being referred to
      */
     public PdfIndirectObjectReference(int number, int generation) {
         super(PdfObjectType.REFERENCE);
@@ -29,7 +31,7 @@ public class PdfIndirectObjectReference extends AbstractPdfObject {
 
     public void setReference(String reference) {
         this.reference = reference;
-        this.setByteRepresentation(this.reference.getBytes());
+        this.setByteRepresentation(ByteEncoder.getBytes(this.reference));
     }
 
     public void updateReference(int number, int generation) {

@@ -1,6 +1,6 @@
 package nl.mad.pdflibrary.pdf.object;
 
-import java.io.UnsupportedEncodingException;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * PdfName represents the name object of PDF. Names are used to specify all data within PdfObjects. 
@@ -41,11 +41,7 @@ public class PdfName extends AbstractPdfObject {
         this.name = name;
         if (!name.startsWith("/")) {
             String prefixName = "/" + name;
-            try {
-                this.setByteRepresentation(prefixName.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            this.setByteRepresentation(ByteEncoder.getBytes(prefixName));
         }
     }
 

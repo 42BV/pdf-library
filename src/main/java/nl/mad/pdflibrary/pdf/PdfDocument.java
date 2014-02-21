@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.pdf;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import nl.mad.pdflibrary.pdf.object.PdfPage;
 import nl.mad.pdflibrary.pdf.object.PdfStream;
 import nl.mad.pdflibrary.pdf.object.PdfString;
 import nl.mad.pdflibrary.pdf.object.PdfText;
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
 
 /**
  * Represents the PDF mad itself, containing the four different sections of a PDF mad.
@@ -38,13 +40,15 @@ public class PdfDocument {
     /**
      * The default line separator.
      */
-    public static final byte[] LINE_SEPARATOR = System.lineSeparator().getBytes();
+    public static byte[] LINE_SEPARATOR = System.getProperty("line.separator").getBytes();
     private static final String CREATOR = "PDF-Library";
 
     /**
      * Creates a new instance of PdfDocument.
+     * @throws UnsupportedEncodingException 
      */
-    public PdfDocument() {
+    public PdfDocument() throws UnsupportedEncodingException {
+        LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
         header = new PdfHeader();
         body = new PdfBody();
         xref = new PdfCrossReferenceTable();

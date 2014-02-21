@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+
 /**
  * Represents the number object from the PDF. This is used for all kinds of specification, such as the number of pages in the mad.
  * 
@@ -41,9 +43,9 @@ public class PdfNumber extends AbstractPdfObject {
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         if (number == (int) number) {
-            os.write(String.valueOf((int) number).getBytes());
+            os.write(ByteEncoder.getBytes(String.valueOf((int) number)));
         } else {
-            os.write(String.valueOf(number).getBytes());
+            os.write(ByteEncoder.getBytes(String.valueOf(number)));
         }
     }
 }
