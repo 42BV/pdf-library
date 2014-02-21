@@ -41,7 +41,7 @@ public class Main {
     private static void inDepthDocumentCreation() throws IOException {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
         Font f = new Font(Font.SANS_SERIF, Font.BOLD, 16);
-        Text t = new Text("Hello, Batman!", f);
+        Text t = new Text("Hello, Batman! ..and Robin..", f);
         Text t2 = new Text("Dudududu", f, 600, 200);
         Paragraph p = new Paragraph(200, 500);
 

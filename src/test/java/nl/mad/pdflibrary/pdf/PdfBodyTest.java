@@ -1,20 +1,18 @@
 package nl.mad.pdflibrary.pdf;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import nl.mad.pdflibrary.pdf.PdfBody;
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.object.PdfName;
 import nl.mad.pdflibrary.pdf.object.PdfPage;
-
 import org.junit.Before;
 import org.junit.Test;
 
-
+import static junit.framework.TestCase.assertEquals;
 
 public class PdfBodyTest {
     private PdfBody body;

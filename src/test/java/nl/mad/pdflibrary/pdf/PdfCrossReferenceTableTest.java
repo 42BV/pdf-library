@@ -1,18 +1,17 @@
-package nl.mad.pdflibrary.pdf;
-
-import static org.junit.Assert.assertEquals;
+package test.java.nl.mad.pdflibrary.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import nl.mad.pdflibrary.pdf.PdfCrossReferenceTable;
 import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.object.PdfName;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertEquals;
 
 public class PdfCrossReferenceTableTest {
     private PdfCrossReferenceTable xref;

@@ -1,12 +1,13 @@
 package nl.mad.pdflibrary.pdf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import nl.mad.pdflibrary.document.Text;
+import nl.mad.pdflibrary.pdf.PdfDocument;
 import nl.mad.pdflibrary.pdf.object.PdfObjectType;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
 
 public class PdfDocumentTest {
     private PdfDocument document;

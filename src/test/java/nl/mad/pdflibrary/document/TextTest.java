@@ -1,11 +1,13 @@
 package nl.mad.pdflibrary.document;
 
-import static org.junit.Assert.assertEquals;
-
 import java.awt.Font;
 
+import nl.mad.pdflibrary.document.DocumentPartType;
+import nl.mad.pdflibrary.document.Text;
 import org.junit.Before;
 import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
 
 public class TextTest {
     private Text text;

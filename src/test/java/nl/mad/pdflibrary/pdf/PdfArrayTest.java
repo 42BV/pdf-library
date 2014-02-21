@@ -1,17 +1,15 @@
 package nl.mad.pdflibrary.pdf;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import nl.mad.pdflibrary.pdf.object.PdfArray;
 import nl.mad.pdflibrary.pdf.object.PdfName;
-
+import junit.*;
 import org.junit.Before;
 import org.junit.Test;
 
-
+import static junit.framework.TestCase.assertEquals;
 
 public class PdfArrayTest {
 
