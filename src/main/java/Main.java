@@ -1,11 +1,11 @@
 import java.io.IOException;
 
-import nl.mad.pdflibrary.document.Document;
-import nl.mad.pdflibrary.document.Font;
-import nl.mad.pdflibrary.document.FontFamily;
-import nl.mad.pdflibrary.document.FontStyle;
-import nl.mad.pdflibrary.document.Paragraph;
-import nl.mad.pdflibrary.document.Text;
+import nl.mad.pdflibrary.api.Document;
+import nl.mad.pdflibrary.api.Font;
+import nl.mad.pdflibrary.api.FontFamily;
+import nl.mad.pdflibrary.api.FontStyle;
+import nl.mad.pdflibrary.api.Paragraph;
+import nl.mad.pdflibrary.api.Text;
 
 public class Main {
 

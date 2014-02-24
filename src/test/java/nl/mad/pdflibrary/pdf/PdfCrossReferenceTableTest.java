@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.mad.pdflibrary.pdf.object.PdfIndirectObject;
-import nl.mad.pdflibrary.pdf.object.PdfName;
-import nl.mad.pdflibrary.pdf.utility.ByteEncoder;
+import nl.mad.pdflibrary.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.syntax.PdfName;
+import nl.mad.pdflibrary.utility.ByteEncoder;
 
+import nl.mad.pdflibrary.structure.PdfCrossReferenceTable;
 import org.junit.Before;
 import org.junit.Test;
 

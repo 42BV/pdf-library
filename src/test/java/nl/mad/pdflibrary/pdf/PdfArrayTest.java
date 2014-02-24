@@ -3,9 +3,8 @@ package nl.mad.pdflibrary.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import nl.mad.pdflibrary.pdf.object.PdfArray;
-import nl.mad.pdflibrary.pdf.object.PdfName;
-import junit.*;
+import nl.mad.pdflibrary.syntax.PdfArray;
+import nl.mad.pdflibrary.syntax.PdfName;
 import org.junit.Before;
 import org.junit.Test;
 

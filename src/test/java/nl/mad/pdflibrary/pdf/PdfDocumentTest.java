@@ -1,9 +1,10 @@
 package nl.mad.pdflibrary.pdf;
 
 import static junit.framework.TestCase.assertEquals;
-import nl.mad.pdflibrary.document.Text;
-import nl.mad.pdflibrary.pdf.object.PdfObjectType;
+import nl.mad.pdflibrary.api.Text;
+import nl.mad.pdflibrary.syntax.PdfObjectType;
 
+import nl.mad.pdflibrary.structure.PdfDocument;
 import org.junit.Before;
 import org.junit.Test;
 
