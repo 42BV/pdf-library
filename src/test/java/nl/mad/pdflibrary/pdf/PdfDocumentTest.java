@@ -18,7 +18,7 @@ public class PdfDocumentTest {
     @Test
     public void testAddWithEmptyStream() {
         document.addPage(200, 200);
-        Text text = new Text("Test");
+        Text text = new Text("Test", 12);
         document.add(text);
         //PdfTextStream testStream = new PdfTextStream();
         //testStream.addCommands(text);

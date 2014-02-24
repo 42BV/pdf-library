@@ -56,4 +56,12 @@ public class PdfDictionary extends AbstractPdfObject {
         return this.content.get(key);
     }
 
+    public boolean containsKey(PdfName key) {
+        return this.content.containsKey(key);
+    }
+
+    public boolean containsValue(AbstractPdfObject value) {
+        return this.content.containsValue(value);
+    }
+
 }

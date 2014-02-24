@@ -1,6 +1,5 @@
 package nl.mad.pdflibrary.document;
 
-import java.awt.Font;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -20,7 +19,7 @@ public class Document {
     /**
      * Default font. This is used when no font is specified.
      */
-    public static final Font DEFAULT_FONT = new Font(Font.SERIF, Font.PLAIN, 12);
+    public static final Font DEFAULT_FONT = new Font(FontFamily.TIMES_ROMAN, FontStyle.NORMAL);
     private int pageNumber = 0;
     /**
      * A4 page width.

@@ -33,8 +33,8 @@ public class PdfText extends AbstractPdfObject {
      * @param text Text object to be added.
      */
     public final void addText(Text text) {
-        this.addFont(PdfDocument.getPdfFont(text.getFont()), text.getFont().getSize());
-        this.addPosition(text.getPositionX(), text.getPositionY());
+        this.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
+        this.addMatrix(text);
         this.addTextString(text.getText());
     }
 
@@ -44,8 +44,9 @@ public class PdfText extends AbstractPdfObject {
      * @param positionX X Position of the text.
      * @param positionY Y position of the text.
      */
-    public void addPosition(int positionX, int positionY) {
-        String byteRep = "1 0 0 1 " + positionX + " " + positionY + " Tm\n";
+    public void addMatrix(Text text) {
+        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + text.getPositionX() + " "
+                + text.getPositionY() + " Tm\n";
         this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
     }
 

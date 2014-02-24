@@ -8,24 +8,28 @@ package nl.mad.pdflibrary.document;
 public class Font extends AbstractDocumentPart {
     private FontFamily family;
     private FontStyle style;
-    //temp attribute!
-    private String filename;
+    private BaseFont baseFont;
 
     /**
-     * Create a new instance of Font.
+     * Create a new instance of Font. Will try to use a default base font since none was supplied.
      * @param family Font family.
      * @param style Style of font (bold, italic).
      */
     public Font(FontFamily family, FontStyle style) {
+        this(family, style, BaseFont.getDefaultBaseFont(family));
+    }
+
+    /**
+     * Creates a new instance of Font.
+     * @param family Font family.
+     * @param style Style of font (bold, italic).
+     * @param baseFont BaseFont corresponding to this font.
+     */
+    public Font(FontFamily family, FontStyle style, BaseFont baseFont) {
         super(DocumentPartType.FONT);
         this.setFamily(family);
         this.setStyle(style);
-    }
-
-    //for testing purposes
-    public Font(String filename) {
-        super(DocumentPartType.FONT);
-        this.filename = filename;
+        this.baseFont = baseFont;
     }
 
     public FontFamily getFamily() {
@@ -42,5 +46,9 @@ public class Font extends AbstractDocumentPart {
 
     public void setStyle(FontStyle style) {
         this.style = style;
+    }
+
+    public BaseFont getBaseFont() {
+        return baseFont;
     }
 }

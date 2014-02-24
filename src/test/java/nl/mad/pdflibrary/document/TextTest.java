@@ -1,13 +1,9 @@
 package nl.mad.pdflibrary.document;
 
-import java.awt.Font;
+import static junit.framework.TestCase.assertEquals;
 
-import nl.mad.pdflibrary.document.DocumentPartType;
-import nl.mad.pdflibrary.document.Text;
 import org.junit.Before;
 import org.junit.Test;
-
-import static junit.framework.TestCase.assertEquals;
 
 public class TextTest {
     private Text text;
@@ -31,7 +27,7 @@ public class TextTest {
 
     @Test
     public void testSetFont() {
-        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+        Font f = new Font(FontFamily.COURIER, FontStyle.NORMAL);
         text.setFont(f);
         assertEquals("Font was not set correctly.", f, text.getFont());
     }

@@ -6,5 +6,19 @@ package nl.mad.pdflibrary.document;
  *
  */
 public enum FontFamily {
-    HELVECTICA, TIMES_ROMAN, COURIER, SYMBOL, ZAPFDINGBATS
+    HELVETICA("Helvetica"), TIMES_ROMAN("Times-Roman"), COURIER("Courier"), SYMBOL("Symbol"), ZAPFDINGBATS("ZapfDingBats");
+
+    private FontFamily(final String text) {
+        this.text = text;
+    }
+
+    private final String text;
+
+    /* (non-Javadoc)
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return text;
+    }
 }

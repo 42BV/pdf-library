@@ -92,21 +92,34 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject Resource to be added.
      */
     private void addResource(PdfIndirectObject indirectObject) {
-        ++resourceCount;
         PdfDictionary currentResources = (PdfDictionary) this.get(resources);
         PdfName key = getKeyForType(indirectObject.getObject().getType());
-        String resourceReference = RESOURCE_REFERENCE_PREFIX + this.resourceCount;
-        indirectObject.getReference().setResourceReference(resourceReference);
-        PdfName resourceKey = new PdfName(resourceReference);
 
-        if (currentResources.get(key) != null) {
-            PdfDictionary keyResourceDictionary = (PdfDictionary) currentResources.get(key);
-            keyResourceDictionary.put(resourceKey, indirectObject.getReference());
-        } else {
-            PdfDictionary newResource = new PdfDictionary(PdfObjectType.DICTIONARY);
-            newResource.put(resourceKey, indirectObject.getReference());
-            currentResources.put(key, newResource);
+        if (!objectInResources(indirectObject, currentResources, key)) {
+            ++resourceCount;
+            String resourceReference = RESOURCE_REFERENCE_PREFIX + this.resourceCount;
+            indirectObject.getReference().setResourceReference(resourceReference);
+            PdfName resourceKey = new PdfName(resourceReference);
+
+            if (currentResources.get(key) != null) {
+                PdfDictionary keyResourceDictionary = (PdfDictionary) currentResources.get(key);
+                keyResourceDictionary.put(resourceKey, indirectObject.getReference());
+            } else {
+                PdfDictionary newResource = new PdfDictionary(PdfObjectType.DICTIONARY);
+                newResource.put(resourceKey, indirectObject.getReference());
+                currentResources.put(key, newResource);
+            }
         }
+    }
+
+    private boolean objectInResources(PdfIndirectObject indirectObject, PdfDictionary currentResources, PdfName key) {
+        if (currentResources.get(key) != null) {
+            PdfDictionary keyResources = (PdfDictionary) currentResources.get(key);
+            if (keyResources.containsValue(indirectObject.getReference())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

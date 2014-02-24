@@ -1,7 +1,9 @@
-import java.awt.Font;
 import java.io.IOException;
 
 import nl.mad.pdflibrary.document.Document;
+import nl.mad.pdflibrary.document.Font;
+import nl.mad.pdflibrary.document.FontFamily;
+import nl.mad.pdflibrary.document.FontStyle;
 import nl.mad.pdflibrary.document.Paragraph;
 import nl.mad.pdflibrary.document.Text;
 
@@ -19,11 +21,11 @@ public class Main {
 
     private static void easyDocumentCreation() throws IOException {
         Document d = new Document();
-        Font f = new Font(Font.SANS_SERIF, Font.BOLD, 16);
 
-        Text t = new Text("Hello, Batman!!", f);
-        Text t2 = new Text("Good day Robin.");
-        Text t3 = new Text("Good day Robby.", f);
+        Font f = new Font(FontFamily.COURIER, FontStyle.BOLD);
+        Text t = new Text("Hello, Batman!!", 12, f);
+        Text t2 = new Text("Good day Robin.", 8);
+        Text t3 = new Text("Good day Robby.", 46, f);
 
         Paragraph p = new Paragraph();
         d.addPart(t);
@@ -40,14 +42,27 @@ public class Main {
 
     private static void inDepthDocumentCreation() throws IOException {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
-        Font f = new Font(Font.SANS_SERIF, Font.BOLD, 16);
-        Text t = new Text("Hello, Batman! ..and Robin..", f);
-        Text t2 = new Text("Dudududu", f, 600, 200);
-        Paragraph p = new Paragraph(200, 500);
+        Font f = new Font(FontFamily.COURIER, FontStyle.BOLD);
+        Text t = new Text("The book of Batman", 42, f, 150, 500);
+        Text t2 = new Text("..and Robin..", 11, f);
+        f = new Font(FontFamily.HELVETICA, FontStyle.ITALIC);
+        Text t3 = new Text("Written by Batman", 30, f, 600, 200, 1, 3, 0, 0);
+        Text t4 = new Text("Tom is dom", 120, new Font(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
+
+        Paragraph p = new Paragraph();
+        Paragraph p2 = new Paragraph(450, 200);
 
         p.addText(t);
         p.addText(t2);
-        d.addPart(t);
+        p2.addText(t3);
+        p2.addText(t2);
+
+        d.addPart(p);
+        d.addPart(p2);
+
+        d.addNewPage();
+        d.addPart(t4);
+
         d.finish();
 
     }

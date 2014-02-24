@@ -1,6 +1,5 @@
 package nl.mad.pdflibrary.pdf;
 
-import java.awt.Font;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.mad.pdflibrary.document.AbstractDocumentPart;
+import nl.mad.pdflibrary.document.Font;
 import nl.mad.pdflibrary.document.Paragraph;
 import nl.mad.pdflibrary.document.Text;
 import nl.mad.pdflibrary.pdf.object.PdfDictionary;
@@ -64,7 +64,7 @@ public class PdfDocument {
     public void add(AbstractDocumentPart part) {
         switch (part.getType()) {
         case TEXT:
-            this.addText((Text) part, false);
+            this.addText((Text) part, false, false);
             break;
         case PARAGRAPH:
             Paragraph paragraph = (Paragraph) part;
@@ -76,12 +76,17 @@ public class PdfDocument {
                     textCollection.get(0).setPositionY(paragraph.getPositionY());
                 }
                 for (int i = 0; i < textCollection.size(); ++i) {
+                    boolean ignoreMatrix = true;
                     boolean ignorePosition = true;
                     //if we're not using custom paragraph positioning, try to use the first text object position
-                    if (!paragraph.getCustomPositioning() && i == 0) {
+                    //TODO: We should have some kind of position calculation!
+                    if (i == 0) {
+                        ignoreMatrix = false;
                         ignorePosition = false;
+                    } else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
+                        ignoreMatrix = false;
                     }
-                    this.addText(textCollection.get(i), ignorePosition);
+                    this.addText(textCollection.get(i), ignoreMatrix, ignorePosition);
                 }
             }
             break;
@@ -96,10 +101,12 @@ public class PdfDocument {
     /**
      * Adds the given text object to the PdfTextStream of the current page.
      * @param text Text that needs to be added.
-     * @param overridePosition if true the position of the text will be disregarded. When using a paragraph, this should be true 
-     * for every text object besides the first one.
+     * @param overrideMatrix if true the matrix of the text will be disregarded. This should be true when the new text object has the same
+     * matrix as the text object before it.
+     * @param ignorePosition if true the position of the text will be disregarded. This should be true when using a paragraph for every text
+     * object besides the first one. This ensures that all text is placed together.
      */
-    private void addText(Text text, boolean overridePosition) {
+    private void addText(Text text, boolean overrideMatrix, boolean ignorePosition) {
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
         //if the page has no content yet
@@ -108,16 +115,25 @@ public class PdfDocument {
             PdfStream ts = new PdfStream();
             ts.add(new PdfText(text));
             currentPage.add(body.addObject(ts));
-        } else if (!overridePosition) {
-            //if we want to keep the text position, we simply convert the text object
-            currentPage.getCurrentStream().add(new PdfText(text));
         } else {
-            //if we do not want to keep the nl position we avoid the position method
             PdfText pdfText = new PdfText();
-            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getFont().getSize());
+            if (!overrideMatrix) {
+                pdfText.addMatrix(text);
+            }
+            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
             pdfText.addTextString(text.getText());
-            currentPage.getCurrentStream().add(pdfText);
         }
+
+        //        else if (!overrideMatrix) {
+        //            //if we want to use the matrix from the new text object
+        //            currentPage.getCurrentStream().add(new PdfText(text));
+        //        } else {
+        //            //if we want to reuse the matrix from the last text object, we simply convert the new text object without setting it
+        //            PdfText pdfText = new PdfText();
+        //            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
+        //            pdfText.addTextString(text.getText());
+        //            currentPage.getCurrentStream().add(pdfText);
+        //        }
     }
 
     /**
