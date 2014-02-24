@@ -1,5 +1,6 @@
 package nl.mad.pdflibrary.syntax;
 
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
@@ -22,7 +23,7 @@ public class PdfName extends AbstractPdfObject {
     /**
      * creates a new instance of PdfName with the given PdfNameValue.
      * @param name PdfNameValue containing the name.
-     * @see PdfNameValue
+     * @see nl.mad.pdflibrary.model.PdfNameValue
      */
     public PdfName(PdfNameValue name) {
         super(PdfObjectType.NAME);

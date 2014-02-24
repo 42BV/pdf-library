@@ -1,12 +1,16 @@
 package nl.mad.pdflibrary.api;
 
+import nl.mad.pdflibrary.model.DocumentPartType;
+import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.Text;
+
 /**
  * This is the text api part, storing all the data necessary for showing text in a api.
  * 
  * @author Dylan de Wolff
  * @see AbstractDocumentPart
  */
-public class Text extends AbstractPlaceableDocumentPart {
+public class AbstractText extends AbstractPlaceableDocumentPart implements Text {
     private String textString;
     private int textSize;
     private static int defaultTextSize = 12;
@@ -19,7 +23,7 @@ public class Text extends AbstractPlaceableDocumentPart {
     /**
      * Creates a new text instance.
      */
-    public Text() {
+    public AbstractText() {
         this("", defaultTextSize, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
         this.setCustomPositioning(false);
     }
@@ -30,7 +34,7 @@ public class Text extends AbstractPlaceableDocumentPart {
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
      */
-    public Text(String text, int textSize) {
+    public AbstractText(String text, int textSize) {
         this(text, textSize, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
         this.setCustomPositioning(false);
     }
@@ -42,7 +46,7 @@ public class Text extends AbstractPlaceableDocumentPart {
      * @param textSize The size of the text.
      * @param font The font that's used for the text.
      */
-    public Text(String text, int textSize, Font font) {
+    public AbstractText(String text, int textSize, Font font) {
         this(text, textSize, font, 0, 0, 1, 1, 0, 0);
         this.setCustomPositioning(false);
     }
@@ -54,7 +58,7 @@ public class Text extends AbstractPlaceableDocumentPart {
      * @param posX The x position of the text from the lower left corner.
      * @param posY The y position of the text from the lower left corner.
      */
-    public Text(String text, int textSize, int posX, int posY) {
+    public AbstractText(String text, int textSize, int posX, int posY) {
         this(text, textSize, Document.DEFAULT_FONT, posX, posY, 1, 1, 0, 0);
     }
 
@@ -66,7 +70,7 @@ public class Text extends AbstractPlaceableDocumentPart {
      * @param posX The x position of the text from the lower left corner.
      * @param posY The y position of the text from the lower left corner.
      */
-    public Text(String text, int textSize, Font font, int posX, int posY) {
+    public AbstractText(String text, int textSize, Font font, int posX, int posY) {
         this(text, textSize, font, posX, posY, 1, 1, 0, 0);
     }
 
@@ -83,7 +87,7 @@ public class Text extends AbstractPlaceableDocumentPart {
      * @param shearX The shear (tilt) of the text on the X-axis.
      * @param shearY The shear (tilt) of the text on the Y-axis.
      */
-    public Text(String text, int textSize, Font font, int posX, int posY, double scaleX, double scaleY, double shearX, double shearY) {
+    public AbstractText(String text, int textSize, Font font, int posX, int posY, double scaleX, double scaleY, double shearX, double shearY) {
         super(DocumentPartType.TEXT);
         this.textString = text;
         this.font = font;
@@ -136,9 +140,7 @@ public class Text extends AbstractPlaceableDocumentPart {
         this.textString = text;
     }
 
-    public Font getFont() {
-        return font;
-    }
+    public Font getFont() { return font; }
 
     public void setFont(Font font) {
         this.font = font;

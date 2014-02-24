@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.api;
+package nl.mad.pdflibrary.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,9 +7,9 @@ import java.util.Map;
  * BaseFont contains the subtype of the font and the different names of the font for each style the font has.
  * BaseFont also has a map containing the default basefonts that PDF viewers should support. See FontFamily and FontStyle to see which are the default fonts.
  * @author Dylan de Wolff
- * @see FontFamily
- * @see FontStyle
- * @see Font
+ * @see nl.mad.pdflibrary.model.FontFamily
+ * @see nl.mad.pdflibrary.model.FontStyle
+ * @see nl.mad.pdflibrary.api.AbstractFont
  *
  */
 public class BaseFont {

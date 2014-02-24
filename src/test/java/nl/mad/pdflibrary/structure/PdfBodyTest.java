@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.pdf;
+package nl.mad.pdflibrary.structure;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -11,7 +11,6 @@ import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfName;
 import nl.mad.pdflibrary.syntax.PdfPage;
 
-import nl.mad.pdflibrary.structure.PdfBody;
 import org.junit.Before;
 import org.junit.Test;
 

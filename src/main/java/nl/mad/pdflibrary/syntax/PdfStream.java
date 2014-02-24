@@ -5,8 +5,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.mad.pdflibrary.structure.PdfDocument;
+//import nl.mad.pdflibrary.structure.PdfDocument;
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
  * Represents a PDF stream object. Stream objects are dictionaries that contain a sequence of bytes. 
@@ -64,7 +66,7 @@ public class PdfStream extends PdfDictionary {
     public void writeToFile(OutputStream os) throws IOException {
         updateLength();
         super.writeToFile(os);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         os.write(ByteEncoder.getBytes(START_STREAM));
 
         for (int i = 0; i < contents.size(); ++i) {

@@ -3,7 +3,6 @@ package nl.mad.pdflibrary.syntax;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import nl.mad.pdflibrary.structure.PdfCrossReferenceTable;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
@@ -12,7 +11,6 @@ import nl.mad.pdflibrary.utility.ByteEncoder;
  * to create the cross reference table.
  * 
  *  @author Dylan de Wolff
- *  @see PdfCrossReferenceTable
  *  @see PdfIndirectObjectReference
  */
 public class PdfIndirectObject {

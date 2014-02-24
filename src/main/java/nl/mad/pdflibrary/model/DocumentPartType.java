@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.api;
+package nl.mad.pdflibrary.model;
 
 /**
  * Contains the different types of api parts.

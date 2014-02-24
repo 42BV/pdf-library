@@ -1,10 +1,10 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.model;
 
 /**
  * Contains a list of standard PdfName values.
  * 
  * @author Dylan de Wolff 
- * @see PdfName
+ * @see nl.mad.pdflibrary.syntax.PdfName
  */
 public enum PdfNameValue {
     TYPE("Type"), KIDS("Kids"), FONT("Font"), BASE_FONT("BaseFont"), SUB_TYPE("SubType"), TYPE1("Type1"), CATALOG("Catalog"), PAGES("Pages"), PAGE("Page"), CONTENTS(

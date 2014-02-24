@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
  * This class represents the header section of a PDF file and contains data such as the PDF version.
@@ -30,8 +31,8 @@ public class PdfHeader {
      */
     public void writeToFile(OutputStream os) throws IOException {
         os.write(VERSION);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         os.write(BINARY_INDICATOR);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
     }
 }

@@ -1,6 +1,7 @@
 package nl.mad.pdflibrary.syntax;
 
-import nl.mad.pdflibrary.api.Font;
+import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.PdfNameValue;
 
 /**
  * PdfDictionary representing a font.

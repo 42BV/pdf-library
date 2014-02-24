@@ -10,7 +10,7 @@ import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.syntax.PdfNameValue;
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfPageTree;

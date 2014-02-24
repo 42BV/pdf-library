@@ -1,11 +1,13 @@
 package nl.mad.pdflibrary.api;
 
+import nl.mad.pdflibrary.model.*;
+
 /**
  * Font class containing the font family and style. 
  * @author Dylan de Wolff
  *
  */
-public class Font extends AbstractDocumentPart {
+public class AbstractFont extends AbstractDocumentPart implements Font {
     private FontFamily family;
     private FontStyle style;
     private BaseFont baseFont;
@@ -15,7 +17,7 @@ public class Font extends AbstractDocumentPart {
      * @param family Font family.
      * @param style Style of font (bold, italic).
      */
-    public Font(FontFamily family, FontStyle style) {
+    public AbstractFont(FontFamily family, FontStyle style) {
         this(family, style, BaseFont.getDefaultBaseFont(family));
     }
 
@@ -25,7 +27,7 @@ public class Font extends AbstractDocumentPart {
      * @param style Style of font (bold, italic).
      * @param baseFont BaseFont corresponding to this font.
      */
-    public Font(FontFamily family, FontStyle style, BaseFont baseFont) {
+    public AbstractFont(FontFamily family, FontStyle style, BaseFont baseFont) {
         super(DocumentPartType.FONT);
         this.setFamily(family);
         this.setStyle(style);

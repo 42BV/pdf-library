@@ -1,11 +1,9 @@
 import java.io.IOException;
 
-import nl.mad.pdflibrary.api.Document;
-import nl.mad.pdflibrary.api.Font;
-import nl.mad.pdflibrary.api.FontFamily;
-import nl.mad.pdflibrary.api.FontStyle;
-import nl.mad.pdflibrary.api.Paragraph;
-import nl.mad.pdflibrary.api.Text;
+import nl.mad.pdflibrary.api.*;
+import nl.mad.pdflibrary.api.AbstractFont;
+import nl.mad.pdflibrary.model.FontFamily;
+import nl.mad.pdflibrary.model.FontStyle;
 
 public class Main {
 
@@ -22,12 +20,12 @@ public class Main {
     private static void easyDocumentCreation() throws IOException {
         Document d = new Document();
 
-        Font f = new Font(FontFamily.COURIER, FontStyle.BOLD);
-        Text t = new Text("Hello, Batman!!", 12, f);
-        Text t2 = new Text("Good day Robin.", 8);
-        Text t3 = new Text("Good day Robby.", 46, f);
+        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.BOLD);
+        AbstractText t = new AbstractText("Hello, Batman!!", 12, f);
+        AbstractText t2 = new AbstractText("Good day Robin.", 8);
+        AbstractText t3 = new AbstractText("Good day Robby.", 46, f);
 
-        Paragraph p = new Paragraph();
+        AbstractParagraph p = new AbstractParagraph();
         d.addPart(t);
 
         p.addText(t);
@@ -42,15 +40,15 @@ public class Main {
 
     private static void inDepthDocumentCreation() throws IOException {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
-        Font f = new Font(FontFamily.COURIER, FontStyle.BOLD);
-        Text t = new Text("The book of Batman", 42, f, 150, 500);
-        Text t2 = new Text("..and Robin..", 11, f);
-        f = new Font(FontFamily.HELVETICA, FontStyle.ITALIC);
-        Text t3 = new Text("Written by Batman", 30, f, 600, 200, 1, 3, 0, 0);
-        Text t4 = new Text("Tom is dom", 120, new Font(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
+        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.BOLD);
+        AbstractText t = new AbstractText("The book of Batman", 42, f, 150, 500);
+        AbstractText t2 = new AbstractText("..and Robin..", 11, f);
+        f = new AbstractFont(FontFamily.HELVETICA, FontStyle.ITALIC);
+        AbstractText t3 = new AbstractText("Written by Batman", 30, f, 600, 200, 1, 3, 0, 0);
+        AbstractText t4 = new AbstractText("Tom is dom", 120, new AbstractFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
 
-        Paragraph p = new Paragraph();
-        Paragraph p2 = new Paragraph(450, 200);
+        AbstractParagraph p = new AbstractParagraph();
+        AbstractParagraph p2 = new AbstractParagraph(450, 200);
 
         p.addText(t);
         p.addText(t2);

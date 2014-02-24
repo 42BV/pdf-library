@@ -1,6 +1,4 @@
-package nl.mad.pdflibrary.api;
-
-import nl.mad.pdflibrary.syntax.PdfNameValue;
+package nl.mad.pdflibrary.model;
 
 /**
  * Enum containing the different subtypes of fonts. Each subtype also stores the corresponding PdfNameValue.

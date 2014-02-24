@@ -7,10 +7,11 @@ import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.syntax.PdfNameValue;
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfNumber;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
  * PdfTrailer represents the trailer section of a PDF. The trailer specifies the amount of objects in the api,
@@ -81,13 +82,13 @@ public class PdfTrailer extends PdfDictionary {
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         os.write(TRAILER_INDICATOR);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         super.writeToFile(os);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         os.write(START_XREF_INDICATOR);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         os.write(crossReferenceStartByte);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         os.write(END_OF_FILE_INDICATOR);
     }
 

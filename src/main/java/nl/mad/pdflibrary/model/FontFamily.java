@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.api;
+package nl.mad.pdflibrary.model;
 
 /**
  * Enum containing the default PDF font families.

@@ -2,15 +2,18 @@ package nl.mad.pdflibrary.api;
 
 import static junit.framework.TestCase.assertEquals;
 
+import nl.mad.pdflibrary.model.DocumentPartType;
+import nl.mad.pdflibrary.model.FontFamily;
+import nl.mad.pdflibrary.model.FontStyle;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TextTest {
-    private Text text;
+    private AbstractText text;
 
     @Before
     public void setUp() throws Exception {
-        text = new Text();
+        text = new AbstractText();
     }
 
     @Test
@@ -27,7 +30,7 @@ public class TextTest {
 
     @Test
     public void testSetFont() {
-        Font f = new Font(FontFamily.COURIER, FontStyle.NORMAL);
+        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.NORMAL);
         text.setFont(f);
         assertEquals("Font was not set correctly.", f, text.getFont());
     }

@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.mad.pdflibrary.api.AbstractDocumentPart;
-import nl.mad.pdflibrary.api.Font;
-import nl.mad.pdflibrary.api.Paragraph;
-import nl.mad.pdflibrary.api.Text;
+import nl.mad.pdflibrary.model.DocumentPart;
+import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfFont;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.syntax.PdfNameValue;
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfStream;
@@ -37,7 +37,8 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfWriter writer;
     private PdfPage currentPage;
-    private static Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
+    private Map<Font, PdfIndirectObject> fontList = new HashMap<>();
+
     /**
      * The default line separator.
      */
@@ -59,9 +60,8 @@ public class PdfDocument {
     /**
      * Creates a PdfObject from the given api part and adds it to the api.
      * @param part Document part that is to be added.
-     * @see PdfObjectFactory
      */
-    public void add(AbstractDocumentPart part) {
+    public void add(DocumentPart part) {
         switch (part.getType()) {
         case TEXT:
             this.addText((Text) part, false, false);
@@ -113,14 +113,14 @@ public class PdfDocument {
         if (currentPage.streamEmpty()) {
             //create new stream object and add the text
             PdfStream ts = new PdfStream();
-            ts.add(new PdfText(text));
+            ts.add(new PdfText(text, getPdfFont(text.getFont())));
             currentPage.add(body.addObject(ts));
         } else {
             PdfText pdfText = new PdfText();
             if (!overrideMatrix) {
                 pdfText.addMatrix(text);
             }
-            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
+            pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
             pdfText.addTextString(text.getText());
         }
 
@@ -137,6 +137,15 @@ public class PdfDocument {
     }
 
     /**
+     * Returns the indirect object representing the given font.
+     * @param font Requested font.
+     * @return PdfIndirectObject representing the font or null if the font is not in the list
+     */
+    public PdfIndirectObject getPdfFont(Font font) {
+        return fontList.get(font);
+    }
+
+    /**
      * Creates an indirectObject for the given font and adds it to the font list.
      * @param font Font that needs to be added.
      * @return indirect object for the given font
@@ -150,15 +159,6 @@ public class PdfDocument {
         } else {
             return fontList.get(font);
         }
-    }
-
-    /**
-     * Returns the indirect object representing the given font.
-     * @param font Requested font.
-     * @return PdfIndirectObject representing the font or null if the font is not in the list
-     */
-    public static PdfIndirectObject getPdfFont(Font font) {
-        return fontList.get(font);
     }
 
     /**

@@ -1,5 +1,7 @@
 package nl.mad.pdflibrary.structure;
 
+import nl.mad.pdflibrary.utility.PdfConstants;
+
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,7 +30,7 @@ public class PdfWriter {
     public void write(PdfHeader h, PdfBody b, PdfCrossReferenceTable xref, PdfTrailer t) throws UnsupportedEncodingException, IOException {
         DataOutputStream os = new DataOutputStream(new FileOutputStream("testpdf.pdf"));
         h.writeToFile(os);
-        os.write(PdfDocument.LINE_SEPARATOR);
+        os.write(PdfConstants.LINE_SEPARATOR);
         b.writeToFile(os);
         xref.fillTableWithIndirectObjects(b.getAllIndirectObjects());
         xref.writeToFile(os);

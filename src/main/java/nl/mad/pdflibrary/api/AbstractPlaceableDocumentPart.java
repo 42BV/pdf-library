@@ -1,12 +1,15 @@
 package nl.mad.pdflibrary.api;
 
+import nl.mad.pdflibrary.model.DocumentPartType;
+import nl.mad.pdflibrary.model.PlaceableDocumentPart;
+
 /**
  * AbstractPlaceableDocumentPart is an extension of AbstractDocumentPart that allows for positioning of the object.
  * 
  * @author Dylan de Wolff
  * @see AbstractDocumentPart
  */
-public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart {
+public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart implements PlaceableDocumentPart {
     private Integer positionX;
     private Integer positionY;
     /**

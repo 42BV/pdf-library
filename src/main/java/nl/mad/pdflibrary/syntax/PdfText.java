@@ -1,14 +1,15 @@
 package nl.mad.pdflibrary.syntax;
 
-import nl.mad.pdflibrary.api.Text;
-import nl.mad.pdflibrary.structure.PdfDocument;
+import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
  * PdfText stores the PDF stream version of a Text object. 
  * @author Dylan de Wolff
  * @see PdfStream
- * @see Text
+ * @see nl.mad.pdflibrary.model.Text
  */
 public class PdfText extends AbstractPdfObject {
 
@@ -16,9 +17,9 @@ public class PdfText extends AbstractPdfObject {
      * Creates a new instance of PdfText.
      * @param text The text that needs to be represented.
      */
-    public PdfText(Text text) {
+    public PdfText(Text text, PdfIndirectObject font) {
         super(PdfObjectType.TEXT);
-        this.addText(text);
+        this.addText(text, font);
     }
 
     /**
@@ -31,9 +32,10 @@ public class PdfText extends AbstractPdfObject {
     /**
      * Adds the given Text object to the stream.
      * @param text Text object to be added.
+     * @param font font for the text
      */
-    public final void addText(Text text) {
-        this.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
+    public final void addText(Text text, PdfIndirectObject font) {
+        this.addFont(font, text.getTextSize());
         this.addMatrix(text);
         this.addTextString(text.getText());
     }
@@ -41,8 +43,7 @@ public class PdfText extends AbstractPdfObject {
     /**
      * Converts the given position values to a text matrix and adds this to the byte representation.
      * This should be done before adding the text.
-     * @param positionX X Position of the text.
-     * @param positionY Y position of the text.
+     * @param text text to add to the document
      */
     public void addMatrix(Text text) {
         String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + text.getPositionX() + " "

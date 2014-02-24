@@ -1,5 +1,7 @@
 package nl.mad.pdflibrary.syntax;
 
+import nl.mad.pdflibrary.model.PdfNameValue;
+
 /**
  * PdfPage stores all the data necessary to form a page. The class is responsible for holding it's own content and used resources.
  * 
