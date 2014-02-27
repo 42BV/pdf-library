@@ -9,11 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TextTest {
-    private AbstractText text;
+    private BaseText text;
 
     @Before
     public void setUp() throws Exception {
-        text = new AbstractText();
+        text = new BaseText();
     }
 
     @Test
@@ -30,7 +30,7 @@ public class TextTest {
 
     @Test
     public void testSetFont() {
-        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.NORMAL);
+        BaseFont f = new BaseFont(FontFamily.COURIER, FontStyle.NORMAL);
         text.setFont(f);
         assertEquals("Font was not set correctly.", f, text.getFont());
     }

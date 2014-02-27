@@ -2,7 +2,7 @@ package nl.mad.pdflibrary.structure;
 
 import static junit.framework.TestCase.assertEquals;
 
-import nl.mad.pdflibrary.api.AbstractText;
+import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 
 import org.junit.Before;
@@ -19,7 +19,7 @@ public class PdfDocumentTest {
     @Test
     public void testAddWithEmptyStream() {
         document.addPage(200, 200);
-        AbstractText text = new AbstractText("Test", 12);
+        BaseText text = new BaseText("Test", 12);
         document.add(text);
         //PdfTextStream testStream = new PdfTextStream();
         //testStream.addCommands(text);

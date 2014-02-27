@@ -10,6 +10,6 @@ public interface Font extends DocumentPart {
 
     public void setStyle(FontStyle style);
 
-    public BaseFont getBaseFont();
+    public BaseFontFamily getBaseFont();
 
 }

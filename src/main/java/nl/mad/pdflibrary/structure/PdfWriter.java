@@ -1,11 +1,11 @@
 package nl.mad.pdflibrary.structure;
 
-import nl.mad.pdflibrary.utility.PdfConstants;
-
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
  * Writes the different sections to an OutputStream.
@@ -27,18 +27,18 @@ public class PdfWriter {
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    public void write(PdfHeader h, PdfBody b, PdfCrossReferenceTable xref, PdfTrailer t) throws UnsupportedEncodingException, IOException {
-        DataOutputStream os = new DataOutputStream(new FileOutputStream("testpdf.pdf"));
-        h.writeToFile(os);
-        os.write(PdfConstants.LINE_SEPARATOR);
-        b.writeToFile(os);
+    public void write(OutputStream os, PdfHeader h, PdfBody b, PdfCrossReferenceTable xref, PdfTrailer t) throws UnsupportedEncodingException, IOException {
+        DataOutputStream dos = new DataOutputStream(os);
+        h.writeToFile(dos);
+        dos.write(PdfConstants.LINE_SEPARATOR);
+        b.writeToFile(dos);
         xref.fillTableWithIndirectObjects(b.getAllIndirectObjects());
-        xref.writeToFile(os);
+        xref.writeToFile(dos);
         t.setObjectAmount(b.getTotalIndirectObjectsAmount() + 1);
         t.setCrossReferenceStartByte(xref.getStartByte());
         t.fillObjectSpecification(b.getCatalogReference());
-        t.writeToFile(os);
-        os.flush();
-        os.close();
+        t.writeToFile(dos);
+        dos.flush();
+        dos.close();
     }
 }

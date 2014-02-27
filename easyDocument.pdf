@@ -1,0 +1,83 @@
+%PDF-1.7
+%âãÏÓ
+
+1 0 obj
+<<
+/Pages 2 0 R
+/Type /Catalog
+>>
+endobj
+
+2 0 obj
+<<
+/Count 1
+/Type /Pages
+/Kids [3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+/MediaBox [0 0 595 842 ]
+/Type /Page
+/Contents [5 0 R ]
+/Resources <<
+/Font <<
+/R1 4 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/SubType /Type1
+>>
+endobj
+
+5 0 obj
+<<
+/Filter []
+/Length 152
+>>
+stream
+BT
+/R1 26 Tf
+1.0 0.0 0.0 1.0 0 0 Tm
+(Test text) Tj
+1.0 0.0 0.0 1.0 0 0 Tm
+/R1 16 Tf
+(Test paragraph.) Tj
+/R1 12 Tf
+(Follow up to test paragraph.) Tj
+ET
+endstream
+endobj
+
+6 0 obj
+<<
+/Creator (PDF-Library)
+/CreationDate (D:20140227160320)
+>>
+endobj
+
+xref
+0 7
+0000000000 65535 f
+0000000020 00000 n
+0000000070 00000 n
+0000000129 00000 n
+0000000246 00000 n
+0000000319 00000 n
+0000000533 00000 n
+trailer
+<<
+/Root 1 0 R
+/Info 6 0 R
+/Size 7
+>>
+startxref
+611
+%%EOF

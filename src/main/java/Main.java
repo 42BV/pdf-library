@@ -1,9 +1,14 @@
+import java.io.FileOutputStream;
 import java.io.IOException;
 
-import nl.mad.pdflibrary.api.*;
-import nl.mad.pdflibrary.api.AbstractFont;
+import nl.mad.pdflibrary.api.BaseFont;
+import nl.mad.pdflibrary.api.BaseParagraph;
+import nl.mad.pdflibrary.api.BaseText;
+import nl.mad.pdflibrary.api.Document;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontStyle;
+import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.Text;
 
 public class Main {
 
@@ -13,42 +18,34 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        //easyDocumentCreation();
+        easyDocumentCreation();
         inDepthDocumentCreation();
     }
 
     private static void easyDocumentCreation() throws IOException {
         Document d = new Document();
-
-        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.BOLD);
-        AbstractText t = new AbstractText("Hello, Batman!!", 12, f);
-        AbstractText t2 = new AbstractText("Good day Robin.", 8);
-        AbstractText t3 = new AbstractText("Good day Robby.", 46, f);
-
-        AbstractParagraph p = new AbstractParagraph();
+        Text t = d.createText("Test text", 26);
         d.addPart(t);
-
+        t = d.createText("Test paragraph.", 16);
+        Text t2 = d.createText("Follow up to test paragraph.", 12);
+        Paragraph p = d.createParagraph();
         p.addText(t);
         p.addText(t2);
-        p.addText(t3);
-
         d.addPart(p);
-        d.addNewPage();
-        d.addPart(t3);
-        d.finish();
+        d.finish("easyDocument");
     }
 
     private static void inDepthDocumentCreation() throws IOException {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
-        AbstractFont f = new AbstractFont(FontFamily.COURIER, FontStyle.BOLD);
-        AbstractText t = new AbstractText("The book of Batman", 42, f, 150, 500);
-        AbstractText t2 = new AbstractText("..and Robin..", 11, f);
-        f = new AbstractFont(FontFamily.HELVETICA, FontStyle.ITALIC);
-        AbstractText t3 = new AbstractText("Written by Batman", 30, f, 600, 200, 1, 3, 0, 0);
-        AbstractText t4 = new AbstractText("Tom is dom", 120, new AbstractFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
+        BaseFont f = new BaseFont(FontFamily.COURIER, FontStyle.BOLD);
+        BaseText t = new BaseText("Test Document", 42, f, 70, 500);
+        BaseText t2 = new BaseText("Test Document Two", 11, f);
+        f = new BaseFont(FontFamily.HELVETICA, FontStyle.ITALIC);
+        BaseText t3 = new BaseText("Written by test", 30, f, 100, 200, 1, 3, 0, 0);
+        BaseText t4 = new BaseText("Page 2 Test", 120, new BaseFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
 
-        AbstractParagraph p = new AbstractParagraph();
-        AbstractParagraph p2 = new AbstractParagraph(450, 200);
+        BaseParagraph p = new BaseParagraph();
+        BaseParagraph p2 = new BaseParagraph(300, 200);
 
         p.addText(t);
         p.addText(t2);
@@ -57,11 +54,10 @@ public class Main {
 
         d.addPart(p);
         d.addPart(p2);
-
         d.addNewPage();
         d.addPart(t4);
 
-        d.finish();
+        d.finish(new FileOutputStream("inDepthDocument.pdf"));
 
     }
 }

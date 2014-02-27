@@ -1,6 +1,7 @@
 package nl.mad.pdflibrary.structure;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -10,12 +11,12 @@ import java.util.Map;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfFont;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfStream;
@@ -122,6 +123,7 @@ public class PdfDocument {
             }
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
             pdfText.addTextString(text.getText());
+            currentPage.getCurrentStream().add(pdfText);
         }
 
         //        else if (!overrideMatrix) {
@@ -172,11 +174,11 @@ public class PdfDocument {
     }
 
     /**
-     * Adds the given api info to the PDF trailer.
-     * @param author Writer of the api.
-     * @param title Title of the api.
-     * @param subject Subject of the api.
-     * @param creationDate Creation date of the api.
+     * Adds the given document info to the PDF trailer.
+     * @param author Writer of the document.
+     * @param title Title of the document.
+     * @param subject Subject of the document.
+     * @param creationDate Creation date of the document.
      * @see PdfTrailer
      */
     public void addDocumentInfo(String author, String title, String subject, Calendar creationDate) {
@@ -194,15 +196,25 @@ public class PdfDocument {
     }
 
     /**
-     * Make the writer start writing the api.
+     * Make the writer start writing the document to the given OutputStream.
      * 
+     * @add OutputStream OutputStream to write to.
      * @throws IOException 
      */
-    public void finish() throws IOException {
-        this.writer.write(header, body, xref, trailer);
+    public void finish(OutputStream os) throws IOException {
+        this.writer.write(os, header, body, xref, trailer);
     }
 
     public PdfPage getCurrentPage() {
         return this.currentPage;
+    }
+
+    public void addNewLine() {
+        //No implementation yet
+        if (currentPage.streamEmpty()) {
+
+        } else {
+
+        }
     }
 }
