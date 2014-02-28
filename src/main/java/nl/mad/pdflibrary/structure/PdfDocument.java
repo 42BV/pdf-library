@@ -38,7 +38,7 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfWriter writer;
     private PdfPage currentPage;
-    private Map<Font, PdfIndirectObject> fontList = new HashMap<>();
+    private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
 
     /**
      * The default line separator.

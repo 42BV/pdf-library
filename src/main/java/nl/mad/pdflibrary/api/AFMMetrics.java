@@ -8,6 +8,11 @@ import java.util.StringTokenizer;
 
 import nl.mad.pdflibrary.model.FontMetrics;
 
+/**
+ * This class is responsible for parsing afm files and storing the data found.
+ * @author Dylan de Wolff
+ *
+ */
 public class AFMMetrics implements FontMetrics {
     private String fontName;
     private String fullName;
@@ -17,10 +22,10 @@ public class AFMMetrics implements FontMetrics {
     private boolean isFixedPitch;
     private String characterSet;
     private int[] fontBBox;
-    private int UnderlinePosition;
-    private int UnderlineThickness;
+    private int underlinePosition;
+    private int underlineThickness;
     private String encodingScheme;
-    private int CapHeight;
+    private int capHeight;
     private int xHeight;
     private int ascender;
     private int descender;
@@ -31,10 +36,16 @@ public class AFMMetrics implements FontMetrics {
     private Map<String, KerningPair> kerningPairs;
 
     private AFMMetrics() {
-        characterMetrics = new HashMap<>();
-        kerningPairs = new HashMap<>();
+        characterMetrics = new HashMap<String, CharacterMetric>();
+        kerningPairs = new HashMap<String, KerningPair>();
     }
 
+    /**
+     * Parses the given afm file and returns an instance of FontMetrics containing the values parsed.
+     * @param filename Name of the afm file.
+     * @return FontMetrics
+     * @throws IOException
+     */
     public static FontMetrics parse(String filename) throws IOException {
         AFMMetrics afm = new AFMMetrics();
         String currentLine;
@@ -80,6 +91,7 @@ public class AFMMetrics implements FontMetrics {
                 afm.setStdVW(Integer.valueOf(st.nextToken()));
             }
         }
+        //TODO: remainder of parsing (character metrics/kerning)
         return null;
     }
 
@@ -154,19 +166,19 @@ public class AFMMetrics implements FontMetrics {
     }
 
     public int getUnderlinePosition() {
-        return UnderlinePosition;
+        return underlinePosition;
     }
 
     public void setUnderlinePosition(int underlinePosition) {
-        UnderlinePosition = underlinePosition;
+        this.underlinePosition = underlinePosition;
     }
 
     public int getUnderlineThickness() {
-        return UnderlineThickness;
+        return underlineThickness;
     }
 
     public void setUnderlineThickness(int underlineThickness) {
-        UnderlineThickness = underlineThickness;
+        this.underlineThickness = underlineThickness;
     }
 
     public String getEncodingScheme() {
@@ -178,11 +190,11 @@ public class AFMMetrics implements FontMetrics {
     }
 
     public int getCapHeight() {
-        return CapHeight;
+        return capHeight;
     }
 
     public void setCapHeight(int capHeight) {
-        CapHeight = capHeight;
+        this.capHeight = capHeight;
     }
 
     public int getxHeight() {
@@ -241,6 +253,10 @@ public class AFMMetrics implements FontMetrics {
         this.kerningPairs = kerningPairs;
     }
 
+    /**
+     * Inner class representing the metrics of a single character. 
+     * @author Dylan de Wolff
+     */
     private class CharacterMetric {
         private int c;
         private float wx;
@@ -271,6 +287,12 @@ public class AFMMetrics implements FontMetrics {
         }
     }
 
+    /**
+     * Inner class representing a kerning pair. Only stores the second character and the width offset, the first character
+     * is used as key in the kerning map found in the AFMMetrics class.
+     * @author Dylan de Wolff
+     * @see AFMMetrics
+     */
     private class KerningPair {
         private String secondCharacter;
         private int widthOffset;

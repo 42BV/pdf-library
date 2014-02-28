@@ -32,7 +32,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
      */
     public BaseParagraph(int positionX, int positionY) {
         super(DocumentPartType.PARAGRAPH);
-        textCollection = new ArrayList<>();
+        textCollection = new ArrayList<Text>();
         this.setPositionX(positionX);
         this.setPositionY(positionY);
     }

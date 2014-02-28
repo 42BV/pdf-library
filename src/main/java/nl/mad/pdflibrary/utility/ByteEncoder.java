@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
  * @author Dylan de Wolff
  *
  */
-public class ByteEncoder {
+public final class ByteEncoder {
     private static final String DEFAULT_BYTE_ENCODING = "UTF-8";
 
     private ByteEncoder() {

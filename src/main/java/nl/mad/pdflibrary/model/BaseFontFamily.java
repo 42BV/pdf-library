@@ -59,7 +59,7 @@ public class BaseFontFamily {
         this.boldName = boldName;
         this.italicName = italicName;
         this.boldItalicName = boldItalicName;
-        metricsMap = new HashMap<>();
+        metricsMap = new HashMap<String, FontMetrics>();
         this.fillAllMetrics();
     }
 

@@ -1,7 +1,19 @@
 package nl.mad.pdflibrary.utility;
 
-public class PdfConstants {
+/**
+ * Contains constants that are used by several PDF object classes.
+ * @author Dylan de Wolff
+ *
+ */
+public final class PdfConstants {
 
+    /**
+     * Specifies the default line separator value.
+     */
     public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
+
+    private PdfConstants() {
+
+    }
 
 }
