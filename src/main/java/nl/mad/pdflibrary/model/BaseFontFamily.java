@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.mad.pdflibrary.api.AFMMetrics;
+import nl.mad.pdflibrary.font.AFMMetrics;
 
 /**
  * BaseFont contains the subtype of the font and the different names of the font for each style the font has.
@@ -34,7 +34,7 @@ public class BaseFontFamily {
     private String boldName;
     private String italicName;
     private String boldItalicName;
-    private Map<String, FontMetrics> metricsMap;
+    private Map<String, FontMetrics> metrics;
 
     /**
      * Creates a new instance of BaseFontFamily. If you use this constructor it is assumed that this BaseFontFamily has no options for bold, italic or bold-italic.
@@ -49,9 +49,9 @@ public class BaseFontFamily {
      * Creates a new instance of BaseFontFamily.
      * @param type Font SubType.
      * @param name Name of the font.
-     * @param boldName Bold name of the font.
-     * @param italicName Italic name of the font.
-     * @param boldItalicName Bold-italic name of the font.
+     * @param boldName Bold name of the font. Insert the normal name if this font has no bold option.
+     * @param italicName Italic name of the font. Insert the normal name if this font has no italic option.
+     * @param boldItalicName Bold-italic name of the font. Insert the normal name if this font has no bold-italic option.
      */
     public BaseFontFamily(FontType type, String name, String boldName, String italicName, String boldItalicName) {
         this.subType = type;
@@ -59,10 +59,13 @@ public class BaseFontFamily {
         this.boldName = boldName;
         this.italicName = italicName;
         this.boldItalicName = boldItalicName;
-        metricsMap = new HashMap<String, FontMetrics>();
+        metrics = new HashMap<String, FontMetrics>();
         this.fillAllMetrics();
     }
 
+    /**
+     * Calls fillMetrics for all the different styles.
+     */
     private void fillAllMetrics() {
         fillMetrics(name);
         if (!boldName.equals(name)) fillMetrics(boldName);
@@ -70,10 +73,15 @@ public class BaseFontFamily {
         if (!boldItalicName.equals(name)) fillMetrics(boldItalicName);
     }
 
+    /**
+     * Creates FontMetrics for the given filename and adds it to the metrics map.
+     * @param filename Name of the file.
+     * @see FontMetrics
+     */
     private void fillMetrics(String filename) {
-        if (filename.toLowerCase().endsWith(".afm")) {
+        if (subType == FontType.TYPE1) {
             try {
-                metricsMap.put(filename, AFMMetrics.parse(filename));
+                metrics.put(filename, new AFMMetrics(filename));
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -81,6 +89,20 @@ public class BaseFontFamily {
         }
     }
 
+    /**
+     * Returns the metrics of this font for the given style.
+     * @param style Style of font.
+     * @return Metrics of this font for the given style.
+     */
+    public FontMetrics getMetricsForStyle(FontStyle style) {
+        return this.metrics.get(this.getNameOfStyle(style));
+    }
+
+    /**
+     * Returns the BaseFontFamily instance for the given FontFamily.
+     * @param family Family type of the font.
+     * @return BaseFontFamily corresponding to the given FontFamily.
+     */
     public static BaseFontFamily getDefaultBaseFontFamily(FontFamily family) {
         return defaultBaseFonts.get(family);
     }

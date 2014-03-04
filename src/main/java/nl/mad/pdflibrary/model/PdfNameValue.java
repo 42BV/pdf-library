@@ -10,7 +10,10 @@ public enum PdfNameValue {
     TYPE("Type"), KIDS("Kids"), FONT("Font"), BASE_FONT("BaseFont"), SUB_TYPE("SubType"), TYPE1("Type1"), CATALOG("Catalog"), PAGES("Pages"), PAGE("Page"), CONTENTS(
             "Contents"), RESOURCES("Resources"), MEDIA_BOX("MediaBox"), LENGTH("Length"), ROOT("Root"), SIZE("Size"), INFO("Info"), AUTHOR("Author"), CREATOR(
             "Creator"), CREATION_DATE("CreationDate"), SUBJECT("Subject"), TITLE("Title"), FILTER("Filter"), TYPE0("Type0"), MMTYPE1("MMType1"), TYPE3("Type3"), TRUE_TYPE(
-            "TrueType");
+            "TrueType"), FONT_DESCRIPTOR("FontDescriptor"), ENCODING("Encoding"), FONT_NAME("FontName"), FONT_FAMILY("FontFamily"), FLAGS("Flags"), FONT_BOUNDING_BOX(
+            "FontBBox"), ITALIC_ANGLE("ItalicAngle"), ASCENT("Ascent"), DESCENT("Descent"), LEADING("Leading"), CAP_HEIGHT("CapHeight"), XHEIGHT("XHeight"), STEMV(
+            "StemV"), STEMH("StemH"), AVG_WIDTH("AvgWidth"), MAX_WIDTH("MaxWidth"), MISSING_WIDTH("MissingWidth"), FIRST_CHAR("FirstChar"), LAST_CHAR(
+            "LastChar"), WIDTHS("Widths"), WIN_ANSI_ENCODING("WinAnsiEncoding");
 
     private String string;
 

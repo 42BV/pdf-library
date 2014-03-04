@@ -40,8 +40,8 @@ public class Document {
      * A4 page height.
      */
     public static final int A4_HEIGHT = 842;
-    private int width = A4_WIDTH;
-    private int height = A4_HEIGHT;
+    private int width;
+    private int height;
     private boolean finished;
 
     /**
@@ -50,6 +50,10 @@ public class Document {
      */
     public Document() throws UnsupportedEncodingException {
         this(A4_WIDTH, A4_HEIGHT, "", "", "");
+    }
+
+    public Document(int width, int height) throws UnsupportedEncodingException {
+        this(width, height, "", "", "");
     }
 
     /**

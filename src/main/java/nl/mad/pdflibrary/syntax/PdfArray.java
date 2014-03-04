@@ -21,11 +21,16 @@ public class PdfArray extends AbstractPdfObject {
         this.values = new ArrayList<AbstractPdfObject>();
     }
 
+    public PdfArray(List<AbstractPdfObject> values) {
+        this();
+        this.addValues(values);
+    }
+
     public void addValue(AbstractPdfObject value) {
         this.values.add(value);
     }
 
-    public void addValues(ArrayList<AbstractPdfObject> values) {
+    public void addValues(List<AbstractPdfObject> values) {
         this.values.addAll(values);
     }
 

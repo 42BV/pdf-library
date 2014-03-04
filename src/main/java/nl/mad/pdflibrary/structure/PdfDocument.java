@@ -15,6 +15,7 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfFont;
+import nl.mad.pdflibrary.syntax.PdfFontDescriptor;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfName;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
@@ -122,7 +123,7 @@ public class PdfDocument {
                 pdfText.addMatrix(text);
             }
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
-            pdfText.addTextString(text.getText());
+            pdfText.addTextString(text);
             currentPage.getCurrentStream().add(pdfText);
         }
 
@@ -154,8 +155,12 @@ public class PdfDocument {
      */
     public PdfIndirectObject addFont(Font font) {
         if (!fontList.containsKey(font) && font != null) {
+            PdfFontDescriptor newFontDescriptor = new PdfFontDescriptor(font);
             PdfFont newFont = new PdfFont(font);
             PdfIndirectObject indirectFont = body.addObject(newFont);
+            PdfIndirectObject indirectFontDictionary = body.addObject(newFontDescriptor);
+            newFont.setFontDescriptorReference(indirectFontDictionary.getReference());
+
             fontList.put(font, indirectFont);
             return indirectFont;
         } else {

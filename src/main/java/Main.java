@@ -5,6 +5,7 @@ import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.api.Document;
+import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontStyle;
 import nl.mad.pdflibrary.model.Paragraph;
@@ -24,10 +25,13 @@ public class Main {
 
     private static void easyDocumentCreation() throws IOException {
         Document d = new Document();
-        Text t = d.createText("Test text", 26);
+        Font f = d.createFont(FontFamily.HELVETICA, FontStyle.NORMAL);
+        Text t = d.createText("Test Document", 26);
+        t.setFont(f);
         d.addPart(t);
-        t = d.createText("Test paragraph.", 16);
-        Text t2 = d.createText("Follow up to test paragraph.", 12);
+
+        t = d.createText("Test Document Two", 11);
+        Text t2 = d.createText("Test Document Three", 13);
         Paragraph p = d.createParagraph();
         p.addText(t);
         p.addText(t2);
@@ -37,12 +41,12 @@ public class Main {
 
     private static void inDepthDocumentCreation() throws IOException {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
-        BaseFont f = new BaseFont(FontFamily.COURIER, FontStyle.BOLD);
+        BaseFont f = new BaseFont(FontFamily.TIMES_ROMAN, FontStyle.NORMAL);
         BaseText t = new BaseText("Test Document", 42, f, 70, 500);
         BaseText t2 = new BaseText("Test Document Two", 11, f);
         f = new BaseFont(FontFamily.HELVETICA, FontStyle.ITALIC);
-        BaseText t3 = new BaseText("Written by test", 30, f, 100, 200, 1, 3, 0, 0);
-        BaseText t4 = new BaseText("Page 2 Test", 120, new BaseFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
+        BaseText t3 = new BaseText("Written by test", 30, f, 100, 200);
+        BaseText t4 = new BaseText("Page 2 Test", 30, new BaseFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
 
         BaseParagraph p = new BaseParagraph();
         BaseParagraph p2 = new BaseParagraph(300, 200);

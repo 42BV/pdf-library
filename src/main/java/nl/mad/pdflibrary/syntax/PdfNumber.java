@@ -3,6 +3,8 @@ package nl.mad.pdflibrary.syntax;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
@@ -29,6 +31,32 @@ public class PdfNumber extends AbstractPdfObject {
 
     public void setNumber(double number) {
         this.number = number;
+    }
+
+    /**
+     * Converts the given list of integers to a list of PdfObjects.
+     * @param values Values to be converted.
+     * @return List of PdfObjects.
+     */
+    public static List<AbstractPdfObject> convertListOfValues(List<Integer> values) {
+        List<AbstractPdfObject> list = new ArrayList<AbstractPdfObject>();
+        for (int value : values) {
+            list.add(new PdfNumber(value));
+        }
+        return list;
+    }
+
+    /**
+     * Converts the given list of doubles to a list of PdfObjects.
+     * @param values Values to be converted.
+     * @return List of PdfObjects.
+     */
+    public static List<AbstractPdfObject> convertListOfValues(double[] values) {
+        List<AbstractPdfObject> list = new ArrayList<AbstractPdfObject>();
+        for (double value : values) {
+            list.add(new PdfNumber(value));
+        }
+        return list;
     }
 
     private void updateByteRepresentation() {

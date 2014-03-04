@@ -1,5 +1,10 @@
 package nl.mad.pdflibrary.model;
 
+/**
+ * Interface for font classes.
+ * @author Dylan de Wolff
+ *
+ */
 public interface Font extends DocumentPart {
 
     public FontFamily getFamily();

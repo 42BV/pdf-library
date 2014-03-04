@@ -2,10 +2,23 @@ package nl.mad.pdflibrary.model;
 
 import java.util.List;
 
+/**
+ * Interface for paragraph classes.
+ * @author Dylan de Wolff
+ *
+ */
 public interface Paragraph extends PlaceableDocumentPart {
 
-    public void addText(Text text);
+    /**
+     * Adds text to the paragraph.
+     * @param text Text to be added.
+     */
+    void addText(Text text);
 
-    public List<Text> getTextCollection();
+    /**
+     * Returns list of all the text objects in this paragraph.
+     * @return List containing all text objects in this paragraph.
+     */
+    List<Text> getTextCollection();
 
 }
