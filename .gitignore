@@ -5,5 +5,7 @@
 .classpath
 .pmd
 .project
-testpdf.pdf
+document.pdf
+easyDocument.pdf
+InDepthDocument.pdf
 bin
