@@ -44,6 +44,7 @@ public class PdfArray extends AbstractPdfObject {
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         os.write('[');
+        os.write(' ');
         for (int i = 0; i < values.size(); ++i) {
             values.get(i).writeToFile(os);
             os.write(' ');

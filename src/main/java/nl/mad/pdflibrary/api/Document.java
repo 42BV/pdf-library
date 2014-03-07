@@ -30,7 +30,7 @@ public class Document {
      * Default font. This is used when no font is specified.
      */
     public static final BaseFont DEFAULT_FONT = new BaseFont(FontFamily.TIMES_ROMAN, FontStyle.NORMAL);
-    private static final String defaultFileName = "document.pdf";
+    private static final String DEFAULT_FILE_NAME = "document.pdf";
     private int pageNumber = 0;
     /**
      * A4 page width.
@@ -40,8 +40,6 @@ public class Document {
      * A4 page height.
      */
     public static final int A4_HEIGHT = 842;
-    private int width;
-    private int height;
     private boolean finished;
 
     /**
@@ -66,10 +64,8 @@ public class Document {
      * @throws UnsupportedEncodingException 
      */
     public Document(int width, int height, String author, String title, String subject) throws UnsupportedEncodingException {
-        pdfDocument = new PdfDocument();
+        pdfDocument = new PdfDocument(width, height);
         finished = false;
-        this.width = width;
-        this.height = height;
         this.author = author;
         this.title = title;
         this.subject = subject;
@@ -129,7 +125,7 @@ public class Document {
      */
     public void addNewPage() {
         if (!finished) {
-            pdfDocument.addPage(width, height);
+            pdfDocument.addPage();
             ++this.pageNumber;
         }
     }
@@ -158,7 +154,7 @@ public class Document {
         if (!title.isEmpty()) {
             this.finish(title);
         }
-        this.finish(new FileOutputStream(defaultFileName));
+        this.finish(new FileOutputStream(DEFAULT_FILE_NAME));
     }
 
     /** 

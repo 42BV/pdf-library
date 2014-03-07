@@ -40,8 +40,9 @@ public class PdfDictionary extends AbstractPdfObject {
     public void writeToFile(OutputStream os) throws IOException {
         os.write(ByteEncoder.getBytes(OPEN_DICTIONARY));
         for (Entry<PdfName, AbstractPdfObject> entry : content.entrySet()) {
+            os.write(' ');
             entry.getKey().writeToFile(os);
-            os.write((byte) ' ');
+            os.write(' ');
             entry.getValue().writeToFile(os);
             os.write(PdfConstants.LINE_SEPARATOR);
         }

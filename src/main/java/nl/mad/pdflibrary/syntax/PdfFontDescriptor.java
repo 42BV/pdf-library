@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.syntax;
 import nl.mad.pdflibrary.model.BaseFontFamily;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
+import nl.mad.pdflibrary.model.FontType;
 import nl.mad.pdflibrary.model.PdfNameValue;
 
 /**
@@ -46,5 +47,22 @@ public class PdfFontDescriptor extends PdfDictionary {
         put(new PdfName(PdfNameValue.AVG_WIDTH), new PdfNumber(metrics.getAvgWidth()));
         put(new PdfName(PdfNameValue.MAX_WIDTH), new PdfNumber(metrics.getMaxWidth()));
         put(new PdfName(PdfNameValue.MISSING_WIDTH), new PdfNumber(metrics.getMissingWidth()));
+    }
+
+    public void setFontFileReference(PdfIndirectObjectReference reference, FontType type) {
+        switch (type) {
+        case TYPE1:
+        case MMTYPE1:
+            put(new PdfName(PdfNameValue.FONT_FILE), reference);
+            break;
+        case TRUETYPE:
+            put(new PdfName(PdfNameValue.FONT_FILE2), reference);
+            break;
+        case TYPE3:
+            put(new PdfName(PdfNameValue.FONT_FILE3), reference);
+            break;
+        default:
+            break;
+        }
     }
 }

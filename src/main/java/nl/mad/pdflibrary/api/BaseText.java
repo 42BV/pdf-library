@@ -100,6 +100,30 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.setShearY(shearY);
     }
 
+    /**
+     * Creates a copy of the given BaseText.
+     * @param copyFrom BaseText to copy from.
+     */
+    public BaseText(Text copyFrom) {
+        super(DocumentPartType.TEXT);
+        this.textString = copyFrom.getText();
+        this.font = copyFrom.getFont();
+        if (copyFrom.getCustomPositioning()) {
+            this.setPositionX(copyFrom.getPositionX());
+            this.setPositionY(copyFrom.getPositionY());
+            this.setCustomPositioning(true);
+        } else {
+            this.setPositionX(0);
+            this.setPositionY(0);
+            this.setCustomPositioning(false);
+        }
+        this.setTextSize(copyFrom.getTextSize());
+        this.setScaleX(copyFrom.getScaleX());
+        this.setScaleY(copyFrom.getScaleY());
+        this.setShearX(copyFrom.getShearX());
+        this.setShearY(copyFrom.getShearY());
+    }
+
     public double getScaleX() {
         return scaleX;
     }

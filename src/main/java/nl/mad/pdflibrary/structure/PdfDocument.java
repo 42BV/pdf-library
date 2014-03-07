@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
+import nl.mad.pdflibrary.syntax.PdfFile;
 import nl.mad.pdflibrary.syntax.PdfFont;
 import nl.mad.pdflibrary.syntax.PdfFontDescriptor;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
@@ -40,6 +42,8 @@ public class PdfDocument {
     private PdfWriter writer;
     private PdfPage currentPage;
     private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
+    private int defaultPageHeight;
+    private int defaultPageWidth;
 
     /**
      * The default line separator.
@@ -51,46 +55,27 @@ public class PdfDocument {
      * Creates a new instance of PdfDocument.
      * @throws UnsupportedEncodingException 
      */
-    public PdfDocument() throws UnsupportedEncodingException {
+    public PdfDocument(int width, int height) throws UnsupportedEncodingException {
         header = new PdfHeader();
         body = new PdfBody();
         xref = new PdfCrossReferenceTable();
         trailer = new PdfTrailer();
         writer = new PdfWriter();
+        this.defaultPageHeight = height;
+        this.defaultPageWidth = width;
     }
 
     /**
-     * Creates a PdfObject from the given api part and adds it to the api.
+     * Creates a PdfObject from the given document part and adds it to the document.
      * @param part Document part that is to be added.
      */
     public void add(DocumentPart part) {
         switch (part.getType()) {
         case TEXT:
-            this.addText((Text) part, false, false);
+            this.addText((Text) part, new PdfText(), false, false, false);
             break;
         case PARAGRAPH:
-            Paragraph paragraph = (Paragraph) part;
-            List<Text> textCollection = paragraph.getTextCollection();
-            if (paragraph.getTextCollection().size() != 0) {
-                //if we're using custom paragraph positioning, adjust the first text object
-                if (paragraph.getCustomPositioning() && textCollection.get(0) != null) {
-                    textCollection.get(0).setPositionX(paragraph.getPositionX());
-                    textCollection.get(0).setPositionY(paragraph.getPositionY());
-                }
-                for (int i = 0; i < textCollection.size(); ++i) {
-                    boolean ignoreMatrix = true;
-                    boolean ignorePosition = true;
-                    //if we're not using custom paragraph positioning, try to use the first text object position
-                    //TODO: We should have some kind of position calculation!
-                    if (i == 0) {
-                        ignoreMatrix = false;
-                        ignorePosition = false;
-                    } else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
-                        ignoreMatrix = false;
-                    }
-                    this.addText(textCollection.get(i), ignoreMatrix, ignorePosition);
-                }
-            }
+            this.addParagraph((Paragraph) part);
             break;
         case FONT:
             //TODO: Implementation of direct font adding
@@ -101,42 +86,139 @@ public class PdfDocument {
     }
 
     /**
+     * Adds a paragraph object to the document.
+     * @param paragraph Paragraph to be added.
+     */
+    private void addParagraph(Paragraph paragraph) {
+        List<Text> textCollection = paragraph.getTextCollection();
+        if (paragraph.getTextCollection().size() != 0) {
+            //if we're using custom paragraph positioning, adjust the first text object
+            if (paragraph.getCustomPositioning() && textCollection.get(0) != null) {
+                textCollection.get(0).setPositionX(paragraph.getPositionX());
+                textCollection.get(0).setPositionY(paragraph.getPositionY());
+            } else if (!textCollection.get(0).getCustomPositioning()) {
+                calculatePosition(textCollection.get(0), false);
+            }
+            int posX = textCollection.get(0).getPositionX();
+            for (int i = 0; i < textCollection.size(); ++i) {
+                boolean ignoreMatrix = true;
+                boolean ignorePosition = true;
+
+                if (i == 0) {
+                    ignoreMatrix = false;
+                    ignorePosition = false;
+                }
+                //NO SUPPORT YET FOR MORE THAN ONE MATRIX IN A PARAGRAPH
+                //                    else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
+                //                        ignoreMatrix = false;
+                //                    }
+                this.addText(textCollection.get(i), new PdfText(posX), ignoreMatrix, ignorePosition, true);
+            }
+            currentPage.setFilledWidth(0);
+        }
+    }
+
+    /**
+     * Calculates a position to place the given text.
+     * @param text Text to be positioned
+     * @param inParagraph Whether or not the given text object is part of a paragraph. 
+     */
+    private void calculatePosition(Text text, boolean inParagraph) {
+        Font font = text.getFont();
+        double spaceWidth = font.getBaseFont().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
+        if (inParagraph) {
+            text.setPositionX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
+            text.setPositionY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
+        } else {
+            //TODO: take into account margins and such
+            text.setPositionX(0);
+            text.setPositionY((int) (Math.ceil(currentPage.getHeight() - (currentPage.getFilledHeight() + calculateLeading(font, text.getTextSize())))));
+        }
+
+    }
+
+    /**
+     * Calculates leading based on font metrics and size of the text.
+     * @param font Font of the text.
+     * @param textSize Size of the text.
+     * @return int containing the calculated leading. 
+     */
+    private int calculateLeading(Font font, int textSize) {
+        return font.getBaseFont().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
+    }
+
+    /**
      * Adds the given text object to the PdfTextStream of the current page.
      * @param text Text that needs to be added.
+     * @param PdfText the pdfText object to be added.
      * @param overrideMatrix if true the matrix of the text will be disregarded. This should be true when the new text object has the same
      * matrix as the text object before it.
-     * @param ignorePosition if true the position of the text will be disregarded. This should be true when using a paragraph for every text
-     * object besides the first one. This ensures that all text is placed together.
+     * @param ignorePosition if true the position of the text will be disregarded. This 
+     * should be true when the text object is following another text object in a paragraph.
+     * @param isParagraph specifies if the given text object is inside a paragraph. 
      */
-    private void addText(Text text, boolean overrideMatrix, boolean ignorePosition) {
+    private void addText(Text text, PdfText pdfText, boolean overrideMatrix, boolean ignorePosition, boolean isParagraph) {
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
+        PdfStream ts = getCurrentPageStream();
+
+        if (!text.getCustomPositioning() && !isParagraph) {
+            calculatePosition(text, false);
+        }
+
+        String overflow = "";
+        if (overrideMatrix) {
+            pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
+            overflow = pdfText.addTextString(text, currentPage, calculateLeading(text.getFont(), text.getTextSize()), ignorePosition);
+        } else {
+            if (ignorePosition) {
+                calculatePosition(text, true);
+            }
+            overflow = pdfText.addText(text, getPdfFont(text.getFont()), currentPage, calculateLeading(text.getFont(), text.getTextSize()), ignorePosition);
+        }
+        ts.add(pdfText);
+        handleOverflow(text, overflow, isParagraph, pdfText.getPositionX());
+    }
+
+    /**
+     * This method handles any overflow that comes forth from adding a text object to the document.
+     * @param text Text object that created the overflow.
+     * @param overflow String containing the overflow.
+     * @param isParagraph Whether or not the text object is part of a paragraph.
+     * @param posX The X position of the paragraph. 
+     */
+    private void handleOverflow(Text text, String overflow, boolean isParagraph, int posX) {
+        //if a part of the text doesn't fit on the current page we create a new page and add the text to the next one.
+        if (overflow != "") {
+            this.addPage();
+            Text overflowText = new BaseText(text);
+            overflowText.setText(overflow);
+            calculatePosition(overflowText, false);
+            PdfText pdfText;
+            if (isParagraph) {
+                pdfText = new PdfText(posX);
+            } else {
+                pdfText = new PdfText();
+            }
+            this.addText(overflowText, pdfText, false, false, isParagraph);
+        }
+    }
+
+    /**
+     * Returns the stream used by the current page. Creates a new stream if the page does not have one.
+     * @return Stream of the current page.
+     */
+    private PdfStream getCurrentPageStream() {
+        PdfStream ts;
         //if the page has no content yet
         if (currentPage.streamEmpty()) {
             //create new stream object and add the text
-            PdfStream ts = new PdfStream();
-            ts.add(new PdfText(text, getPdfFont(text.getFont())));
+            ts = new PdfStream();
             currentPage.add(body.addObject(ts));
         } else {
-            PdfText pdfText = new PdfText();
-            if (!overrideMatrix) {
-                pdfText.addMatrix(text);
-            }
-            pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
-            pdfText.addTextString(text);
-            currentPage.getCurrentStream().add(pdfText);
+            ts = currentPage.getCurrentStream();
         }
-
-        //        else if (!overrideMatrix) {
-        //            //if we want to use the matrix from the new text object
-        //            currentPage.getCurrentStream().add(new PdfText(text));
-        //        } else {
-        //            //if we want to reuse the matrix from the last text object, we simply convert the new text object without setting it
-        //            PdfText pdfText = new PdfText();
-        //            pdfText.addFont(PdfDocument.getPdfFont(text.getFont()), text.getTextSize());
-        //            pdfText.addTextString(text.getText());
-        //            currentPage.getCurrentStream().add(pdfText);
-        //        }
+        return ts;
     }
 
     /**
@@ -156,6 +238,14 @@ public class PdfDocument {
     public PdfIndirectObject addFont(Font font) {
         if (!fontList.containsKey(font) && font != null) {
             PdfFontDescriptor newFontDescriptor = new PdfFontDescriptor(font);
+            byte[] fontProgramFile = font.getBaseFont().getMetricsForStyle(font.getStyle()).getFontFile();
+            if (fontProgramFile != null) {
+                PdfStream stream = new PdfStream();
+                stream.add(new PdfFile(fontProgramFile));
+                PdfIndirectObject indirectFontFile = body.addObject(stream);
+                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getBaseFont().getSubType());
+            }
+
             PdfFont newFont = new PdfFont(font);
             PdfIndirectObject indirectFont = body.addObject(newFont);
             PdfIndirectObject indirectFontDictionary = body.addObject(newFontDescriptor);
@@ -166,6 +256,13 @@ public class PdfDocument {
         } else {
             return fontList.get(font);
         }
+    }
+
+    /**
+     * Adds a new page with the default size and changes the current page.
+     */
+    public void addPage() {
+        this.addPage(defaultPageWidth, defaultPageHeight);
     }
 
     /**

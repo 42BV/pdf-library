@@ -14,6 +14,7 @@ public interface FontMetrics {
      * Location of font resources.
      */
     String RESOURCE_LOCATION = "src/main/resources/";
+    int DEFAULT_LEADING_ADDITION = 5;
 
     /**
      * Returns width of the character corresponding to the given unicode character code.
@@ -61,7 +62,7 @@ public interface FontMetrics {
 
     /**
      * Returns integer containing flags specifying various characteristics of the font.
-     * @return
+     * @return int containing the flag value.
      */
     int getFlags();
 
@@ -166,8 +167,46 @@ public interface FontMetrics {
     /**
      * Returns the width of the given string. Can also return the width of the string after kerning is applied.
      * @param string The string to calculate the width of.
+     * @param fontSize The size of the font.
      * @param kerning Whether or not kerning should be applied.
      * @return Width of the string. 
      */
-    String getWidthOfString(String string, boolean kerning);
+    int getWidthOfString(String string, int fontSize, boolean kerning);
+
+    /**
+     * Returns the width of the given string in points. Can also return the width of the string after kerning is applied.
+     * @param string The string to calculate the width of.
+     * @param fontSize The size of the font.
+     * @param kerning Whether or not kerning should be applied.
+     * @return Width of the string in points.
+     */
+    double getWidthPointOfString(String string, int fontSize, boolean kerning);
+
+    /**
+     * Returns width of the character corresponding to the given unicode character code in points.
+     * @param characterCode Code of character.
+     * @return Width of the character in points.
+     */
+    double getWidthPoint(int characterCode);
+
+    /**
+     * Returns width of the character corresponding to the given character name in points.
+     * @param characterName Name of character.
+     * @return Width of the character in points.
+     */
+    double getWidthPoint(String characterName);
+
+    /**
+     * Returns the font program file in bytes. This is needed for fully embedding a font.
+     * @return The font program file in a byte array.
+     */
+    byte[] getFontFile();
+
+    /**
+     * Returns the value needed to convert the unit used by the font to the points unit.
+     * @return
+     */
+    double getConversionToPointsValue();
+
+    int getLeadingForSize(int textSize);
 }

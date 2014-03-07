@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//import nl.mad.pdflibrary.structure.PdfDocument;
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.PdfConstants;
@@ -42,7 +41,9 @@ public class PdfStream extends PdfDictionary {
      * Creates a new instance of PdfStream.
      */
     public PdfStream() {
-        this(new PdfArray());
+        super(PdfObjectType.STREAM);
+        contents = new ArrayList<AbstractPdfObject>();
+        this.put(LENGTH, new PdfNumber(0));
     }
 
     /**
@@ -121,7 +122,11 @@ public class PdfStream extends PdfDictionary {
             }
             length += contents.get(i).getByteRepresentation().length;
             if (checkWriteAfter(i)) {
-                length += getWriteAfterStreamContent(contents.get(i)).length;
+                int afterStreamContentLength = getWriteAfterStreamContent(contents.get(i)).length;
+                if (afterStreamContentLength > 0) {
+                    //we take the length of the end of stream indicator minus one since we do not want to take the end of line into account.
+                    length += afterStreamContentLength - 1;
+                }
             }
         }
         number.setNumber(length);
@@ -151,6 +156,19 @@ public class PdfStream extends PdfDictionary {
 
     public void add(AbstractPdfObject object) {
         this.contents.add(object);
+    }
+
+    /**
+     * Adds a filter to the filter array.
+     * @param filter Object containing the filter.
+     */
+    public void addFilter(AbstractPdfObject filter) {
+        PdfArray array = (PdfArray) this.get(FILTER);
+        if (array == null) {
+            array = new PdfArray();
+            this.put(FILTER, array);
+        }
+        array.addValue(filter);
     }
 
     public int getContentSize() {

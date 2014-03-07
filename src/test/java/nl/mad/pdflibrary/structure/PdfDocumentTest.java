@@ -1,8 +1,8 @@
 package nl.mad.pdflibrary.structure;
 
 import static junit.framework.TestCase.assertEquals;
-
 import nl.mad.pdflibrary.api.BaseText;
+import nl.mad.pdflibrary.api.Document;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 
 import org.junit.Before;
@@ -13,7 +13,7 @@ public class PdfDocumentTest {
 
     @Before
     public void setUp() throws Exception {
-        document = new PdfDocument();
+        document = new PdfDocument(Document.A4_WIDTH, Document.A4_HEIGHT);
     }
 
     @Test

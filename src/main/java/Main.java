@@ -43,7 +43,9 @@ public class Main {
         Document d = new Document(Document.A4_WIDTH, Document.A4_HEIGHT, "D. de Wolff", "Test Document", "Nothing really.");
         BaseFont f = new BaseFont(FontFamily.TIMES_ROMAN, FontStyle.NORMAL);
         BaseText t = new BaseText("Test Document", 42, f, 70, 500);
-        BaseText t2 = new BaseText("Test Document Two", 11, f);
+        BaseText t2 = new BaseText("Test Document Twoooooooooooooooooooo", 11, f);
+        BaseText t5 = new BaseText(
+                "JAnJanJan JanJan JanJanJanJanJAnJanJanJanJanJanJanJanJan JAnJ an Jan Jan JanJ anJ anJa nJa JAn Jan Jan Jan Jan Jan Jan Jan Jan", 16, f);
         f = new BaseFont(FontFamily.HELVETICA, FontStyle.ITALIC);
         BaseText t3 = new BaseText("Written by test", 30, f, 100, 200);
         BaseText t4 = new BaseText("Page 2 Test", 30, new BaseFont(FontFamily.COURIER, FontStyle.BOLDITALIC), 25, 700);
@@ -53,6 +55,7 @@ public class Main {
 
         p.addText(t);
         p.addText(t2);
+        p.addText(t5);
         p2.addText(t3);
         p2.addText(t2);
 

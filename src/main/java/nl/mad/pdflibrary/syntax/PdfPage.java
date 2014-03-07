@@ -10,6 +10,8 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 public class PdfPage extends PdfDictionary {
     private int width;
     private int height;
+    private double filledWidth;
+    private double filledHeight;
     /**
      * The amount of resources this page uses.
      */
@@ -155,5 +157,29 @@ public class PdfPage extends PdfDictionary {
             return false;
         }
         return true;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public double getFilledWidth() {
+        return this.filledWidth;
+    }
+
+    public double getFilledHeight() {
+        return this.filledHeight;
+    }
+
+    public void setFilledWidth(double newWidth) {
+        this.filledWidth = newWidth;
+    }
+
+    public void setFilledHeight(double newHeight) {
+        this.filledHeight = newHeight;
     }
 }

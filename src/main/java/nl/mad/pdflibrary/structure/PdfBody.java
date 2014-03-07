@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.AbstractPdfObject;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfPageTree;
@@ -68,6 +68,7 @@ public class PdfBody {
     public PdfIndirectObject addPage(PdfPage page) {
         PdfIndirectObject indirectPage = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, page, true);
         this.pageTree.add(indirectPage);
+        page.put(new PdfName(PdfNameValue.PARENT), pageTree.getReference());
         return indirectPage;
     }
 

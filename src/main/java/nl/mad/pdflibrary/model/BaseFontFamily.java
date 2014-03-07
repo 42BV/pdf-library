@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.mad.pdflibrary.font.AFMMetrics;
+import nl.mad.pdflibrary.font.Type1FontMetrics;
 
 /**
  * BaseFont contains the subtype of the font and the different names of the font for each style the font has.
@@ -81,7 +81,7 @@ public class BaseFontFamily {
     private void fillMetrics(String filename) {
         if (subType == FontType.TYPE1) {
             try {
-                metrics.put(filename, new AFMMetrics(filename));
+                metrics.put(filename, new Type1FontMetrics(filename));
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
