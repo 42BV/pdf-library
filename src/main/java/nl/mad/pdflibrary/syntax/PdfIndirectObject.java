@@ -43,7 +43,7 @@ public class PdfIndirectObject {
      * @param number Object number.
      * @param generation Object generation (always 0, unless you are changing an existing object).
      * @param object The object contained within this indirect object.
-     * @param objectInUse States if the object is actually used in the api.
+     * @param objectInUse States if the object is actually used in the document.
      */
     public PdfIndirectObject(int number, int generation, AbstractPdfObject object, boolean objectInUse) {
         this.number = number;
@@ -69,6 +69,10 @@ public class PdfIndirectObject {
         return this.reference;
     }
 
+    /**
+     * Sets the object number.
+     * @param number Object number.
+     */
     public void setNumber(int number) {
         this.number = number;
         this.reference.updateReference(this.number, this.generation);
@@ -82,6 +86,10 @@ public class PdfIndirectObject {
         return this.generation;
     }
 
+    /**
+     * Sets the generation number of this object.
+     * @param generation number of generation.
+     */
     public void setGeneration(int generation) {
         this.generation = generation;
         this.reference.updateReference(this.number, this.generation);

@@ -18,7 +18,7 @@ public class PdfNumber extends AbstractPdfObject {
     /**
      * Specifies buffer size, used to convert the number value to bytes.
      */
-    private final static int BYTE_BUFFER_SIZE = 8;
+    private static final int BYTE_BUFFER_SIZE = 8;
 
     /**
      * Creates a new instance of PdfNumber.

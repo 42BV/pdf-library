@@ -13,7 +13,7 @@ import nl.mad.pdflibrary.utility.ByteEncoder;
  * @author Dylan de Wolff
  */
 public class PdfString extends AbstractPdfObject {
-    private final static String DATE_PREFIX = "D:";
+    private static final String DATE_PREFIX = "D:";
     private String string;
 
     /**
@@ -44,6 +44,10 @@ public class PdfString extends AbstractPdfObject {
         return string;
     }
 
+    /**
+     * Sets the string this object represents.
+     * @param string String to use.
+     */
     public void setString(String string) {
         this.string = string;
         this.setByteRepresentation(ByteEncoder.getBytes(string));

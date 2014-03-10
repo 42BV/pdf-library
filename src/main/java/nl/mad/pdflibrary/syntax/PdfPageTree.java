@@ -9,7 +9,7 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
- * Represents the page tree of a PDF api. Page tree's contain pages or other page tree's.
+ * Represents the page tree of a PDF document. Page tree's contain pages or other page tree's.
  * Pages are divided in page tree's to quicken the lookup process.
  * 
  * @author Dylan de Wolff
@@ -23,7 +23,7 @@ public class PdfPageTree extends PdfIndirectObject {
      * @param number Number of object.
      * @param generation Generation of object.
      * @param pages Object this refers to.
-     * @param inUse Whether the object is used in the api.
+     * @param inUse Whether the object is used in the document.
      */
     public PdfPageTree(int number, int generation, PdfDictionary pages, boolean inUse) {
         super(number, generation, pages, inUse);
@@ -74,6 +74,10 @@ public class PdfPageTree extends PdfIndirectObject {
         return objects;
     }
 
+    /**
+     * Adds the given indirect object as a child.
+     * @param indirectPage Child to be added.
+     */
     public void add(PdfIndirectObject indirectPage) {
         kids.add(indirectPage);
     }
@@ -91,13 +95,6 @@ public class PdfPageTree extends PdfIndirectObject {
         dictionary.put(new PdfName("Count"), new PdfNumber(kidsReferenceArray.getSize()));
     }
 
-    /**
-     * Writes the object to the given OutputStream.
-     * 
-     * @param os OutputStream to write to.
-     * @throws IOException
-     * @see nl.mad.pdflibrary.syntax.PdfIndirectObject#writeToFile(java.io.OutputStream)
-     */
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         setKidReferences();

@@ -46,6 +46,10 @@ public class PdfName extends AbstractPdfObject {
         }
     }
 
+    /**
+     * Sets the name of the object.
+     * @param name PdfNameValue specifying the name of the object.
+     */
     public final void setName(PdfNameValue name) {
         this.setName(name.toString());
     }

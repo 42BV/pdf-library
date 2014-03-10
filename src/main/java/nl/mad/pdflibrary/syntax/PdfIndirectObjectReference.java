@@ -3,7 +3,6 @@ package nl.mad.pdflibrary.syntax;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
- *
  * Holds the reference to an indirect object, this class should be used whenever another object wishes to refer to an indirect object.
  * @author Dylan de Wolff
  */
@@ -12,7 +11,7 @@ public class PdfIndirectObjectReference extends AbstractPdfObject {
     /**
      * The syntax used in PDF to specify a reference.
      */
-    private final static char referenceSyntax = 'R';
+    private static final char REFERENCE_SYNTAX = 'R';
     /**
      * Resource references have a different syntax than normal references.
      */
@@ -28,13 +27,22 @@ public class PdfIndirectObjectReference extends AbstractPdfObject {
         this.updateReference(number, generation);
     }
 
+    /**
+     * Sets the reference string.
+     * @param reference String containing the reference.
+     */
     public void setReference(String reference) {
         this.reference = reference;
         this.setByteRepresentation(ByteEncoder.getBytes(this.reference));
     }
 
+    /**
+     * Updates the reference string.
+     * @param number Number of the object being referred to.
+     * @param generation Generation of the object being referred to.
+     */
     public final void updateReference(int number, int generation) {
-        String newReference = number + " " + generation + " " + PdfIndirectObjectReference.referenceSyntax;
+        String newReference = number + " " + generation + " " + PdfIndirectObjectReference.REFERENCE_SYNTAX;
         this.setReference(newReference);
     }
 

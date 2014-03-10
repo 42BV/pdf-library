@@ -39,7 +39,11 @@ public class PdfText extends AbstractPdfObject {
     /**
      * Adds the given Text object to the stream.
      * @param text Text object to be added.
-     * @param fontReference font for the text
+     * @param fontReference font for the text.
+     * @param page The page this text is added to.
+     * @param leading Int containing the leading for this text.
+     * @param ignorePosition Boolean specifying whether the position of the text should be ignored.
+     * @return String containing overflow.
      */
     public String addText(Text text, PdfIndirectObject fontReference, PdfPage page, int leading, boolean ignorePosition) {
         this.addFont(fontReference, text.getTextSize());
@@ -73,6 +77,10 @@ public class PdfText extends AbstractPdfObject {
     /**
      * Adds the byte representation for the given text string.
      * @param text String that is to be added.
+     * @param page The page this text is added to.
+     * @param leading Int containing the leading for this text.
+     * @param ignorePosition Boolean specifying whether the position of the text should be ignored.
+     * @return String containing overflow.
      */
     public String addTextString(Text text, PdfPage page, int leading, boolean ignorePosition) {
         List<String> splitStrings = processNewLines(text, page, leading, ignorePosition);
@@ -85,6 +93,14 @@ public class PdfText extends AbstractPdfObject {
         return "";
     }
 
+    /**
+     * Splits the text and adds new lines where needed.
+     * @param text Text to be processed.
+     * @param page Page the text will appear on.
+     * @param leading Leading of the text.
+     * @param ignorePosition Whether or not the position of the text should be ignored.
+     * @return List of strings containing the split text.
+     */
     private List<String> processNewLines(Text text, PdfPage page, int leading, boolean ignorePosition) {
         String textString = text.getText();
         int textSize = text.getTextSize();
@@ -106,7 +122,7 @@ public class PdfText extends AbstractPdfObject {
             //TODO: Fix retrieving space width by unicode
             width += metrics.getWidthPointOfString(strings[i], textSize, true) + metrics.getWidthPoint("space");
             if (width > page.getWidth()) {
-                currentLine = new StringBuilder(this.processKerning(currentLine.toString(), font, leading));
+                currentLine = new StringBuilder(this.processKerning(currentLine.toString(), font));
                 currentLine.append(" 0 " + -leading + " TD");
                 processedStrings.add(currentLine.toString());
                 page.setFilledHeight(page.getFilledHeight() + leading);
@@ -118,7 +134,7 @@ public class PdfText extends AbstractPdfObject {
             currentLine.append(' ');
             //if we are at the last string
             if ((i + 1) == strings.length) {
-                currentLine = new StringBuilder(this.processKerning(currentLine.toString(), font, leading));
+                currentLine = new StringBuilder(this.processKerning(currentLine.toString(), font));
                 processedStrings.add(currentLine.toString());
             }
         }
@@ -133,7 +149,13 @@ public class PdfText extends AbstractPdfObject {
         return processedStrings;
     }
 
-    private String processKerning(String text, Font font, int leading) {
+    /**
+     * Processes the kerning for the given text.
+     * @param text Text to be processed.
+     * @param font Font used for this text.
+     * @return String with kerning.
+     */
+    private String processKerning(String text, Font font) {
         FontMetrics metrics = font.getBaseFont().getMetricsForStyle(font.getStyle());
         StringBuilder sb = new StringBuilder("[(");
         for (int i = 0; i < text.length(); ++i) {

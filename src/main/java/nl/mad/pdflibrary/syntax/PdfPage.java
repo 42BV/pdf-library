@@ -20,8 +20,8 @@ public class PdfPage extends PdfDictionary {
      * The current content stream.
      */
     private PdfStream currentStream;
-    private static final PdfName content = new PdfName(PdfNameValue.CONTENTS);
-    private static final PdfName resources = new PdfName(PdfNameValue.RESOURCES);
+    private static final PdfName CONTENT = new PdfName(PdfNameValue.CONTENTS);
+    private static final PdfName RESOURCES = new PdfName(PdfNameValue.RESOURCES);
     private static final String RESOURCE_REFERENCE_PREFIX = "R";
 
     /**
@@ -43,8 +43,8 @@ public class PdfPage extends PdfDictionary {
     private void initPage() {
         put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.PAGE));
         put(new PdfName(PdfNameValue.MEDIA_BOX), createMediabox());
-        put(resources, new PdfDictionary(PdfObjectType.DICTIONARY));
-        put(content, new PdfArray());
+        put(RESOURCES, new PdfDictionary(PdfObjectType.DICTIONARY));
+        put(CONTENT, new PdfArray());
     }
 
     /**
@@ -86,7 +86,7 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject IndirectObject to be added.
      */
     private void addContent(PdfIndirectObject indirectObject) {
-        PdfArray currentContent = (PdfArray) this.get(content);
+        PdfArray currentContent = (PdfArray) this.get(CONTENT);
         currentContent.addValue(indirectObject.getReference());
         this.currentStream = (PdfStream) indirectObject.getObject();
     }
@@ -96,7 +96,7 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject Resource to be added.
      */
     private void addResource(PdfIndirectObject indirectObject) {
-        PdfDictionary currentResources = (PdfDictionary) this.get(resources);
+        PdfDictionary currentResources = (PdfDictionary) this.get(RESOURCES);
         PdfName key = getKeyForType(indirectObject.getObject().getType());
 
         if (!objectInResources(indirectObject, currentResources, key)) {
@@ -152,6 +152,10 @@ public class PdfPage extends PdfDictionary {
         return this.currentStream;
     }
 
+    /**
+     * Checks if the stream is empty.
+     * @return true if the stream is empty, false otherwise
+     */
     public boolean streamEmpty() {
         if (this.currentStream != null && this.currentStream.getContentSize() > 0) {
             return false;

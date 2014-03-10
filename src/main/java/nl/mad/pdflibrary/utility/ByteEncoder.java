@@ -14,6 +14,11 @@ public final class ByteEncoder {
     private ByteEncoder() {
     }
 
+    /**
+     * Returns the byte representation of the given string.
+     * @param s String to be processed to bytes.
+     * @return Byte array containing the byte value of the given string.
+     */
     public static byte[] getBytes(String s) {
         try {
             return s.getBytes(DEFAULT_BYTE_ENCODING);

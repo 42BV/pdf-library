@@ -57,12 +57,6 @@ public class PdfStream extends PdfDictionary {
         this.put(FILTER, filters);
     }
 
-    /** 
-     * Writes the stream to the given OutputStream.
-     * @throws IOException
-     * @param os OutputStream to write to.
-     * @see nl.mad.pdflibrary.syntax.PdfDictionary#writeToFile(java.io.OutputStream)
-     */
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         updateLength();
@@ -154,6 +148,10 @@ public class PdfStream extends PdfDictionary {
         return new byte[0];
     }
 
+    /**
+     * Adds the given object to the content of the stream.
+     * @param object Object to be added to the content.
+     */
     public void add(AbstractPdfObject object) {
         this.contents.add(object);
     }
