@@ -19,7 +19,7 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
 
     /**
      * Creates a new instance of AbstractPlaceableDocumentPart.
-     * @param type Type of api part.
+     * @param type Type of document part.
      */
     public AbstractPlaceableDocumentPart(DocumentPartType type) {
         super(type);
@@ -29,6 +29,7 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
         return positionX;
     }
 
+    @Override
     public final void setPositionX(int positionX) {
         this.positionX = positionX;
         this.setCustomPositioning(true);
@@ -38,6 +39,7 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
         return positionY;
     }
 
+    @Override
     public final void setPositionY(int positionY) {
         this.positionY = positionY;
         this.setCustomPositioning(true);

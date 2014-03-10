@@ -1,9 +1,10 @@
 package nl.mad.pdflibrary.utility;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -21,23 +22,25 @@ public final class UnicodeConverter {
     private static final int KEY_RADIX = 16;
 
     static {
-        unicodeToPostscript = new HashMap<Integer, String>();
-        File file = new File(FontMetrics.RESOURCE_LOCATION + FILENAME);
-        if (file.isFile()) {
-            try {
-                RandomAccessFile rfile = new RandomAccessFile(file, "r");
-                UnicodeConverter.processGlyphlist(rfile);
-                rfile.close();
-            } catch (FileNotFoundException e) {
-                System.err.print("Could not find glyphlist.txt in the resources folder");
-            } catch (IOException e) {
-                System.err.print("Exception ocurred while reading glyphlist.txt");
+        try {
+            unicodeToPostscript = new HashMap<Integer, String>();
+            InputStream in = UnicodeConverter.class.getResourceAsStream(FontMetrics.RESOURCE_LOCATION + FILENAME);
+            //TODO: Remove this as soon as it's no longer necessary to run the library on its own
+            if (in == null) {
+                in = UnicodeConverter.class.getClassLoader().getResourceAsStream(FILENAME);
             }
+            if (in != null) {
+                UnicodeConverter.processGlyphlist(in);
+                in.close();
+            }
+        } catch (FileNotFoundException e) {
+            System.err.print("Could not find glyphlist.txt in the resources folder: " + e.toString());
+        } catch (IOException e) {
+            System.err.print("Exception ocurred while reading glyphlist.txt: " + e.toString());
         }
     }
 
     private UnicodeConverter() {
-
     }
 
     /**
@@ -51,12 +54,13 @@ public final class UnicodeConverter {
 
     /**
      * Processes the file containing the list of unicode character codes and the corresponding postscript names.
-     * @param file
+     * @param in InputStream for the glyph conversion list.
      * @throws IOException
      */
-    private static void processGlyphlist(RandomAccessFile file) throws IOException {
+    private static void processGlyphlist(InputStream in) throws IOException {
         String currentLine = "";
-        while ((currentLine = file.readLine()) != null) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        while ((currentLine = reader.readLine()) != null) {
             if (!currentLine.startsWith("#")) {
                 StringTokenizer st = new StringTokenizer(currentLine, " ;\r\n\t\f");
                 String value = st.nextToken();
@@ -65,5 +69,4 @@ public final class UnicodeConverter {
             }
         }
     }
-
 }

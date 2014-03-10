@@ -13,7 +13,10 @@ public interface FontMetrics {
     /**
      * Location of font resources.
      */
-    String RESOURCE_LOCATION = "src/main/resources/";
+    String RESOURCE_LOCATION = "/resources/";
+    /**
+     * This value is added by default to any leading calculations.
+     */
     int DEFAULT_LEADING_ADDITION = 5;
 
     /**
@@ -204,9 +207,14 @@ public interface FontMetrics {
 
     /**
      * Returns the value needed to convert the unit used by the font to the points unit.
-     * @return
+     * @return double containing the value needed to execute the conversion.
      */
     double getConversionToPointsValue();
 
+    /**
+     * Returns the leading (space between two lines) that should be used for the given text size.
+     * @param textSize Size of the text.
+     * @return int containing the leading value.
+     */
     int getLeadingForSize(int textSize);
 }

@@ -3,9 +3,8 @@ package nl.mad.pdflibrary.model;
 import java.util.List;
 
 /**
- * Interface for paragraph classes.
+ * Interface for paragraph classes. Paragraph objects store a collection of other document parts that should be kept together.
  * @author Dylan de Wolff
- *
  */
 public interface Paragraph extends PlaceableDocumentPart {
 

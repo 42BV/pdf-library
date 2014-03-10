@@ -7,8 +7,8 @@ import java.util.Map;
 import nl.mad.pdflibrary.font.Type1FontMetrics;
 
 /**
- * BaseFont contains the subtype of the font and the different names of the font for each style the font has.
- * BaseFont also has a map containing the default basefonts that PDF viewers should support. See FontFamily and FontStyle to see which are the default fonts.
+ * BaseFontFamily contains the subtype of the font and the different names of the font for each style the font has.
+ * BaseFontFamily also has a map containing the default fonts that PDF viewers should support. See FontFamily and FontStyle to see which are the default fonts.
  * @author Dylan de Wolff
  * @see nl.mad.pdflibrary.model.FontFamily
  * @see nl.mad.pdflibrary.model.FontStyle
@@ -37,7 +37,8 @@ public class BaseFontFamily {
     private Map<String, FontMetrics> metrics;
 
     /**
-     * Creates a new instance of BaseFontFamily. If you use this constructor it is assumed that this BaseFontFamily has no options for bold, italic or bold-italic.
+     * Creates a new instance of BaseFontFamily. If you use this constructor it is assumed that this BaseFontFamily 
+     * has no options for bold, italic or bold-italic.
      * @param type Font SubType.
      * @param name Name of the font.
      */

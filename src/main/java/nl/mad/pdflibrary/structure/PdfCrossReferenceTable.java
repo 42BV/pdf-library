@@ -175,11 +175,11 @@ public class PdfCrossReferenceTable {
 
         /**
          * Ensures the generation number is stored as the PDF format requires.
-         * @param generation Generation number of object.
+         * @param generationNumber Generation number of object.
          */
-        private void processGeneration(int generation) {
-            String generationNumber = String.valueOf(generation);
-            this.generation = GENERATION_FORMAT.subSequence(0, GENERATION_FORMAT.length() - generationNumber.length()) + generationNumber;
+        private void processGeneration(int generationNumber) {
+            String generationNumberString = String.valueOf(generationNumber);
+            this.generation = GENERATION_FORMAT.subSequence(0, GENERATION_FORMAT.length() - generationNumberString.length()) + generationNumberString;
         }
 
         /**

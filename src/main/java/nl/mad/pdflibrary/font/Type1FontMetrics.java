@@ -1,7 +1,5 @@
 package nl.mad.pdflibrary.font;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +21,9 @@ public class Type1FontMetrics implements FontMetrics {
     private AfmParser afm;
     private PfbParser pfb;
     private String filename;
+    /**
+     * Value used to convert from the unit used in afm to the unit used by PDF.
+     */
     private final double conversionToPoints = 0.001;
 
     /**
@@ -57,20 +58,16 @@ public class Type1FontMetrics implements FontMetrics {
         if (!localFilename.toLowerCase().endsWith(extension)) {
             localFilename += extension;
         }
-        File file = new File(localFilename);
-        //tries looking for the file in the resource folder
-        if (!file.isFile()) {
-            localFilename = FontMetrics.RESOURCE_LOCATION + localFilename;
-            file = new File(localFilename);
+        InputStream in = getClass().getResourceAsStream(FontMetrics.RESOURCE_LOCATION + localFilename);
+        //TODO: Remove this as soon as it's no longer necessary to run the library on its own
+        if (in == null) {
+            System.out.println("IN = null");
+            in = this.getClass().getClassLoader().getResourceAsStream(localFilename);
         }
-        if (file.isFile()) {
-            try {
-                return new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                System.err.print("File was not found.");
-            }
+        if (in == null) {
+            System.out.println("IN = still NULL");
         }
-        return null;
+        return in;
     }
 
     @Override

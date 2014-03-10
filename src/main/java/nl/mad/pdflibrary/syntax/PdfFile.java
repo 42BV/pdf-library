@@ -5,6 +5,10 @@ import java.io.OutputStream;
 
 import nl.mad.pdflibrary.utility.PdfConstants;
 
+/**
+ * Represents an embedded file. This class only uses the byte representation. 
+ * @author Dylan de Wolff
+ */
 public class PdfFile extends AbstractPdfObject {
 
     public PdfFile(byte[] byteRepresentation) {

@@ -5,7 +5,8 @@ import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Text;
 
 /**
- * This is the text document part, storing all the data necessary for showing text in a document.
+ * BaseText is the default Text document part. Adding an instance of this class to the Document class will 
+ * add the text in this instance to the actual document. This class stores all the data necessary to show the text.
  * 
  * @author Dylan de Wolff
  * @see AbstractDocumentPart
@@ -13,7 +14,7 @@ import nl.mad.pdflibrary.model.Text;
 public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private String textString;
     private int textSize;
-    private static final int defaultTextSize = 12;
+    private static final int DEFAULT_TEXT_SIZE = 12;
     private double scaleX;
     private double scaleY;
     private double shearX;
@@ -21,15 +22,17 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private Font font;
 
     /**
-     * Creates a new text instance.
+     * Creates a new text instance. Will use default text size, default font and 
+     * will automatically position the text in the document.
      */
     public BaseText() {
-        this("", defaultTextSize, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
+        this("", DEFAULT_TEXT_SIZE, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
         this.setCustomPositioning(false);
     }
 
     /**
-     * Creates a new text instance. 
+     * Creates a new text instance. Will use default font and 
+     * will automatically position the text in the document.
      * 
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
@@ -40,7 +43,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     }
 
     /**
-     * Creates a new text instance.
+     * Creates a new text instance. Will automatically position the given text in the document.
      * 
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
@@ -52,7 +55,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     }
 
     /**
-     * Creates a new text instance.
+     * Creates a new text instance with the default font. 
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
      * @param posX The x position of the text from the lower left corner.
@@ -101,8 +104,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     }
 
     /**
-     * Creates a copy of the given BaseText.
-     * @param copyFrom BaseText to copy from.
+     * Creates a copy of the given Text object.
+     * @param copyFrom Text object to copy from.
      */
     public BaseText(Text copyFrom) {
         super(DocumentPartType.TEXT);
@@ -176,6 +179,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         return textSize;
     }
 
+    @Override
     public void setTextSize(int textSize) {
         if (textSize >= 0) {
             this.textSize = textSize;
@@ -184,6 +188,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         }
     }
 
+    @Override
     public boolean textMatrixEquals(Text text) {
         if (getPositionX() == text.getPositionX() && getPositionY() == text.getPositionY() && scaleX == text.getScaleX() && scaleY == text.getScaleY()
                 && shearX == text.getShearX() && shearY == text.getShearY()) {

@@ -3,18 +3,18 @@ package nl.mad.pdflibrary.structure;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
 import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfNumber;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
- * PdfTrailer represents the trailer section of a PDF. The trailer specifies the amount of objects in the api,
+ * PdfTrailer represents the trailer section of a PDF. The trailer specifies the amount of objects in the document,
  * where the cross reference table starts and the final line of the file.
  * @author Dylan de Wolff
  */
@@ -64,7 +64,7 @@ public class PdfTrailer extends PdfDictionary {
     }
 
     /**
-     * Sets the data necessary to point out the root (catalog) of the api and the amount of objects in the body.
+     * Sets the data necessary to point out the root (catalog) of the document and the amount of objects in the body.
      * @param root Catalog reference.
      */
     public final void fillObjectSpecification(PdfIndirectObjectReference root) {

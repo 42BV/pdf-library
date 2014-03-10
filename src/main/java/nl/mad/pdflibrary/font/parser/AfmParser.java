@@ -11,6 +11,11 @@ import java.util.StringTokenizer;
 import nl.mad.pdflibrary.font.Type1FontMetrics;
 import nl.mad.pdflibrary.model.FontMetricsFlagValues;
 
+/**
+ * This class is reponsible for parsing Afm files (contains Type 1 font metrics) and storing the data found. This is required to embed a Type 1 font.
+ * 
+ * @author Dylan de Wolff
+ */
 public class AfmParser {
     private String fontName;
     private String fullName;
@@ -37,66 +42,78 @@ public class AfmParser {
     private int firstChar;
     private int lastChar;
 
+    /**
+     * Creates a new instance of AfmParser and parses the given file.
+     * @param file InputStream for the afm file.
+     */
     public AfmParser(InputStream file) {
         characterMetrics = new LinkedHashMap<String, CharacterMetric>();
         kerningPairs = new LinkedHashMap<KerningKey, Integer>();
         parse(file);
     }
 
+    /**
+     * Processes the given inputstream and stores the data found.
+     * @param is
+     */
     private void parse(InputStream is) {
-        BufferedReader file = new BufferedReader(new InputStreamReader(is));
-        boolean metricsFound = false;
-        if (file != null) {
-            try {
-                String currentLine = file.readLine();
-                while (currentLine != null && !metricsFound) {
-                    StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
-                    String token = st.nextToken();
-                    if ("FontName".equalsIgnoreCase(token)) {
-                        setFontName(st.nextToken());
-                    } else if ("FullName".equalsIgnoreCase(token)) {
-                        setFontName(st.nextToken());
-                    } else if ("FamilyName".equalsIgnoreCase(token)) {
-                        setFamilyName(st.nextToken());
-                    } else if ("Weight".equalsIgnoreCase(token)) {
-                        setWeight(st.nextToken());
-                    } else if ("ItalicAngle".equalsIgnoreCase(token)) {
-                        setItalicAngle(Double.valueOf(st.nextToken()));
-                    } else if ("IsFixedPitch".equalsIgnoreCase(token)) {
-                        setFixedPitch("true".equals(st.nextToken()));
-                    } else if ("CharacterSet".equalsIgnoreCase(token)) {
-                        setCharacterSet(st.nextToken());
-                    } else if ("FontBBox".equalsIgnoreCase(token)) {
-                        double[] bBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
-                                Double.valueOf(st.nextToken()) };
-                        setFontBBox(bBox);
-                    } else if ("UnderLinePosition".equalsIgnoreCase(token)) {
-                        setUnderlinePosition(Integer.valueOf(st.nextToken()));
-                    } else if ("UnderLineThickness".equalsIgnoreCase(token)) {
-                        setUnderlineThickness(Integer.valueOf(st.nextToken()));
-                    } else if ("EncodingScheme".equalsIgnoreCase(token)) {
-                        setEncodingScheme(st.nextToken());
-                    } else if ("CapHeight".equalsIgnoreCase(token)) {
-                        setCapHeight(Integer.valueOf(st.nextToken()));
-                    } else if ("XHeight".equalsIgnoreCase(token)) {
-                        setxHeight(Integer.valueOf(st.nextToken()));
-                    } else if ("Ascender".equalsIgnoreCase(token)) {
-                        setAscender(Integer.valueOf(st.nextToken()));
-                    } else if ("Descender".equalsIgnoreCase(token)) {
-                        setDescender(Integer.valueOf(st.nextToken()));
-                    } else if ("StdHW".equalsIgnoreCase(token)) {
-                        setStdHW(Integer.valueOf(st.nextToken()));
-                    } else if ("StdVW".equalsIgnoreCase(token)) {
-                        setStdVW(Integer.valueOf(st.nextToken()));
-                    } else if ("StartCharMetrics".equalsIgnoreCase(token)) {
-                        metricsFound = true;
-                        parseCharacterMetrics(file);
+        if (is != null) {
+            BufferedReader file = new BufferedReader(new InputStreamReader(is));
+            boolean metricsFound = false;
+            if (file != null) {
+                try {
+                    String currentLine = file.readLine();
+                    while (currentLine != null && !metricsFound) {
+                        StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
+                        String token = st.nextToken();
+                        if ("FontName".equalsIgnoreCase(token)) {
+                            setFontName(st.nextToken());
+                        } else if ("FullName".equalsIgnoreCase(token)) {
+                            setFontName(st.nextToken());
+                        } else if ("FamilyName".equalsIgnoreCase(token)) {
+                            setFamilyName(st.nextToken());
+                        } else if ("Weight".equalsIgnoreCase(token)) {
+                            setWeight(st.nextToken());
+                        } else if ("ItalicAngle".equalsIgnoreCase(token)) {
+                            setItalicAngle(Double.valueOf(st.nextToken()));
+                        } else if ("IsFixedPitch".equalsIgnoreCase(token)) {
+                            setFixedPitch("true".equals(st.nextToken()));
+                        } else if ("CharacterSet".equalsIgnoreCase(token)) {
+                            setCharacterSet(st.nextToken());
+                        } else if ("FontBBox".equalsIgnoreCase(token)) {
+                            double[] bBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
+                                    Double.valueOf(st.nextToken()) };
+                            setFontBBox(bBox);
+                        } else if ("UnderLinePosition".equalsIgnoreCase(token)) {
+                            setUnderlinePosition(Integer.valueOf(st.nextToken()));
+                        } else if ("UnderLineThickness".equalsIgnoreCase(token)) {
+                            setUnderlineThickness(Integer.valueOf(st.nextToken()));
+                        } else if ("EncodingScheme".equalsIgnoreCase(token)) {
+                            setEncodingScheme(st.nextToken());
+                        } else if ("CapHeight".equalsIgnoreCase(token)) {
+                            setCapHeight(Integer.valueOf(st.nextToken()));
+                        } else if ("XHeight".equalsIgnoreCase(token)) {
+                            setXHeight(Integer.valueOf(st.nextToken()));
+                        } else if ("Ascender".equalsIgnoreCase(token)) {
+                            setAscender(Integer.valueOf(st.nextToken()));
+                        } else if ("Descender".equalsIgnoreCase(token)) {
+                            setDescender(Integer.valueOf(st.nextToken()));
+                        } else if ("StdHW".equalsIgnoreCase(token)) {
+                            setStdHW(Integer.valueOf(st.nextToken()));
+                        } else if ("StdVW".equalsIgnoreCase(token)) {
+                            setStdVW(Integer.valueOf(st.nextToken()));
+                        } else if ("StartCharMetrics".equalsIgnoreCase(token)) {
+                            /*we've found the start of the character metrics, so we make sure the loop will stop and
+                            call the method that will handle the character metrics. */
+                            metricsFound = true;
+                            parseCharacterMetrics(file);
+                        }
+                        currentLine = file.readLine();
                     }
-                    currentLine = file.readLine();
+                    file.close();
+                } catch (IOException e) {
+                    System.err.print("IOException occurred during parsing of Afm file: " + e.toString());
                 }
-                file.close();
-            } catch (IOException e) {
-                System.err.print("IOException occurred during parsing of Afm file: " + e.toString());
             }
         }
     }
@@ -113,12 +130,14 @@ public class AfmParser {
             StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
             String token = st.nextToken();
             if ("EndCharMetrics".equalsIgnoreCase(token)) {
+                //if we've found the end of the character metrics, stop the loop and start processing the kerning data.
                 characterMetricsEndFound = true;
                 parseKerning(file);
                 updateWidthAttributes();
                 updateCharAttributes();
                 updateFlags();
             } else {
+                //read the character data and store it in the character metrics map.
                 int c = CharacterMetric.DEFAULT_C_VALUE;
                 int wx = CharacterMetric.DEFAULT_WX_VALUE;
                 String name = "";
@@ -271,7 +290,7 @@ public class AfmParser {
         this.capHeight = capHeight;
     }
 
-    public void setxHeight(int xHeight) {
+    public void setXHeight(int xHeight) {
         this.xHeight = xHeight;
     }
 
@@ -417,6 +436,11 @@ public class AfmParser {
         return characterMetrics;
     }
 
+    /**
+     * Returns the character metric corresponding to the given name.
+     * @param name Name of the character.
+     * @return CharacterMetric for the given character, null if the character could not be found.
+     */
     public CharacterMetric getCharacterMetric(String name) {
         return characterMetrics.get(name);
     }
@@ -428,6 +452,12 @@ public class AfmParser {
         return kerningPairs;
     }
 
+    /**
+     * Returns the kerning value for the given characters.
+     * @param characterName Name of first character.
+     * @param secondCharacterName Name of second character.
+     * @return Integer containing the offset between these two characters.
+     */
     public Integer getKerning(String characterName, String secondCharacterName) {
         Integer offset = kerningPairs.get(new KerningKey(characterName, secondCharacterName));
         if (offset != null) {
@@ -481,9 +511,22 @@ public class AfmParser {
         private String name;
         private int[] boundingBox;
 
+        /**
+         * Default value for the character code.
+         */
         public static final int DEFAULT_C_VALUE = -1;
+        /**
+         * Default value for the width.
+         */
         public static final int DEFAULT_WX_VALUE = 250;
 
+        /**
+         * Creates a new instance of CharacterMetric.
+         * @param c Character code.
+         * @param wx Character width.
+         * @param name Name of the character.
+         * @param boundingBox Bounding box of the character.
+         */
         public CharacterMetric(int c, int wx, String name, int[] boundingBox) {
             this.c = c;
             this.wx = wx;

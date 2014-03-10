@@ -29,13 +29,6 @@ public class PdfDictionary extends AbstractPdfObject {
         content = new HashMap<PdfName, AbstractPdfObject>();
     }
 
-    /**
-     * Writes the dictionary to the given OutputStream.
-     * 
-     * @param os OutputStream.
-     * @throws IOException 
-     * @see nl.mad.pdflibrary.syntax.AbstractPdfObject#writeToFile(java.io.OutputStream)
-     */
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         os.write(ByteEncoder.getBytes(OPEN_DICTIONARY));
@@ -49,18 +42,38 @@ public class PdfDictionary extends AbstractPdfObject {
         os.write(ByteEncoder.getBytes(CLOSE_DICTIONARY));
     }
 
+    /**
+     * Puts a new value in the dictionary.
+     * @param key The PdfName that should function as key.
+     * @param value The object to be added as value.
+     */
     public void put(PdfName key, AbstractPdfObject value) {
         this.content.put(key, value);
     }
 
+    /**
+     * Returns a value from the dictionary corresponding to the given key.
+     * @param key PdfName that represents the key.
+     * @return AbstractPdfObject corresponding to the key.
+     */
     public AbstractPdfObject get(PdfName key) {
         return this.content.get(key);
     }
 
+    /**
+     * Check if the dictionary contains the given key.
+     * @param key PdfName that represents the key.
+     * @return true if the dictionary contains the given key, false otherwise.
+     */
     public boolean containsKey(PdfName key) {
         return this.content.containsKey(key);
     }
 
+    /**
+     * Check if the dictionary contains the given value.
+     * @param value AbstractPdfObject representing the value.
+     * @return true if the dictionary contains the given value, false otherwise. 
+     */
     public boolean containsValue(AbstractPdfObject value) {
         return this.content.containsValue(value);
     }

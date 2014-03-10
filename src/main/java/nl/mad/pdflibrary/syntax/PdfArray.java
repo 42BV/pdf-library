@@ -21,26 +21,31 @@ public class PdfArray extends AbstractPdfObject {
         this.values = new ArrayList<AbstractPdfObject>();
     }
 
+    /**
+     * Creates a new instance of PdfArray and adds the given values.
+     * @param values Values to be added.
+     */
     public PdfArray(List<AbstractPdfObject> values) {
         this();
         this.addValues(values);
     }
 
+    /**
+     * Adds the given value to the array.
+     * @param value Object to be added.
+     */
     public void addValue(AbstractPdfObject value) {
         this.values.add(value);
     }
 
+    /**
+     * Adds a list of values to the array.
+     * @param values List of objects to be added.
+     */
     public void addValues(List<AbstractPdfObject> values) {
         this.values.addAll(values);
     }
 
-    /**
-     * Writes this PDF Array to the given OutputStream.
-     * 
-     * @see nl.mad.pdflibrary.syntax.AbstractPdfObject#writeToFile(java.io.OutputStream)
-     * @param os OutputStream that will be written to
-     * @throws IOException
-     */
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         os.write('[');

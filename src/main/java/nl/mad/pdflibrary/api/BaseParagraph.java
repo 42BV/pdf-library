@@ -9,8 +9,9 @@ import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
 
 /**
- * Paragraph contains a collection of text objects. This ensures that the text objects are placed together in the api.
- * This also makes it unnecessary to specify positions for the text objects.
+ * Paragraph contains a collection of text objects. This ensures that the text objects are placed together in the document.
+ * This also makes it unnecessary to specify positions for the text objects. The paragraph should be filled up before being
+ * added to the document. Changes made to the paragraph after adding it to the document will not be processed.
  * @author Dylan de Wolff
  */
 public class BaseParagraph extends AbstractPlaceableDocumentPart implements Paragraph {

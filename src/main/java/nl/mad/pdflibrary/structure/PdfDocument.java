@@ -1,5 +1,6 @@
 package nl.mad.pdflibrary.structure;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -26,11 +27,12 @@ import nl.mad.pdflibrary.syntax.PdfStream;
 import nl.mad.pdflibrary.syntax.PdfString;
 import nl.mad.pdflibrary.syntax.PdfText;
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.PdfConstants;
 
 /**
- * Represents the PDF api itself, containing the four different sections of a PDF api.
+ * Represents the PDF document itself, containing the four different sections of a PDF document.
  * This class is responsible for the creation of the four sections (header, body, cross reference table and trailer),
- * passing along new api parts and storing the used fonts.
+ * passing along new document parts and storing the used fonts.
  * 
  * @author Dylan de Wolff
  */
@@ -39,7 +41,6 @@ public class PdfDocument {
     private PdfBody body;
     private PdfCrossReferenceTable xref;
     private PdfTrailer trailer;
-    private PdfWriter writer;
     private PdfPage currentPage;
     private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
     private int defaultPageHeight;
@@ -60,7 +61,6 @@ public class PdfDocument {
         body = new PdfBody();
         xref = new PdfCrossReferenceTable();
         trailer = new PdfTrailer();
-        writer = new PdfWriter();
         this.defaultPageHeight = height;
         this.defaultPageWidth = width;
     }
@@ -78,7 +78,7 @@ public class PdfDocument {
             this.addParagraph((Paragraph) part);
             break;
         case FONT:
-            //TODO: Implementation of direct font adding
+            this.addFont((Font) part);
             break;
         default:
             break;
@@ -298,19 +298,33 @@ public class PdfDocument {
     }
 
     /**
-     * Make the writer start writing the document to the given OutputStream.
+     * Writes the document to the given OutputStream.
      * 
-     * @add OutputStream OutputStream to write to.
+     * @param os OutputStream to write to.
      * @throws IOException 
      */
-    public void finish(OutputStream os) throws IOException {
-        this.writer.write(os, header, body, xref, trailer);
+    public void write(OutputStream os) throws IOException {
+        DataOutputStream dos = new DataOutputStream(os);
+        header.writeToFile(dos);
+        dos.write(PdfConstants.LINE_SEPARATOR);
+        body.writeToFile(dos);
+        xref.fillTableWithIndirectObjects(body.getAllIndirectObjects());
+        xref.writeToFile(dos);
+        trailer.setObjectAmount(body.getTotalIndirectObjectsAmount() + 1);
+        trailer.setCrossReferenceStartByte(xref.getStartByte());
+        trailer.fillObjectSpecification(body.getCatalogReference());
+        trailer.writeToFile(dos);
+        dos.flush();
+        dos.close();
     }
 
     public PdfPage getCurrentPage() {
         return this.currentPage;
     }
 
+    /**
+     * Adds a new line to the current page stream.
+     */
     public void addNewLine() {
         //No implementation yet
         if (currentPage.streamEmpty()) {

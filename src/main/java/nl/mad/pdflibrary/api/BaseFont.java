@@ -1,9 +1,13 @@
 package nl.mad.pdflibrary.api;
 
-import nl.mad.pdflibrary.model.*;
+import nl.mad.pdflibrary.model.BaseFontFamily;
+import nl.mad.pdflibrary.model.DocumentPartType;
+import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.FontFamily;
+import nl.mad.pdflibrary.model.FontStyle;
 
 /**
- * Font class containing the font family and style. 
+ * Font class containing the font family, style and the actual font family this font is based on. 
  * @author Dylan de Wolff
  *
  */

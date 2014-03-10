@@ -1,14 +1,15 @@
 package nl.mad.pdflibrary.structure;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import nl.mad.pdflibrary.syntax.PdfArray;
 import nl.mad.pdflibrary.syntax.PdfName;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static junit.framework.TestCase.assertEquals;
 
 public class PdfArrayTest {
 
@@ -35,7 +36,7 @@ public class PdfArrayTest {
         array.addValue(test2);
         array.writeToFile(os);
 
-        String expectedResult = "[/nl /test2 ]";
+        String expectedResult = "[ /nl /test2 ]";
         assertEquals("The write output was not as expected.", expectedResult, os.toString());
     }
 }

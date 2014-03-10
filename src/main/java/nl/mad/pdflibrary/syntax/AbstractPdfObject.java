@@ -16,6 +16,7 @@ public abstract class AbstractPdfObject {
 
     /**
      * Creates a new instance of PdfObject.
+     * @param type Type of the object.
      */
     public AbstractPdfObject(PdfObjectType type) {
         this.type = type;
@@ -23,7 +24,8 @@ public abstract class AbstractPdfObject {
 
     /**
      * Creates a new instance of PdfObject and sets the given byte representation.
-     * @param byteRepresentation
+     * @param byteRepresentation Representation of object in bytes.
+     * @param type Type of the object.
      */
     public AbstractPdfObject(byte[] byteRepresentation, PdfObjectType type) {
         this.setByteRepresentation(byteRepresentation);

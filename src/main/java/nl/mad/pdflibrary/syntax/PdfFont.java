@@ -48,7 +48,7 @@ public class PdfFont extends PdfDictionary {
     }
 
     /**
-     * If the encoding is specified in a seperate dictionary, use this method to set the reference.
+     * If the encoding is specified in a separate dictionary, use this method to set the reference.
      * @param encoding Reference to the used encoding.
      */
     public void setFontEncodingReference(PdfIndirectObjectReference encoding) {

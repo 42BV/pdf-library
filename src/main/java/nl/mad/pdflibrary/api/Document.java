@@ -50,6 +50,12 @@ public class Document {
         this(A4_WIDTH, A4_HEIGHT, "", "", "");
     }
 
+    /**
+     * Creates a new instance of Document with the given width and height.
+     * @param width Default page width.
+     * @param height Default page height.
+     * @throws UnsupportedEncodingException
+     */
     public Document(int width, int height) throws UnsupportedEncodingException {
         this(width, height, "", "", "");
     }
@@ -72,22 +78,54 @@ public class Document {
         addNewPage();
     }
 
+    /**
+     * Returns a new Text instance with the given text and text size. This method does not add the created Text object
+     * to the document automatically. Use the addPart method and pass the created Text object as attribute to do this.
+     * @param text String the text instance should represent.
+     * @param textSize Size of the text.
+     * @return new Text instance containing the given text.
+     * @see Text
+     */
     public Text createText(String text, int textSize) {
         return new BaseText(text, textSize);
     }
 
+    /**
+     * Returns a new Font instance with the given family and style. This method does not add the created Font object
+     * to the document automatically. You can add the font directly to the document by passing it as attribute to the
+     * addPart method. The easier method is to attach the font to a Text object, this will add the font automatically 
+     * when the Text object is added.
+     * @param family FontFamily specifying the family of the font.
+     * @param style FontStyle specifying the style of the font.
+     * @return new Font instance.
+     * @see Font
+     */
     public Font createFont(FontFamily family, FontStyle style) {
         return new BaseFont(family, style);
     }
 
+    /**
+     * Creates a new, empty, paragraph object. This method does not add the created paragraph to the document automatically.
+     * The paragraph can be added to the Document by passing it as parameter to the addPart method. The paragraph can be filled
+     * up by adding Text objects.
+     * @return new Paragraph instance.
+     * @see Paragraph
+     */
     public Paragraph createParagraph() {
         return new BaseParagraph();
     }
 
+    /**
+     * Directly adds a new line to the document.
+     */
     public void addNewLine() {
         pdfDocument.addNewLine();
     }
 
+    /**
+     * Directly adds new lines to the document.
+     * @param amount Amount of new lines.
+     */
     public void addNewLines(int amount) {
         for (int i = 0; i < amount; ++i) {
             pdfDocument.addNewLine();
@@ -95,7 +133,7 @@ public class Document {
     }
 
     /**
-     * Adds a new part to the document.
+     * Adds a new part to the document. Use this method to add text, fonts or paragraphs to the document.
      * 
      * @param part New document part to be added to the document.
      * @see DocumentPart
@@ -107,7 +145,7 @@ public class Document {
     }
 
     /**
-     * Adds a list of new parts to the document.
+     * Adds a list of parts to the document.
      *
      * @param parts List of new document parts to be added.
      * @see DocumentPart
@@ -178,7 +216,7 @@ public class Document {
     public void finish(OutputStream os) throws IOException {
         if (!finished) {
             this.pdfDocument.addDocumentInfo(author, title, subject, Calendar.getInstance());
-            this.pdfDocument.finish(os);
+            this.pdfDocument.write(os);
             finished = true;
         }
     }

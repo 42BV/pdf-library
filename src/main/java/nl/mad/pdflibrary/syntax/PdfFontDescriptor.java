@@ -49,6 +49,11 @@ public class PdfFontDescriptor extends PdfDictionary {
         put(new PdfName(PdfNameValue.MISSING_WIDTH), new PdfNumber(metrics.getMissingWidth()));
     }
 
+    /**
+     * Sets the reference to the embedded font program file.
+     * @param reference Reference to the font program file.
+     * @param type Type of font.
+     */
     public void setFontFileReference(PdfIndirectObjectReference reference, FontType type) {
         switch (type) {
         case TYPE1:
