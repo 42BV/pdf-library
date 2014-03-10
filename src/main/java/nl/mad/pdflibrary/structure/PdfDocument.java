@@ -125,7 +125,7 @@ public class PdfDocument {
      */
     private void calculatePosition(Text text, boolean inParagraph) {
         Font font = text.getFont();
-        double spaceWidth = font.getBaseFont().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
+        double spaceWidth = font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
         if (inParagraph) {
             text.setPositionX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
             text.setPositionY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
@@ -144,7 +144,7 @@ public class PdfDocument {
      * @return int containing the calculated leading. 
      */
     private int calculateLeading(Font font, int textSize) {
-        return font.getBaseFont().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
+        return font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
     }
 
     /**
@@ -238,12 +238,12 @@ public class PdfDocument {
     public PdfIndirectObject addFont(Font font) {
         if (!fontList.containsKey(font) && font != null) {
             PdfFontDescriptor newFontDescriptor = new PdfFontDescriptor(font);
-            byte[] fontProgramFile = font.getBaseFont().getMetricsForStyle(font.getStyle()).getFontFile();
+            byte[] fontProgramFile = font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getFontFile();
             if (fontProgramFile != null) {
                 PdfStream stream = new PdfStream();
                 stream.add(new PdfFile(fontProgramFile));
                 PdfIndirectObject indirectFontFile = body.addObject(stream);
-                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getBaseFont().getSubType());
+                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getBaseFontFamily().getSubType());
             }
 
             PdfFont newFont = new PdfFont(font);

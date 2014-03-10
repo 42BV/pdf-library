@@ -9,10 +9,11 @@ import org.junit.Test;
 
 public class DocumentTest {
     private Document document;
+    private final int testPageSize = 200;
 
     @Before
     public void setUp() throws Exception {
-        document = new Document();
+        document = new Document(testPageSize, testPageSize, "TestAuthor", "TestTitle", "TestSubject");
     }
 
     @Test
@@ -26,6 +27,21 @@ public class DocumentTest {
     public void testFinish() throws IOException {
         document.finish();
         assertEquals("The document has not been finished.", true, document.getFinished());
+    }
+
+    @Test
+    public void testAuthor() {
+        assertEquals("The author was not set correctly. ", "TestAuthor", document.getAuthor());
+    }
+
+    @Test
+    public void testTitle() {
+        assertEquals("The title was not set correctly. ", "TestTitle", document.getTitle());
+    }
+
+    @Test
+    public void testSubject() {
+        assertEquals("The subject was not set correctly. ", "TestSubject", document.getSubject());
     }
 
 }

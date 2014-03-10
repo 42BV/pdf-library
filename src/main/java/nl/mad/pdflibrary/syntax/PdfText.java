@@ -116,7 +116,7 @@ public class PdfText extends AbstractPdfObject {
             width += text.getPositionX();
         }
 
-        FontMetrics metrics = font.getBaseFont().getMetricsForStyle(font.getStyle());
+        FontMetrics metrics = font.getBaseFontFamily().getMetricsForStyle(font.getStyle());
         for (int i = 0; i < strings.length; ++i) {
             //add the width of the string
             //TODO: Fix retrieving space width by unicode
@@ -156,7 +156,7 @@ public class PdfText extends AbstractPdfObject {
      * @return String with kerning.
      */
     private String processKerning(String text, Font font) {
-        FontMetrics metrics = font.getBaseFont().getMetricsForStyle(font.getStyle());
+        FontMetrics metrics = font.getBaseFontFamily().getMetricsForStyle(font.getStyle());
         StringBuilder sb = new StringBuilder("[(");
         for (int i = 0; i < text.length(); ++i) {
             sb.append(text.charAt(i));

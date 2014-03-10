@@ -28,7 +28,7 @@ public class PdfFontDescriptor extends PdfDictionary {
      */
     private void fillDescriptor(Font font) {
         put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.FONT_DESCRIPTOR));
-        BaseFontFamily baseFont = font.getBaseFont();
+        BaseFontFamily baseFont = font.getBaseFontFamily();
         String fontName = baseFont.getNameOfStyle(font.getStyle());
         put(new PdfName(PdfNameValue.FONT_NAME), new PdfName(fontName));
         FontMetrics metrics = baseFont.getMetricsForStyle(font.getStyle());

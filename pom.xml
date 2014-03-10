@@ -5,7 +5,7 @@
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <name>PDF Library</name>
+    <name>Toucan-PDF</name>
     <description>Library for generating PDF files from Java</description>
 
     <scm>

@@ -28,7 +28,7 @@ public class PdfFont extends PdfDictionary {
      */
     private void processFont(Font font) {
         put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.FONT));
-        BaseFontFamily base = font.getBaseFont();
+        BaseFontFamily base = font.getBaseFontFamily();
         FontMetrics metrics = base.getMetricsForStyle(font.getStyle());
         put(new PdfName(PdfNameValue.BASE_FONT), new PdfName(base.getNameOfStyle(font.getStyle())));
         put(new PdfName(PdfNameValue.SUB_TYPE), new PdfName(base.getSubType().getPdfNameValue()));

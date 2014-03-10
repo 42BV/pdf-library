@@ -7,14 +7,34 @@ package nl.mad.pdflibrary.model;
  */
 public interface Font extends DocumentPart {
 
-    public FontFamily getFamily();
+    /**
+     * Returns the family of this font.
+     * @return FontFamily specifying the family of this font.
+     */
+    FontFamily getFamily();
 
-    public void setFamily(FontFamily family);
+    /**
+     * Sets the family of this font.
+     * @param family Family of the font.
+     */
+    void setFamily(FontFamily family);
 
-    public FontStyle getStyle();
+    /**
+     * Returns the font style.
+     * @return FontStyle specifying the style of this font.
+     */
+    FontStyle getStyle();
 
-    public void setStyle(FontStyle style);
+    /**
+     * Sets the font style.
+     * @param style Style of the font.
+     */
+    void setStyle(FontStyle style);
 
-    public BaseFontFamily getBaseFont();
+    /**
+     * Returns the base font family of this font.
+     * @return BaseFontFamily for this font.
+     */
+    BaseFontFamily getBaseFontFamily();
 
 }

@@ -61,11 +61,7 @@ public class Type1FontMetrics implements FontMetrics {
         InputStream in = getClass().getResourceAsStream(FontMetrics.RESOURCE_LOCATION + localFilename);
         //TODO: Remove this as soon as it's no longer necessary to run the library on its own
         if (in == null) {
-            System.out.println("IN = null");
             in = this.getClass().getClassLoader().getResourceAsStream(localFilename);
-        }
-        if (in == null) {
-            System.out.println("IN = still NULL");
         }
         return in;
     }
@@ -282,5 +278,9 @@ public class Type1FontMetrics implements FontMetrics {
 
     public String getEncodingScheme() {
         return afm.getEncodingScheme();
+    }
+
+    public String getFilename() {
+        return this.filename;
     }
 }

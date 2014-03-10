@@ -44,6 +44,9 @@ public class BaseFont extends AbstractDocumentPart implements Font {
 
     public void setFamily(FontFamily family) {
         this.family = family;
+        if (BaseFontFamily.getDefaultBaseFontFamily(family) != null) {
+            this.baseFont = BaseFontFamily.getDefaultBaseFontFamily(family);
+        }
     }
 
     public FontStyle getStyle() {
@@ -54,7 +57,7 @@ public class BaseFont extends AbstractDocumentPart implements Font {
         this.style = style;
     }
 
-    public BaseFontFamily getBaseFont() {
+    public BaseFontFamily getBaseFontFamily() {
         return baseFont;
     }
 }
