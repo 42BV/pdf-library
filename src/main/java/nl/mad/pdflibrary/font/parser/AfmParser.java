@@ -50,6 +50,13 @@ public class AfmParser {
         characterMetrics = new LinkedHashMap<String, CharacterMetric>();
         kerningPairs = new LinkedHashMap<KerningKey, Integer>();
         parse(file);
+        System.out.println(fontName);
+        System.out.println(flags);
+        System.out.println(averageWidth);
+        System.out.println(maxWidth);
+        System.out.println(firstChar);
+        System.out.println(lastChar);
+        System.out.println();
     }
 
     /**

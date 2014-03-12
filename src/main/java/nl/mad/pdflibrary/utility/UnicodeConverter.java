@@ -65,7 +65,9 @@ public final class UnicodeConverter {
                 StringTokenizer st = new StringTokenizer(currentLine, " ;\r\n\t\f");
                 String value = st.nextToken();
                 int key = Integer.parseInt(st.nextToken(), KEY_RADIX);
-                unicodeToPostscript.put(key, value);
+                if (unicodeToPostscript.get(key) == null) {
+                    unicodeToPostscript.put(key, value);
+                }
             }
         }
     }

@@ -24,19 +24,20 @@ public class Main {
     }
 
     private static void easyDocumentCreation() throws IOException {
-        Document d = new Document();
-        Font f = d.createFont(FontFamily.HELVETICA, FontStyle.NORMAL);
-        Text t = d.createText("Test Document", 26);
+        Document document = new Document();
+        Font f = document.createFont(FontFamily.HELVETICA, FontStyle.NORMAL);
+        Text t = document.createText("Test Document", 26);
+        Paragraph p = document.createParagraph();
         t.setFont(f);
-        d.addPart(t);
+        document.addPart(t);
 
-        t = d.createText("Test Document Two", 11);
-        Text t2 = d.createText("Test Document Three", 13);
-        Paragraph p = d.createParagraph();
+        t = document.createText("Test Document Two", 11);
+        Text t2 = document.createText("Test Document Three", 13);
+        p = document.createParagraph();
         p.addText(t);
         p.addText(t2);
-        d.addPart(p);
-        d.finish("easyDocument");
+        document.addPart(p);
+        document.finish("easyDocument");
     }
 
     private static void inDepthDocumentCreation() throws IOException {

@@ -216,7 +216,7 @@ public class Type1FontMetrics implements FontMetrics {
         for (int i = 0; i < chars.length; ++i) {
             width += this.getWidth(UnicodeConverter.getPostscriptForUnicode((int) chars[i]));
             if (kerning && (i + 1 != chars.length)) {
-                width -= this.getKerning((int) chars[i], (int) chars[i]);
+                width -= this.getKerning((int) chars[i], (int) chars[i + 1]);
             }
         }
         return width * fontSize;

@@ -1,6 +1,7 @@
 package nl.mad.pdflibrary.font;
 
 import static org.junit.Assert.assertEquals;
+import nl.mad.pdflibrary.model.FontMetrics;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,13 +12,14 @@ import org.junit.Test;
 public class Type1FontMetricsTest {
     private Type1FontMetrics metrics;
     private final int spaceWidth = 278;
-    private final int AWidth = 667;
-    private final int CWidth = 722;
-    private final int ACKerningOffset = -30;
+    private final int capitalAWidth = 667;
+    private final int capitalCWidth = 722;
+    private final int capitalACKerningOffset = -30;
     private final int textSize = 11;
     private final int characterAmount = 315;
     private final int firstChar = 32;
     private final int lastChar = 36;
+    private final int ascend = 718;
     private final double epsilon = 0.0001;
 
     @Before
@@ -53,14 +55,24 @@ public class Type1FontMetricsTest {
 
     @Test
     public void testGetWidthOfString() {
-        int expectedWidth = (spaceWidth * 2 + AWidth) * textSize;
-        //assertEquals("Width of string is incorrect. ", expectedWidth, metrics.getWidthOfString(" A ", textSize, false));
+        int expectedWidth = (spaceWidth * 2 + capitalAWidth) * textSize;
+        assertEquals("Width of string is incorrect. ", expectedWidth, metrics.getWidthOfString(" A ", textSize, false));
+        assertEquals("Width of string in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
+                metrics.getWidthPointOfString(" A ", textSize, false), epsilon);
     }
 
+    @Test
     public void testGetWidthOfStringWithKerning() {
-        int expectedWidth = (AWidth + CWidth - ACKerningOffset) * textSize;
+        int expectedWidth = (capitalAWidth + capitalCWidth + capitalACKerningOffset) * textSize;
         assertEquals("Width of string with kerning is incorrect. ", expectedWidth, metrics.getWidthOfString("AC", textSize, true));
         assertEquals("Width of string with kerning in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
                 metrics.getWidthPointOfString("AC", textSize, true), epsilon);
+    }
+
+    @Test
+    public void testGetLeading() {
+        int expectedLeading = (int) ((ascend * textSize * metrics.getConversionToPointsValue()) + FontMetrics.DEFAULT_LEADING_ADDITION);
+        assertEquals("Calculated leading is incorrect. ", expectedLeading, metrics.getLeadingForSize(textSize));
+        assertEquals("Parsed leading is incorrect. ", 0, metrics.getLeading());
     }
 }
