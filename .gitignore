@@ -8,6 +8,7 @@
 document.pdf
 easyDocument.pdf
 inDepthDocument.pdf
+TestTitle.pdf
 target
 bin
 src/main/resources/log4j.xml
