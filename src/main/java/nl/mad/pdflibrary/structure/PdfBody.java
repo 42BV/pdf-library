@@ -10,7 +10,6 @@ import nl.mad.pdflibrary.syntax.AbstractPdfObject;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
-import nl.mad.pdflibrary.syntax.PdfName;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfPageTree;
@@ -32,9 +31,9 @@ public class PdfBody {
     /**
      * Represents the page tree of PDF documents, stored outside of the general object list to allow for easier updating.
      */
-    private PdfPageTree pageTree;
+    private PdfIndirectObject pageTree;
     /**
-     * Represents the offset caused by storing the catalog separately.
+     * Represents the offset caused by storing the catalog and pagetree separately.
      */
     private static final int OBJECT_NUMBER_OFFSET = 1;
 
@@ -44,7 +43,7 @@ public class PdfBody {
     public PdfBody() {
         indirectObjects = new ArrayList<PdfIndirectObject>();
         pageTree = createPageTree();
-        catalog = createCatalog(pageTree);
+        catalog = createCatalog(pageTree.getReference());
     }
 
     /**
@@ -54,9 +53,18 @@ public class PdfBody {
      * @return The indirect object created with the PdfObject.
      */
     public PdfIndirectObject addObject(AbstractPdfObject object) {
-        PdfIndirectObject indirectObject = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, object, true);
+        PdfIndirectObject indirectObject = this.createIndirectObject(object);
         this.indirectObjects.add(indirectObject);
         return indirectObject;
+    }
+
+    private PdfIndirectObject createIndirectObject(int number, AbstractPdfObject object) {
+        PdfIndirectObject indirectObject = new PdfIndirectObject(number, 0, object, true);
+        return indirectObject;
+    }
+
+    private PdfIndirectObject createIndirectObject(AbstractPdfObject object) {
+        return createIndirectObject(getTotalIndirectObjectsAmount() + 1, object);
     }
 
     /**
@@ -66,9 +74,9 @@ public class PdfBody {
      * @return The indirect object created with the Page.
      */
     public PdfIndirectObject addPage(PdfPage page) {
-        PdfIndirectObject indirectPage = new PdfIndirectObject(getTotalIndirectObjectsAmount() + 1, 0, page, true);
-        this.pageTree.add(indirectPage);
-        page.put(new PdfName(PdfNameValue.PARENT), pageTree.getReference());
+        PdfIndirectObject indirectPage = this.createIndirectObject(page);
+        getPageTreeObject().add(indirectPage);
+        page.put(PdfNameValue.PARENT, pageTree.getReference());
         return indirectPage;
     }
 
@@ -96,7 +104,7 @@ public class PdfBody {
      */
     public final int getTotalIndirectObjectsAmount() {
         if (indirectObjects != null && pageTree != null) {
-            return this.indirectObjects.size() + pageTree.getSize() + PdfBody.OBJECT_NUMBER_OFFSET;
+            return this.indirectObjects.size() + getPageTreeObject().getSize() + PdfBody.OBJECT_NUMBER_OFFSET;
         } else {
             return PdfBody.OBJECT_NUMBER_OFFSET;
         }
@@ -108,24 +116,27 @@ public class PdfBody {
      * @param pages The first page node that the catalog should refer to.
      * @return The indirect object for the catalog.
      */
-    private PdfIndirectObject createCatalog(PdfPageTree pages) {
+    private PdfIndirectObject createCatalog(PdfIndirectObjectReference pageTreeReference) {
         PdfDictionary catalogDictionary = new PdfDictionary(PdfObjectType.CATALOG);
-        PdfIndirectObject indirectCatalog = new PdfIndirectObject(1, 0, catalogDictionary, true);
-        catalogDictionary.put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.CATALOG));
-        catalogDictionary.put(new PdfName(PdfNameValue.PAGES), pages.getReference());
+        PdfIndirectObject indirectCatalog = createIndirectObject(1, catalogDictionary);
+        catalogDictionary.put(PdfNameValue.TYPE, PdfNameValue.CATALOG);
+        catalogDictionary.put(PdfNameValue.PAGES, pageTreeReference);
         return indirectCatalog;
+    }
+
+    private PdfPageTree getPageTreeObject() {
+        return ((PdfPageTree) pageTree.getObject());
     }
 
     /**
      * Creates a new page tree.
      * 
-     * @return The newly made page tree object.
+     * @return The newly made page tree object inside of an IndirectObject.
      */
     //TODO: Add new pagetrees to the existing page tree
-    private PdfPageTree createPageTree() {
-        PdfDictionary pages = new PdfDictionary(PdfObjectType.PAGETREE);
-        PdfPageTree pageTreeObj = new PdfPageTree(getTotalIndirectObjectsAmount() + 1, 0, pages, true);
-        return pageTreeObj;
+    private PdfIndirectObject createPageTree() {
+        PdfPageTree pageTreeObj = new PdfPageTree();
+        return this.createIndirectObject(pageTreeObj);
     }
 
     public PdfIndirectObject getCatalog() {
@@ -144,7 +155,8 @@ public class PdfBody {
     public final List<PdfIndirectObject> getAllIndirectObjects() {
         List<PdfIndirectObject> allIndirectObjects = new ArrayList<PdfIndirectObject>();
         allIndirectObjects.add(catalog);
-        allIndirectObjects.addAll(pageTree.getPageTreeObjects());
+        allIndirectObjects.add(pageTree);
+        allIndirectObjects.addAll(getPageTreeObject().getPageTreeObjects());
         allIndirectObjects.addAll(this.indirectObjects);
         return allIndirectObjects;
     }

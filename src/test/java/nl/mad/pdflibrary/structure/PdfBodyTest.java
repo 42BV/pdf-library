@@ -1,6 +1,6 @@
 package nl.mad.pdflibrary.structure;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

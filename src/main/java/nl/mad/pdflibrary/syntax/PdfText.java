@@ -6,7 +6,6 @@ import java.util.List;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Text;
-import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
  * PdfText stores the PDF stream version of a Text object. 
@@ -57,9 +56,9 @@ public class PdfText extends AbstractPdfObject {
      * @param text text to add to the document
      */
     public void addMatrix(Text text) {
-        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + text.getPositionX() + " "
-                + text.getPositionY() + " Tm\n";
-        this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
+        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + text.getPosition().getX() + " "
+                + text.getPosition().getY() + " Tm\n";
+        this.addToByteRepresentation(byteRep);
     }
 
     //TODO: How to avoid hardcoding these strings?
@@ -71,7 +70,7 @@ public class PdfText extends AbstractPdfObject {
      */
     public void addFont(PdfIndirectObject font, int fontSize) {
         String byteRep = "/" + font.getReference().getResourceReference() + " " + fontSize + " Tf\n";
-        this.addToByteRepresentation(ByteEncoder.getBytes(byteRep));
+        this.addToByteRepresentation(byteRep);
     }
 
     /**
@@ -89,7 +88,7 @@ public class PdfText extends AbstractPdfObject {
             sb.append(s);
             sb.append("\n");
         }
-        this.addToByteRepresentation(ByteEncoder.getBytes(sb.toString()));
+        this.addToByteRepresentation(sb.toString());
         return "";
     }
 
@@ -113,7 +112,7 @@ public class PdfText extends AbstractPdfObject {
         double width = page.getFilledWidth();
         //if we aren't adding the given text object behind another text object
         if (!ignorePosition) {
-            width += text.getPositionX();
+            width += text.getPosition().getX();
         }
 
         FontMetrics metrics = font.getBaseFontFamily().getMetricsForStyle(font.getStyle());

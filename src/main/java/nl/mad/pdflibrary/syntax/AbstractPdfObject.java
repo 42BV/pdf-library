@@ -3,6 +3,8 @@ package nl.mad.pdflibrary.syntax;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import nl.mad.pdflibrary.utility.ByteEncoder;
+
 /**
  * Abstract class for PdfObjects. Represents the base of all the object types found in PDF.
  * @author Dylan de Wolff
@@ -40,6 +42,10 @@ public abstract class AbstractPdfObject {
         this.byteRepresentation = byteRepresentation;
     }
 
+    public final void setByteRepresentation(String s) {
+        this.setByteRepresentation(ByteEncoder.getBytes(s));
+    }
+
     public PdfObjectType getType() {
         return this.type;
     }
@@ -68,5 +74,13 @@ public abstract class AbstractPdfObject {
         } else {
             setByteRepresentation(bytes);
         }
+    }
+
+    /**
+     * Converts the given string and adds it to the current byte representation.
+     * @param s String to be added.
+     */
+    public void addToByteRepresentation(String s) {
+        this.addToByteRepresentation(ByteEncoder.getBytes(s));
     }
 }

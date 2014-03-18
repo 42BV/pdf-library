@@ -33,8 +33,8 @@ public class BaseFont extends AbstractDocumentPart implements Font {
      */
     public BaseFont(FontFamily family, FontStyle style, BaseFontFamily baseFont) {
         super(DocumentPartType.FONT);
-        this.setFamily(family);
-        this.setStyle(style);
+        this.family = family;
+        this.style = style;
         this.baseFont = baseFont;
     }
 

@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import nl.mad.pdflibrary.font.Type1CharacterMetric;
 import nl.mad.pdflibrary.font.Type1FontMetrics;
 import nl.mad.pdflibrary.model.FontMetricsFlagValues;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is reponsible for parsing Afm files (contains Type 1 font metrics) and storing the data found. This is required to embed a Type 1 font.
@@ -17,6 +22,11 @@ import nl.mad.pdflibrary.model.FontMetricsFlagValues;
  * @author Dylan de Wolff
  */
 public class AfmParser {
+    private interface ParsingAction {
+        void execute(AfmParser parser, StringTokenizer st);
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(AfmParser.class);
     private String fontName;
     private String fullName;
     private String familyName;
@@ -34,125 +44,146 @@ public class AfmParser {
     private int descender;
     private int stdHW;
     private int stdVW;
-    private Map<String, CharacterMetric> characterMetrics;
+    private Map<String, Type1CharacterMetric> characterMetrics;
     private Map<KerningKey, Integer> kerningPairs;
     private int flags;
     private int averageWidth;
     private int maxWidth;
     private int firstChar;
     private int lastChar;
+    private static final Map<String, ParsingAction> ACTION_MAP;
 
-    /**
-     * Creates a new instance of AfmParser and parses the given file.
-     * @param file InputStream for the afm file.
-     */
-    public AfmParser(InputStream file) {
-        characterMetrics = new LinkedHashMap<String, CharacterMetric>();
-        kerningPairs = new LinkedHashMap<KerningKey, Integer>();
-        parse(file);
-        System.out.println(fontName);
-        System.out.println(flags);
-        System.out.println(averageWidth);
-        System.out.println(maxWidth);
-        System.out.println(firstChar);
-        System.out.println(lastChar);
-        System.out.println();
-    }
-
-    /**
-     * Processes the given inputstream and stores the data found.
-     * @param is
-     */
-    private void parse(InputStream is) {
-        if (is != null) {
-            BufferedReader file = new BufferedReader(new InputStreamReader(is));
-            boolean metricsFound = false;
-            if (file != null) {
-                try {
-                    String currentLine = file.readLine();
-                    while (currentLine != null && !metricsFound) {
-                        StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
-                        String token = st.nextToken();
-                        if ("FontName".equalsIgnoreCase(token)) {
-                            setFontName(st.nextToken());
-                        } else if ("FullName".equalsIgnoreCase(token)) {
-                            setFontName(st.nextToken());
-                        } else if ("FamilyName".equalsIgnoreCase(token)) {
-                            setFamilyName(st.nextToken());
-                        } else if ("Weight".equalsIgnoreCase(token)) {
-                            setWeight(st.nextToken());
-                        } else if ("ItalicAngle".equalsIgnoreCase(token)) {
-                            setItalicAngle(Double.valueOf(st.nextToken()));
-                        } else if ("IsFixedPitch".equalsIgnoreCase(token)) {
-                            setFixedPitch("true".equals(st.nextToken()));
-                        } else if ("CharacterSet".equalsIgnoreCase(token)) {
-                            setCharacterSet(st.nextToken());
-                        } else if ("FontBBox".equalsIgnoreCase(token)) {
-                            double[] bBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
-                                    Double.valueOf(st.nextToken()) };
-                            setFontBBox(bBox);
-                        } else if ("UnderLinePosition".equalsIgnoreCase(token)) {
-                            setUnderlinePosition(Integer.valueOf(st.nextToken()));
-                        } else if ("UnderLineThickness".equalsIgnoreCase(token)) {
-                            setUnderlineThickness(Integer.valueOf(st.nextToken()));
-                        } else if ("EncodingScheme".equalsIgnoreCase(token)) {
-                            setEncodingScheme(st.nextToken());
-                        } else if ("CapHeight".equalsIgnoreCase(token)) {
-                            setCapHeight(Integer.valueOf(st.nextToken()));
-                        } else if ("XHeight".equalsIgnoreCase(token)) {
-                            setXHeight(Integer.valueOf(st.nextToken()));
-                        } else if ("Ascender".equalsIgnoreCase(token)) {
-                            setAscender(Integer.valueOf(st.nextToken()));
-                        } else if ("Descender".equalsIgnoreCase(token)) {
-                            setDescender(Integer.valueOf(st.nextToken()));
-                        } else if ("StdHW".equalsIgnoreCase(token)) {
-                            setStdHW(Integer.valueOf(st.nextToken()));
-                        } else if ("StdVW".equalsIgnoreCase(token)) {
-                            setStdVW(Integer.valueOf(st.nextToken()));
-                        } else if ("StartCharMetrics".equalsIgnoreCase(token)) {
-                            /*we've found the start of the character metrics, so we make sure the loop will stop and
-                            call the method that will handle the character metrics. */
-                            metricsFound = true;
-                            parseCharacterMetrics(file);
-                        }
-                        currentLine = file.readLine();
-                    }
-                    file.close();
-                } catch (IOException e) {
-                    System.err.print("IOException occurred during parsing of Afm file: " + e.toString());
-                }
+    static {
+        ACTION_MAP = new HashMap<String, ParsingAction>();
+        ACTION_MAP.put("FontName", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setFontName(st.nextToken());
             }
-        }
-    }
-
-    /**
-     * Reads the character metrics information from the given file.
-     * @param file File to be parsed.
-     * @throws IOException
-     */
-    private void parseCharacterMetrics(BufferedReader file) throws IOException {
-        String currentLine = file.readLine();
-        boolean characterMetricsEndFound = false;
-        while (currentLine != null && !characterMetricsEndFound) {
-            StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
-            String token = st.nextToken();
-            if ("EndCharMetrics".equalsIgnoreCase(token)) {
-                //if we've found the end of the character metrics, stop the loop and start processing the kerning data.
-                characterMetricsEndFound = true;
-                parseKerning(file);
-                updateWidthAttributes();
-                updateCharAttributes();
-                updateFlags();
-            } else {
-                //read the character data and store it in the character metrics map.
-                int c = CharacterMetric.DEFAULT_C_VALUE;
-                int wx = CharacterMetric.DEFAULT_WX_VALUE;
+        });
+        ACTION_MAP.put("FullName", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setFullName(st.nextToken());
+            }
+        });
+        ACTION_MAP.put("FamilyName", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setFamilyName(st.nextToken());
+            }
+        });
+        ACTION_MAP.put("Weight", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setWeight(st.nextToken());
+            }
+        });
+        ACTION_MAP.put("ItalicAngle", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setItalicAngle(Double.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("IsFixedPitch", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setFixedPitch("true".equals(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("CharacterSet", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setCharacterSet(st.nextToken());
+            }
+        });
+        ACTION_MAP.put("FontBBox", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                double[] fontBoundingBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
+                        Double.valueOf(st.nextToken()) };
+                parser.setFontBBox(fontBoundingBox);
+            }
+        });
+        ACTION_MAP.put("UnderLinePosition", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setUnderlinePosition(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("UnderlinePosition", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setUnderlinePosition(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("UnderlineThickness", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setUnderlineThickness(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("EncodingScheme", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setEncodingScheme(st.nextToken());
+            }
+        });
+        ACTION_MAP.put("CapHeight", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setCapHeight(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("XHeight", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setXHeight(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("Ascender", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setAscender(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("Descender", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setDescender(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("StdHW", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setStdHW(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("StdVW", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.setStdVW(Integer.valueOf(st.nextToken()));
+            }
+        });
+        ACTION_MAP.put("EndCharMetrics", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                parser.updateWidthAttributes();
+                parser.updateCharAttributes();
+                parser.updateFlags();
+            }
+        });
+        ACTION_MAP.put("C", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
+                String token = st.nextToken();
+                int c = Integer.valueOf(token);
+                int wx = Type1CharacterMetric.DEFAULT_WX_VALUE;
                 String name = "";
                 int[] boundingBox = null;
+
                 while (st.hasMoreTokens()) {
-                    if ("C".equalsIgnoreCase(token)) {
-                        c = Integer.valueOf(st.nextToken());
-                    } else if ("WX".equalsIgnoreCase(token)) {
+                    if ("WX".equalsIgnoreCase(token)) {
                         wx = Integer.valueOf(st.nextToken());
                     } else if ("N".equalsIgnoreCase(token)) {
                         name = st.nextToken();
@@ -164,32 +195,60 @@ public class AfmParser {
                         token = st.nextToken();
                     }
                 }
-                this.characterMetrics.put(name, new CharacterMetric(c, wx, name, boundingBox));
+                Type1CharacterMetric cm = new Type1CharacterMetric(c, wx, name, boundingBox);
+                parser.characterMetrics.put(name, cm);
             }
-            currentLine = file.readLine();
-        }
-    }
-
-    /**
-     * Reads the kerning information from the given file.
-     * @param file File to be parsed.
-     * @throws IOException
-     */
-    private void parseKerning(BufferedReader file) throws IOException {
-        String currentLine = file.readLine();
-        boolean kerningEndFound = false;
-        while (currentLine != null && !kerningEndFound) {
-            StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
-            String token = st.nextToken();
-            if ("KPX".equalsIgnoreCase(token)) {
+        });
+        ACTION_MAP.put("KPX", new ParsingAction() {
+            @Override
+            public void execute(AfmParser parser, StringTokenizer st) {
                 String firstCharacter = st.nextToken();
                 String secondCharacter = st.nextToken();
                 int widthOffset = -Integer.valueOf(st.nextToken());
-                this.kerningPairs.put(new KerningKey(firstCharacter, secondCharacter), widthOffset);
-            } else if ("EndKernPairs".equalsIgnoreCase(token)) {
-                kerningEndFound = true;
+                parser.createKerningEntry(firstCharacter, secondCharacter, widthOffset);
             }
-            currentLine = file.readLine();
+        });
+
+    }
+
+    /**
+     * Creates a new instance of AfmParser and parses the given file.
+     * @param file InputStream for the afm file.
+     */
+    public AfmParser(InputStream file) {
+        this();
+        parse(new BufferedReader(new InputStreamReader(file)));
+    }
+
+    /**
+     * Creates a new instance of AfmParser.
+     */
+    public AfmParser() {
+        characterMetrics = new LinkedHashMap<String, Type1CharacterMetric>();
+        kerningPairs = new LinkedHashMap<KerningKey, Integer>();
+    }
+
+    /**
+     * Processes the given BufferedReader and stores the data found.
+     * @param file BufferedReader to read from.
+     */
+    public void parse(BufferedReader file) {
+        if (file != null) {
+            try {
+                String currentLine = file.readLine();
+                while (currentLine != null) {
+                    StringTokenizer st = new StringTokenizer(currentLine, " ;\t\n\r\f");
+                    String token = st.nextToken();
+
+                    if (ACTION_MAP.containsKey(token)) {
+                        ACTION_MAP.get(token).execute(this, st);
+                    }
+                    currentLine = file.readLine();
+                }
+                file.close();
+            } catch (IOException e) {
+                logger.error("IOException occured during the parsing of Afm file.");
+            }
         }
     }
 
@@ -199,7 +258,7 @@ public class AfmParser {
     private void updateCharAttributes() {
         int firstCharCode = characterMetrics.size();
         int lastCharCode = 0;
-        for (CharacterMetric cm : characterMetrics.values()) {
+        for (Type1CharacterMetric cm : characterMetrics.values()) {
             int c = cm.getC();
             if (c < firstCharCode && c >= 0) {
                 firstCharCode = cm.getC();
@@ -218,7 +277,7 @@ public class AfmParser {
     private void updateWidthAttributes() {
         int totalWidth = 0;
         int characterAmount = characterMetrics.values().size();
-        for (CharacterMetric cm : characterMetrics.values()) {
+        for (Type1CharacterMetric cm : characterMetrics.values()) {
             int characterWidth = cm.getWx();
             if (characterWidth > this.maxWidth) {
                 this.maxWidth = characterWidth;
@@ -247,6 +306,10 @@ public class AfmParser {
         if ("Bold".equalsIgnoreCase(weight)) {
             flags |= FontMetricsFlagValues.FORCE_BOLD.getBitValue();
         }
+    }
+
+    protected void createKerningEntry(String firstCharacter, String secondCharacter, int widthOffset) {
+        kerningPairs.put(new KerningKey(firstCharacter, secondCharacter), widthOffset);
     }
 
     public void setFontName(String fontName) {
@@ -297,8 +360,8 @@ public class AfmParser {
         this.capHeight = capHeight;
     }
 
-    public void setXHeight(int xHeight) {
-        this.xHeight = xHeight;
+    public void setXHeight(int newXHeight) {
+        this.xHeight = newXHeight;
     }
 
     public void setAscender(int ascender) {
@@ -439,7 +502,7 @@ public class AfmParser {
     /**
      * @return the characterMetrics
      */
-    public Map<String, CharacterMetric> getCharacterMetrics() {
+    public Map<String, Type1CharacterMetric> getCharacterMetrics() {
         return characterMetrics;
     }
 
@@ -448,7 +511,7 @@ public class AfmParser {
      * @param name Name of the character.
      * @return CharacterMetric for the given character, null if the character could not be found.
      */
-    public CharacterMetric getCharacterMetric(String name) {
+    public Type1CharacterMetric getCharacterMetric(String name) {
         return characterMetrics.get(name);
     }
 
@@ -509,56 +572,6 @@ public class AfmParser {
     }
 
     /**
-     * Class representing the metrics of a single character. 
-     * @author Dylan de Wolff
-     */
-    public class CharacterMetric {
-        private int c;
-        private int wx;
-        private String name;
-        private int[] boundingBox;
-
-        /**
-         * Default value for the character code.
-         */
-        public static final int DEFAULT_C_VALUE = -1;
-        /**
-         * Default value for the width.
-         */
-        public static final int DEFAULT_WX_VALUE = 250;
-
-        /**
-         * Creates a new instance of CharacterMetric.
-         * @param c Character code.
-         * @param wx Character width.
-         * @param name Name of the character.
-         * @param boundingBox Bounding box of the character.
-         */
-        public CharacterMetric(int c, int wx, String name, int[] boundingBox) {
-            this.c = c;
-            this.wx = wx;
-            this.name = name;
-            this.boundingBox = boundingBox;
-        }
-
-        public int getC() {
-            return c;
-        }
-
-        public int getWx() {
-            return wx;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int[] getBoundingBox() {
-            return boundingBox;
-        }
-    }
-
-    /**
      * Used as key for the kerning map in AFMParser. Contains two character names.
      * @author Dylan de Wolff
      * @see Type1FontMetrics
@@ -577,6 +590,7 @@ public class AfmParser {
             this.secondCharacterName = secondCharacterName;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o != null && o instanceof KerningKey) {
                 KerningKey other = (KerningKey) o;
@@ -587,6 +601,7 @@ public class AfmParser {
             return false;
         }
 
+        @Override
         public int hashCode() {
             return characterName.hashCode() + secondCharacterName.hashCode();
         }

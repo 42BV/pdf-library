@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.PdfConstants;
 
@@ -49,6 +50,24 @@ public class PdfDictionary extends AbstractPdfObject {
      */
     public void put(PdfName key, AbstractPdfObject value) {
         this.content.put(key, value);
+    }
+
+    /**
+     * Puts a new value in the dictionary.
+     * @param key The PdfNameValue to be used as key (will be converted to PdfName).
+     * @param value The object to be added as value.
+     */
+    public void put(PdfNameValue key, AbstractPdfObject value) {
+        this.put(new PdfName(key), value);
+    }
+
+    /**
+     * Puts a new value in the dictionary.
+     * @param key The PdfNameValue to be used as key (will be converted to PdfName).
+     * @param value The PdfNameValue to be used as value (will be converted to PdfName).
+     */
+    public void put(PdfNameValue key, PdfNameValue value) {
+        this.put(new PdfName(key), new PdfName(value));
     }
 
     /**

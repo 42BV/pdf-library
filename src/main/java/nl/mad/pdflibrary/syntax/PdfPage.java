@@ -41,8 +41,8 @@ public class PdfPage extends PdfDictionary {
      * Initializes the page by adding type, mediabox, resources and content.
      */
     private void initPage() {
-        put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.PAGE));
-        put(new PdfName(PdfNameValue.MEDIA_BOX), createMediabox());
+        put(PdfNameValue.TYPE, PdfNameValue.PAGE);
+        put(PdfNameValue.MEDIA_BOX, createMediabox());
         put(RESOURCES, new PdfDictionary(PdfObjectType.DICTIONARY));
         put(CONTENT, new PdfArray());
     }

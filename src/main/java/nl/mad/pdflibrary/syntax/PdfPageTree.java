@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
-import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
  * Represents the page tree of a PDF document. Page tree's contain pages or other page tree's.
@@ -14,19 +13,14 @@ import nl.mad.pdflibrary.utility.ByteEncoder;
  * 
  * @author Dylan de Wolff
  */
-public class PdfPageTree extends PdfIndirectObject {
+public class PdfPageTree extends PdfDictionary {
     private List<PdfIndirectObject> kids;
 
     /**
      * Creates a new instance of PdfPageTree.
-     * 
-     * @param number Number of object.
-     * @param generation Generation of object.
-     * @param pages Object this refers to.
-     * @param inUse Whether the object is used in the document.
      */
-    public PdfPageTree(int number, int generation, PdfDictionary pages, boolean inUse) {
-        super(number, generation, pages, inUse);
+    public PdfPageTree() {
+        super(PdfObjectType.PAGETREE);
         kids = new ArrayList<PdfIndirectObject>();
         initPageTree();
     }
@@ -35,8 +29,7 @@ public class PdfPageTree extends PdfIndirectObject {
      * Initialize the page tree by setting the type value.
      */
     private void initPageTree() {
-        PdfDictionary pages = (PdfDictionary) this.getObject();
-        pages.put(new PdfName(PdfNameValue.TYPE), new PdfName("Pages"));
+        this.put(PdfNameValue.TYPE, PdfNameValue.PAGES);
     }
 
     /**
@@ -47,10 +40,10 @@ public class PdfPageTree extends PdfIndirectObject {
         int size = 1;
         for (PdfIndirectObject kid : kids) {
             PdfObjectType type = kid.getObject().getType();
-            if (type.equals(PdfObjectType.PAGE)) {
+            if (type.equals(PdfObjectType.PAGETREE)) {
+                ((PdfPageTree) kid.getObject()).getSize();
+            } else {
                 ++size;
-            } else if (kid instanceof PdfPageTree) {
-                size += ((PdfPageTree) kid).getSize();
             }
         }
         return size;
@@ -62,13 +55,11 @@ public class PdfPageTree extends PdfIndirectObject {
      */
     public List<PdfIndirectObject> getPageTreeObjects() {
         List<PdfIndirectObject> objects = new ArrayList<PdfIndirectObject>();
-        objects.add(this);
         for (PdfIndirectObject kid : kids) {
             PdfObjectType type = kid.getObject().getType();
-            if (type.equals(PdfObjectType.PAGE)) {
-                objects.add(kid);
-            } else if (kid instanceof PdfPageTree) {
-                objects.addAll(((PdfPageTree) kid).getPageTreeObjects());
+            objects.add(kid);
+            if (type.equals(PdfObjectType.PAGETREE)) {
+                objects.addAll(((PdfPageTree) kid.getObject()).getPageTreeObjects());
             }
         }
         return objects;
@@ -90,17 +81,13 @@ public class PdfPageTree extends PdfIndirectObject {
         for (PdfIndirectObject kid : kids) {
             kidsReferenceArray.addValue(kid.getReference());
         }
-        PdfDictionary dictionary = (PdfDictionary) this.getObject();
-        dictionary.put(new PdfName("Kids"), kidsReferenceArray);
-        dictionary.put(new PdfName("Count"), new PdfNumber(kidsReferenceArray.getSize()));
+        this.put(PdfNameValue.KIDS, kidsReferenceArray);
+        this.put(PdfNameValue.COUNT, new PdfNumber(kidsReferenceArray.getSize()));
     }
 
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         setKidReferences();
-        String objectLine = getNumber() + " " + getGeneration() + " " + START;
-        os.write(ByteEncoder.getBytes(objectLine));
-        this.getObject().writeToFile(os);
-        os.write(ByteEncoder.getBytes(END));
+        super.writeToFile(os);
     }
 }

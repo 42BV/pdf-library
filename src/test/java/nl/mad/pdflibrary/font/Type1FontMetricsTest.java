@@ -20,7 +20,7 @@ public class Type1FontMetricsTest {
     private final int firstChar = 32;
     private final int lastChar = 36;
     private final int ascend = 718;
-    private final double epsilon = 0.0001;
+    private final double delta = 0.0001;
 
     @Before
     public void setUp() throws Exception {
@@ -58,7 +58,7 @@ public class Type1FontMetricsTest {
         int expectedWidth = (spaceWidth * 2 + capitalAWidth) * textSize;
         assertEquals("Width of string is incorrect. ", expectedWidth, metrics.getWidthOfString(" A ", textSize, false));
         assertEquals("Width of string in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
-                metrics.getWidthPointOfString(" A ", textSize, false), epsilon);
+                metrics.getWidthPointOfString(" A ", textSize, false), delta);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class Type1FontMetricsTest {
         int expectedWidth = (capitalAWidth + capitalCWidth + capitalACKerningOffset) * textSize;
         assertEquals("Width of string with kerning is incorrect. ", expectedWidth, metrics.getWidthOfString("AC", textSize, true));
         assertEquals("Width of string with kerning in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
-                metrics.getWidthPointOfString("AC", textSize, true), epsilon);
+                metrics.getWidthPointOfString("AC", textSize, true), delta);
     }
 
     @Test

@@ -1,10 +1,13 @@
 package nl.mad.pdflibrary.model;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 import nl.mad.pdflibrary.font.Type1FontMetrics;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * BaseFontFamily contains the subtype of the font and the different names of the font for each style the font has.
@@ -16,18 +19,19 @@ import nl.mad.pdflibrary.font.Type1FontMetrics;
  *
  */
 public class BaseFontFamily {
+    private final Logger logger = LoggerFactory.getLogger(BaseFontFamily.class);
     /**
      * Contains a BaseFontFamily for the five default font families.
      */
-    private static Map<FontFamily, BaseFontFamily> defaultBaseFonts;
+    private static final Map<FontFamily, BaseFontFamily> DEFAULT_FONT_FAMILIES;
     static {
-        defaultBaseFonts = new HashMap<FontFamily, BaseFontFamily>();
-        defaultBaseFonts.put(FontFamily.TIMES_ROMAN, new BaseFontFamily(FontType.TYPE1, "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic"));
-        defaultBaseFonts.put(FontFamily.HELVETICA, new BaseFontFamily(FontType.TYPE1, "Helvetica", "Helvetica-Bold", "Helvetica-Oblique",
+        DEFAULT_FONT_FAMILIES = new HashMap<FontFamily, BaseFontFamily>();
+        DEFAULT_FONT_FAMILIES.put(FontFamily.TIMES_ROMAN, new BaseFontFamily(FontType.TYPE1, "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic"));
+        DEFAULT_FONT_FAMILIES.put(FontFamily.HELVETICA, new BaseFontFamily(FontType.TYPE1, "Helvetica", "Helvetica-Bold", "Helvetica-Oblique",
                 "Helvetica-BoldOblique"));
-        defaultBaseFonts.put(FontFamily.COURIER, new BaseFontFamily(FontType.TYPE1, "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique"));
-        defaultBaseFonts.put(FontFamily.SYMBOL, new BaseFontFamily(FontType.TYPE1, "Symbol"));
-        defaultBaseFonts.put(FontFamily.ZAPFDINGBATS, new BaseFontFamily(FontType.TYPE1, "ZapfDingbats"));
+        DEFAULT_FONT_FAMILIES.put(FontFamily.COURIER, new BaseFontFamily(FontType.TYPE1, "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique"));
+        DEFAULT_FONT_FAMILIES.put(FontFamily.SYMBOL, new BaseFontFamily(FontType.TYPE1, "Symbol"));
+        DEFAULT_FONT_FAMILIES.put(FontFamily.ZAPFDINGBATS, new BaseFontFamily(FontType.TYPE1, "ZapfDingbats"));
     }
     private FontType subType;
     private String name;
@@ -80,13 +84,15 @@ public class BaseFontFamily {
      * @see FontMetrics
      */
     private void fillMetrics(String filename) {
-        if (subType == FontType.TYPE1) {
-            try {
+        //somehow do this without if (map with subtype, parser?)
+        try {
+            if (subType == FontType.TYPE1) {
                 metrics.put(filename, new Type1FontMetrics(filename));
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+        } catch (FileNotFoundException e) {
+            logger.error(
+                    "The given file: {} could not be found. Continuing the use of this font without specifying the correct filename will result in errors.",
+                    filename);
         }
     }
 
@@ -105,7 +111,7 @@ public class BaseFontFamily {
      * @return BaseFontFamily corresponding to the given FontFamily.
      */
     public static BaseFontFamily getDefaultBaseFontFamily(FontFamily family) {
-        return defaultBaseFonts.get(family);
+        return DEFAULT_FONT_FAMILIES.get(family);
     }
 
     public FontType getSubType() {

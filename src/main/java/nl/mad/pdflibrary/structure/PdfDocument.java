@@ -14,13 +14,13 @@ import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfFile;
 import nl.mad.pdflibrary.syntax.PdfFont;
 import nl.mad.pdflibrary.syntax.PdfFontDescriptor;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfName;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
 import nl.mad.pdflibrary.syntax.PdfStream;
@@ -57,10 +57,10 @@ public class PdfDocument {
      * @throws UnsupportedEncodingException 
      */
     public PdfDocument(int width, int height) throws UnsupportedEncodingException {
-        header = new PdfHeader();
-        body = new PdfBody();
-        xref = new PdfCrossReferenceTable();
-        trailer = new PdfTrailer();
+        this.header = new PdfHeader();
+        this.body = new PdfBody();
+        this.xref = new PdfCrossReferenceTable();
+        this.trailer = new PdfTrailer();
         this.defaultPageHeight = height;
         this.defaultPageWidth = width;
     }
@@ -92,14 +92,14 @@ public class PdfDocument {
     private void addParagraph(Paragraph paragraph) {
         List<Text> textCollection = paragraph.getTextCollection();
         if (paragraph.getTextCollection().size() != 0) {
+            Position pos = paragraph.getPosition();
             //if we're using custom paragraph positioning, adjust the first text object
-            if (paragraph.getCustomPositioning() && textCollection.get(0) != null) {
-                textCollection.get(0).setPositionX(paragraph.getPositionX());
-                textCollection.get(0).setPositionY(paragraph.getPositionY());
-            } else if (!textCollection.get(0).getCustomPositioning()) {
+            if (pos.hasCustomPosition() && textCollection.get(0) != null) {
+                textCollection.get(0).setPosition(pos);
+            } else if (!textCollection.get(0).getPosition().hasCustomPosition()) {
                 calculatePosition(textCollection.get(0), false);
             }
-            int posX = textCollection.get(0).getPositionX();
+            int posX = textCollection.get(0).getPosition().getX();
             for (int i = 0; i < textCollection.size(); ++i) {
                 boolean ignoreMatrix = true;
                 boolean ignorePosition = true;
@@ -127,12 +127,12 @@ public class PdfDocument {
         Font font = text.getFont();
         double spaceWidth = font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
         if (inParagraph) {
-            text.setPositionX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
-            text.setPositionY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
+            text.getPosition().setX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
+            text.getPosition().setY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
         } else {
             //TODO: take into account margins and such
-            text.setPositionX(0);
-            text.setPositionY((int) (Math.ceil(currentPage.getHeight() - (currentPage.getFilledHeight() + calculateLeading(font, text.getTextSize())))));
+            text.getPosition().setX(0);
+            text.getPosition().setY((int) (Math.ceil(currentPage.getHeight() - (currentPage.getFilledHeight() + calculateLeading(font, text.getTextSize())))));
         }
 
     }
@@ -162,7 +162,7 @@ public class PdfDocument {
         currentPage.add(font);
         PdfStream ts = getCurrentPageStream();
 
-        if (!text.getCustomPositioning() && !isParagraph) {
+        if (!text.getPosition().hasCustomPosition() && !isParagraph) {
             calculatePosition(text, false);
         }
 
@@ -287,13 +287,13 @@ public class PdfDocument {
         PdfDictionary trailerInfo = new PdfDictionary(PdfObjectType.DICTIONARY);
         PdfIndirectObject info = body.addObject(trailerInfo);
 
-        if (author.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.AUTHOR), new PdfString(author));
-        if (title.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.TITLE), new PdfString(title));
-        if (subject.length() > 0) trailerInfo.put(new PdfName(PdfNameValue.SUBJECT), new PdfString(subject));
+        if (author.length() > 0) trailerInfo.put(PdfNameValue.AUTHOR, new PdfString(author));
+        if (title.length() > 0) trailerInfo.put(PdfNameValue.TITLE, new PdfString(title));
+        if (subject.length() > 0) trailerInfo.put(PdfNameValue.SUBJECT, new PdfString(subject));
         PdfString dateString = new PdfString();
         dateString.setString(creationDate);
-        if (creationDate != null) trailerInfo.put(new PdfName(PdfNameValue.CREATION_DATE), dateString);
-        trailerInfo.put(new PdfName(PdfNameValue.CREATOR), new PdfString(CREATOR));
+        if (creationDate != null) trailerInfo.put(PdfNameValue.CREATION_DATE, dateString);
+        trailerInfo.put(PdfNameValue.CREATOR, new PdfString(CREATOR));
         trailer.setInfo(info);
     }
 

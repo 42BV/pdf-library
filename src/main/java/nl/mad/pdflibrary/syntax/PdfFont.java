@@ -27,15 +27,15 @@ public class PdfFont extends PdfDictionary {
      * @param font Font that will be processed.
      */
     private void processFont(Font font) {
-        put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.FONT));
+        put(PdfNameValue.TYPE, PdfNameValue.FONT);
         BaseFontFamily base = font.getBaseFontFamily();
         FontMetrics metrics = base.getMetricsForStyle(font.getStyle());
-        put(new PdfName(PdfNameValue.BASE_FONT), new PdfName(base.getNameOfStyle(font.getStyle())));
-        put(new PdfName(PdfNameValue.SUB_TYPE), new PdfName(base.getSubType().getPdfNameValue()));
-        put(new PdfName(PdfNameValue.FIRST_CHAR), new PdfNumber(metrics.getFirstCharCode()));
-        put(new PdfName(PdfNameValue.LAST_CHAR), new PdfNumber(metrics.getLastCharCode()));
+        put(PdfNameValue.BASE_FONT, new PdfName(base.getNameOfStyle(font.getStyle())));
+        put(PdfNameValue.SUB_TYPE, base.getSubType().getPdfNameValue());
+        put(PdfNameValue.FIRST_CHAR, new PdfNumber(metrics.getFirstCharCode()));
+        put(PdfNameValue.LAST_CHAR, new PdfNumber(metrics.getLastCharCode()));
         List<Integer> widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
-        put(new PdfName(PdfNameValue.WIDTHS), new PdfArray(PdfNumber.convertListOfValues(widths)));
+        put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));
         //TODO: set encoding
     }
 
@@ -44,7 +44,7 @@ public class PdfFont extends PdfDictionary {
      * @param fontDescriptor Reference to the font descriptor.
      */
     public void setFontDescriptorReference(PdfIndirectObjectReference fontDescriptor) {
-        put(new PdfName(PdfNameValue.FONT_DESCRIPTOR), fontDescriptor);
+        put(PdfNameValue.FONT_DESCRIPTOR, fontDescriptor);
     }
 
     /**
@@ -52,7 +52,7 @@ public class PdfFont extends PdfDictionary {
      * @param encoding Reference to the used encoding.
      */
     public void setFontEncodingReference(PdfIndirectObjectReference encoding) {
-        put(new PdfName(PdfNameValue.ENCODING), encoding);
+        put(PdfNameValue.ENCODING, encoding);
     }
 
     /**
@@ -60,6 +60,6 @@ public class PdfFont extends PdfDictionary {
      * @param encoding Encoding to use.
      */
     public void setFontEncoding(PdfName encoding) {
-        put(new PdfName(PdfNameValue.ENCODING), encoding);
+        put(PdfNameValue.ENCODING, encoding);
     }
 }

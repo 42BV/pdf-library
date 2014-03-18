@@ -7,7 +7,6 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
-import nl.mad.pdflibrary.syntax.PdfName;
 import nl.mad.pdflibrary.syntax.PdfNumber;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.utility.ByteEncoder;
@@ -68,9 +67,9 @@ public class PdfTrailer extends PdfDictionary {
      * @param root Catalog reference.
      */
     public final void fillObjectSpecification(PdfIndirectObjectReference root) {
-        this.put(new PdfName(PdfNameValue.SIZE), new PdfNumber(objectAmount));
-        this.put(new PdfName(PdfNameValue.ROOT), root);
-        this.put(new PdfName(PdfNameValue.INFO), info.getReference());
+        this.put(PdfNameValue.SIZE, new PdfNumber(objectAmount));
+        this.put(PdfNameValue.ROOT, root);
+        this.put(PdfNameValue.INFO, info.getReference());
     }
 
     /** 

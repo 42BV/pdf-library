@@ -27,26 +27,26 @@ public class PdfFontDescriptor extends PdfDictionary {
      * @param font Font to process.
      */
     private void fillDescriptor(Font font) {
-        put(new PdfName(PdfNameValue.TYPE), new PdfName(PdfNameValue.FONT_DESCRIPTOR));
+        put(PdfNameValue.TYPE, PdfNameValue.FONT_DESCRIPTOR);
         BaseFontFamily baseFont = font.getBaseFontFamily();
         String fontName = baseFont.getNameOfStyle(font.getStyle());
-        put(new PdfName(PdfNameValue.FONT_NAME), new PdfName(fontName));
+        put(PdfNameValue.FONT_NAME, new PdfName(fontName));
         FontMetrics metrics = baseFont.getMetricsForStyle(font.getStyle());
-        put(new PdfName(PdfNameValue.FONT_FAMILY), new PdfName(metrics.getFontFamily()));
-        put(new PdfName(PdfNameValue.FLAGS), new PdfNumber(metrics.getFlags()));
+        put(PdfNameValue.FONT_FAMILY, new PdfName(metrics.getFontFamily()));
+        put(PdfNameValue.FLAGS, new PdfNumber(metrics.getFlags()));
         PdfArray boundingBox = new PdfArray(PdfNumber.convertListOfValues(metrics.getFontBoundingBox()));
-        put(new PdfName(PdfNameValue.FONT_BOUNDING_BOX), boundingBox);
-        put(new PdfName(PdfNameValue.ITALIC_ANGLE), new PdfNumber(metrics.getItalicAngle()));
-        put(new PdfName(PdfNameValue.ASCENT), new PdfNumber(metrics.getAscent()));
-        put(new PdfName(PdfNameValue.DESCENT), new PdfNumber(metrics.getDescent()));
-        put(new PdfName(PdfNameValue.LEADING), new PdfNumber(metrics.getLeading()));
-        put(new PdfName(PdfNameValue.CAP_HEIGHT), new PdfNumber(metrics.getCapHeight()));
-        put(new PdfName(PdfNameValue.XHEIGHT), new PdfNumber(metrics.getXHeight()));
-        put(new PdfName(PdfNameValue.STEMV), new PdfNumber(metrics.getStemV()));
-        put(new PdfName(PdfNameValue.STEMH), new PdfNumber(metrics.getStemH()));
-        put(new PdfName(PdfNameValue.AVG_WIDTH), new PdfNumber(metrics.getAvgWidth()));
-        put(new PdfName(PdfNameValue.MAX_WIDTH), new PdfNumber(metrics.getMaxWidth()));
-        put(new PdfName(PdfNameValue.MISSING_WIDTH), new PdfNumber(metrics.getMissingWidth()));
+        put(PdfNameValue.FONT_BOUNDING_BOX, boundingBox);
+        put(PdfNameValue.ITALIC_ANGLE, new PdfNumber(metrics.getItalicAngle()));
+        put(PdfNameValue.ASCENT, new PdfNumber(metrics.getAscent()));
+        put(PdfNameValue.DESCENT, new PdfNumber(metrics.getDescent()));
+        put(PdfNameValue.LEADING, new PdfNumber(metrics.getLeading()));
+        put(PdfNameValue.CAP_HEIGHT, new PdfNumber(metrics.getCapHeight()));
+        put(PdfNameValue.XHEIGHT, new PdfNumber(metrics.getXHeight()));
+        put(PdfNameValue.STEMV, new PdfNumber(metrics.getStemV()));
+        put(PdfNameValue.STEMH, new PdfNumber(metrics.getStemH()));
+        put(PdfNameValue.AVG_WIDTH, new PdfNumber(metrics.getAvgWidth()));
+        put(PdfNameValue.MAX_WIDTH, new PdfNumber(metrics.getMaxWidth()));
+        put(PdfNameValue.MISSING_WIDTH, new PdfNumber(metrics.getMissingWidth()));
     }
 
     /**
@@ -58,13 +58,13 @@ public class PdfFontDescriptor extends PdfDictionary {
         switch (type) {
         case TYPE1:
         case MMTYPE1:
-            put(new PdfName(PdfNameValue.FONT_FILE), reference);
+            put(PdfNameValue.FONT_FILE, reference);
             break;
         case TRUETYPE:
-            put(new PdfName(PdfNameValue.FONT_FILE2), reference);
+            put(PdfNameValue.FONT_FILE2, reference);
             break;
         case TYPE3:
-            put(new PdfName(PdfNameValue.FONT_FILE3), reference);
+            put(PdfNameValue.FONT_FILE3, reference);
             break;
         default:
             break;

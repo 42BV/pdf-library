@@ -1,6 +1,7 @@
 package nl.mad.pdflibrary.utility;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The byte encoder is responsible for returning the byte value of a given string.
@@ -9,7 +10,7 @@ import java.io.UnsupportedEncodingException;
  *
  */
 public final class ByteEncoder {
-    private static final String DEFAULT_BYTE_ENCODING = "UTF-8";
+    private static final Charset DEFAULT_BYTE_ENCODING = StandardCharsets.UTF_8;
 
     private ByteEncoder() {
     }
@@ -20,11 +21,6 @@ public final class ByteEncoder {
      * @return Byte array containing the byte value of the given string.
      */
     public static byte[] getBytes(String s) {
-        try {
-            return s.getBytes(DEFAULT_BYTE_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return new byte[0];
+        return s.getBytes(DEFAULT_BYTE_ENCODING);
     }
 }

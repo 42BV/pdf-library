@@ -11,6 +11,7 @@ public final class PdfConstants {
      * Specifies the default line separator value.
      */
     public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
+    public static final String RESOURCES = "/resources/";
 
     private PdfConstants() {
 

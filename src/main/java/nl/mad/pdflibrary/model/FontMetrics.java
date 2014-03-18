@@ -10,10 +10,7 @@ import nl.mad.pdflibrary.utility.UnicodeConverter;
  *
  */
 public interface FontMetrics {
-    /**
-     * Location of font resources.
-     */
-    String RESOURCE_LOCATION = "/resources/";
+
     /**
      * This value is added by default to any leading calculations.
      */

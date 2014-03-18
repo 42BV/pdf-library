@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import nl.mad.pdflibrary.model.FontMetrics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * UnicodeConverter allows you to get the postscript name of a unicode character. This is needed for accessing the metric data of certain font types.
@@ -17,27 +19,29 @@ import nl.mad.pdflibrary.model.FontMetrics;
  *
  */
 public final class UnicodeConverter {
-    private static Map<Integer, String> unicodeToPostscript;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnicodeConverter.class);
+    private static final Map<Integer, String> UNICODE_TO_POSTSCRIPT;
     private static final String FILENAME = "glyphlist.txt";
     private static final int KEY_RADIX = 16;
 
     static {
+        Map<Integer, String> unicodeToPostscriptTemp = new HashMap<Integer, String>();
         try {
-            unicodeToPostscript = new HashMap<Integer, String>();
-            InputStream in = UnicodeConverter.class.getResourceAsStream(FontMetrics.RESOURCE_LOCATION + FILENAME);
+            InputStream in = UnicodeConverter.class.getResourceAsStream(PdfConstants.RESOURCES + FILENAME);
             //TODO: Remove this as soon as it's no longer necessary to run the library on its own
             if (in == null) {
                 in = UnicodeConverter.class.getClassLoader().getResourceAsStream(FILENAME);
             }
             if (in != null) {
-                UnicodeConverter.processGlyphlist(in);
+                unicodeToPostscriptTemp = UnicodeConverter.processGlyphlist(unicodeToPostscriptTemp, in);
                 in.close();
             }
         } catch (FileNotFoundException e) {
-            System.err.print("Could not find glyphlist.txt in the resources folder: " + e.toString());
+            LOGGER.error("Could not find glyphlist.txt in the resources folder! UnicodeConverter will not function without this file.");
         } catch (IOException e) {
-            System.err.print("Exception ocurred while reading glyphlist.txt: " + e.toString());
+            LOGGER.error("IOException ocurred while reading glyphlist.txt! UnicodeConverter will not be able to function normally.");
         }
+        UNICODE_TO_POSTSCRIPT = Collections.unmodifiableMap(unicodeToPostscriptTemp);
     }
 
     private UnicodeConverter() {
@@ -49,15 +53,16 @@ public final class UnicodeConverter {
      * @return String containing the postscript name. Will be null if the character could not be found.
      */
     public static String getPostscriptForUnicode(int code) {
-        return unicodeToPostscript.get(code);
+        return UNICODE_TO_POSTSCRIPT.get(code);
     }
 
     /**
      * Processes the file containing the list of unicode character codes and the corresponding postscript names.
+     * @param Map<Integer, String> Map to store the read values in.
      * @param in InputStream for the glyph conversion list.
      * @throws IOException
      */
-    private static void processGlyphlist(InputStream in) throws IOException {
+    private static Map<Integer, String> processGlyphlist(Map<Integer, String> unicodeToPostscriptTemp, InputStream in) throws IOException {
         String currentLine = "";
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         while ((currentLine = reader.readLine()) != null) {
@@ -65,10 +70,11 @@ public final class UnicodeConverter {
                 StringTokenizer st = new StringTokenizer(currentLine, " ;\r\n\t\f");
                 String value = st.nextToken();
                 int key = Integer.parseInt(st.nextToken(), KEY_RADIX);
-                if (unicodeToPostscript.get(key) == null) {
-                    unicodeToPostscript.put(key, value);
+                if (unicodeToPostscriptTemp.get(key) == null) {
+                    unicodeToPostscriptTemp.put(key, value);
                 }
             }
         }
+        return unicodeToPostscriptTemp;
     }
 }

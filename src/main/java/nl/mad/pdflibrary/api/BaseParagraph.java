@@ -6,6 +6,7 @@ import java.util.List;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
 /**
@@ -22,20 +23,17 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
      * Creates a new instance of Paragraph with automatic positioning.
      */
     public BaseParagraph() {
-        this(0, 0);
-        this.setCustomPositioning(false);
+        this(new Position());
     }
 
     /**
      * Creates a new instance of Paragraph.
-     * @param positionX x-position from the lower left corner.
-     * @param positionY y-position from the lower left corner.
+     * @param position Position of the paragraph.
      */
-    public BaseParagraph(int positionX, int positionY) {
+    public BaseParagraph(Position position) {
         super(DocumentPartType.PARAGRAPH);
         textCollection = new ArrayList<Text>();
-        this.setPositionX(positionX);
-        this.setPositionY(positionY);
+        this.setPosition(position);
     }
 
     /**
@@ -45,9 +43,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
      * @param font Font to be used.
      */
     public BaseParagraph(String text, int textSize, Font font) {
-        this(0, 0);
-        textCollection.add(new BaseText(text, textSize, font));
-        this.setCustomPositioning(false);
+        this(text, textSize, font, new Position());
     }
 
     /**
@@ -56,13 +52,11 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
      * @param text Text to be added to the text object. The paragraph will be positioned automatically.
      * @param textSize Size of the text.
      * @param font Font to be used.
-     * @param positionX x-position from the lower left corner.
-     * @param positionY y-position from the lower left corner.
+     * @param position position of the paragraph.
      */
-    public BaseParagraph(String text, int textSize, Font font, int positionX, int positionY) {
-        this(0, 0);
+    public BaseParagraph(String text, int textSize, Font font, Position position) {
+        this(position);
         textCollection.add(new BaseText(text, textSize, font));
-        this.setCustomPositioning(false);
     }
 
     public void addText(Text text) {

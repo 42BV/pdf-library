@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.mad.pdflibrary.font.parser.AfmParser;
-import nl.mad.pdflibrary.font.parser.AfmParser.CharacterMetric;
 import nl.mad.pdflibrary.font.parser.PfbParser;
 import nl.mad.pdflibrary.model.FontMetrics;
+import nl.mad.pdflibrary.utility.PdfConstants;
 import nl.mad.pdflibrary.utility.UnicodeConverter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for parsing afm files and storing the metrics data found.
@@ -18,6 +21,7 @@ import nl.mad.pdflibrary.utility.UnicodeConverter;
  * @see FontMetrics
  */
 public class Type1FontMetrics implements FontMetrics {
+    private final Logger logger = LoggerFactory.getLogger(Type1FontMetrics.class);
     private AfmParser afm;
     private PfbParser pfb;
     private String filename;
@@ -29,18 +33,20 @@ public class Type1FontMetrics implements FontMetrics {
     /**
      * Creates a new instance of Type1FontMetrics and immediately parses the file corresponding to the given filename.
      * @param filename Font file to be parsed.
+     * @throws FileNotFoundException 
      * @throws IOException
      */
-    public Type1FontMetrics(String filename) throws IOException {
+    public Type1FontMetrics(String filename) throws FileNotFoundException {
         this.filename = filename;
         this.parseAfm();
     }
 
     /**
      * Creates a new AFMParser, which starts the parsing of the afm file, and stores the parser.
+     * @throws FileNotFoundException 
      * @throws IOException
      */
-    public void parseAfm() {
+    public void parseAfm() throws FileNotFoundException {
         InputStream file = getFile(".afm");
         afm = new AfmParser(file);
     }
@@ -52,13 +58,13 @@ public class Type1FontMetrics implements FontMetrics {
      * @return InputStream for the given filename. Null if the file could not be found.
      * @throws FileNotFoundException
      */
-    private InputStream getFile(String extension) {
+    private InputStream getFile(String extension) throws FileNotFoundException {
         String localFilename = filename;
         //add afm extension if it could not be found.
         if (!localFilename.toLowerCase().endsWith(extension)) {
             localFilename += extension;
         }
-        InputStream in = getClass().getResourceAsStream(FontMetrics.RESOURCE_LOCATION + localFilename);
+        InputStream in = getClass().getResourceAsStream(PdfConstants.RESOURCES + localFilename);
         //TODO: Remove this as soon as it's no longer necessary to run the library on its own
         if (in == null) {
             in = this.getClass().getClassLoader().getResourceAsStream(localFilename);
@@ -76,7 +82,12 @@ public class Type1FontMetrics implements FontMetrics {
     }
 
     private byte[] parsePfb() {
-        InputStream file = getFile(".pfb");
+        InputStream file = null;
+        try {
+            file = getFile(".pfb");
+        } catch (FileNotFoundException e) {
+            logger.info("Could not find Pfb file for {}, will continue without embedding Pfb data.", filename);
+        }
         if (file != null) {
             pfb = new PfbParser(file);
             return pfb.getPfbData();
@@ -91,7 +102,7 @@ public class Type1FontMetrics implements FontMetrics {
 
     @Override
     public int getWidth(String name) {
-        CharacterMetric metric = afm.getCharacterMetric(name);
+        Type1CharacterMetric metric = afm.getCharacterMetric(name);
         if (metric != null) {
             return metric.getWx();
         }
@@ -191,7 +202,7 @@ public class Type1FontMetrics implements FontMetrics {
     @Override
     public List<Integer> getWidths() {
         List<Integer> widths = new ArrayList<Integer>();
-        for (CharacterMetric cm : afm.getCharacterMetrics().values()) {
+        for (Type1CharacterMetric cm : afm.getCharacterMetrics().values()) {
             widths.add(cm.getWx());
         }
         return widths;
@@ -200,7 +211,7 @@ public class Type1FontMetrics implements FontMetrics {
     @Override
     public List<Integer> getWidths(int firstCharCode, int lastCharCode) {
         List<Integer> widths = new ArrayList<Integer>();
-        for (CharacterMetric cm : afm.getCharacterMetrics().values()) {
+        for (Type1CharacterMetric cm : afm.getCharacterMetrics().values()) {
             int c = cm.getC();
             if (c >= firstCharCode && c <= lastCharCode) {
                 widths.add(cm.getWx());

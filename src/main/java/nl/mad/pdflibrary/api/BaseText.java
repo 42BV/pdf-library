@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.api;
 
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
 /**
@@ -26,8 +27,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
      * will automatically position the text in the document.
      */
     public BaseText() {
-        this("", DEFAULT_TEXT_SIZE, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
-        this.setCustomPositioning(false);
+        this("", DEFAULT_TEXT_SIZE, Document.DEFAULT_FONT, new Position(), 1, 1, 0, 0);
     }
 
     /**
@@ -38,8 +38,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
      * @param textSize The size of the text.
      */
     public BaseText(String text, int textSize) {
-        this(text, textSize, Document.DEFAULT_FONT, 0, 0, 1, 1, 0, 0);
-        this.setCustomPositioning(false);
+        this(text, textSize, Document.DEFAULT_FONT, new Position(), 1, 1, 0, 0);
     }
 
     /**
@@ -50,19 +49,17 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
      * @param font The font that's used for the text.
      */
     public BaseText(String text, int textSize, Font font) {
-        this(text, textSize, font, 0, 0, 1, 1, 0, 0);
-        this.setCustomPositioning(false);
+        this(text, textSize, font, new Position(), 1, 1, 0, 0);
     }
 
     /**
      * Creates a new text instance with the default font. 
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
-     * @param posX The x position of the text from the lower left corner.
-     * @param posY The y position of the text from the lower left corner.
+     * @param position The position of the text.
      */
-    public BaseText(String text, int textSize, int posX, int posY) {
-        this(text, textSize, Document.DEFAULT_FONT, posX, posY, 1, 1, 0, 0);
+    public BaseText(String text, int textSize, Position position) {
+        this(text, textSize, Document.DEFAULT_FONT, position, 1, 1, 0, 0);
     }
 
     /**
@@ -70,11 +67,10 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
      * @param font The font of the text.
-     * @param posX The x position of the text from the lower left corner.
-     * @param posY The y position of the text from the lower left corner.
+     * @param posX The position of the text.
      */
-    public BaseText(String text, int textSize, Font font, int posX, int posY) {
-        this(text, textSize, font, posX, posY, 1, 1, 0, 0);
+    public BaseText(String text, int textSize, Font font, Position position) {
+        this(text, textSize, font, position, 1, 1, 0, 0);
     }
 
     /**
@@ -83,24 +79,22 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
      * @param text The text that needs to be shown.
      * @param textSize The size of the text.
      * @param font The font that's used for the text.
-     * @param posX The x position of the text from the lower left corner.
-     * @param posY The y position of the text from the lower left corner.
+     * @param position The position used for the text.
      * @param scaleX The scale of the text on the X-axis.
      * @param scaleY The scale of the text on the Y-axis.
      * @param shearX The shear (tilt) of the text on the X-axis.
      * @param shearY The shear (tilt) of the text on the Y-axis.
      */
-    public BaseText(String text, int textSize, Font font, int posX, int posY, double scaleX, double scaleY, double shearX, double shearY) {
+    public BaseText(String text, int textSize, Font font, Position position, double scaleX, double scaleY, double shearX, double shearY) {
         super(DocumentPartType.TEXT);
         this.textString = text;
         this.font = font;
-        this.setPositionX(posX);
-        this.setPositionY(posY);
-        this.setTextSize(textSize);
-        this.setScaleX(scaleX);
-        this.setScaleY(scaleY);
-        this.setShearX(shearX);
-        this.setShearY(shearY);
+        this.setPosition(position);
+        this.textSize = textSize;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.shearX = shearX;
+        this.shearY = shearY;
     }
 
     /**
@@ -111,20 +105,12 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         super(DocumentPartType.TEXT);
         this.textString = copyFrom.getText();
         this.font = copyFrom.getFont();
-        if (copyFrom.getCustomPositioning()) {
-            this.setPositionX(copyFrom.getPositionX());
-            this.setPositionY(copyFrom.getPositionY());
-            this.setCustomPositioning(true);
-        } else {
-            this.setPositionX(0);
-            this.setPositionY(0);
-            this.setCustomPositioning(false);
-        }
-        this.setTextSize(copyFrom.getTextSize());
-        this.setScaleX(copyFrom.getScaleX());
-        this.setScaleY(copyFrom.getScaleY());
-        this.setShearX(copyFrom.getShearX());
-        this.setShearY(copyFrom.getShearY());
+        this.setPosition(copyFrom.getPosition());
+        this.textSize = copyFrom.getTextSize();
+        this.scaleX = copyFrom.getScaleX();
+        this.scaleY = copyFrom.getScaleY();
+        this.shearX = copyFrom.getShearX();
+        this.shearY = copyFrom.getShearY();
     }
 
     public double getScaleX() {
@@ -190,8 +176,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public boolean textMatrixEquals(Text text) {
-        if (getPositionX() == text.getPositionX() && getPositionY() == text.getPositionY() && scaleX == text.getScaleX() && scaleY == text.getScaleY()
-                && shearX == text.getShearX() && shearY == text.getShearY()) {
+        if (getPosition().getX() == text.getPosition().getX() && getPosition().getY() == text.getPosition().getY() && scaleX == text.getScaleX()
+                && scaleY == text.getScaleY() && shearX == text.getShearX() && shearY == text.getShearY()) {
             return true;
         }
         return false;

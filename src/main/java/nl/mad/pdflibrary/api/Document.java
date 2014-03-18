@@ -70,8 +70,8 @@ public class Document {
      * @throws UnsupportedEncodingException 
      */
     public Document(int width, int height, String author, String title, String subject) throws UnsupportedEncodingException {
-        pdfDocument = new PdfDocument(width, height);
-        finished = false;
+        this.pdfDocument = new PdfDocument(width, height);
+        this.finished = false;
         this.author = author;
         this.title = title;
         this.subject = subject;

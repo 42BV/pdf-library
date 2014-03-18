@@ -1,6 +1,6 @@
 package nl.mad.pdflibrary.structure;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.api.Document;
 import nl.mad.pdflibrary.syntax.PdfObjectType;

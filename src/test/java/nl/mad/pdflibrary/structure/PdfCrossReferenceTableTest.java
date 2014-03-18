@@ -1,7 +1,6 @@
 package nl.mad.pdflibrary.structure;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -44,12 +43,7 @@ public class PdfCrossReferenceTableTest {
         dos.writeChars("a");
         int expectedValue = dos.size();
         xref.writeToFile(dos);
-
-        boolean succeed = false;
-        if (Arrays.equals(ByteEncoder.getBytes(String.valueOf(expectedValue)), xref.getStartByte())) {
-            succeed = true;
-        }
-        assertTrue("The start byte is incorrect.", succeed);
-        //TODO: test the writing itself, also test the inner cross reference class somehow?
+        assertEquals("The start byte is incorrect.", true, Arrays.equals(ByteEncoder.getBytes(String.valueOf(expectedValue)), xref.getStartByte()));
+        //test writing itself
     }
 }

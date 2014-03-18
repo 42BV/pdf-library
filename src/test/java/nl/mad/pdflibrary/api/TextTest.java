@@ -1,9 +1,10 @@
 package nl.mad.pdflibrary.api;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontStyle;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ public class TextTest {
     private BaseText text;
     private final int textSize = 10;
     private final double testScaleShear = 2.0;
+    private final double delta = 0.0001;
 
     @Before
     public void setUp() throws Exception {
@@ -39,34 +41,19 @@ public class TextTest {
     }
 
     @Test
-    public void testCustomPositioning() {
-        assertEquals("Custom positioning was not set correctly. ", false, text.getCustomPositioning());
-        text = new BaseText("Test", 1, 1, 1);
-        assertEquals("Custom positioning was not set correctly. ", true, text.getCustomPositioning());
-    }
-
-    @Test
-    public void testPositioning() {
-        text.setPositionX(1);
-        assertEquals("Position X was not set correctly. ", 1, text.getPositionX());
-        text.setPositionY(1);
-        assertEquals("Position Y was not set correctly. ", 1, text.getPositionY());
-    }
-
-    @Test
     public void testScaling() {
         text.setScaleX(testScaleShear);
-        assertEquals("Scale X was not set correctly. ", testScaleShear, text.getScaleX());
+        assertEquals("Scale X was not set correctly. ", testScaleShear, text.getScaleX(), delta);
         text.setScaleY(testScaleShear);
-        assertEquals("Scale Y was not set correctly. ", testScaleShear, text.getScaleY());
+        assertEquals("Scale Y was not set correctly. ", testScaleShear, text.getScaleY(), delta);
     }
 
     @Test
     public void testShearing() {
         text.setShearX(testScaleShear);
-        assertEquals("Shear X was not set correctly. ", testScaleShear, text.getShearX());
+        assertEquals("Shear X was not set correctly. ", testScaleShear, text.getShearX(), delta);
         text.setShearY(testScaleShear);
-        assertEquals("Shear Y was not set correctly. ", testScaleShear, text.getShearY());
+        assertEquals("Shear Y was not set correctly. ", testScaleShear, text.getShearY(), delta);
     }
 
     @Test
@@ -79,8 +66,8 @@ public class TextTest {
 
     @Test
     public void testMatrixEquals() {
-        text = new BaseText("Test", textSize, Document.DEFAULT_FONT, 0, 0, 1, testScaleShear, testScaleShear, 1);
-        Text t = new BaseText("", textSize, Document.DEFAULT_FONT, 0, 0, 1, testScaleShear, testScaleShear, 1);
+        text = new BaseText("Test", textSize, Document.DEFAULT_FONT, new Position(), 1, testScaleShear, testScaleShear, 1);
+        Text t = new BaseText("", textSize, Document.DEFAULT_FONT, new Position(), 1, testScaleShear, testScaleShear, 1);
         assertEquals("Text matrix equals method returned wrong result. ", true, text.textMatrixEquals(t));
     }
 

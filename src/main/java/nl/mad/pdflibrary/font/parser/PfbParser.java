@@ -6,12 +6,16 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is responsible for parsing pfb (Type 1 font program) and storing the data found. This is required to fully embed a Type 1 font.
  * @author Dylan de Wolff
  *
  */
 public class PfbParser {
+    private final Logger logger = LoggerFactory.getLogger(PfbParser.class);
     private byte[] pfbData;
     private static final int HEADER_LENGTH = 18;
     private static final int START_MARKER = 0x80;
@@ -64,7 +68,7 @@ public class PfbParser {
                     pointer += got;
                 }
             } catch (IOException e) {
-                System.err.print("The file was found, but an IOException ocurred during parsing: " + e.toString());
+                logger.error("An IOException occured during the parsing of a Pfb file.");
             }
         }
     }
@@ -85,7 +89,7 @@ public class PfbParser {
                 amountRead = file.read(tempBuffer);
             }
         } catch (IOException e) {
-            System.err.print("An IOException occurred while reading the pfb file: " + e.toString());
+            logger.error("An IOException occured while reading the Pfb file.");
         }
         return out.toByteArray();
     }

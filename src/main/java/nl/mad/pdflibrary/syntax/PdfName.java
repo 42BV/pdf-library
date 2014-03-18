@@ -1,7 +1,6 @@
 package nl.mad.pdflibrary.syntax;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
-import nl.mad.pdflibrary.utility.ByteEncoder;
 
 /**
  * PdfName represents the name object of PDF. Names are used to specify all data within PdfObjects. 
@@ -42,7 +41,7 @@ public class PdfName extends AbstractPdfObject {
         this.name = name;
         if (!name.startsWith("/")) {
             String prefixName = "/" + name;
-            this.setByteRepresentation(ByteEncoder.getBytes(prefixName));
+            this.setByteRepresentation(prefixName);
         }
     }
 
