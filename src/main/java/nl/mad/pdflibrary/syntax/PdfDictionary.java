@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * PdfDictionary represents the dictionary object in PDF's. It functions the same as a Java dictionary
@@ -38,7 +38,7 @@ public class PdfDictionary extends AbstractPdfObject {
             entry.getKey().writeToFile(os);
             os.write(' ');
             entry.getValue().writeToFile(os);
-            os.write(PdfConstants.LINE_SEPARATOR);
+            os.write(Constants.LINE_SEPARATOR);
         }
         os.write(ByteEncoder.getBytes(CLOSE_DICTIONARY));
     }
@@ -77,6 +77,10 @@ public class PdfDictionary extends AbstractPdfObject {
      */
     public AbstractPdfObject get(PdfName key) {
         return this.content.get(key);
+    }
+
+    public AbstractPdfObject get(PdfNameValue key) {
+        return this.get(new PdfName(key));
     }
 
     /**

@@ -1,12 +1,11 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.syntax;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import nl.mad.pdflibrary.syntax.PdfArray;
-import nl.mad.pdflibrary.syntax.PdfName;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,21 +21,27 @@ public class PdfArrayTest {
 
     @Test
     public void testAddValue() {
-        PdfName test = new PdfName("nl");
+        PdfName test = new PdfName("test");
         array.addValue(test);
         assertEquals("The PdfObject was not added correctly to the array", test, array.getValues().get(0));
+
+        List<AbstractPdfObject> testList = new ArrayList<>();
+        testList.add(new PdfName("test2"));
+        testList.add(new PdfName("test3"));
+        array.addValues(testList);
+        assertEquals("The PdfObjects were not added correctly to the array", 3, array.getValues().size());
     }
 
     @Test
     public void testWriteToFile() throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        PdfName test = new PdfName("nl");
+        PdfName test = new PdfName("test");
         array.addValue(test);
         PdfName test2 = new PdfName("test2");
         array.addValue(test2);
         array.writeToFile(os);
 
-        String expectedResult = "[ /nl /test2 ]";
+        String expectedResult = "[ /test /test2 ]";
         assertEquals("The write output was not as expected.", expectedResult, os.toString());
     }
 }

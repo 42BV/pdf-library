@@ -11,8 +11,22 @@ public interface Paragraph extends PlaceableDocumentPart {
     /**
      * Adds text to the paragraph.
      * @param text Text to be added.
+     * @return the paragraph.
      */
-    void addText(Text text);
+    Paragraph addText(Text text);
+
+    /**
+     * @param x The x position to place the paragraph.
+     * @param y The y position to place the paragraph.
+     * @return the paragraph.
+     */
+    Paragraph on(int x, int y);
+
+    /**
+     * @param position The position to place the paragraph.
+     * @return the paragraph.
+     */
+    Paragraph on(Position position);
 
     /**
      * Returns list of all the text objects in this paragraph.

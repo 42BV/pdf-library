@@ -7,7 +7,7 @@ import java.util.List;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.utility.ByteEncoder;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * Represents a PDF stream object. Stream objects are dictionaries that contain a sequence of bytes. 
@@ -31,7 +31,7 @@ public class PdfStream extends PdfDictionary {
     /**
      * Specifies the command used to specify the end of a text stream.
      */
-    private static final String END_TEXT_STREAM = "ET\n";
+    private static final String END_TEXT_STREAM = "ET";
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
     //somehow limit this to objects that are actually supposed to be part of the contents?
@@ -51,9 +51,7 @@ public class PdfStream extends PdfDictionary {
      * @param filters Array containing the filters on the stream.
      */
     public PdfStream(PdfArray filters) {
-        super(PdfObjectType.STREAM);
-        contents = new ArrayList<AbstractPdfObject>();
-        this.put(LENGTH, new PdfNumber(0));
+        this();
         this.put(FILTER, filters);
     }
 
@@ -61,7 +59,7 @@ public class PdfStream extends PdfDictionary {
     public void writeToFile(OutputStream os) throws IOException {
         updateLength();
         super.writeToFile(os);
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
         os.write(ByteEncoder.getBytes(START_STREAM));
 
         for (int i = 0; i < contents.size(); ++i) {
@@ -72,6 +70,7 @@ public class PdfStream extends PdfDictionary {
             if (checkWriteAfter(i)) {
                 os.write(getWriteAfterStreamContent(contents.get(i)));
             }
+            os.write(Constants.LINE_SEPARATOR);
         }
         os.write(ByteEncoder.getBytes(END_STREAM));
     }

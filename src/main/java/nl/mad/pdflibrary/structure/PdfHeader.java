@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.mad.pdflibrary.utility.ByteEncoder;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * This class represents the header section of a PDF file and contains data such as the PDF version.
@@ -14,7 +14,7 @@ import nl.mad.pdflibrary.utility.PdfConstants;
 public class PdfHeader {
     private static final byte[] VERSION = ByteEncoder.getBytes("%PDF-1.7");
     /**
-     * Indicates to file readers that this api contains binary data.
+     * Indicates to file readers that this document contains binary data.
      */
     private static final byte[] BINARY_INDICATOR = ByteEncoder.getBytes("%âãÏÓ");
 
@@ -31,8 +31,8 @@ public class PdfHeader {
      */
     public void writeToFile(OutputStream os) throws IOException {
         os.write(VERSION);
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
         os.write(BINARY_INDICATOR);
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
     }
 }

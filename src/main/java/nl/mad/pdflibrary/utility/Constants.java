@@ -5,16 +5,18 @@ package nl.mad.pdflibrary.utility;
  * @author Dylan de Wolff
  *
  */
-public final class PdfConstants {
+public final class Constants {
 
     /**
      * Specifies the default line separator value.
      */
     public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
+    /**
+     * Specifies the location of the resources folder.
+     */
     public static final String RESOURCES = "/resources/";
 
-    private PdfConstants() {
-
+    private Constants() {
     }
 
 }

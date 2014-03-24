@@ -10,8 +10,9 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 public class PdfPage extends PdfDictionary {
     private int width;
     private int height;
-    private double filledWidth;
     private double filledHeight;
+    private double filledWidth;
+
     /**
      * The amount of resources this page uses.
      */
@@ -66,18 +67,15 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject Object to be added.
      */
     public void add(PdfIndirectObject indirectObject) {
-        AbstractPdfObject obj = indirectObject.getObject();
-        if (obj instanceof PdfDictionary) {
-            switch (indirectObject.getObject().getType()) {
-            case STREAM:
-                this.addContent(indirectObject);
-                break;
-            case FONT:
-                this.addResource(indirectObject);
-                break;
-            default:
-                break;
-            }
+        switch (indirectObject.getObject().getType()) {
+        case STREAM:
+            this.addContent(indirectObject);
+            break;
+        case FONT:
+            this.addResource(indirectObject);
+            break;
+        default:
+            break;
         }
     }
 
@@ -171,19 +169,31 @@ public class PdfPage extends PdfDictionary {
         return this.height;
     }
 
-    public double getFilledWidth() {
-        return this.filledWidth;
-    }
-
+    /**
+     * @return the filledHeight
+     */
     public double getFilledHeight() {
-        return this.filledHeight;
+        return filledHeight;
     }
 
-    public void setFilledWidth(double newWidth) {
-        this.filledWidth = newWidth;
+    /**
+     * @param filledHeight the height to set
+     */
+    public void setFilledHeight(double filledHeight) {
+        this.filledHeight = filledHeight;
     }
 
-    public void setFilledHeight(double newHeight) {
-        this.filledHeight = newHeight;
+    /**
+     * @return the filledWidth
+     */
+    public double getFilledWidth() {
+        return filledWidth;
+    }
+
+    /**
+     * @param filledWidth the width to set
+     */
+    public void setFilledWidth(double filledWidth) {
+        this.filledWidth = filledWidth;
     }
 }

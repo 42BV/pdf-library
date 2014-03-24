@@ -1,7 +1,7 @@
 package nl.mad.pdflibrary.syntax;
 
-import nl.mad.pdflibrary.model.BaseFontFamily;
 import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.FontType;
 import nl.mad.pdflibrary.model.PdfNameValue;
@@ -28,7 +28,7 @@ public class PdfFontDescriptor extends PdfDictionary {
      */
     private void fillDescriptor(Font font) {
         put(PdfNameValue.TYPE, PdfNameValue.FONT_DESCRIPTOR);
-        BaseFontFamily baseFont = font.getBaseFontFamily();
+        FontFamily baseFont = font.getFontFamily();
         String fontName = baseFont.getNameOfStyle(font.getStyle());
         put(PdfNameValue.FONT_NAME, new PdfName(fontName));
         FontMetrics metrics = baseFont.getMetricsForStyle(font.getStyle());

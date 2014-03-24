@@ -16,6 +16,7 @@ import org.junit.Test;
 
 public class PdfBodyTest {
     private PdfBody body;
+    private final int pageSize = 200;
 
     @Before
     public void setUp() throws Exception {
@@ -38,7 +39,7 @@ public class PdfBodyTest {
 
     @Test
     public void testAddPage() {
-        PdfPage page = new PdfPage(200, 200);
+        PdfPage page = new PdfPage(pageSize, pageSize);
         body.addPage(page);
         int expectedObjectPos = 2;
         assertEquals("Page has not been correctly added to the body.", page, body.getAllIndirectObjects().get(expectedObjectPos).getObject());
@@ -49,7 +50,7 @@ public class PdfBodyTest {
     public void testStartByteSetting() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
-        String testString = "nl";
+        String testString = "test";
         dos.writeBytes(testString);
         body.writeToFile(dos);
         int expectedStartByte = testString.length();
@@ -58,9 +59,9 @@ public class PdfBodyTest {
 
     @Test
     public void testGetIndirectObjects() {
-        PdfName test = new PdfName("nl");
+        PdfName test = new PdfName("test");
         body.addObject(test);
-        PdfPage page = new PdfPage(200, 200);
+        PdfPage page = new PdfPage(pageSize, pageSize);
         body.addPage(page);
 
         int expectedTotalSize = 4;
@@ -72,5 +73,10 @@ public class PdfBodyTest {
         assertEquals("The amount of objects retrieved is incorrect. ", expectedSize, indirectObjects.size());
         assertEquals("The first object was not the catalog. ", body.getCatalog(), allIndirectObjects.get(0));
         assertEquals("The first object was not the nl object. ", test, indirectObjects.get(0).getObject());
+    }
+
+    @Test
+    public void testWrite() {
+
     }
 }

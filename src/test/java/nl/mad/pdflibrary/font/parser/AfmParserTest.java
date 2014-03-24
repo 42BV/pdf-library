@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 
 import nl.mad.pdflibrary.font.Type1CharacterMetric;
+import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Test;
 
@@ -36,7 +37,6 @@ public class AfmParserTest {
     private final Type1CharacterMetric firstChar = new Type1CharacterMetric(10, lowestWidth, "test", new int[] { 1, 0, -1, 0 });
     private final Type1CharacterMetric lastChar = new Type1CharacterMetric(11, expectedMaxWidth, "testTwo", new int[] { 0, 0, 0, 0 });
     private final int expectedKerning = -10;
-    private final double epsilon = 0.00001;
 
     /**
      * Creates new instance of AfmParserTest. Parses a fake Afm file.
@@ -70,7 +70,6 @@ public class AfmParserTest {
         sb.append("StartKernPairs 1\n");
         sb.append("KPX " + firstChar.getName() + " " + lastChar.getName() + " " + expectedKerning + "\n");
         sb.append("EndKernPairs \nEndKernData \nEndFontMetrics \n");
-        System.out.println(sb.toString());
         BufferedReader br = new BufferedReader(new StringReader(sb.toString()));
         afm = new AfmParser();
         afm.parse(br);
@@ -129,7 +128,7 @@ public class AfmParserTest {
 
     @Test
     public void testItalicAngle() {
-        assertEquals("Italic angle is not as expected. ", expectedItalicAngle, afm.getItalicAngle(), epsilon);
+        assertEquals("Italic angle is not as expected. ", expectedItalicAngle, afm.getItalicAngle(), FloatEqualityTester.EPSILON);
     }
 
     @Test

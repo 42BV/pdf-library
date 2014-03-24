@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 public class PfbParser {
     private final Logger logger = LoggerFactory.getLogger(PfbParser.class);
     private byte[] pfbData;
+    private int[] lengths;
     private static final int HEADER_LENGTH = 18;
     private static final int START_MARKER = 0x80;
     private static final int ASCII_MARKER = 0x01;
@@ -31,6 +32,7 @@ public class PfbParser {
      */
     public PfbParser(InputStream file) {
         pfbData = new byte[0];
+        lengths = new int[PFB_RECORD_TYPES.length];
         parse(readInput(file));
     }
 
@@ -44,7 +46,6 @@ public class PfbParser {
                 ByteArrayInputStream input = new ByteArrayInputStream(file);
                 pfbData = new byte[(int) (file.length - HEADER_LENGTH)];
                 int recordLength = PFB_RECORD_TYPES.length;
-
                 int pointer = 0;
                 for (int i = 0; i < recordLength; ++i) {
                     int read = input.read();
@@ -60,6 +61,7 @@ public class PfbParser {
                     size += input.read() << INPUT_ZERO_PADDING[0];
                     size += input.read() << INPUT_ZERO_PADDING[1];
                     size += input.read() << INPUT_ZERO_PADDING[2];
+                    lengths[i] = size;
 
                     int got = input.read(pfbData, pointer, size);
                     if (got < 0) {
@@ -95,7 +97,10 @@ public class PfbParser {
     }
 
     public byte[] getPfbData() {
-        return this.pfbData;
+        return this.pfbData.clone();
     }
 
+    public int[] getLengths() {
+        return this.lengths.clone();
+    }
 }

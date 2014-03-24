@@ -4,6 +4,7 @@ import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 /**
  * BaseText is the default Text document part. Adding an instance of this class to the Document class will 
@@ -23,78 +24,28 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private Font font;
 
     /**
-     * Creates a new text instance. Will use default text size, default font and 
+     * Creates a new text instance with the given text. Will use default text size, default font and 
      * will automatically position the text in the document.
      */
     public BaseText() {
-        this("", DEFAULT_TEXT_SIZE, Document.DEFAULT_FONT, new Position(), 1, 1, 0, 0);
+        this("");
     }
 
     /**
-     * Creates a new text instance. Will use default font and 
+     * Creates a new text instance. Will use default text size, default font and
      * will automatically position the text in the document.
-     * 
-     * @param text The text that needs to be shown.
-     * @param textSize The size of the text.
+     * @param text
      */
-    public BaseText(String text, int textSize) {
-        this(text, textSize, Document.DEFAULT_FONT, new Position(), 1, 1, 0, 0);
-    }
-
-    /**
-     * Creates a new text instance. Will automatically position the given text in the document.
-     * 
-     * @param text The text that needs to be shown.
-     * @param textSize The size of the text.
-     * @param font The font that's used for the text.
-     */
-    public BaseText(String text, int textSize, Font font) {
-        this(text, textSize, font, new Position(), 1, 1, 0, 0);
-    }
-
-    /**
-     * Creates a new text instance with the default font. 
-     * @param text The text that needs to be shown.
-     * @param textSize The size of the text.
-     * @param position The position of the text.
-     */
-    public BaseText(String text, int textSize, Position position) {
-        this(text, textSize, Document.DEFAULT_FONT, position, 1, 1, 0, 0);
-    }
-
-    /**
-     * Creates a new text instance.
-     * @param text The text that needs to be shown.
-     * @param textSize The size of the text.
-     * @param font The font of the text.
-     * @param posX The position of the text.
-     */
-    public BaseText(String text, int textSize, Font font, Position position) {
-        this(text, textSize, font, position, 1, 1, 0, 0);
-    }
-
-    /**
-     * Creates a new text instance.
-     * 
-     * @param text The text that needs to be shown.
-     * @param textSize The size of the text.
-     * @param font The font that's used for the text.
-     * @param position The position used for the text.
-     * @param scaleX The scale of the text on the X-axis.
-     * @param scaleY The scale of the text on the Y-axis.
-     * @param shearX The shear (tilt) of the text on the X-axis.
-     * @param shearY The shear (tilt) of the text on the Y-axis.
-     */
-    public BaseText(String text, int textSize, Font font, Position position, double scaleX, double scaleY, double shearX, double shearY) {
+    public BaseText(String text) {
         super(DocumentPartType.TEXT);
-        this.textString = text;
-        this.font = font;
-        this.setPosition(position);
-        this.textSize = textSize;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        this.shearX = shearX;
-        this.shearY = shearY;
+        textString = text;
+        textSize = DEFAULT_TEXT_SIZE;
+        font = Document.DEFAULT_FONT;
+        this.setPosition(new Position());
+        scaleX = 1;
+        scaleY = 1;
+        shearX = 0;
+        shearY = 0;
     }
 
     /**
@@ -113,73 +64,121 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.shearY = copyFrom.getShearY();
     }
 
+    @Override
     public double getScaleX() {
         return scaleX;
     }
 
-    public void setScaleX(double scaleX) {
-        this.scaleX = scaleX;
+    @Override
+    public Text scale(double newScaleX, double newScaleY) {
+        this.scaleX = newScaleX;
+        this.scaleY = newScaleY;
+        return this;
     }
 
+    @Override
+    public Text scaleX(double newScaleX) {
+        this.scaleX = newScaleX;
+        return this;
+    }
+
+    @Override
     public double getScaleY() {
         return scaleY;
     }
 
-    public void setScaleY(double scaleY) {
-        this.scaleY = scaleY;
+    @Override
+    public Text scaleY(double newScaleY) {
+        this.scaleY = newScaleY;
+        return this;
     }
 
+    @Override
+    public Text shear(double newShearX, double newShearY) {
+        this.shearX = newShearX;
+        this.shearY = newShearY;
+        return this;
+    }
+
+    @Override
     public double getShearX() {
         return shearX;
     }
 
-    public void setShearX(double shearX) {
-        this.shearX = shearX;
+    @Override
+    public Text shearX(double newShearX) {
+        this.shearX = newShearX;
+        return this;
     }
 
+    @Override
     public double getShearY() {
         return shearY;
     }
 
-    public void setShearY(double shearY) {
-        this.shearY = shearY;
+    @Override
+    public Text shearY(double newShearY) {
+        this.shearY = newShearY;
+        return this;
     }
 
+    @Override
     public String getText() {
         return textString;
     }
 
-    public void setText(String text) {
+    @Override
+    public Text text(String text) {
         this.textString = text;
+        return this;
     }
 
+    @Override
     public Font getFont() {
         return font;
     }
 
-    public void setFont(Font font) {
-        this.font = font;
+    @Override
+    public Text font(Font newFont) {
+        this.font = newFont;
+        return this;
     }
 
+    @Override
     public int getTextSize() {
         return textSize;
     }
 
     @Override
-    public void setTextSize(int textSize) {
-        if (textSize >= 0) {
-            this.textSize = textSize;
+    public Text size(int newTextSize) {
+        if (newTextSize >= 0) {
+            this.textSize = newTextSize;
         } else {
             this.textSize = 0;
         }
+        return this;
     }
 
     @Override
     public boolean textMatrixEquals(Text text) {
-        if (getPosition().getX() == text.getPosition().getX() && getPosition().getY() == text.getPosition().getY() && scaleX == text.getScaleX()
-                && scaleY == text.getScaleY() && shearX == text.getShearX() && shearY == text.getShearY()) {
+        if (FloatEqualityTester.equals(getPosition().getX(), text.getPosition().getX())
+                && FloatEqualityTester.equals(getPosition().getY(), text.getPosition().getY()) && FloatEqualityTester.equals(scaleX, text.getScaleX())
+                && FloatEqualityTester.equals(scaleY, text.getScaleY()) && FloatEqualityTester.equals(shearX, text.getShearX())
+                && FloatEqualityTester.equals(shearY, text.getShearY())) {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Text on(int x, int y) {
+        this.setPosition(new Position(x, y));
+        return this;
+    }
+
+    @Override
+    public Text on(Position position) {
+        this.setPosition(position);
+        return this;
     }
 }

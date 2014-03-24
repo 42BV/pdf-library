@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import nl.mad.pdflibrary.model.BaseFontFamily;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
+import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.FontStyle;
 
 import org.junit.Before;
@@ -18,7 +18,7 @@ public class FontTest {
 
     @Before
     public void setUp() throws Exception {
-        font = new BaseFont(FontFamily.HELVETICA, FontStyle.NORMAL);
+        font = new BaseFont(FontFamilyType.HELVETICA, FontStyle.NORMAL);
     }
 
     @Test
@@ -28,24 +28,36 @@ public class FontTest {
 
     @Test
     public void testFamilyAdjustment() {
-        FontFamily expectedFamily = FontFamily.COURIER;
+        FontFamilyType expectedFamily = FontFamilyType.COURIER;
         String expectedBaseFontFamilyName = "Courier";
-        font.setFamily(expectedFamily);
+        font.family(expectedFamily);
         assertEquals("The font family was set incorrectly.", expectedFamily, font.getFamily());
-        assertEquals("The base font family was not adjusted.", expectedBaseFontFamilyName, font.getBaseFontFamily().getName());
+        assertEquals("The base font family was not adjusted.", expectedBaseFontFamilyName, font.getFontFamily().getName());
     }
 
     @Test
     public void testStyleAdjustment() {
-        FontStyle expectedStyle = FontStyle.BOLD;
-        font.setStyle(expectedStyle);
-        assertEquals("The font style was set incorrectly.", expectedStyle, font.getStyle());
+        font.style(FontStyle.BOLD);
+        assertEquals("The font style was set incorrectly.", FontStyle.BOLD, font.getStyle());
+        font.italic();
+        assertEquals("The font style was set incorrectly. ", FontStyle.ITALIC, font.getStyle());
+        font.bold();
+        assertEquals("The font style was set incorrectly. ", FontStyle.BOLD, font.getStyle());
+        font.boldItalic();
+        assertEquals("The font style was set incorrectly. ", FontStyle.BOLDITALIC, font.getStyle());
     }
 
     @Test
     public void testBaseFontFamilyAdjustment() throws IOException {
-        BaseFontFamily bff = BaseFontFamily.getDefaultBaseFontFamily(FontFamily.TIMES_ROMAN);
-        font = new BaseFont(FontFamily.HELVETICA, FontStyle.BOLD, bff);
-        assertEquals("The BaseFontFamily was not set correctly. ", bff, font.getBaseFontFamily());
+        FontFamily bff = FontFamily.getDefaultFontFamily(FontFamilyType.TIMES_ROMAN);
+        font = new BaseFont(FontFamilyType.HELVETICA, FontStyle.BOLD, bff);
+        assertEquals("The BaseFontFamily was not set correctly. ", bff, font.getFontFamily());
+    }
+
+    @Test
+    public void testDefaultConstructor() {
+        font = new BaseFont();
+        assertEquals("The font family was incorrectly copied from the default font. ", Document.DEFAULT_FONT.getFamily(), font.getFamily());
+        assertEquals("The font style was incorrectly copied from the default font. ", Document.DEFAULT_FONT.getStyle(), font.getStyle());
     }
 }

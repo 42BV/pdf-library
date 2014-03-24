@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.utility.ByteEncoder;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * 
@@ -112,15 +112,15 @@ public class PdfCrossReferenceTable {
     public void writeToFile(DataOutputStream os) throws IOException {
         setStartByte(os.size());
         os.write(ByteEncoder.getBytes(XREF_INDICATOR));
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
         os.write(ByteEncoder.getBytes(this.getObjectAmountLine()));
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
         os.write(ByteEncoder.getBytes(DEFAULT_FIRST_REFERENCE));
-        os.write(PdfConstants.LINE_SEPARATOR);
+        os.write(Constants.LINE_SEPARATOR);
 
         for (Entry<Integer, CrossReference> xref : crossReferences.entrySet()) {
             xref.getValue().writeToFile(os);
-            os.write(PdfConstants.LINE_SEPARATOR);
+            os.write(Constants.LINE_SEPARATOR);
         }
     }
 

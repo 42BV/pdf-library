@@ -11,13 +11,14 @@ public interface Font extends DocumentPart {
      * Returns the family of this font.
      * @return FontFamily specifying the family of this font.
      */
-    FontFamily getFamily();
+    FontFamilyType getFamily();
 
     /**
      * Sets the family of this font.
      * @param family Family of the font.
+     * @return the font.
      */
-    void setFamily(FontFamily family);
+    Font family(FontFamilyType family);
 
     /**
      * Returns the font style.
@@ -28,13 +29,31 @@ public interface Font extends DocumentPart {
     /**
      * Sets the font style.
      * @param style Style of the font.
+     * @return the font.
      */
-    void setStyle(FontStyle style);
+    Font style(FontStyle style);
+
+    /**
+     * Sets the font style to bold.
+     * @return the font.
+     */
+    Font bold();
+
+    /**
+     * Sets the font style to italic.
+     * @return the font.
+     */
+    Font italic();
+
+    /**
+     * Sets the font style to bold-italic.
+     * @return the font.
+     */
+    Font boldItalic();
 
     /**
      * Returns the base font family of this font.
      * @return BaseFontFamily for this font.
      */
-    BaseFontFamily getBaseFontFamily();
-
+    FontFamily getFontFamily();
 }

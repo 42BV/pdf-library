@@ -2,8 +2,8 @@ package nl.mad.pdflibrary.syntax;
 
 import java.util.List;
 
-import nl.mad.pdflibrary.model.BaseFontFamily;
 import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.PdfNameValue;
 
@@ -28,7 +28,7 @@ public class PdfFont extends PdfDictionary {
      */
     private void processFont(Font font) {
         put(PdfNameValue.TYPE, PdfNameValue.FONT);
-        BaseFontFamily base = font.getBaseFontFamily();
+        FontFamily base = font.getFontFamily();
         FontMetrics metrics = base.getMetricsForStyle(font.getStyle());
         put(PdfNameValue.BASE_FONT, new PdfName(base.getNameOfStyle(font.getStyle())));
         put(PdfNameValue.SUB_TYPE, base.getSubType().getPdfNameValue());
@@ -36,7 +36,6 @@ public class PdfFont extends PdfDictionary {
         put(PdfNameValue.LAST_CHAR, new PdfNumber(metrics.getLastCharCode()));
         List<Integer> widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
         put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));
-        //TODO: set encoding
     }
 
     /**

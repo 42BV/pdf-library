@@ -28,4 +28,11 @@ public class ParagraphTest {
         assertEquals("The size of the text collection is incorrect. ", 1, paragraph.getTextCollection().size());
         assertEquals("The added text object is incorrect. ", t, paragraph.getTextCollection().get(0));
     }
+
+    @Test
+    public void testPositioning() {
+        paragraph.on(200, 201);
+        assertEquals("The position was not set correctly. ", 200, paragraph.getPosition().getX());
+        assertEquals("The position was not set correctly. ", 201, paragraph.getPosition().getY());
+    }
 }

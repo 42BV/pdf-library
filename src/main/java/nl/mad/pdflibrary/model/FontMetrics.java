@@ -214,4 +214,10 @@ public interface FontMetrics {
      * @return int containing the leading value.
      */
     int getLeadingForSize(int textSize);
+
+    /**
+     * Returns the lenghts for the font program.
+     * @return int array containing the lenghts.
+     */
+    int[] getFontProgramLengths();
 }

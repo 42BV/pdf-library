@@ -1,8 +1,8 @@
 package nl.mad.pdflibrary.structure;
 
 import static org.junit.Assert.assertEquals;
+import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.api.Document;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 
 import org.junit.Before;
@@ -13,13 +13,13 @@ public class PdfDocumentTest {
 
     @Before
     public void setUp() throws Exception {
-        document = new PdfDocument(Document.A4_WIDTH, Document.A4_HEIGHT);
+        document = new PdfDocument();
     }
 
     @Test
     public void testAddWithEmptyStream() {
-        document.addPage(200, 200);
-        BaseText text = new BaseText("Test", 12);
+        document.addPage(new BasePage(200, 200));
+        BaseText text = new BaseText("Test");
         document.add(text);
         //PdfTextStream testStream = new PdfTextStream();
         //testStream.addCommands(text);
@@ -43,7 +43,7 @@ public class PdfDocumentTest {
     @Test
     public void testAddPage() {
         assertEquals("There should not yet be a current page. ", null, document.getCurrentPage());
-        document.addPage(200, 200);
+        document.addPage(new BasePage(200, 200));
         assertEquals("Page was added and set as current page. ", PdfObjectType.PAGE, document.getCurrentPage().getType());
     }
 

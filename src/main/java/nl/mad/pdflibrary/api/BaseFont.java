@@ -1,9 +1,9 @@
 package nl.mad.pdflibrary.api;
 
-import nl.mad.pdflibrary.model.BaseFontFamily;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
+import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.FontStyle;
 
 /**
@@ -12,17 +12,25 @@ import nl.mad.pdflibrary.model.FontStyle;
  *
  */
 public class BaseFont extends AbstractDocumentPart implements Font {
-    private FontFamily family;
+    private FontFamilyType family;
     private FontStyle style;
-    private BaseFontFamily baseFont;
+    private FontFamily baseFont;
+
+    /**
+     * Creates a new instance of BaseFont. Will copy the default font specified in Document.
+     * @see Document
+     */
+    public BaseFont() {
+        this(Document.DEFAULT_FONT.getFamily(), Document.DEFAULT_FONT.getStyle(), Document.DEFAULT_FONT.getFontFamily());
+    }
 
     /**
      * Create a new instance of Font. Will try to use a default base font since none was supplied.
      * @param family Font family.
      * @param style Style of font (bold, italic).
      */
-    public BaseFont(FontFamily family, FontStyle style) {
-        this(family, style, BaseFontFamily.getDefaultBaseFontFamily(family));
+    public BaseFont(FontFamilyType family, FontStyle style) {
+        this(family, style, FontFamily.getDefaultFontFamily(family));
     }
 
     /**
@@ -31,33 +39,58 @@ public class BaseFont extends AbstractDocumentPart implements Font {
      * @param style Style of font (bold, italic).
      * @param baseFont BaseFont corresponding to this font.
      */
-    public BaseFont(FontFamily family, FontStyle style, BaseFontFamily baseFont) {
+    public BaseFont(FontFamilyType family, FontStyle style, FontFamily baseFont) {
         super(DocumentPartType.FONT);
         this.family = family;
         this.style = style;
         this.baseFont = baseFont;
     }
 
-    public FontFamily getFamily() {
+    @Override
+    public FontFamilyType getFamily() {
         return family;
     }
 
-    public void setFamily(FontFamily family) {
-        this.family = family;
-        if (BaseFontFamily.getDefaultBaseFontFamily(family) != null) {
-            this.baseFont = BaseFontFamily.getDefaultBaseFontFamily(family);
+    @Override
+    public Font family(FontFamilyType fontFamily) {
+        this.family = fontFamily;
+        if (FontFamily.getDefaultFontFamily(family) != null) {
+            this.baseFont = FontFamily.getDefaultFontFamily(family);
         }
+        return this;
     }
 
+    @Override
     public FontStyle getStyle() {
         return style;
     }
 
-    public void setStyle(FontStyle style) {
-        this.style = style;
+    @Override
+    public Font style(FontStyle fontStyle) {
+        this.style = fontStyle;
+        return this;
     }
 
-    public BaseFontFamily getBaseFontFamily() {
+    @Override
+    public Font bold() {
+        this.style = FontStyle.BOLD;
+        return this;
+    }
+
+    @Override
+    public Font italic() {
+        this.style = FontStyle.ITALIC;
+        return this;
+    }
+
+    @Override
+    public Font boldItalic() {
+        this.style = FontStyle.BOLDITALIC;
+        return this;
+    }
+
+    @Override
+    public FontFamily getFontFamily() {
         return baseFont;
     }
 }

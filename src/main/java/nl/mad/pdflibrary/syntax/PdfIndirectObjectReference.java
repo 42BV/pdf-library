@@ -29,7 +29,7 @@ public class PdfIndirectObjectReference extends AbstractPdfObject {
      * Sets the reference string.
      * @param reference String containing the reference.
      */
-    public void setReference(String reference) {
+    public final void setReference(String reference) {
         this.reference = reference;
         this.setByteRepresentation(this.reference);
     }

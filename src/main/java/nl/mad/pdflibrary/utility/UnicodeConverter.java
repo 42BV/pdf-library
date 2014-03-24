@@ -26,8 +26,9 @@ public final class UnicodeConverter {
 
     static {
         Map<Integer, String> unicodeToPostscriptTemp = new HashMap<Integer, String>();
+        InputStream in = null;
         try {
-            InputStream in = UnicodeConverter.class.getResourceAsStream(PdfConstants.RESOURCES + FILENAME);
+            in = UnicodeConverter.class.getResourceAsStream(Constants.RESOURCES + FILENAME);
             //TODO: Remove this as soon as it's no longer necessary to run the library on its own
             if (in == null) {
                 in = UnicodeConverter.class.getClassLoader().getResourceAsStream(FILENAME);

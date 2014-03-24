@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 /**
  * Represents the number object from the PDF. This is used for all kinds of specification, such as the number of pages in the api.
@@ -31,6 +32,10 @@ public class PdfNumber extends AbstractPdfObject {
 
     public void setNumber(double number) {
         this.number = number;
+    }
+
+    public double getNumber() {
+        return this.number;
     }
 
     /**
@@ -75,7 +80,7 @@ public class PdfNumber extends AbstractPdfObject {
     public void writeToFile(OutputStream os) throws IOException {
         this.updateByteRepresentation();
         //write an int instead of a double if possible.
-        if (number == Math.floor(number)) {
+        if (FloatEqualityTester.equals(number, Math.floor(number))) {
             os.write(ByteEncoder.getBytes(String.valueOf((int) number)));
         } else {
             os.write(ByteEncoder.getBytes(String.valueOf(number)));

@@ -6,8 +6,12 @@
 .pmd
 .project
 document.pdf
+test.pdf
 easyDocument.pdf
 inDepthDocument.pdf
+TestTitle.pdf
+Toucan.pdf
 target
 bin
 src/main/resources/log4j.xml
+

@@ -22,6 +22,7 @@ public abstract class AbstractPdfObject {
      */
     public AbstractPdfObject(PdfObjectType type) {
         this.type = type;
+        byteRepresentation = new byte[0];
     }
 
     /**
@@ -56,9 +57,7 @@ public abstract class AbstractPdfObject {
      * @throws IOException
      */
     public void writeToFile(OutputStream os) throws IOException {
-        if (byteRepresentation != null) {
-            os.write(byteRepresentation);
-        }
+        os.write(byteRepresentation);
     }
 
     /**
@@ -66,14 +65,10 @@ public abstract class AbstractPdfObject {
      * @param bytes Array of bytes to be added.
      */
     public void addToByteRepresentation(byte[] bytes) {
-        if (byteRepresentation != null) {
-            byte[] newRepresentation = new byte[byteRepresentation.length + bytes.length];
-            System.arraycopy(byteRepresentation, 0, newRepresentation, 0, byteRepresentation.length);
-            System.arraycopy(bytes, 0, newRepresentation, byteRepresentation.length, bytes.length);
-            setByteRepresentation(newRepresentation);
-        } else {
-            setByteRepresentation(bytes);
-        }
+        byte[] newRepresentation = new byte[byteRepresentation.length + bytes.length];
+        System.arraycopy(byteRepresentation, 0, newRepresentation, 0, byteRepresentation.length);
+        System.arraycopy(bytes, 0, newRepresentation, byteRepresentation.length, bytes.length);
+        setByteRepresentation(newRepresentation);
     }
 
     /**

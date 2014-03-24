@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import nl.mad.pdflibrary.font.Type1CharacterMetric;
-import nl.mad.pdflibrary.font.Type1FontMetrics;
 import nl.mad.pdflibrary.model.FontMetricsFlagValues;
 
 import org.slf4j.Logger;
@@ -22,10 +21,6 @@ import org.slf4j.LoggerFactory;
  * @author Dylan de Wolff
  */
 public class AfmParser {
-    private interface ParsingAction {
-        void execute(AfmParser parser, StringTokenizer st);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(AfmParser.class);
     private String fontName;
     private String fullName;
@@ -232,7 +227,7 @@ public class AfmParser {
      * Processes the given BufferedReader and stores the data found.
      * @param file BufferedReader to read from.
      */
-    public void parse(BufferedReader file) {
+    public final void parse(BufferedReader file) {
         if (file != null) {
             try {
                 String currentLine = file.readLine();
@@ -312,71 +307,71 @@ public class AfmParser {
         kerningPairs.put(new KerningKey(firstCharacter, secondCharacter), widthOffset);
     }
 
-    public void setFontName(String fontName) {
+    private void setFontName(String fontName) {
         this.fontName = fontName;
     }
 
-    public void setFullName(String fullName) {
+    private void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
-    public void setFamilyName(String familyName) {
+    private void setFamilyName(String familyName) {
         this.familyName = familyName;
     }
 
-    public void setWeight(String weight) {
+    private void setWeight(String weight) {
         this.weight = weight;
     }
 
-    public void setItalicAngle(double italicAngle) {
+    private void setItalicAngle(double italicAngle) {
         this.italicAngle = italicAngle;
     }
 
-    public void setFixedPitch(boolean fixedPitch) {
+    private void setFixedPitch(boolean fixedPitch) {
         this.isFixedPitch = fixedPitch;
     }
 
-    public void setCharacterSet(String characterSet) {
+    private void setCharacterSet(String characterSet) {
         this.characterSet = characterSet;
     }
 
-    public void setFontBBox(double[] fontBBox) {
-        this.fontBBox = fontBBox;
+    private void setFontBBox(double[] fontBBox) {
+        this.fontBBox = fontBBox.clone();
     }
 
-    public void setUnderlinePosition(int underlinePosition) {
+    private void setUnderlinePosition(int underlinePosition) {
         this.underlinePosition = underlinePosition;
     }
 
-    public void setUnderlineThickness(int underlineThickness) {
+    private void setUnderlineThickness(int underlineThickness) {
         this.underlineThickness = underlineThickness;
     }
 
-    public void setEncodingScheme(String encodingScheme) {
+    private void setEncodingScheme(String encodingScheme) {
         this.encodingScheme = encodingScheme;
     }
 
-    public void setCapHeight(int capHeight) {
+    private void setCapHeight(int capHeight) {
         this.capHeight = capHeight;
     }
 
-    public void setXHeight(int newXHeight) {
+    private void setXHeight(int newXHeight) {
         this.xHeight = newXHeight;
     }
 
-    public void setAscender(int ascender) {
+    private void setAscender(int ascender) {
         this.ascender = ascender;
     }
 
-    public void setDescender(int descender) {
+    private void setDescender(int descender) {
         this.descender = descender;
     }
 
-    public void setStdHW(int stdHW) {
+    private void setStdHW(int stdHW) {
         this.stdHW = stdHW;
     }
 
-    public void setStdVW(int stdVW) {
+    private void setStdVW(int stdVW) {
         this.stdVW = stdVW;
     }
 
@@ -433,7 +428,7 @@ public class AfmParser {
      * @return the fontBBox
      */
     public double[] getFontBBox() {
-        return fontBBox;
+        return fontBBox.clone();
     }
 
     /**
@@ -572,11 +567,18 @@ public class AfmParser {
     }
 
     /**
+     * Used for determining which action to execute when parsing the file.
+     * @author Dylan de Wolff
+     */
+    private interface ParsingAction {
+        void execute(AfmParser parser, StringTokenizer st);
+    }
+
+    /**
      * Used as key for the kerning map in AFMParser. Contains two character names.
      * @author Dylan de Wolff
-     * @see Type1FontMetrics
      */
-    private class KerningKey {
+    private static class KerningKey {
         private final String characterName;
         private final String secondCharacterName;
 
@@ -592,7 +594,7 @@ public class AfmParser {
 
         @Override
         public boolean equals(Object o) {
-            if (o != null && o instanceof KerningKey) {
+            if (o instanceof KerningKey) {
                 KerningKey other = (KerningKey) o;
                 if (characterName.equals(other.characterName) && secondCharacterName.equals(other.secondCharacterName)) {
                     return true;

@@ -40,9 +40,9 @@ public class PdfName extends AbstractPdfObject {
     public final void setName(String name) {
         this.name = name;
         if (!name.startsWith("/")) {
-            String prefixName = "/" + name;
-            this.setByteRepresentation(prefixName);
+            this.name = "/" + name;
         }
+        this.setByteRepresentation(this.name);
     }
 
     /**

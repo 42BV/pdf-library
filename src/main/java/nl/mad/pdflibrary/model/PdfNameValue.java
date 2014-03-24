@@ -14,7 +14,8 @@ public enum PdfNameValue {
             "FontBBox"), ITALIC_ANGLE("ItalicAngle"), ASCENT("Ascent"), DESCENT("Descent"), LEADING("Leading"), CAP_HEIGHT("CapHeight"), XHEIGHT("XHeight"), STEMV(
             "StemV"), STEMH("StemH"), AVG_WIDTH("AvgWidth"), MAX_WIDTH("MaxWidth"), MISSING_WIDTH("MissingWidth"), FIRST_CHAR("FirstChar"), LAST_CHAR(
             "LastChar"), WIDTHS("Widths"), WIN_ANSI_ENCODING("WinAnsiEncoding"), PARENT("Parent"), FONT_FILE("FontFile"), FONT_FILE2("FontFile2"), FONT_FILE3(
-            "FontFile3"), ASCII_HEX_DECODE("ASCIIHexDecode"), ASCII_85_DECODE("ASCII85Decode"), FLATE_DECODE("FlateDecode"), COUNT("Count");
+            "FontFile3"), ASCII_HEX_DECODE("ASCIIHexDecode"), ASCII_85_DECODE("ASCII85Decode"), FLATE_DECODE("FlateDecode"), COUNT("Count"), LENGTH1("Length1"), LENGTH2(
+            "Length2"), LENGTH3("Length3");
 
     private String string;
 

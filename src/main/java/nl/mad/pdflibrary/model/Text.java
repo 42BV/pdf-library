@@ -14,10 +14,19 @@ public interface Text extends PlaceableDocumentPart {
     double getScaleX();
 
     /**
+     * Sets the width and height scale of the text.
+     * @param scaleX new width scale.
+     * @param scaleY new height scale.
+     * @return the Text object
+     */
+    Text scale(double scaleX, double scaleY);
+
+    /**
      * Sets the width scale of the text.
      * @param scaleX new scale.
+     * @return the Text object
      */
-    void setScaleX(double scaleX);
+    Text scaleX(double scaleX);
 
     /**
      * Returns the height scale of the text.
@@ -28,8 +37,17 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the height scale of the text.
      * @param scaleY new scale.
+     * @return the Text object
      */
-    void setScaleY(double scaleY);
+    Text scaleY(double scaleY);
+
+    /**
+     * Sets the x and y shearing for this text.
+     * @param shearX The x shearing.
+     * @param shearY The y shearing.
+     * @return the Text object.
+     */
+    Text shear(double shearX, double shearY);
 
     /**
      * Returns the shear (tilt) of the text on the X-axis.
@@ -40,8 +58,9 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the shear (tilt) of the text on the X-axis.
      * @param shearX new shear.
+     * @return the Text object.
      */
-    void setShearX(double shearX);
+    Text shearX(double shearX);
 
     /**
      * Returns the shear (tilt) of the text on the Y-axis.
@@ -52,8 +71,9 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the shear (tilt) of the text on the Y-axis.
      * @param shearY new shear.
+     * @return shearY
      */
-    void setShearY(double shearY);
+    Text shearY(double shearY);
 
     /**
      * Returns the text value.
@@ -64,8 +84,9 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the text that this object should represent.
      * @param text String containing the new text.
+     * @return the Text object
      */
-    void setText(String text);
+    Text text(String text);
 
     /**
      * Returns the font that this text uses.
@@ -76,8 +97,9 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the font that this text uses.
      * @param font Font to be used.
+     * @return the Text object
      */
-    void setFont(Font font);
+    Text font(Font font);
 
     /**
      * Returns the size of the text.
@@ -88,8 +110,24 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Sets the size of the text.
      * @param textSize Size of the text.
+     * @return the Text object
      */
-    void setTextSize(int textSize);
+    Text size(int textSize);
+
+    /**
+     * Places the text on the given position.
+     * @param x Position x of the text.
+     * @param y Position y of the text.
+     * @return the Text object
+     */
+    Text on(int x, int y);
+
+    /**
+     * Places the text on the given position.
+     * @param position Position of the text.
+     * @return the Text object
+     */
+    Text on(Position position);
 
     /**
      * Checks if the matrix of this text object is equal to the matrix of the given text object.

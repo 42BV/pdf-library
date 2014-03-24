@@ -7,7 +7,15 @@ package nl.mad.pdflibrary.model;
  */
 public interface PlaceableDocumentPart extends DocumentPart {
 
-    void setPosition(Position position);
-
+    /**
+     * Retrieves the position of this documentPart.
+     * @return Position of this object.
+     */
     Position getPosition();
+
+    /**
+     * Sets the position to the given position.
+     * @param position Position to use.
+     */
+    void setPosition(Position position);
 }

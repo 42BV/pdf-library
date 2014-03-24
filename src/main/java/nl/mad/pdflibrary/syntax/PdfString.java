@@ -19,6 +19,7 @@ public class PdfString extends AbstractPdfObject {
      */
     public PdfString() {
         super(PdfObjectType.STRING);
+        string = "";
     }
 
     /**
@@ -28,6 +29,7 @@ public class PdfString extends AbstractPdfObject {
     public PdfString(String string) {
         this();
         this.string = string;
+        this.setByteRepresentation(string);
     }
 
     @Override

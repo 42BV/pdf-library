@@ -11,6 +11,6 @@ public interface DocumentPart {
      * Returns the type of this DocumentPart.
      * @return DocumentPartType specifying the type of this part.
      */
-    public DocumentPartType getType();
+    DocumentPartType getType();
 
 }

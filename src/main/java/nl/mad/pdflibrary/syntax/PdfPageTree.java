@@ -41,7 +41,7 @@ public class PdfPageTree extends PdfDictionary {
         for (PdfIndirectObject kid : kids) {
             PdfObjectType type = kid.getObject().getType();
             if (type.equals(PdfObjectType.PAGETREE)) {
-                ((PdfPageTree) kid.getObject()).getSize();
+                size += ((PdfPageTree) kid.getObject()).getSize();
             } else {
                 ++size;
             }

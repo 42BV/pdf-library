@@ -1,7 +1,6 @@
 package nl.mad.pdflibrary.font;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 import nl.mad.pdflibrary.font.parser.AfmParser;
 import nl.mad.pdflibrary.font.parser.PfbParser;
 import nl.mad.pdflibrary.model.FontMetrics;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 import nl.mad.pdflibrary.utility.UnicodeConverter;
 
 import org.slf4j.Logger;
@@ -25,16 +24,16 @@ public class Type1FontMetrics implements FontMetrics {
     private AfmParser afm;
     private PfbParser pfb;
     private String filename;
+
     /**
      * Value used to convert from the unit used in afm to the unit used by PDF.
      */
-    private final double conversionToPoints = 0.001;
+    private static final double CONVERSION_TO_POINTS = 0.001;
 
     /**
      * Creates a new instance of Type1FontMetrics and immediately parses the file corresponding to the given filename.
      * @param filename Font file to be parsed.
-     * @throws FileNotFoundException 
-     * @throws IOException
+     * @throws FileNotFoundException
      */
     public Type1FontMetrics(String filename) throws FileNotFoundException {
         this.filename = filename;
@@ -44,10 +43,10 @@ public class Type1FontMetrics implements FontMetrics {
     /**
      * Creates a new AFMParser, which starts the parsing of the afm file, and stores the parser.
      * @throws FileNotFoundException 
-     * @throws IOException
      */
     public void parseAfm() throws FileNotFoundException {
-        InputStream file = getFile(".afm");
+        InputStream file;
+        file = getFile(".afm");
         afm = new AfmParser(file);
     }
 
@@ -64,10 +63,14 @@ public class Type1FontMetrics implements FontMetrics {
         if (!localFilename.toLowerCase().endsWith(extension)) {
             localFilename += extension;
         }
-        InputStream in = getClass().getResourceAsStream(PdfConstants.RESOURCES + localFilename);
+        InputStream in = getClass().getResourceAsStream(Constants.RESOURCES + localFilename);
         //TODO: Remove this as soon as it's no longer necessary to run the library on its own
         if (in == null) {
             in = this.getClass().getClassLoader().getResourceAsStream(localFilename);
+            if (in == null) {
+                logger.error("Could not find .afm file corresponding to the given filename: " + filename + ". You should not use this font any further.");
+                throw new FileNotFoundException("Could not find .afm file corresponding to the given filename: " + filename);
+            }
         }
         return in;
     }
@@ -81,18 +84,20 @@ public class Type1FontMetrics implements FontMetrics {
         }
     }
 
+    /**
+     * Starts parsing the pfb file if it hasn't been parsed already.
+     * @return byte array containing the parsed file. Will be an empty array if the file could not be found.
+     */
     private byte[] parsePfb() {
         InputStream file = null;
         try {
             file = getFile(".pfb");
         } catch (FileNotFoundException e) {
             logger.info("Could not find Pfb file for {}, will continue without embedding Pfb data.", filename);
+            return new byte[0];
         }
-        if (file != null) {
-            pfb = new PfbParser(file);
-            return pfb.getPfbData();
-        }
-        return new byte[0];
+        pfb = new PfbParser(file);
+        return pfb.getPfbData();
     }
 
     @Override
@@ -211,10 +216,12 @@ public class Type1FontMetrics implements FontMetrics {
     @Override
     public List<Integer> getWidths(int firstCharCode, int lastCharCode) {
         List<Integer> widths = new ArrayList<Integer>();
-        for (Type1CharacterMetric cm : afm.getCharacterMetrics().values()) {
-            int c = cm.getC();
-            if (c >= firstCharCode && c <= lastCharCode) {
+        for (int i = firstCharCode; i < lastCharCode + 1; ++i) {
+            Type1CharacterMetric cm = afm.getCharacterMetric(UnicodeConverter.getPostscriptForUnicode(i));
+            if (cm != null) {
                 widths.add(cm.getWx());
+            } else {
+                widths.add(0);
             }
         }
         return widths;
@@ -240,12 +247,12 @@ public class Type1FontMetrics implements FontMetrics {
 
     @Override
     public double getWidthPoint(String charName) {
-        return this.getWidth(charName) * conversionToPoints;
+        return this.getWidth(charName) * CONVERSION_TO_POINTS;
     }
 
     @Override
     public double getWidthPointOfString(String string, int fontSize, boolean kerning) {
-        return (this.getWidthOfString(string, fontSize, kerning) * conversionToPoints);
+        return (this.getWidthOfString(string, fontSize, kerning) * CONVERSION_TO_POINTS);
     }
 
     @Override
@@ -255,12 +262,12 @@ public class Type1FontMetrics implements FontMetrics {
 
     @Override
     public double getConversionToPointsValue() {
-        return this.conversionToPoints;
+        return CONVERSION_TO_POINTS;
     }
 
     @Override
     public int getLeadingForSize(int textSize) {
-        return (int) (this.getAscent() * textSize * conversionToPoints) + DEFAULT_LEADING_ADDITION;
+        return (int) (this.getAscent() * textSize * CONVERSION_TO_POINTS) + DEFAULT_LEADING_ADDITION;
     }
 
     public String getFullName() {
@@ -293,5 +300,10 @@ public class Type1FontMetrics implements FontMetrics {
 
     public String getFilename() {
         return this.filename;
+    }
+
+    @Override
+    public int[] getFontProgramLengths() {
+        return pfb.getLengths();
     }
 }

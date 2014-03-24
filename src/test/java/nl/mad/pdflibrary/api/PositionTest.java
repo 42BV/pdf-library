@@ -20,6 +20,10 @@ public class PositionTest {
         assertEquals("The custom positioning was not set correctly.", false, pos.hasCustomPosition());
         pos.setX(testPositionValue);
         assertEquals("The custom positioning was not set correctly.", true, pos.hasCustomPosition());
+        pos.setY(testPositionValue);
+        assertEquals("The custom positioning was not set correctly.", true, pos.hasCustomPosition());
+        pos.setX(Position.UNUSED_VALUE);
+        assertEquals("The custom positioning was not set correctly.", true, pos.hasCustomPosition());
     }
 
     @Test

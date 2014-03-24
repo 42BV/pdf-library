@@ -9,9 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.FontMetrics;
+import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.model.Position;
@@ -20,6 +23,7 @@ import nl.mad.pdflibrary.syntax.PdfDictionary;
 import nl.mad.pdflibrary.syntax.PdfFile;
 import nl.mad.pdflibrary.syntax.PdfFont;
 import nl.mad.pdflibrary.syntax.PdfFontDescriptor;
+import nl.mad.pdflibrary.syntax.PdfFontProgram;
 import nl.mad.pdflibrary.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.syntax.PdfObjectType;
 import nl.mad.pdflibrary.syntax.PdfPage;
@@ -27,7 +31,7 @@ import nl.mad.pdflibrary.syntax.PdfStream;
 import nl.mad.pdflibrary.syntax.PdfString;
 import nl.mad.pdflibrary.syntax.PdfText;
 import nl.mad.pdflibrary.utility.ByteEncoder;
-import nl.mad.pdflibrary.utility.PdfConstants;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * Represents the PDF document itself, containing the four different sections of a PDF document.
@@ -43,8 +47,6 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfPage currentPage;
     private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
-    private int defaultPageHeight;
-    private int defaultPageWidth;
 
     /**
      * The default line separator.
@@ -54,15 +56,13 @@ public class PdfDocument {
 
     /**
      * Creates a new instance of PdfDocument.
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException
      */
-    public PdfDocument(int width, int height) throws UnsupportedEncodingException {
+    public PdfDocument() throws UnsupportedEncodingException {
         this.header = new PdfHeader();
         this.body = new PdfBody();
         this.xref = new PdfCrossReferenceTable();
         this.trailer = new PdfTrailer();
-        this.defaultPageHeight = height;
-        this.defaultPageWidth = width;
     }
 
     /**
@@ -72,16 +72,36 @@ public class PdfDocument {
     public void add(DocumentPart part) {
         switch (part.getType()) {
         case TEXT:
-            this.addText((Text) part, new PdfText(), false, false, false);
+            if (part instanceof Text) {
+                this.addText((Text) part, new PdfText(), false, false, false);
+            }
             break;
         case PARAGRAPH:
-            this.addParagraph((Paragraph) part);
+            if (part instanceof Paragraph) {
+                this.addParagraph((Paragraph) part);
+            }
             break;
         case FONT:
-            this.addFont((Font) part);
+            if (part instanceof Font) {
+                this.addFont((Font) part);
+            }
             break;
+        case PAGE:
+            if (part instanceof Page) {
+                this.addPage((Page) part);
+            }
         default:
             break;
+        }
+    }
+
+    /**
+     * Creates PdfObjects for the given parts and adds them to the document.
+     * @param parts Document parts to add.
+     */
+    public void add(List<DocumentPart> parts) {
+        for (DocumentPart part : parts) {
+            this.add(part);
         }
     }
 
@@ -125,7 +145,7 @@ public class PdfDocument {
      */
     private void calculatePosition(Text text, boolean inParagraph) {
         Font font = text.getFont();
-        double spaceWidth = font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
+        double spaceWidth = font.getFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
         if (inParagraph) {
             text.getPosition().setX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
             text.getPosition().setY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
@@ -144,7 +164,7 @@ public class PdfDocument {
      * @return int containing the calculated leading. 
      */
     private int calculateLeading(Font font, int textSize) {
-        return font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
+        return font.getFontFamily().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
     }
 
     /**
@@ -190,9 +210,9 @@ public class PdfDocument {
     private void handleOverflow(Text text, String overflow, boolean isParagraph, int posX) {
         //if a part of the text doesn't fit on the current page we create a new page and add the text to the next one.
         if (overflow != "") {
-            this.addPage();
+            this.addPage(new BasePage(currentPage.getWidth(), currentPage.getHeight()));
             Text overflowText = new BaseText(text);
-            overflowText.setText(overflow);
+            overflowText.text(overflow);
             calculatePosition(overflowText, false);
             PdfText pdfText;
             if (isParagraph) {
@@ -238,12 +258,14 @@ public class PdfDocument {
     public PdfIndirectObject addFont(Font font) {
         if (!fontList.containsKey(font) && font != null) {
             PdfFontDescriptor newFontDescriptor = new PdfFontDescriptor(font);
-            byte[] fontProgramFile = font.getBaseFontFamily().getMetricsForStyle(font.getStyle()).getFontFile();
+            FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
+            byte[] fontProgramFile = metrics.getFontFile();
             if (fontProgramFile != null) {
-                PdfStream stream = new PdfStream();
-                stream.add(new PdfFile(fontProgramFile));
-                PdfIndirectObject indirectFontFile = body.addObject(stream);
-                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getBaseFontFamily().getSubType());
+                PdfFontProgram fontProgram = new PdfFontProgram();
+                fontProgram.setFontProgram(new PdfFile(fontProgramFile));
+                fontProgram.setLengths(metrics.getFontProgramLengths());
+                PdfIndirectObject indirectFontFile = body.addObject(fontProgram);
+                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getFontFamily().getSubType());
             }
 
             PdfFont newFont = new PdfFont(font);
@@ -259,20 +281,12 @@ public class PdfDocument {
     }
 
     /**
-     * Adds a new page with the default size and changes the current page.
-     */
-    public void addPage() {
-        this.addPage(defaultPageWidth, defaultPageHeight);
-    }
-
-    /**
      * Adds a new page and changes the current page.
-     * @param width Width of page.
-     * @param height Height of page.
+     * @param page Page to add.
      */
-    public void addPage(int width, int height) {
-        PdfPage page = new PdfPage(width, height);
-        currentPage = (PdfPage) body.addPage(page).getObject();
+    public void addPage(Page page) {
+        PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight());
+        currentPage = (PdfPage) body.addPage(pdfPage).getObject();
     }
 
     /**
@@ -306,7 +320,7 @@ public class PdfDocument {
     public void write(OutputStream os) throws IOException {
         DataOutputStream dos = new DataOutputStream(os);
         header.writeToFile(dos);
-        dos.write(PdfConstants.LINE_SEPARATOR);
+        dos.write(Constants.LINE_SEPARATOR);
         body.writeToFile(dos);
         xref.fillTableWithIndirectObjects(body.getAllIndirectObjects());
         xref.writeToFile(dos);
@@ -327,10 +341,10 @@ public class PdfDocument {
      */
     public void addNewLine() {
         //No implementation yet
-        if (currentPage.streamEmpty()) {
-
-        } else {
-
-        }
+        //        if (currentPage.streamEmpty()) {
+        //
+        //        } else {
+        //
+        //        }
     }
 }

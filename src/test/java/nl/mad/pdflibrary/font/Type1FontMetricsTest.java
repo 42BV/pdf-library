@@ -1,17 +1,20 @@
 package nl.mad.pdflibrary.font;
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import nl.mad.pdflibrary.model.FontMetrics;
+import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;
 import org.junit.Test;
 
-//getters are not tested here because they simply pass along the variables to a parser. 
-//Therefore testing the parsers also tests the behaviour of this class. The only get methods that are tested 
-//have their own behaviour and don't simply pass the request along.
 public class Type1FontMetricsTest {
     private Type1FontMetrics metrics;
     private final int spaceWidth = 278;
+    private final int aWidth = 556;
     private final int capitalAWidth = 667;
     private final int capitalCWidth = 722;
     private final int capitalACKerningOffset = -30;
@@ -20,31 +23,40 @@ public class Type1FontMetricsTest {
     private final int firstChar = 32;
     private final int lastChar = 36;
     private final int ascend = 718;
-    private final double delta = 0.0001;
 
     @Before
     public void setUp() throws Exception {
         metrics = new Type1FontMetrics("Helvetica");
     }
 
-    @Test
-    public void testFilename() {
+    @Test(expected = FileNotFoundException.class)
+    public void testFilename() throws FileNotFoundException {
         assertEquals("Filename was not set correctly. ", "Helvetica", metrics.getFilename());
+        metrics = new Type1FontMetrics("nonexisting.afm");
     }
 
     @Test
-    public void testParsePfb() {
+    public void testFontFile() throws IOException {
         boolean correctResult = false;
-        if (metrics.getFontFile().length > 0) {
-            correctResult = true;
-        }
-        assertEquals("Parsing .pfb did not go correctly, this could be caused by not being able to find the document. ", true, correctResult);
+        byte[] fontFile = metrics.getFontFile();
+        assertEquals("Parsing .pfb did not go correctly, this could be caused by not being able to find the document. ", true, fontFile.length > 0);
+        //on second retrieval it will not parse and simply return the array
+        assertEquals("Second font file retrieval went wrong.", true, metrics.getFontFile().length > 0);
+
     }
+
+    //
+    //    @Test
+    //    public void testNonExistingFontFile() {
+    //
+    //    }
 
     @Test
     public void testGetWidth() {
-        int width = metrics.getWidth("space");
-        assertEquals("Width of the metric was incorrect. ", spaceWidth, width);
+        int width = metrics.getWidth((int) 'a');
+        assertEquals("Width of the metric was incorrect. ", aWidth, width);
+        width = metrics.getWidth("ikbestaniet");
+        assertEquals(0, width);
     }
 
     @Test
@@ -58,7 +70,7 @@ public class Type1FontMetricsTest {
         int expectedWidth = (spaceWidth * 2 + capitalAWidth) * textSize;
         assertEquals("Width of string is incorrect. ", expectedWidth, metrics.getWidthOfString(" A ", textSize, false));
         assertEquals("Width of string in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
-                metrics.getWidthPointOfString(" A ", textSize, false), delta);
+                metrics.getWidthPointOfString(" A ", textSize, false), FloatEqualityTester.EPSILON);
     }
 
     @Test
@@ -66,7 +78,7 @@ public class Type1FontMetricsTest {
         int expectedWidth = (capitalAWidth + capitalCWidth + capitalACKerningOffset) * textSize;
         assertEquals("Width of string with kerning is incorrect. ", expectedWidth, metrics.getWidthOfString("AC", textSize, true));
         assertEquals("Width of string with kerning in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
-                metrics.getWidthPointOfString("AC", textSize, true), delta);
+                metrics.getWidthPointOfString("AC", textSize, true), FloatEqualityTester.EPSILON);
     }
 
     @Test
