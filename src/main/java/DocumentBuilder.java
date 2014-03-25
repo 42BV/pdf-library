@@ -1,17 +1,29 @@
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
 import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.api.Document;
+import nl.mad.pdflibrary.model.DocumentPart;
+import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.structure.PdfDocument;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The DocumentBuilder is the access point for the library and allows the creation of documents. 
- * By instantiating a new DocumentBuilder you will also automatically create a new document. 
- * You can retrieve the document by using the getDocument function. This will allow you to edit the document metadata, such as the title and author.
+ * This class allows you to edit the document metadata, such as the title and author.
  * DocumentBuilder also offers several methods for adding content to the document such as addText and addParagraph. 
  * All the methods for adding objects return the object made allowing you to edit them as you please. 
  * If you are done editing the document, use the finish function. If you wish to make adjustments afterwards, simply use the finish method again 
@@ -20,8 +32,25 @@ import nl.mad.pdflibrary.model.Text;
  *
  */
 public class DocumentBuilder {
-    private Document document;
     private int currentPageNumber;
+    private String author;
+    private String title;
+    private String subject;
+    private Calendar creationDate;
+    private final Logger logger = LoggerFactory.getLogger(DocumentBuilder.class);
+    private static final String DEFAULT_FILE_NAME = "document.pdf";
+    /**
+     * A4 page width.
+     */
+    public static final int A4_WIDTH = 595;
+    /**
+     * A4 page height.
+     */
+    public static final int A4_HEIGHT = 842;
+    private int defaultPageWidth = A4_WIDTH;
+    private int defaultPageHeight = A4_HEIGHT;
+    private List<Page> pages;
+    private String filename;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -29,16 +58,32 @@ public class DocumentBuilder {
      * You can add content to the document by using any of the add* methods.
      */
     public DocumentBuilder() {
-        document = new Document();
+        pages = new LinkedList<Page>();
+        author = "";
+        title = "";
+        subject = "";
+        filename = "";
+        creationDate = Calendar.getInstance();
         currentPageNumber = 1;
     }
 
     /**
-     * Returns the actual document instance. This allows you to edit document metadata.
-     * @return document object
+     * Adds a new part to the document. 
+     * Use this method to add text, fonts or paragraphs to a specific page in the document.
+     * 
+     * @param part New document part to be added to the document.
+     * @param pagenumber Number of the page to add this part to.
+     * @see DocumentPart
+     * @return the document object.
      */
-    public Document getDocument() {
-        return this.document;
+    private void addPart(DocumentPart part) {
+        if (part.getType() != DocumentPartType.PAGE) {
+            if (pages.size() == 0) {
+                this.addPage();
+            }
+            Page currentPage = pages.get(currentPageNumber - 1);
+            currentPage.add(part);
+        }
     }
 
     /**
@@ -48,7 +93,7 @@ public class DocumentBuilder {
      */
     public Font addFont() {
         Font font = new BaseFont();
-        document.addPart(font, currentPageNumber);
+        this.addPart(font);
         return font;
     }
 
@@ -58,10 +103,35 @@ public class DocumentBuilder {
      * @see Page
      */
     public Page addPage() {
-        Page page = new BasePage(document.getDefaultPageWidth(), document.getDefaultPageHeight());
-        document.addPage(page);
-        this.currentPageNumber = document.getPageAmount();
+        Page page = new BasePage(defaultPageWidth, defaultPageHeight);
+        pages.add(page);
+        this.currentPageNumber = this.getPageAmount();
         return page;
+    }
+
+    /**
+     * Creates a new page and adds it to the document on the given position. Use the returned page object to specify the attributes of the page.
+     * @param pageNumber The position to place the page on.
+     * @return page object, null if the specified page number is invalid
+     */
+    public Page addPage(int pageNumber) {
+        Page page = null;
+        if (pageNumber > 0) {
+            page = new BasePage(defaultPageWidth, defaultPageHeight);
+            pages.add(pageNumber - 1, page);
+            currentPageNumber = pageNumber;
+        } else {
+            logger.warn("Invalid page number specified, returning null.");
+        }
+        return page;
+    }
+
+    /**
+     * Returns the amount of pages in the document.
+     * @return int containing amount of pages.
+     */
+    public int getPageAmount() {
+        return this.pages.size();
     }
 
     /**
@@ -70,7 +140,132 @@ public class DocumentBuilder {
      * @return page instance or null if there is no page for the given number.
      */
     public Page getPage(int pageNumber) {
-        return document.getPage(pageNumber);
+        if (pageNumber > 0 && pages.size() >= pageNumber) {
+            return this.pages.get(pageNumber - 1);
+        }
+        logger.warn("Could not find page on the given page number, returned null");
+        return null;
+    }
+
+    /**
+     * Prints the document to a PDF file.
+     */
+    public void finish() {
+        checkFilename();
+        try {
+            this.finish(new FileOutputStream(filename));
+        } catch (FileNotFoundException e) {
+            logger.error("File not found exception ocurred during the creation of a file with the given filename.");
+        }
+    }
+
+    /**
+     * Checks the file name and changes it if needed.
+     */
+    private void checkFilename() {
+        String file = filename;
+        if (file.isEmpty()) {
+            if (!title.isEmpty()) {
+                file = title;
+            } else {
+                file = DEFAULT_FILE_NAME;
+            }
+        }
+
+        if (!file.endsWith(".pdf")) {
+            file += ".pdf";
+        }
+        filename = file;
+    }
+
+    /**
+     * Prints the document to the given OutputStream and no longer allows editing of the document.
+     * @param os The OutputStream to write to.
+     */
+    public void finish(OutputStream os) {
+        try {
+            PdfDocument pdfDoc = new PdfDocument();
+            for (Page page : pages) {
+                pdfDoc.add(page);
+                pdfDoc.add(page.getContent());
+            }
+            pdfDoc.addDocumentInfo(author, title, subject, Calendar.getInstance());
+            pdfDoc.write(os);
+        } catch (IOException e) {
+            logger.error("IOException ocurred during the writing process of the PDF file.");
+        }
+    }
+
+    /**
+     * Sets the creation date of the document.
+     * @param calendar Calendar containing the date.
+     * @return the document.
+     */
+    public DocumentBuilder on(Calendar calendar) {
+        this.creationDate = calendar;
+        return this;
+    }
+
+    /**
+     * Returns the creation date for this document.
+     * @return calendar containing the creation date.
+     */
+    public Calendar getCreationDate() {
+        return this.creationDate;
+    }
+
+    /**
+     * Set the author of the document.
+     * @param writer The author that wrote the document.
+     * @return the document.
+     */
+    public DocumentBuilder writtenBy(String writer) {
+        this.author = writer;
+        return this;
+    }
+
+    /**
+     * Returns the author of the document.
+     * @return String containing authors name.
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * Set the title of the document.
+     * @param documentTitle Title to use.
+     * @return the document.
+     */
+    public DocumentBuilder title(String documentTitle) {
+        this.title = documentTitle;
+        return this;
+    }
+
+    /**
+     * Returns the title of this document.
+     * @return String containing title.
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Set the subject of the document.
+     * @param documentSubject Subject to use.
+     * @return the document.
+     */
+    public DocumentBuilder about(String documentSubject) {
+        this.subject = documentSubject;
+        return this;
+    }
+
+    /**
+     * Returns the subject of this document.
+     * @return String containing subject.
+     */
+    public String getSubject() {
+        return subject;
     }
 
     /**
@@ -92,7 +287,7 @@ public class DocumentBuilder {
      */
     public Text addText(String s) {
         Text text = createText(s);
-        document.addPart(text, currentPageNumber);
+        this.addPart(text);
         return text;
     }
 
@@ -125,7 +320,7 @@ public class DocumentBuilder {
      */
     public Paragraph addParagraph() {
         Paragraph paragraph = new BaseParagraph();
-        document.addPart(paragraph, currentPageNumber);
+        this.addPart(paragraph);
         return paragraph;
     }
 
@@ -135,7 +330,7 @@ public class DocumentBuilder {
      * @return the DocumentBuilder
      */
     public DocumentBuilder setCurrentPage(Page page) {
-        return this.setCurrentPage(document.getPageNumberOf(page));
+        return this.setCurrentPage(this.getPageNumberOf(page));
     }
 
     /**
@@ -144,17 +339,36 @@ public class DocumentBuilder {
      * @return the DocumentBuilder
      */
     public DocumentBuilder setCurrentPage(int pageNumber) {
-        if (pageNumber > 0 && pageNumber <= document.getPageAmount()) {
+        if (pageNumber > 0 && pageNumber <= this.getPageAmount()) {
             this.currentPageNumber = pageNumber;
         }
         return this;
     }
 
     /**
-     * Finishes up the document by converting it to a PDF. If no custom filename has been specified before calling this method the title of
-     * the document will be used instead. If the title is not specified either, the document will simply be named "document".
+     * Sets the filename of the document.
+     * @param documentFilename Name to use.
+     * @return the document.
      */
-    public void finish() {
-        document.finish();
+    public DocumentBuilder filename(String documentFilename) {
+        this.filename = documentFilename;
+        return this;
+    }
+
+    /**
+     * Returns the filename for this document.
+     * @return String containing filename.
+     */
+    public String getFilename() {
+        return this.filename;
+    }
+
+    /**
+     * Returns the page number corresponding to the given page.
+     * @param page Page to look for.
+     * @return int containing page number, 0 if it could not be found
+     */
+    public int getPageNumberOf(Page page) {
+        return pages.indexOf(page) + 1;
     }
 }

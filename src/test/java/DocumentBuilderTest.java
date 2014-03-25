@@ -1,6 +1,9 @@
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
@@ -21,36 +24,45 @@ public class DocumentBuilderTest {
 
     @Test
     public void testCreation() {
-        assertEquals(false, builder.getDocument() == null);
+        assertEquals(false, builder.getCreationDate() == null);
     }
 
     @Test
     public void testFont() {
         Font f = builder.addFont();
-        assertEquals(DocumentPartType.FONT, builder.getDocument().getPage(1).getContent().get(0).getType());
+        assertEquals(DocumentPartType.FONT, builder.getPage(1).getContent().get(0).getType());
     }
 
     @Test
     public void testText() {
         Text t = builder.addText();
-        assertEquals(DocumentPartType.TEXT, builder.getDocument().getPage(1).getContent().get(0).getType());
+        assertEquals(DocumentPartType.TEXT, builder.getPage(1).getContent().get(0).getType());
         assertEquals("", t.getText());
 
         t = builder.createText();
-        assertEquals(1, builder.getDocument().getPage(1).getContent().size());
+        assertEquals(1, builder.getPage(1).getContent().size());
         assertEquals("", t.getText());
     }
 
     @Test
     public void testParagraph() {
         Paragraph p = builder.addParagraph();
-        assertEquals(DocumentPartType.PARAGRAPH, builder.getDocument().getPage(1).getContent().get(0).getType());
+        assertEquals(DocumentPartType.PARAGRAPH, builder.getPage(1).getContent().get(0).getType());
     }
 
     @Test
     public void testPage() {
-        Page p = builder.addPage();
-        assertEquals(p, builder.getDocument().getPage(1));
+        int expectedAmount = builder.getPageAmount() + 1;
+        builder.addPage().size(200, 200);
+        assertEquals("The new page has not been added correctly.", expectedAmount, builder.getPageAmount());
+        Page testPage = builder.addPage(1);
+        assertEquals("The new page has not been added correctly on the given position. ", testPage, builder.getPage(1));
+        builder.addPage(0);
+        assertEquals("The new page has been added on an incorrect position. ", 2, builder.getPageAmount());
+        Page page = builder.getPage(-1);
+        assertEquals(null, page);
+        page = builder.getPage(999);
+        assertEquals(null, page);
     }
 
     @Test
@@ -79,9 +91,60 @@ public class DocumentBuilderTest {
     }
 
     @Test
-    public void testFinish() throws IOException {
-        builder.getDocument().title("test");
+    public void testAuthor() {
+        builder.writtenBy("TestAuthor");
+        assertEquals("The author was not set correctly. ", "TestAuthor", builder.getAuthor());
+    }
+
+    @Test
+    public void testTitle() {
+        builder.title("TestTitle");
+        assertEquals("The title was not set correctly. ", "TestTitle", builder.getTitle());
+    }
+
+    @Test
+    public void testSubject() {
+        builder.about("TestSubject");
+        assertEquals("The subject was not set correctly. ", "TestSubject", builder.getSubject());
+    }
+
+    @Test
+    public void testCreationDate() {
+        Calendar cal = Calendar.getInstance();
+        builder.on(cal);
+        assertEquals("The creation date was not set correctly. ", cal, builder.getCreationDate());
+    }
+
+    @Test
+    public void testFilename() throws IOException {
+        File tempFile = File.createTempFile("document", ".pdf");
+
+        //test filename acquisition with empty filename and title
         builder.finish();
-        assertEquals("test.pdf", builder.getDocument().getFilename());
+        assertEquals("The filename was not set correctly. ", "document.pdf", builder.getFilename());
+        tempFile.delete();
+
+        //test filename acquisition with empty filename and filled title
+        builder.filename("");
+        builder.title("Test");
+        tempFile = File.createTempFile("Test", ".pdf");
+        builder.finish();
+        assertEquals("The filename was not set correctly. ", "Test.pdf", builder.getFilename());
+
+        //test filename acquisition with filename without extension
+        builder.filename("Test");
+        builder.finish();
+        assertEquals("The filename was not set correctly. ", "Test.pdf", builder.getFilename());
+        tempFile.delete();
+
+    }
+
+    @Test
+    public void testFinish() throws IOException {
+        builder.addPage();
+        builder.addPage();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        builder.finish(baos);
+        assertEquals(true, baos.size() > 0);
     }
 }

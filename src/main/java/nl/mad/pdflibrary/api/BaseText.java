@@ -4,6 +4,7 @@ import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.utility.Constants;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 /**
@@ -40,7 +41,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         super(DocumentPartType.TEXT);
         textString = text;
         textSize = DEFAULT_TEXT_SIZE;
-        font = Document.DEFAULT_FONT;
+        font = Constants.DEFAULT_FONT;
         this.setPosition(new Position());
         scaleX = 1;
         scaleY = 1;

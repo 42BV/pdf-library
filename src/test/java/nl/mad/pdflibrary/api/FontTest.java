@@ -9,6 +9,7 @@ import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.FontStyle;
+import nl.mad.pdflibrary.utility.Constants;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class FontTest {
     @Test
     public void testDefaultConstructor() {
         font = new BaseFont();
-        assertEquals("The font family was incorrectly copied from the default font. ", Document.DEFAULT_FONT.getFamily(), font.getFamily());
-        assertEquals("The font style was incorrectly copied from the default font. ", Document.DEFAULT_FONT.getStyle(), font.getStyle());
+        assertEquals("The font family was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getFamily(), font.getFamily());
+        assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());
     }
 }

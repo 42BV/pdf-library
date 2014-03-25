@@ -5,6 +5,7 @@ import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.FontStyle;
+import nl.mad.pdflibrary.utility.Constants;
 
 /**
  * Font class containing the font family, style and the actual font family this font is based on. 
@@ -21,7 +22,7 @@ public class BaseFont extends AbstractDocumentPart implements Font {
      * @see Document
      */
     public BaseFont() {
-        this(Document.DEFAULT_FONT.getFamily(), Document.DEFAULT_FONT.getStyle(), Document.DEFAULT_FONT.getFontFamily());
+        this(Constants.DEFAULT_FONT.getFamily(), Constants.DEFAULT_FONT.getStyle(), Constants.DEFAULT_FONT.getFontFamily());
     }
 
     /**
