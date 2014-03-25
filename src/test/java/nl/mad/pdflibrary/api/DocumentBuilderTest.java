@@ -1,3 +1,4 @@
+package nl.mad.pdflibrary.api;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;

@@ -1,3 +1,5 @@
+package nl.mad.pdflibrary.api;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -6,10 +8,6 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import nl.mad.pdflibrary.api.BaseFont;
-import nl.mad.pdflibrary.api.BasePage;
-import nl.mad.pdflibrary.api.BaseParagraph;
-import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
@@ -74,16 +72,19 @@ public class DocumentBuilder {
      * @param part New document part to be added to the document.
      * @param pagenumber Number of the page to add this part to.
      * @see DocumentPart
-     * @return the document object.
+     * @return the builder object.
      */
-    private void addPart(DocumentPart part) {
-        if (part.getType() != DocumentPartType.PAGE) {
-            if (pages.size() == 0) {
-                this.addPage();
+    public DocumentBuilder addPart(DocumentPart part) {
+        if (part != null) {
+            if (part.getType() != DocumentPartType.PAGE) {
+                if (pages.size() == 0) {
+                    this.addPage();
+                }
+                Page currentPage = pages.get(currentPageNumber - 1);
+                currentPage.add(part);
             }
-            Page currentPage = pages.get(currentPageNumber - 1);
-            currentPage.add(part);
         }
+        return this;
     }
 
     /**

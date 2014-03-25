@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.Calendar;
 
+import nl.mad.pdflibrary.api.DocumentBuilder;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamilyType;
 
