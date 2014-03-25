@@ -25,7 +25,7 @@ public class PdfArrayTest {
         array.addValue(test);
         assertEquals("The PdfObject was not added correctly to the array", test, array.getValues().get(0));
 
-        List<AbstractPdfObject> testList = new ArrayList<>();
+        List<AbstractPdfObject> testList = new ArrayList<AbstractPdfObject>();
         testList.add(new PdfName("test2"));
         testList.add(new PdfName("test3"));
         array.addValues(testList);
