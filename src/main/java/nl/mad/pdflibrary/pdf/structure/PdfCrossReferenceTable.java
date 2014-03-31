@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.pdf.structure;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.Constants;
 

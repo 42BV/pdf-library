@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
 

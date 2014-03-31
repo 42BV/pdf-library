@@ -9,6 +9,11 @@ import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.pdf.syntax.PdfFont;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.syntax.PdfText;
 
 import org.junit.Before;
 import org.junit.BeforeClass;

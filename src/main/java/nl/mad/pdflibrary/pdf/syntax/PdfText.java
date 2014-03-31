@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 
 import java.util.ArrayList;
 import java.util.List;

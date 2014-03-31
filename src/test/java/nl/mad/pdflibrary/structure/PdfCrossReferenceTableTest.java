@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.structure.PdfCrossReferenceTable;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 import org.junit.Before;

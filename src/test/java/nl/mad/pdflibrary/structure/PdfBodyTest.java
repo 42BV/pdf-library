@@ -7,9 +7,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfName;
-import nl.mad.pdflibrary.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.structure.PdfBody;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
 
 import org.junit.Before;
 import org.junit.Test;

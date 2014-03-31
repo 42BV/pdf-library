@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author Dylan de Wolff
  */
 public class AfmParser {
-    private final Logger logger = LoggerFactory.getLogger(AfmParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AfmParser.class);
     private String fontName;
     private String fullName;
     private String familyName;
@@ -242,7 +242,7 @@ public class AfmParser {
                 }
                 file.close();
             } catch (IOException e) {
-                logger.error("IOException occured during the parsing of Afm file.");
+                LOGGER.error("IOException occured during the parsing of Afm file.");
             }
         }
     }

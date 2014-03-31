@@ -28,7 +28,7 @@ All it requires is calling a few methods and passing along our data. Adding actu
    
     builder.addText("Example text").on(10, 10).size(11);
 
-Or adding it to a paragraph to make sure multiple text objects stay together. Note the use of createText() instead of addText() here, this makes sure the text object is only instantiated and not directly added to the document. Using addText and adding the text to a paragraph afterwards would result in showing the text twice!
+You can also add multiple text objects to a paragraph to make sure they stay together. Note the use of builder.createText() instead of builder.addText() here, this makes sure the text object is only instantiated and not directly added to the document. Using addText and adding the text to a paragraph afterwards would result in showing the text twice!
    
     builder.addParagraph().on(10, 10).addText(builder.createText().text("This stays")).addText(builder.createText("together"));
 

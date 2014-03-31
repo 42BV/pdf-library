@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.nio.charset.StandardCharsets;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfArray;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
 
 import org.junit.Before;
 import org.junit.Test;

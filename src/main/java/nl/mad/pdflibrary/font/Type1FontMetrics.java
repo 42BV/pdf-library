@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @see FontMetrics
  */
 public class Type1FontMetrics implements FontMetrics {
-    private final Logger logger = LoggerFactory.getLogger(Type1FontMetrics.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(Type1FontMetrics.class);
     private AfmParser afm;
     private PfbParser pfb;
     private String filename;
@@ -68,7 +68,7 @@ public class Type1FontMetrics implements FontMetrics {
         if (in == null) {
             in = this.getClass().getClassLoader().getResourceAsStream(localFilename);
             if (in == null) {
-                logger.error("Could not find .afm file corresponding to the given filename: " + filename + ". You should not use this font any further.");
+                LOGGER.error("Could not find .afm file corresponding to the given filename: " + filename + ". You should not use this font any further.");
                 throw new FileNotFoundException("Could not find .afm file corresponding to the given filename: " + filename);
             }
         }
@@ -93,7 +93,7 @@ public class Type1FontMetrics implements FontMetrics {
         try {
             file = getFile(".pfb");
         } catch (FileNotFoundException e) {
-            logger.info("Could not find Pfb file for {}, will continue without embedding Pfb data.", filename);
+            LOGGER.info("Could not find Pfb file for {}, will continue without embedding Pfb data.", filename);
             return new byte[0];
         }
         pfb = new PfbParser(file);

@@ -1,6 +1,7 @@
 package nl.mad.pdflibrary.utility;
 
 import nl.mad.pdflibrary.api.BaseFont;
+import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.FontStyle;
 
@@ -22,7 +23,7 @@ public final class Constants {
     /**
      * Default font. This is used when no font is specified.
      */
-    public static final BaseFont DEFAULT_FONT = new BaseFont(FontFamilyType.TIMES_ROMAN, FontStyle.NORMAL);
+    public static final Font DEFAULT_FONT = new BaseFont(FontFamilyType.TIMES_ROMAN, FontStyle.NORMAL);
 
     private Constants() {
     }

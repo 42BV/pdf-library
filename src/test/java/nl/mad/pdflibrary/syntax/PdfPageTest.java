@@ -3,6 +3,15 @@ package nl.mad.pdflibrary.syntax;
 import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfArray;
+import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
+import nl.mad.pdflibrary.pdf.syntax.PdfFont;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.syntax.PdfStream;
+import nl.mad.pdflibrary.pdf.syntax.PdfString;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import nl.mad.pdflibrary.pdf.syntax.PdfFile;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 
 import org.junit.Before;

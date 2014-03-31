@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FontFamily {
-    private final Logger logger = LoggerFactory.getLogger(FontFamily.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FontFamily.class);
     /**
      * Contains a BaseFontFamily for the five default font families.
      */
@@ -90,7 +90,7 @@ public class FontFamily {
                 metrics.put(filename, new Type1FontMetrics(filename));
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.toString());
+            LOGGER.error(e.toString());
         }
     }
 

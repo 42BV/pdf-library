@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.pdf.structure;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,18 +19,17 @@ import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
-import nl.mad.pdflibrary.syntax.PdfDictionary;
-import nl.mad.pdflibrary.syntax.PdfFile;
-import nl.mad.pdflibrary.syntax.PdfFont;
-import nl.mad.pdflibrary.syntax.PdfFontDescriptor;
-import nl.mad.pdflibrary.syntax.PdfFontProgram;
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfObjectType;
-import nl.mad.pdflibrary.syntax.PdfPage;
-import nl.mad.pdflibrary.syntax.PdfStream;
-import nl.mad.pdflibrary.syntax.PdfString;
-import nl.mad.pdflibrary.syntax.PdfText;
-import nl.mad.pdflibrary.utility.ByteEncoder;
+import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
+import nl.mad.pdflibrary.pdf.syntax.PdfFile;
+import nl.mad.pdflibrary.pdf.syntax.PdfFont;
+import nl.mad.pdflibrary.pdf.syntax.PdfFontDescriptor;
+import nl.mad.pdflibrary.pdf.syntax.PdfFontProgram;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.syntax.PdfStream;
+import nl.mad.pdflibrary.pdf.syntax.PdfString;
+import nl.mad.pdflibrary.pdf.syntax.PdfText;
 import nl.mad.pdflibrary.utility.Constants;
 
 /**
@@ -47,12 +46,7 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfPage currentPage;
     private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
-
-    /**
-     * The default line separator.
-     */
-    public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
-    private static final String CREATOR = "PDF-Library";
+    private static final String CREATOR = "Toucan-PDF";
 
     /**
      * Creates a new instance of PdfDocument.

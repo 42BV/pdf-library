@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.pdf.structure;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
-import nl.mad.pdflibrary.syntax.AbstractPdfObject;
-import nl.mad.pdflibrary.syntax.PdfDictionary;
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
-import nl.mad.pdflibrary.syntax.PdfObjectType;
-import nl.mad.pdflibrary.syntax.PdfPage;
-import nl.mad.pdflibrary.syntax.PdfPageTree;
+import nl.mad.pdflibrary.pdf.syntax.AbstractPdfObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObjectReference;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.syntax.PdfPageTree;
 
 /** 
  * Represents the body section of a PDF file. Responsible for creating indirect objects and storing all 

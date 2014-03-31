@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.pdf.structure;
 
 import java.io.IOException;
 import java.io.OutputStream;

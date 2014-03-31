@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.mad.pdflibrary.pdf.syntax.AbstractPdfObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfArray;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+
 import org.junit.Before;
 import org.junit.Test;
 

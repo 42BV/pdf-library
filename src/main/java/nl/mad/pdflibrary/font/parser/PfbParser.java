@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PfbParser {
-    private final Logger logger = LoggerFactory.getLogger(PfbParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PfbParser.class);
     private byte[] pfbData;
     private int[] lengths;
     private static final int HEADER_LENGTH = 18;
@@ -70,7 +70,7 @@ public class PfbParser {
                     pointer += got;
                 }
             } catch (IOException e) {
-                logger.error("An IOException occured during the parsing of a Pfb file.");
+                LOGGER.error("An IOException occured during the parsing of a Pfb file.");
             }
         }
     }
@@ -91,7 +91,7 @@ public class PfbParser {
                 amountRead = file.read(tempBuffer);
             }
         } catch (IOException e) {
-            logger.error("An IOException occured while reading the Pfb file.");
+            LOGGER.error("An IOException occured while reading the Pfb file.");
         }
         return out.toByteArray();
     }

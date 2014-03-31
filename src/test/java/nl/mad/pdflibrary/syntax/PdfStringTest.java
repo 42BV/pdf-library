@@ -8,6 +8,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import nl.mad.pdflibrary.pdf.syntax.PdfString;
+
 import org.junit.Before;
 import org.junit.Test;
 

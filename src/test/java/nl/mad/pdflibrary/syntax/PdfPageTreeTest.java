@@ -6,6 +6,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfPage;
+import nl.mad.pdflibrary.pdf.syntax.PdfPageTree;
 
 import org.junit.Before;
 import org.junit.Test;

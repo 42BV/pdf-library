@@ -15,7 +15,7 @@ import nl.mad.pdflibrary.utility.Constants;
 public class BaseFont extends AbstractDocumentPart implements Font {
     private FontFamilyType family;
     private FontStyle style;
-    private FontFamily baseFont;
+    private FontFamily fontFamily;
 
     /**
      * Creates a new instance of BaseFont. Will copy the default font specified in Document.
@@ -44,7 +44,7 @@ public class BaseFont extends AbstractDocumentPart implements Font {
         super(DocumentPartType.FONT);
         this.family = family;
         this.style = style;
-        this.baseFont = baseFont;
+        this.fontFamily = baseFont;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class BaseFont extends AbstractDocumentPart implements Font {
     public Font family(FontFamilyType fontFamily) {
         this.family = fontFamily;
         if (FontFamily.getDefaultFontFamily(family) != null) {
-            this.baseFont = FontFamily.getDefaultFontFamily(family);
+            this.fontFamily = FontFamily.getDefaultFontFamily(family);
         }
         return this;
     }
@@ -92,6 +92,6 @@ public class BaseFont extends AbstractDocumentPart implements Font {
 
     @Override
     public FontFamily getFontFamily() {
-        return baseFont;
+        return fontFamily;
     }
 }

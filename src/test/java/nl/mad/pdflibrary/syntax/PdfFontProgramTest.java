@@ -2,6 +2,9 @@ package nl.mad.pdflibrary.syntax;
 
 import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfFile;
+import nl.mad.pdflibrary.pdf.syntax.PdfFontProgram;
+import nl.mad.pdflibrary.pdf.syntax.PdfNumber;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 

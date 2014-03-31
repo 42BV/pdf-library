@@ -6,6 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfArray;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.syntax.PdfNumber;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfStream;
+import nl.mad.pdflibrary.pdf.syntax.PdfString;
+import nl.mad.pdflibrary.pdf.syntax.PdfText;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;

@@ -3,7 +3,8 @@ package nl.mad.pdflibrary.structure;
 import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.structure.PdfDocument;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 
 /**
  * Holds the reference to an indirect object, this class should be used whenever another object wishes to refer to an indirect object.

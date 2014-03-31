@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 
 /**
  * Enum containing the different types of PdfObjects.

@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -74,7 +74,7 @@ public class PdfNumber extends AbstractPdfObject {
      * Writes the number to the given OutputStream.
      * @param os OutputStream to write to.
      * @throws IOException 
-     * @see nl.mad.pdflibrary.syntax.AbstractPdfObject#writeToFile(java.io.OutputStream)
+     * @see nl.mad.pdflibrary.pdf.syntax.AbstractPdfObject#writeToFile(java.io.OutputStream)
      */
     @Override
     public void writeToFile(OutputStream os) throws IOException {

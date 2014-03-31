@@ -14,7 +14,7 @@ import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
-import nl.mad.pdflibrary.structure.PdfDocument;
+import nl.mad.pdflibrary.pdf.structure.PdfDocument;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class DocumentBuilder {
     private String title;
     private String subject;
     private Calendar creationDate;
-    private final Logger logger = LoggerFactory.getLogger(DocumentBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentBuilder.class);
     private static final String DEFAULT_FILE_NAME = "document.pdf";
     /**
      * A4 page width.
@@ -122,7 +122,7 @@ public class DocumentBuilder {
             pages.add(pageNumber - 1, page);
             currentPageNumber = pageNumber;
         } else {
-            logger.warn("Invalid page number specified, returning null.");
+            LOGGER.warn("Invalid page number specified, returning null.");
         }
         return page;
     }
@@ -144,7 +144,7 @@ public class DocumentBuilder {
         if (pageNumber > 0 && pages.size() >= pageNumber) {
             return this.pages.get(pageNumber - 1);
         }
-        logger.warn("Could not find page on the given page number, returned null");
+        LOGGER.warn("Could not find page on the given page number, returned null");
         return null;
     }
 
@@ -156,7 +156,7 @@ public class DocumentBuilder {
         try {
             this.finish(new FileOutputStream(filename));
         } catch (FileNotFoundException e) {
-            logger.error("File not found exception ocurred during the creation of a file with the given filename.");
+            LOGGER.error("File not found exception ocurred during the creation of a file with the given filename.");
         }
     }
 
@@ -193,7 +193,7 @@ public class DocumentBuilder {
             pdfDoc.addDocumentInfo(author, title, subject, Calendar.getInstance());
             pdfDoc.write(os);
         } catch (IOException e) {
-            logger.error("IOException ocurred during the writing process of the PDF file.");
+            LOGGER.error("IOException ocurred during the writing process of the PDF file.");
         }
     }
 
@@ -349,7 +349,7 @@ public class DocumentBuilder {
     /**
      * Sets the filename of the document.
      * @param documentFilename Name to use.
-     * @return the document.
+     * @return the documentBuilder.
      */
     public DocumentBuilder filename(String documentFilename) {
         this.filename = documentFilename;
@@ -371,5 +371,19 @@ public class DocumentBuilder {
      */
     public int getPageNumberOf(Page page) {
         return pages.indexOf(page) + 1;
+    }
+
+    /**
+     * Sets the default page size to use.
+     * @param width Default page width to use.
+     * @param height Default page height to use.
+     * @return the documentBuilder.
+     */
+    public DocumentBuilder setDefaultPageSize(int width, int height) {
+        if (width > 0 && height > 0) {
+            this.defaultPageHeight = height;
+            this.defaultPageWidth = width;
+        }
+        return this;
     }
 }

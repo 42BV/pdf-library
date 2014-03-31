@@ -6,6 +6,11 @@ import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.pdf.syntax.PdfArray;
+import nl.mad.pdflibrary.pdf.syntax.PdfFont;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObjectReference;
+import nl.mad.pdflibrary.pdf.syntax.PdfName;
+import nl.mad.pdflibrary.pdf.syntax.PdfNumber;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;

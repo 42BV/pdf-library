@@ -1,14 +1,14 @@
-package nl.mad.pdflibrary.structure;
+package nl.mad.pdflibrary.pdf.structure;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.mad.pdflibrary.model.PdfNameValue;
-import nl.mad.pdflibrary.syntax.PdfDictionary;
-import nl.mad.pdflibrary.syntax.PdfIndirectObject;
-import nl.mad.pdflibrary.syntax.PdfIndirectObjectReference;
-import nl.mad.pdflibrary.syntax.PdfNumber;
-import nl.mad.pdflibrary.syntax.PdfObjectType;
+import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObjectReference;
+import nl.mad.pdflibrary.pdf.syntax.PdfNumber;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
 import nl.mad.pdflibrary.utility.ByteEncoder;
 import nl.mad.pdflibrary.utility.Constants;
 
@@ -74,7 +74,7 @@ public class PdfTrailer extends PdfDictionary {
 
     /** 
      * Writes the trailer to the given OutputStream.
-     * @see nl.mad.pdflibrary.syntax.PdfDictionary#writeToFile(java.io.OutputStream)
+     * @see nl.mad.pdflibrary.pdf.syntax.PdfDictionary#writeToFile(java.io.OutputStream)
      * @param os OutputStream which will be written to.
      * @throws IOException
      */

@@ -5,5 +5,5 @@
  * specifically aimed at representing fonts. This simplifies the conversion from the classes found in the Api/Model 
  * package to actual PDF objects.
  */
-package nl.mad.pdflibrary.syntax;
+package nl.mad.pdflibrary.pdf.syntax;
 

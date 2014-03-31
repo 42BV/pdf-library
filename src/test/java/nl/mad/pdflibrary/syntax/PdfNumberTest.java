@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.mad.pdflibrary.pdf.syntax.AbstractPdfObject;
+import nl.mad.pdflibrary.pdf.syntax.PdfNumber;
+import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
 import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;
