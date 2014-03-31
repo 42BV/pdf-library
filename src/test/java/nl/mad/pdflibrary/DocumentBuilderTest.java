@@ -1,4 +1,5 @@
-package nl.mad.pdflibrary.api;
+package nl.mad.pdflibrary;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -6,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
+import nl.mad.pdflibrary.DocumentBuilder;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.Page;

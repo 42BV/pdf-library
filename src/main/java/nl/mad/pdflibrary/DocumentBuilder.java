@@ -1,4 +1,4 @@
-package nl.mad.pdflibrary.api;
+package nl.mad.pdflibrary;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +8,10 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import nl.mad.pdflibrary.api.BaseFont;
+import nl.mad.pdflibrary.api.BasePage;
+import nl.mad.pdflibrary.api.BaseParagraph;
+import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
