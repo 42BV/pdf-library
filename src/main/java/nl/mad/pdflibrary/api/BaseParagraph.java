@@ -124,4 +124,25 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
             }
         }
     }
+
+    @Override
+    public int getContentHeight(Page page) {
+        int height = 0;
+        for (Text t : textCollection) {
+            height += t.getContentHeight(page);
+        }
+        return height;
+    }
+
+    @Override
+    public int getContentWidth(Page page) {
+        int longestWidth = 0;
+        for (Text t : textCollection) {
+            int width = t.getContentWidth(page);
+            if (width > longestWidth) {
+                longestWidth = width;
+            }
+        }
+        return longestWidth;
+    }
 }

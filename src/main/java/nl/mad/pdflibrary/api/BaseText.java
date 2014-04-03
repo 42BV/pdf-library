@@ -354,4 +354,16 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
             }
         }
     }
+
+    @Override
+    public int getContentHeight(Page page) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getContentWidth(Page page) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

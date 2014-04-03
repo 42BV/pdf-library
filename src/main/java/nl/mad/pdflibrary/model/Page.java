@@ -149,4 +149,29 @@ public interface Page extends DocumentPart {
      * @return the unfilled width.
      */
     double getRemainingWidth();
+
+    /**
+     * Returns the content that have a explicit position.
+     * @return list of document parts that have fixed positions
+     */
+    List<DocumentPart> getFixedPositionContent();
+
+    /**
+     * Returns the content that have no custom position specified.
+     * @return List of document parts.
+     */
+    List<DocumentPart> getPositionlessContent();
+
+    /**
+     * Adds the list of parts to the content of this page.
+     * @param parts List of parts to add.
+     * @return the page.
+     */
+    Page addAll(List<DocumentPart> parts);
+
+    /**
+     * Calculates and returns an open position.
+     * @return Position that is available to use.
+     */
+    Position getOpenPosition();
 }

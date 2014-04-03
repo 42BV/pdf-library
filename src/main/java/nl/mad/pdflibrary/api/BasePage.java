@@ -10,6 +10,8 @@ import nl.mad.pdflibrary.model.Observer;
 import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.PlaceableDocumentPart;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
 public class BasePage extends AbstractDocumentPart implements Page, Observer {
@@ -23,7 +25,9 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
     private int marginRight;
     private List<DocumentPart> content;
     private Page overflowPage;
-    public static final double CUT_OFF_POINT_PERCENTAGE = 0.7;
+    public static final double CUT_OFF_POINT_PERCENTAGE = 0.9;
+    private static final int MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING = 100;
+    private static final int DEFAULT_NEW_LINE_SIZE = 10;
 
     /**
      * Creates a new instance of BasePage with the given width and height.
@@ -37,6 +41,23 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
         this.height = height;
         this.filledHeight = 0;
         this.filledWidth = 0;
+    }
+
+    /**
+     * Creates a new page based on the attributes of the given page. This does not copy the content of the given page!
+     * @param page Page to base attributes on.
+     */
+    public BasePage(Page page) {
+        super(DocumentPartType.PAGE);
+        content = new ArrayList<DocumentPart>();
+        this.width = page.getWidth();
+        this.height = page.getHeight();
+        this.filledHeight = 0;
+        this.filledWidth = 0;
+        this.marginBottom = page.getMarginBottom();
+        this.marginLeft = page.getMarginLeft();
+        this.marginTop = page.getMarginTop();
+        this.marginRight = page.getMarginRight();
     }
 
     @Override
@@ -212,4 +233,78 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
         return this;
     }
 
+    @Override
+    public Position getOpenPosition() {
+        boolean openPositionFound = false;
+        int potentialHeight = (int) (height - filledHeight - marginTop);
+        Position position = new Position(0 + marginLeft, height);
+        while (!openPositionFound) {
+            height -= DEFAULT_NEW_LINE_SIZE;
+            position = new Position(0 + marginLeft, potentialHeight);
+            if (checkAvailableWidth(position) > (MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING * this.getWidthWithoutMargins())) {
+                return position;
+            }
+        }
+        return null;
+    }
+
+    private int checkAvailableWidth(Position position) {
+        int widthAvailable = this.getWidth() - marginRight - position.getX();
+        for (DocumentPart p : content) {
+            if (p instanceof PlaceableDocumentPart) {
+                PlaceableDocumentPart part = (PlaceableDocumentPart) p;
+                Position partPos = part.getPosition();
+                if (partPos.hasCustomPosition()) {
+                    int partWidth = part.getContentWidth(this);
+                    if (partPos.getX() < this.marginLeft) {
+                        partWidth -= this.marginLeft - partPos.getX();
+                    } else if (partPos.getX() > (width - marginRight)) {
+                        partWidth = 0;
+                    }
+                    int widthAvail = this.getWidthWithoutMargins() - partWidth;
+                    if (widthAvail < widthAvailable) {
+                        widthAvailable = widthAvail;
+                    }
+                }
+            }
+        }
+        return widthAvailable;
+    }
+
+    private int checkAvailableHeight(Position position) {
+        int heightAvailable = this.getHeight() - marginBottom - position.getY();
+        return heightAvailable;
+    }
+
+    @Override
+    public List<DocumentPart> getFixedPositionContent() {
+        List<DocumentPart> fixedPositionList = new ArrayList<>();
+        for (DocumentPart p : content) {
+            if (p instanceof PlaceableDocumentPart) {
+                if (((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
+                    fixedPositionList.add((PlaceableDocumentPart) p);
+                }
+            }
+        }
+        return fixedPositionList;
+    }
+
+    @Override
+    public List<DocumentPart> getPositionlessContent() {
+        List<DocumentPart> positionlessContent = new ArrayList<>();
+        for (DocumentPart p : content) {
+            if (p instanceof PlaceableDocumentPart) {
+                if (!((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
+                    positionlessContent.add((PlaceableDocumentPart) p);
+                }
+            }
+        }
+        return positionlessContent;
+    }
+
+    @Override
+    public Page addAll(List<DocumentPart> parts) {
+        this.content.addAll(parts);
+        return this;
+    }
 }
