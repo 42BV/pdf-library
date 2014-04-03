@@ -34,4 +34,10 @@ public interface Paragraph extends PlaceableDocumentPart {
      */
     List<Text> getTextCollection();
 
+    /**
+     * Calculates the size of the content within the paragraph.
+     * @param page Page the paragraph is on.
+     */
+    void processContentSize(Page page);
+
 }

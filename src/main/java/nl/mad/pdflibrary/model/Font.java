@@ -56,4 +56,11 @@ public interface Font extends DocumentPart {
      * @return BaseFontFamily for this font.
      */
     FontFamily getFontFamily();
+
+    /**
+     * Returns the leading of this font for the given text size.
+     * @param textSize size of the text to get the leading for.
+     * @return int containing leading value.
+     */
+    int getLeading(int textSize);
 }

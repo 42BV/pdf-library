@@ -15,6 +15,9 @@ import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
+import nl.mad.pdflibrary.model.Observable;
+import nl.mad.pdflibrary.model.Observer;
+import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
@@ -33,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Dylan de Wolff
  *
  */
-public class DocumentBuilder {
+public class DocumentBuilder implements Observer {
     private int currentPageNumber;
     private String author;
     private String title;
@@ -109,6 +112,7 @@ public class DocumentBuilder {
      */
     public Page addPage() {
         Page page = new BasePage(defaultPageWidth, defaultPageHeight);
+        page.addChangeObserver(this);
         pages.add(page);
         this.currentPageNumber = this.getPageAmount();
         return page;
@@ -123,6 +127,7 @@ public class DocumentBuilder {
         Page page = null;
         if (pageNumber > 0) {
             page = new BasePage(defaultPageWidth, defaultPageHeight);
+            page.addChangeObserver(this);
             pages.add(pageNumber - 1, page);
             currentPageNumber = pageNumber;
         } else {
@@ -389,5 +394,42 @@ public class DocumentBuilder {
             this.defaultPageWidth = width;
         }
         return this;
+    }
+
+    @Override
+    public void update(Observable sender, ObserverEvent event, DocumentPart arg) {
+        switch (event) {
+        case RECALCULATE:
+            executeRecalculation(sender, event);
+            break;
+        case OVERFLOW:
+            handleOverflow(sender, event, arg);
+            break;
+        default:
+            break;
+        }
+    }
+
+    private void executeRecalculation(Observable sender, ObserverEvent event) {
+        int pageIndex = pages.indexOf((Page) sender);
+        if (pageIndex >= 0) {
+            for (int i = pageIndex; i < pages.size(); ++i) {
+                if (pages.get(i) != null) {
+                    pages.get(i).processContentSize();
+                }
+            }
+        }
+    }
+
+    private void handleOverflow(Observable sender, ObserverEvent event, DocumentPart arg) {
+        int index = pages.indexOf((Page) sender);
+        Page page = pages.get(index);
+        Page overflowPage = page.getOverflowPage();
+        if (overflowPage == null) {
+            overflowPage = this.addPage(index + 2).size(page.getWidth(), page.getHeight());
+            page.overflowPage(overflowPage);
+        }
+        overflowPage.add(arg);
+        this.update(sender, ObserverEvent.RECALCULATE, arg);
     }
 }

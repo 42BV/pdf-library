@@ -10,8 +10,10 @@ import nl.mad.pdflibrary.model.PdfNameValue;
 public class PdfPage extends PdfDictionary {
     private int width;
     private int height;
-    private double filledHeight;
-    private double filledWidth;
+    private int marginLeft;
+    private int marginRight;
+    private int marginTop;
+    private int marginBottom;
 
     /**
      * The amount of resources this page uses.
@@ -170,30 +172,72 @@ public class PdfPage extends PdfDictionary {
     }
 
     /**
-     * @return the filledHeight
+     * @return the marginLeft
      */
-    public double getFilledHeight() {
-        return filledHeight;
+    public int getMarginLeft() {
+        return marginLeft;
     }
 
     /**
-     * @param filledHeight the height to set
+     * @param marginLeft the marginLeft to set
      */
-    public void setFilledHeight(double filledHeight) {
-        this.filledHeight = filledHeight;
+    public void setMarginLeft(int marginLeft) {
+        this.marginLeft = marginLeft;
     }
 
     /**
-     * @return the filledWidth
+     * @return the marginRight
      */
-    public double getFilledWidth() {
-        return filledWidth;
+    public int getMarginRight() {
+        return marginRight;
     }
 
     /**
-     * @param filledWidth the width to set
+     * @param marginRight the marginRight to set
      */
-    public void setFilledWidth(double filledWidth) {
-        this.filledWidth = filledWidth;
+    public void setMarginRight(int marginRight) {
+        this.marginRight = marginRight;
+    }
+
+    /**
+     * @return the marginTop
+     */
+    public int getMarginTop() {
+        return marginTop;
+    }
+
+    /**
+     * @param marginTop the marginTop to set
+     */
+    public void setMarginTop(int marginTop) {
+        this.marginTop = marginTop;
+    }
+
+    /**
+     * @return the marginBottom
+     */
+    public int getMarginBottom() {
+        return marginBottom;
+    }
+
+    /**
+     * @param marginBottom the marginBottom to set
+     */
+    public void setMarginBottom(int marginBottom) {
+        this.marginBottom = marginBottom;
+    }
+
+    /**
+     * Sets the values for all margins.
+     * @param marginLeft Left margin to use.
+     * @param marginRight Right margin to use.
+     * @param marginBottom Bottom margin to use.
+     * @param marginTop Top margin to use.
+     */
+    public void setMargins(int marginLeft, int marginRight, int marginBottom, int marginTop) {
+        this.marginLeft = marginLeft;
+        this.marginRight = marginRight;
+        this.marginBottom = marginBottom;
+        this.marginTop = marginTop;
     }
 }

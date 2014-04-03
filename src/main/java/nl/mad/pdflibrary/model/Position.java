@@ -48,4 +48,20 @@ public class Position {
     public boolean hasCustomPosition() {
         return (x != UNUSED_VALUE || y != UNUSED_VALUE);
     }
+
+    /**
+     * Checks if the y value has been set to a custom value.
+     * @return True if y is not equal to the default unused value, false otherwise.
+     */
+    public boolean hasCustomYValue() {
+        return y != UNUSED_VALUE;
+    }
+
+    /**
+     * Checks if the x value has been set to a custom value.
+     * @return True if x is not equal to the default unused value, false otherwise.
+     */
+    public boolean hasCustomXValue() {
+        return x != UNUSED_VALUE;
+    }
 }

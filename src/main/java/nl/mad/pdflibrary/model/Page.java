@@ -41,4 +41,112 @@ public interface Page extends DocumentPart {
      * @return Height of the page.
      */
     int getHeight();
+
+    /**
+     * Retrieves the filled width of this page.
+     * @return Filled width of the page.
+     */
+    double getFilledWidth();
+
+    /**
+     * Retrieves the filled height of this page.
+     * @return Filled height of the page.
+     */
+    double getFilledHeight();
+
+    /**
+     * Retrieves the filled width of this page.
+     * @param filledWidth New filled width of the page.
+     */
+    void setFilledWidth(double filledWidth);
+
+    /**
+     * Retrieves the filled height of this page.
+     * @param filledHeight New filled height of the page.
+     */
+    void setFilledHeight(double filledHeight);
+
+    /**
+     * Processes the size of the document part.
+     */
+    void processContentSize();
+
+    /**
+     * Sets the page to use for overflowing content.
+     */
+    void overflowPage(Page page);
+
+    /**
+     * Returns the page that is used for overflowing content.
+     * @return Page used for overflowing content.
+     */
+    Page getOverflowPage();
+
+    /**
+     * Sets the top margin of the page.
+     * @param marginTop the top margin to set
+     * @return This page.
+     */
+    Page marginTop(int marginTop);
+
+    /**
+     * @return the marginTop
+     */
+    int getMarginTop();
+
+    /**
+     * Sets the bottom margin of the page.
+     * @param marginBottom the bottom margin to set
+     * @return This page.
+     */
+    Page marginBottom(int marginBottom);
+
+    /**
+     * @return the bottom margin
+     */
+    int getMarginBottom();
+
+    /**
+     * Sets the right margin of the page.
+     * @param marginRight the right margin to set
+     * @return This page.
+     */
+    Page marginRight(int marginRight);
+
+    /**
+     * @return the right margin
+     */
+    int getMarginRight();
+
+    /**
+     * Sets the left margin of the page.
+     * @param marginLeft the left margin to set
+     * @return This page.
+     */
+    Page marginLeft(int marginLeft);
+
+    /**
+     * @return the left margin
+     */
+    int getMarginLeft();
+
+    /**
+     * @return height of the page without margins.
+     */
+    int getHeightWithoutMargins();
+
+    /**
+     * @return width of the page without margins.
+     */
+    int getWidthWithoutMargins();
+
+    /**
+     * @return the unfilled height.
+     */
+    double getRemainingHeight();
+
+    /**
+     * @return the unfilled width.
+     */
+    double getRemainingWidth();
 }

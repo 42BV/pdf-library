@@ -12,7 +12,6 @@ import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
 import nl.mad.pdflibrary.pdf.syntax.PdfPage;
 import nl.mad.pdflibrary.pdf.syntax.PdfStream;
 import nl.mad.pdflibrary.pdf.syntax.PdfString;
-import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +29,6 @@ public class PdfPageTest {
         assertEquals(200, page.getWidth());
         assertEquals(201, page.getHeight());
         assertEquals(PdfObjectType.PAGE, page.getType());
-        assertEquals(0, page.getFilledWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(0, page.getFilledHeight(), FloatEqualityTester.EPSILON);
         assertEquals(4, ((PdfArray) page.get(PdfNameValue.MEDIA_BOX)).getSize());
     }
 

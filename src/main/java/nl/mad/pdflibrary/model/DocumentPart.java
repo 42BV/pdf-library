@@ -13,4 +13,15 @@ public interface DocumentPart {
      */
     DocumentPartType getType();
 
+    /**
+     * Adds observer to the document part.
+     * @param o Observer to add.
+     */
+    void addChangeObserver(Observer o);
+
+    /**
+     * Removes observer from the document part.
+     * @param o Observer to remove.
+     */
+    void removeChangeObserver(Observer o);
 }

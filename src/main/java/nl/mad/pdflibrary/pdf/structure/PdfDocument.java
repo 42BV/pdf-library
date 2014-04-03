@@ -9,15 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.mad.pdflibrary.api.BasePage;
-import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
-import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
 import nl.mad.pdflibrary.pdf.syntax.PdfFile;
@@ -67,7 +64,7 @@ public class PdfDocument {
         switch (part.getType()) {
         case TEXT:
             if (part instanceof Text) {
-                this.addText((Text) part, new PdfText(), false, false, false);
+                this.addText((Text) part, false);
             }
             break;
         case PARAGRAPH:
@@ -105,117 +102,63 @@ public class PdfDocument {
      */
     private void addParagraph(Paragraph paragraph) {
         List<Text> textCollection = paragraph.getTextCollection();
-        if (paragraph.getTextCollection().size() != 0) {
-            Position pos = paragraph.getPosition();
-            //if we're using custom paragraph positioning, adjust the first text object
-            if (pos.hasCustomPosition() && textCollection.get(0) != null) {
-                textCollection.get(0).setPosition(pos);
-            } else if (!textCollection.get(0).getPosition().hasCustomPosition()) {
-                calculatePosition(textCollection.get(0), false);
-            }
-            int posX = textCollection.get(0).getPosition().getX();
-            for (int i = 0; i < textCollection.size(); ++i) {
-                boolean ignoreMatrix = true;
-                boolean ignorePosition = true;
+        for (int i = 0; i < textCollection.size(); ++i) {
+            boolean ignoreMatrix = true;
 
-                if (i == 0) {
-                    ignoreMatrix = false;
-                    ignorePosition = false;
-                }
-                //NO SUPPORT YET FOR MORE THAN ONE MATRIX IN A PARAGRAPH
-                //                    else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
-                //                        ignoreMatrix = false;
-                //                    }
-                this.addText(textCollection.get(i), new PdfText(posX), ignoreMatrix, ignorePosition, true);
+            if (i == 0) {
+                ignoreMatrix = false;
             }
-            currentPage.setFilledWidth(0);
-        }
-    }
-
-    /**
-     * Calculates a position to place the given text.
-     * @param text Text to be positioned
-     * @param inParagraph Whether or not the given text object is part of a paragraph. 
-     */
-    private void calculatePosition(Text text, boolean inParagraph) {
-        Font font = text.getFont();
-        double spaceWidth = font.getFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
-        if (inParagraph) {
-            text.getPosition().setX((int) (Math.ceil(currentPage.getFilledWidth() + spaceWidth)));
-            text.getPosition().setY((int) (currentPage.getHeight() - currentPage.getFilledHeight()));
-        } else {
-            //TODO: take into account margins and such
-            text.getPosition().setX(0);
-            text.getPosition().setY((int) (Math.ceil(currentPage.getHeight() - (currentPage.getFilledHeight() + calculateLeading(font, text.getTextSize())))));
+            //NO SUPPORT YET FOR MORE THAN ONE MATRIX IN A PARAGRAPH
+            //                    else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
+            //                        ignoreMatrix = false;
+            //                    }
+            this.addText(textCollection.get(i), ignoreMatrix);
         }
 
-    }
-
-    /**
-     * Calculates leading based on font metrics and size of the text.
-     * @param font Font of the text.
-     * @param textSize Size of the text.
-     * @return int containing the calculated leading. 
-     */
-    private int calculateLeading(Font font, int textSize) {
-        return font.getFontFamily().getMetricsForStyle(font.getStyle()).getLeadingForSize(textSize);
     }
 
     /**
      * Adds the given text object to the PdfTextStream of the current page.
      * @param text Text that needs to be added.
-     * @param PdfText the pdfText object to be added.
      * @param overrideMatrix if true the matrix of the text will be disregarded. This should be true when the new text object has the same
      * matrix as the text object before it.
-     * @param ignorePosition if true the position of the text will be disregarded. This 
-     * should be true when the text object is following another text object in a paragraph.
-     * @param isParagraph specifies if the given text object is inside a paragraph. 
      */
-    private void addText(Text text, PdfText pdfText, boolean overrideMatrix, boolean ignorePosition, boolean isParagraph) {
+    private void addText(Text text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
+        PdfText pdfText = new PdfText();
         PdfStream ts = getCurrentPageStream();
-
-        if (!text.getPosition().hasCustomPosition() && !isParagraph) {
-            calculatePosition(text, false);
-        }
 
         String overflow = "";
         if (overrideMatrix) {
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
-            overflow = pdfText.addTextString(text, currentPage, calculateLeading(text.getFont(), text.getTextSize()), ignorePosition);
+            overflow = pdfText.addTextString(text);
         } else {
-            if (ignorePosition) {
-                calculatePosition(text, true);
-            }
-            overflow = pdfText.addText(text, getPdfFont(text.getFont()), currentPage, calculateLeading(text.getFont(), text.getTextSize()), ignorePosition);
+            overflow = pdfText.addText(text, getPdfFont(text.getFont()), currentPage);
         }
         ts.add(pdfText);
-        handleOverflow(text, overflow, isParagraph, pdfText.getPositionX());
+        handleOverflow(text, overflow);
     }
 
     /**
      * This method handles any overflow that comes forth from adding a text object to the document.
      * @param text Text object that created the overflow.
      * @param overflow String containing the overflow.
-     * @param isParagraph Whether or not the text object is part of a paragraph.
-     * @param posX The X position of the paragraph. 
      */
-    private void handleOverflow(Text text, String overflow, boolean isParagraph, int posX) {
+    private void handleOverflow(Text text, String overflow) {
         //if a part of the text doesn't fit on the current page we create a new page and add the text to the next one.
-        if (overflow != "") {
-            this.addPage(new BasePage(currentPage.getWidth(), currentPage.getHeight()));
-            Text overflowText = new BaseText(text);
-            overflowText.text(overflow);
-            calculatePosition(overflowText, false);
-            PdfText pdfText;
-            if (isParagraph) {
-                pdfText = new PdfText(posX);
-            } else {
-                pdfText = new PdfText();
-            }
-            this.addText(overflowText, pdfText, false, false, isParagraph);
-        }
+        //        if (overflow != "") {
+        //            this.addPage(new BasePage(currentPage.getWidth(), currentPage.getHeight()));
+        //            Text overflowText = new BaseText(text);
+        //            overflowText.text(overflow);
+        //            PdfText pdfText;
+        //            if (isParagraph) {
+        //                pdfText = new PdfText(posX);
+        //            } else {
+        //                pdfText = new PdfText();
+        //            }
+        //            this.addText(overflowText, pdfText, false, false, isParagraph);
+        //        }
     }
 
     /**
@@ -280,6 +223,7 @@ public class PdfDocument {
      */
     public void addPage(Page page) {
         PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight());
+        pdfPage.setMargins(page.getMarginLeft(), page.getMarginRight(), page.getMarginBottom(), page.getMarginTop());
         currentPage = (PdfPage) body.addPage(pdfPage).getObject();
     }
 

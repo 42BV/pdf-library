@@ -1,5 +1,7 @@
 package nl.mad.pdflibrary.model;
 
+import java.util.List;
+
 /**
  * Interface for Text classes. Text classes store the data necessary to add text to a document. 
  * @author Dylan de Wolff
@@ -136,4 +138,17 @@ public interface Text extends PlaceableDocumentPart {
      */
     boolean textMatrixEquals(Text text);
 
+    /**
+     * Returns array of strings, each string represents a single line in the document based on the text from this object.
+     * @return String[] String array containing the lines.
+     */
+    List<String> getTextArray();
+
+    /**
+     * Processes the text to check how the text will be divided into lines and where exactly the text is going to be positioned. 
+     * @param page Page the text is on.
+     * @param inParagraph Whether or not the text is in a paragraph.
+     * @param positionX The starting position of the paragraph. (not used if not in paragraph)
+     */
+    void processContentSize(Page page, boolean inParagraph, int positionX);
 }
