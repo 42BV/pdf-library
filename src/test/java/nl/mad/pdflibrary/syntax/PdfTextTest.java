@@ -47,8 +47,8 @@ public class PdfTextTest {
         Text text = new BaseText("Test").size(10).on(20, 20);
 
         //expected result for font adding, matrix adding and text adding
-        String expectedTotalResult = "/R1 10 Tf\n" + "1.0 0.0 0.0 1.0 30 31 Tm\n" + "[(T) 70 (est)] TJ\n";
-        pdfText.addText(text, fontReference, page);
+        String expectedTotalResult = "/R1 10 Tf\n" + "1.0 0.0 0.0 1.0 20 20 Tm\n" + "[(T) 70 (est)] TJ\n";
+        pdfText.addText(text, fontReference);
         assertEquals(expectedTotalResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
 
@@ -57,10 +57,10 @@ public class PdfTextTest {
         pdfText = new PdfText();
         Paragraph p = new BaseParagraph().addText(new BaseText("Test Test Test")).addText(new BaseText("Test2"));
         for (int i = 0; i < p.getTextCollection().size(); ++i) {
-            pdfText.addText(p.getTextCollection().get(i), fontReference, page);
+            pdfText.addText(p.getTextCollection().get(i), fontReference);
         }
-        String expectedResult = "/R1 12 Tf\n1.0 0.0 0.0 1.0 9 10 Tm\n[(T) 70 (est)] TJ\n[(T) 70 (est)] TJ\n"
-                + "[(T) 70 (est)] TJ\n/R1 12 Tf\n1.0 0.0 0.0 1.0 9 10 Tm\n[(T) 70 (est2)] TJ\n";
+        String expectedResult = "/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est)] TJ\n[(T) 70 (est)] TJ\n"
+                + "[(T) 70 (est)] TJ\n/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est2)] TJ\n";
         assertEquals(expectedResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
 }
