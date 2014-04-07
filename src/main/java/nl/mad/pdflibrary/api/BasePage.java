@@ -63,7 +63,6 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
     @Override
     public Page add(DocumentPart part) {
         if (part != null) {
-            part.addChangeObserver(this);
             content.add(part);
         }
         return this;
@@ -141,7 +140,6 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
             break;
         case OVERFLOW:
             this.removeSenderIfDisposable(sender);
-            this.notify(event, arg);
             break;
         default:
             break;
@@ -152,14 +150,12 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
         if (sender instanceof Text) {
             Text text = (Text) sender;
             if (text.getText().isEmpty()) {
-                text.removeChangeObserver(this);
                 this.content.remove(sender);
             }
         } else if (sender instanceof Paragraph) {
             Paragraph paragraph = (Paragraph) sender;
             if (paragraph.getTextCollection().size() == 0) {
                 this.content.remove(sender);
-                paragraph.removeChangeObserver(this);
             }
         }
     }
@@ -235,40 +231,99 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
 
     @Override
     public Position getOpenPosition() {
+        return this.getOpenPositionOn((int) (height - marginTop));
+    }
+
+    @Override
+    public Position getOpenPositionOn(int positionHeight) {
         boolean openPositionFound = false;
-        int potentialHeight = (int) (height - filledHeight - marginTop);
-        Position position = new Position(0 + marginLeft, height);
+        int potentialHeight = positionHeight;
+        Position position = new Position(0 + marginLeft, potentialHeight);
         while (!openPositionFound) {
-            height -= DEFAULT_NEW_LINE_SIZE;
-            position = new Position(0 + marginLeft, potentialHeight);
-            if (checkAvailableWidth(position) > (MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING * this.getWidthWithoutMargins())) {
+            if (checkAvailableWidth(position) > (MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING)) {
                 return position;
             }
+            if (potentialHeight <= marginBottom) {
+                return null;
+            }
+            potentialHeight -= DEFAULT_NEW_LINE_SIZE;
+            position = new Position(marginLeft, potentialHeight);
         }
         return null;
     }
 
     private int checkAvailableWidth(Position position) {
-        int widthAvailable = this.getWidth() - marginRight - position.getX();
-        for (DocumentPart p : content) {
-            if (p instanceof PlaceableDocumentPart) {
-                PlaceableDocumentPart part = (PlaceableDocumentPart) p;
-                Position partPos = part.getPosition();
-                if (partPos.hasCustomPosition()) {
-                    int partWidth = part.getContentWidth(this);
-                    if (partPos.getX() < this.marginLeft) {
-                        partWidth -= this.marginLeft - partPos.getX();
-                    } else if (partPos.getX() > (width - marginRight)) {
-                        partWidth = 0;
-                    }
-                    int widthAvail = this.getWidthWithoutMargins() - partWidth;
-                    if (widthAvail < widthAvailable) {
-                        widthAvailable = widthAvail;
-                    }
+        int availableWidth = this.getWidth() - marginRight - position.getX();
+        int startOccupied = availableWidth;
+        int endOccupied = 0;
+        for (PlaceableDocumentPart part : getPartsOnLine(position)) {
+            System.out.println("SOMETHINGS ON MAH LINE");
+            Position pos = part.getPosition();
+            if (!positionOutsideRightBoundary(pos)) {
+                int x = pos.getX();
+                int partWidth = part.getContentWidth(this, pos);
+                if (positionOutsideLeftBoundary(pos)) {
+                    x += this.marginLeft - x;
+                }
+                if (x < startOccupied) {
+                    startOccupied = x;
+                }
+                int end = partWidth + x;
+                if (end > endOccupied) {
+                    endOccupied = width;
                 }
             }
         }
-        return widthAvailable;
+
+        if (endOccupied != 0 && startOccupied != availableWidth) {
+            availableWidth = availableWidth - (startOccupied - endOccupied);
+        }
+        return availableWidth;
+    }
+
+    private List<PlaceableDocumentPart> getPartsOnLine(Position pos) {
+        List<PlaceableDocumentPart> contentOnSameLine = new ArrayList<PlaceableDocumentPart>();
+        for (DocumentPart p : content) {
+            if (p instanceof PlaceableDocumentPart) {
+                PlaceableDocumentPart part = (PlaceableDocumentPart) p;
+                if (onSameLine(pos, part)) {
+                    System.out.println("ONLINE");
+                    contentOnSameLine.add(part);
+                }
+            }
+        }
+        return contentOnSameLine;
+    }
+
+    private boolean positionOutsideLeftBoundary(Position pos) {
+        if (pos.getX() > marginLeft) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean positionOutsideRightBoundary(Position pos) {
+        if (pos.getX() < (width - marginRight)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean onSameLine(Position position, PlaceableDocumentPart part) {
+        //        System.out.println("Given position: " + position.getX() + ", " + position.getY());
+        //        System.out.println("Part position: " + part.getPosition().getX() + ", " + part.getPosition().getY());
+        //        System.out.println("Part height: " + part.getContentHeight(this));
+        //        System.out.println("Check 1: " + (position.getY() <= part.getPosition().getY()) + ", Check 2: " + (position.getY() >= part.getContentHeight(this)));
+        System.out.println("Pos check: " + position.getY());
+        System.out.println("part pos: " + part.getPosition().getY());
+        System.out.println("Part height: " + part.getContentHeight(this));
+        System.out.println("If statement: " + (position.getY() <= part.getPosition().getY()) + " "
+                + (position.getY() >= (part.getPosition().getY() - part.getContentHeight(this))));
+        //increase check size 
+        if (position.getY() <= part.getPosition().getY() && position.getY() >= (part.getPosition().getY() - part.getContentHeight(this))) {
+            return true;
+        }
+        return false;
     }
 
     private int checkAvailableHeight(Position position) {
@@ -306,5 +361,37 @@ public class BasePage extends AbstractDocumentPart implements Page, Observer {
     public Page addAll(List<DocumentPart> parts) {
         this.content.addAll(parts);
         return this;
+    }
+
+    @Override
+    public List<int[]> getOpenSpacesOn(Position pos) {
+        List<PlaceableDocumentPart> parts = this.getPartsOnLine(pos);
+        List<int[]> openSpaces = new ArrayList<int[]>();
+
+        //this might cause trouble with fixed position stuff beyond the margins
+        openSpaces.add(new int[] { marginLeft, (width - marginRight) });
+        for (PlaceableDocumentPart part : parts) {
+            openSpaces = adjustOpenSpaces(openSpaces, part);
+        }
+        return openSpaces;
+    }
+
+    private List<int[]> adjustOpenSpaces(List<int[]> openSpaces, PlaceableDocumentPart part) {
+        List<int[]> newOpenSpaces = new ArrayList<int[]>();
+        for (int[] openSpace : openSpaces) {
+            int contentWidth = part.getContentWidth(this, part.getPosition());
+            if (part.getPosition().getX() >= openSpace[0] && (part.getPosition().getX() + contentWidth) < openSpace[1]) {
+                if (openSpace[0] != part.getPosition().getX()) {
+                    newOpenSpaces.add(new int[] { openSpace[0], part.getPosition().getX() });
+                }
+
+                if (part.getPosition().getX() + contentWidth != openSpace[1]) {
+                    newOpenSpaces.add(new int[] { part.getPosition().getX() + contentWidth, openSpace[1] });
+                }
+            } else {
+                newOpenSpaces.add(openSpace);
+            }
+        }
+        return newOpenSpaces;
     }
 }

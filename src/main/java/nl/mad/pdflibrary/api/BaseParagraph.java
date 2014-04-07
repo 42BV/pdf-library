@@ -49,11 +49,15 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         this.textCollection = text;
     }
 
+    public BaseParagraph(Paragraph p) {
+        super(DocumentPartType.PARAGRAPH);
+        this.textCollection = p.getTextCollection();
+        this.setPosition(p.getPosition());
+    }
+
     @Override
     public Paragraph addText(Text text) {
-        text.addChangeObserver(this);
         this.textCollection.add(text);
-        this.notifyChange();
         return this;
     }
 
@@ -69,7 +73,6 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     @Override
     public Paragraph on(Position position) {
         this.setPosition(position);
-        this.notifyChange();
         return this;
     }
 
@@ -89,15 +92,10 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         }
     }
 
-    private void notifyChange() {
-        this.notify(ObserverEvent.RECALCULATE, null);
-    }
-
     @Override
     public void update(Observable sender, ObserverEvent event, DocumentPart arg) {
         switch (event) {
         case RECALCULATE:
-            this.notify(event, arg);
             break;
         case OVERFLOW:
             handleOverflow(sender, event, arg);
@@ -112,7 +110,6 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         newTextList.add((Text) arg);
         newTextList.addAll(textCollection.subList(textCollection.indexOf(sender), textCollection.size()));
         this.removeSenderIfDisposable(sender);
-        this.notify(event, new BaseParagraph(newTextList));
     }
 
     private void removeSenderIfDisposable(Observable sender) {
@@ -120,7 +117,6 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
             Text text = (Text) sender;
             if (text.getText().isEmpty()) {
                 this.textCollection.remove(text);
-                text.removeChangeObserver(this);
             }
         }
     }
@@ -135,10 +131,10 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     }
 
     @Override
-    public int getContentWidth(Page page) {
+    public int getContentWidth(Page page, Position position) {
         int longestWidth = 0;
         for (Text t : textCollection) {
-            int width = t.getContentWidth(page);
+            int width = t.getContentWidth(page, position);
             if (width > longestWidth) {
                 longestWidth = width;
             }

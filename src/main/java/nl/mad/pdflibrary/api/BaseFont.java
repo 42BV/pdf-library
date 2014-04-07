@@ -4,6 +4,7 @@ import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamily;
 import nl.mad.pdflibrary.model.FontFamilyType;
+import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.FontStyle;
 import nl.mad.pdflibrary.utility.Constants;
 
@@ -97,6 +98,11 @@ public class BaseFont extends AbstractDocumentPart implements Font {
 
     @Override
     public int getLeading(int textSize) {
-        return getFontFamily().getMetricsForStyle(getStyle()).getLeadingForSize(textSize);
+        return fontFamily.getMetricsForStyle(style).getLeadingForSize(textSize);
+    }
+
+    @Override
+    public FontMetrics getMetrics() {
+        return fontFamily.getMetricsForStyle(style);
     }
 }

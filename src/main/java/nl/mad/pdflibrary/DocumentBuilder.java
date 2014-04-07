@@ -12,12 +12,10 @@ import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
+import nl.mad.pdflibrary.api.DocumentState;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
-import nl.mad.pdflibrary.model.Observable;
-import nl.mad.pdflibrary.model.Observer;
-import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
@@ -36,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Dylan de Wolff
  *
  */
-public class DocumentBuilder implements Observer {
+public class DocumentBuilder {
     private int currentPageNumber;
     private String author;
     private String title;
@@ -56,6 +54,7 @@ public class DocumentBuilder implements Observer {
     private int defaultPageHeight = A4_HEIGHT;
     private List<Page> pages;
     private String filename;
+    private DocumentState state;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -70,6 +69,7 @@ public class DocumentBuilder implements Observer {
         filename = "";
         creationDate = Calendar.getInstance();
         currentPageNumber = 1;
+        state = new DocumentState();
     }
 
     /**
@@ -112,7 +112,6 @@ public class DocumentBuilder implements Observer {
      */
     public Page addPage() {
         Page page = new BasePage(defaultPageWidth, defaultPageHeight);
-        page.addChangeObserver(this);
         pages.add(page);
         this.currentPageNumber = this.getPageAmount();
         return page;
@@ -127,7 +126,6 @@ public class DocumentBuilder implements Observer {
         Page page = null;
         if (pageNumber > 0) {
             page = new BasePage(defaultPageWidth, defaultPageHeight);
-            page.addChangeObserver(this);
             pages.add(pageNumber - 1, page);
             currentPageNumber = pageNumber;
         } else {
@@ -194,8 +192,9 @@ public class DocumentBuilder implements Observer {
      */
     public void finish(OutputStream os) {
         try {
+            state.updateState(pages);
             PdfDocument pdfDoc = new PdfDocument();
-            for (Page page : pages) {
+            for (Page page : state.getPages()) {
                 pdfDoc.add(page);
                 pdfDoc.add(page.getContent());
             }
@@ -396,40 +395,13 @@ public class DocumentBuilder implements Observer {
         return this;
     }
 
-    @Override
-    public void update(Observable sender, ObserverEvent event, DocumentPart arg) {
-        switch (event) {
-        case RECALCULATE:
-            executeRecalculation(sender, event);
-            break;
-        case OVERFLOW:
-            handleOverflow(sender, event, arg);
-            break;
-        default:
-            break;
-        }
-    }
-
-    private void executeRecalculation(Observable sender, ObserverEvent event) {
-        int pageIndex = pages.indexOf((Page) sender);
-        if (pageIndex >= 0) {
-            for (int i = pageIndex; i < pages.size(); ++i) {
-                if (pages.get(i) != null) {
-                    pages.get(i).processContentSize();
-                }
-            }
-        }
-    }
-
-    private void handleOverflow(Observable sender, ObserverEvent event, DocumentPart arg) {
-        int index = pages.indexOf((Page) sender);
-        Page page = pages.get(index);
-        Page overflowPage = page.getOverflowPage();
-        if (overflowPage == null) {
-            overflowPage = this.addPage(index + 2).size(page.getWidth(), page.getHeight());
-            page.overflowPage(overflowPage);
-        }
-        overflowPage.add(arg);
-        this.update(sender, ObserverEvent.RECALCULATE, arg);
+    /**
+     * Returns a state that contains what the actual document will look like once it's converted.
+     * Calling this method will completely reset the state which can cost a lot of performance on large documents.
+     * @return DocumentState containing the state of the document as is.
+     */
+    public DocumentState getPreview() {
+        state.updateState(pages);
+        return state;
     }
 }

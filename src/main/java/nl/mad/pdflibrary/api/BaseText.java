@@ -2,13 +2,14 @@ package nl.mad.pdflibrary.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
-import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
@@ -30,8 +31,10 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private double scaleY;
     private double shearX;
     private double shearY;
+    private int contentWidth;
+    private int contentHeight;
     private Font font;
-    private List<String> textArray;
+    private Map<Position, String> textSplit;
 
     /**
      * Creates a new text instance with the given text. Will use default text size, default font and 
@@ -49,15 +52,16 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public BaseText(String text) {
         super(DocumentPartType.TEXT);
         textString = text;
-        textArray = Arrays.asList(textString.split(" "));
+        textSplit = new LinkedHashMap<>();
         textSize = DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
         scaleX = 1;
         scaleY = 1;
         shearX = 0;
         shearY = 0;
+        contentHeight = 0;
+        contentWidth = 0;
         this.setPosition(new Position());
-        this.notifyObserversOfChange();
     }
 
     /**
@@ -74,7 +78,9 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.scaleY = copyFrom.getScaleY();
         this.shearX = copyFrom.getShearX();
         this.shearY = copyFrom.getShearY();
-        this.textArray = copyFrom.getTextArray();
+        this.textSplit = copyFrom.getTextSplit();
+        contentHeight = 0;
+        contentWidth = 0;
     }
 
     @Override
@@ -86,14 +92,12 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public Text scale(double newScaleX, double newScaleY) {
         this.scaleX = newScaleX;
         this.scaleY = newScaleY;
-        this.notifyObserversOfChange();
         return this;
     }
 
     @Override
     public Text scaleX(double newScaleX) {
         this.scaleX = newScaleX;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -105,7 +109,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text scaleY(double newScaleY) {
         this.scaleY = newScaleY;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -113,7 +116,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public Text shear(double newShearX, double newShearY) {
         this.shearX = newShearX;
         this.shearY = newShearY;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -125,7 +127,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text shearX(double newShearX) {
         this.shearX = newShearX;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -137,7 +138,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text shearY(double newShearY) {
         this.shearY = newShearY;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -149,7 +149,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text text(String text) {
         this.textString = text;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -161,7 +160,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text font(Font newFont) {
         this.font = newFont;
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -177,7 +175,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         } else {
             this.textSize = 0;
         }
-        this.notifyObserversOfChange();
         return this;
     }
 
@@ -195,98 +192,88 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Text on(int x, int y) {
         this.setPosition(new Position(x, y));
-        this.notifyObserversOfChange();
         return this;
     }
 
     @Override
     public Text on(Position position) {
         this.setPosition(position);
-        this.notifyObserversOfChange();
         return this;
-    }
-
-    private double getEffectiveHeight(Page page) {
-        double height = page.getRemainingHeight();
-        if (this.getPosition().hasCustomYValue()) {
-            height = this.getPosition().getY();
-        }
-        return height;
     }
 
     @Override
     public void processContentSize(Page page, boolean inParagraph, int positionX) {
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(textString.split(" ")));
         int leading = font.getLeading(textSize);
-        this.textArray = new ArrayList<String>();
-        FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
-        this.calculatePosition(page, inParagraph);
-        StringBuilder currentLine = new StringBuilder();
-        double height = getEffectiveHeight(page);
-        double width = this.getPosition().getX() + page.getMarginRight();
+        this.textSplit = new LinkedHashMap<Position, String>();
         int i = 0;
-        boolean overflowFound = false;
-        while (!overflowFound && i < strings.size()) {
+        boolean stringsProcessed = false;
+        Position pos = new Position(this.getPosition());
+
+        while (!stringsProcessed && i < strings.size()) {
+            List<int[]> openSpaces = page.getOpenSpacesOn(pos);
+            i = splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
+            page.setFilledHeight(page.getFilledHeight() + leading);
+            pos = page.getOpenPosition();
+            if (pos == null) {
+                System.out.println("WE HAVE A LEAK");
+                //overflow
+            }
+        }
+    }
+
+    private int splitText(List<int[]> openSpaces, List<String> strings, Position pos, Page page) {
+        StringBuilder currentLine = new StringBuilder();
+        int[] openSpace = openSpaces.get(0);
+        int i = 0;
+        double width = 0;
+        boolean openSpacesFilled = false;
+        FontMetrics metrics = font.getMetrics();
+        int openSpaceIndex = 0;
+        while (!openSpacesFilled && i < strings.size()) {
+            String s = strings.get(i);
+            //TODO: fix use of "space"
             double oldWidth = width;
-            width += metrics.getWidthPointOfString(strings.get(i), textSize, true) + (metrics.getWidthPoint("space") * textSize);
-            //exceeded width limit
-            if (width > page.getWidthWithoutMargins()) {
-                currentLine = new StringBuilder(processCutOff(oldWidth, page, currentLine.toString(), strings, i));
-                height -= leading;
-                if (height > 0) {
-                    textArray.add(currentLine.toString());
-                    textArray.add("\n");
-                    width = processLineAdditionWidth(width, positionX, inParagraph);
+            width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
+            if (width > openSpace[1] - openSpace[0]) {
+                //currentLine = new StringBuilder(processCutOff(oldWidth, (openSpace[1] - openSpace[0]), currentLine.toString(), strings, i, page));
+                if (!currentLine.toString().isEmpty()) {
+                    Position position = new Position(openSpace[0], pos.getY());
+                    textSplit.put(position, currentLine.toString());
                     currentLine = new StringBuilder();
                 }
-            }
-            if (height <= 0) {
-                height += leading;
-                overflowFound = true;
-                handleOverflow(i, strings);
-            }
-            currentLine.append(strings.get(i));
-            currentLine.append(" ");
-            ++i;
-            //is this problematic for overflow?
-            if (i == strings.size() && !overflowFound) {
-                textArray.add(currentLine.toString());
-                if (!inParagraph) {
-                    height -= leading;
+                if (openSpaceIndex != (openSpaces.size() - 1)) {
+                    openSpace = openSpaces.get(openSpaceIndex + 1);
+                    width = 0;
+                    ++openSpaceIndex;
+                }
+
+                if (openSpaceIndex == (openSpaces.size() - 1)) {
+                    openSpacesFilled = true;
                 }
             }
-        }
+            currentLine.append(s);
+            currentLine.append(' ');
 
-        System.out.println(textString);
-        System.out.println("new filled height: " + (page.getHeight() - height));
-        System.out.println();
-        page.setFilledHeight(page.getHeightWithoutMargins() - height);
-        if (inParagraph) {
-            page.setFilledWidth(width);
-        } else {
-            page.setFilledWidth(0);
+            if (i == (strings.size() - 1)) {
+                Position position = new Position(openSpace[0], pos.getY());
+                //currentLine = new StringBuilder(processCutOff(oldWidth, (openSpace[1] - openSpace[0]), currentLine.toString(), strings, i, page));
+                textSplit.put(position, currentLine.toString());
+            }
+            ++i;
         }
+        return i;
     }
 
-    private double processLineAdditionWidth(double width, int positionX, boolean inParagraph) {
-        if (inParagraph) {
-            width = positionX;
-        } else {
-            width = this.getPosition().getX();
-        }
-        return width;
-    }
-
-    private String processCutOff(double width, Page page, String currentLine, List<String> text, int currentTextIndex) {
-        //0 check should probably be originalWidth(?) check
-        if (width < (page.getWidth() * BasePage.CUT_OFF_POINT_PERCENTAGE) || width == 0) {
+    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex, Page page) {
+        if (width < (page.getWidth() * BasePage.CUT_OFF_POINT_PERCENTAGE) && FloatEqualityTester.equals(widthLimit, page.getWidth()) || width == 0) {
             double currentWidth = width;
             StringBuilder currentString = new StringBuilder(currentLine);
-            FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
+            FontMetrics metrics = font.getMetrics();
             char[] charArray = text.get(currentTextIndex).toCharArray();
             int i = 0;
 
-            while (currentWidth < page.getWidthWithoutMargins() && i != charArray.length) {
+            while (currentWidth < widthLimit && i != charArray.length) {
                 char c = charArray[i];
                 double characterSize = 0.0;
                 if (i + 1 != charArray.length) {
@@ -295,7 +282,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
                     characterSize = metrics.getWidthPoint(c) * textSize;
                 }
                 currentWidth += characterSize;
-                if (currentWidth < page.getWidth()) {
+                if (currentWidth < widthLimit) {
                     currentString.append(c);
                 }
                 ++i;
@@ -309,7 +296,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     private void handleOverflow(int overflowStart, List<String> strings) {
         StringBuilder sb = new StringBuilder();
-        for (String s : textArray) {
+        for (String s : textSplit.values()) {
             if (!"\n".equals(s)) {
                 sb.append(s);
                 sb.append(" ");
@@ -324,46 +311,27 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         }
         Text overflowText = new BaseText(this).text(sb.toString());
         overflowText.on(new Position());
-
-        this.notify(ObserverEvent.OVERFLOW, overflowText);
-    }
-
-    private void notifyObserversOfChange() {
-        this.notifyObserversOfChange(ObserverEvent.RECALCULATE, null);
-    }
-
-    private void notifyObserversOfChange(ObserverEvent event, DocumentPart arg) {
-        this.notify(event, arg);
     }
 
     @Override
-    public List<String> getTextArray() {
-        return this.textArray;
-    }
-
-    private void calculatePosition(Page page, boolean inParagraph) {
-        Position position = getPosition();
-        if (!position.hasCustomPosition()) {
-            double spaceWidth = font.getFontFamily().getMetricsForStyle(font.getStyle()).getWidthPoint((int) ' ');
-            if (inParagraph) {
-                position.setX((int) (Math.ceil(page.getFilledWidth() + spaceWidth)));
-                position.setY((int) (page.getRemainingHeight()));
-            } else {
-                position.setX(0);
-                position.setY((int) (Math.ceil(page.getRemainingHeight() - font.getLeading(textSize))));
-            }
-        }
+    public Map<Position, String> getTextSplit() {
+        return this.textSplit;
     }
 
     @Override
     public int getContentHeight(Page page) {
-        // TODO Auto-generated method stub
-        return 0;
+        return font.getLeading(textSize) * textSplit.entrySet().size();
     }
 
     @Override
-    public int getContentWidth(Page page) {
-        // TODO Auto-generated method stub
+    public int getContentWidth(Page page, Position position) {
+        for (Entry<Position, String> entry : textSplit.entrySet()) {
+            Position linePos = entry.getKey();
+            if (position.getY() <= linePos.getY() && position.getY() >= linePos.getY() - font.getLeading(textSize)) {
+                FontMetrics metrics = font.getMetrics();
+                return (int) (metrics.getWidthPointOfString(entry.getValue(), textSize, true) + (metrics.getWidthPoint("space") * textSize));
+            }
+        }
         return 0;
     }
 }

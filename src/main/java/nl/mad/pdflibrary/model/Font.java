@@ -63,4 +63,10 @@ public interface Font extends DocumentPart {
      * @return int containing leading value.
      */
     int getLeading(int textSize);
+
+    /**
+     * Returns the metrics corresponding to this font.
+     * @return FontMetrics corresponding to this font.
+     */
+    FontMetrics getMetrics();
 }

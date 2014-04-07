@@ -134,7 +134,7 @@ public class PdfDocument {
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
             overflow = pdfText.addTextString(text);
         } else {
-            overflow = pdfText.addText(text, getPdfFont(text.getFont()), currentPage);
+            overflow = pdfText.addText(text, getPdfFont(text.getFont()));
         }
         ts.add(pdfText);
         handleOverflow(text, overflow);

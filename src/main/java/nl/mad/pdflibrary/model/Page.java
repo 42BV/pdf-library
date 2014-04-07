@@ -174,4 +174,18 @@ public interface Page extends DocumentPart {
      * @return Position that is available to use.
      */
     Position getOpenPosition();
+
+    /**
+     * Calculates and returns an open position on or after the given height.
+     * @param height Offset to find a position.
+     * @return Position that is available to use.
+     */
+    Position getOpenPositionOn(int height);
+
+    /**
+     * Returns the available spaces on the given line.
+     * @param pos Position to check on.
+     * @return List of int arrays, each contains the start- and end point of the space.
+     */
+    List<int[]> getOpenSpacesOn(Position pos);
 }

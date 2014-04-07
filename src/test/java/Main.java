@@ -1,12 +1,8 @@
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import nl.mad.pdflibrary.DocumentBuilder;
-import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.api.DocumentState;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontFamilyType;
 import nl.mad.pdflibrary.model.Page;
@@ -25,11 +21,11 @@ public class Main {
     }
 
     private static void documentStateTest() {
-        List<Page> pages = new ArrayList<Page>();
-        Page page = new BasePage(DocumentBuilder.A4_WIDTH, DocumentBuilder.A4_HEIGHT).add(new BaseText("Test"));
-        pages.add(page);
-        DocumentState state = new DocumentState();
-        state.updateState(pages);
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().add(new BaseText("Fixed Test").on(0, 832).size(12))
+                .add(new BaseText("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test  "));
+        ((BaseText) (builder.getPreview().getPages().get(0).getContent().get(1))).getTextSplit().toString();
+        builder.finish();
     }
 
     private static void ultimateDocumentCreation() {

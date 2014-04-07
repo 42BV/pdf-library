@@ -2,7 +2,6 @@ package nl.mad.pdflibrary.api;
 
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
-import nl.mad.pdflibrary.model.Observable;
 import nl.mad.pdflibrary.model.Observer;
 
 /**
@@ -10,7 +9,7 @@ import nl.mad.pdflibrary.model.Observer;
  * @author Dylan de Wolff
  * @see Document
  */
-public abstract class AbstractDocumentPart extends Observable implements DocumentPart {
+public abstract class AbstractDocumentPart implements DocumentPart {
     /**
      * Type of this part.
      */
@@ -27,15 +26,5 @@ public abstract class AbstractDocumentPart extends Observable implements Documen
     @Override
     public DocumentPartType getType() {
         return type;
-    }
-
-    @Override
-    public void addChangeObserver(Observer o) {
-        this.addObserver(o);
-    }
-
-    @Override
-    public void removeChangeObserver(Observer o) {
-        this.deleteObserver(o);
     }
 }

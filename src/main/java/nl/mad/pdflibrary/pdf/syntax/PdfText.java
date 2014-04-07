@@ -1,9 +1,11 @@
 package nl.mad.pdflibrary.pdf.syntax;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
+import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
 /**
@@ -25,12 +27,11 @@ public class PdfText extends AbstractPdfObject {
      * Adds the given Text object to the stream.
      * @param text Text object to be added.
      * @param fontReference font for the text.
-     * @param page PdfPage the text will be placed on.
      * @return String containing overflow.
      */
-    public String addText(Text text, PdfIndirectObject fontReference, PdfPage page) {
+    public String addText(Text text, PdfIndirectObject fontReference) {
         this.addFont(fontReference, text.getTextSize());
-        this.addMatrix(text, page);
+        this.addMatrix(text);
         return this.addTextString(text);
     }
 
@@ -38,16 +39,22 @@ public class PdfText extends AbstractPdfObject {
      * Converts the given position values to a text matrix and adds this to the byte representation.
      * This should be done before adding the text.
      * @param text text to add to the document.
-     * @param page page this text will be on.
      */
-    public void addMatrix(Text text, PdfPage page) {
+    public void addMatrix(Text text) {
         System.out.println(text.getText());
         System.out.println(text.getPosition().getX());
         System.out.println(text.getPosition().getY());
         System.out.println();
+        this.addMatrix(text, null);
+    }
 
-        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " "
-                + (text.getPosition().getX() + page.getMarginLeft()) + " " + (text.getPosition().getY() + page.getMarginTop()) + " Tm\n";
+    private void addMatrix(Text text, Position position) {
+        Position pos = position;
+        if (pos == null) {
+            pos = text.getPosition();
+        }
+        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + pos.getX() + " " + pos.getY()
+                + " Tm\n";
         this.addToByteRepresentation(byteRep);
     }
 
@@ -69,11 +76,12 @@ public class PdfText extends AbstractPdfObject {
      */
     public String addTextString(Text text) {
         StringBuilder sb = new StringBuilder();
-        List<String> textArray = text.getTextArray();
-        for (int i = 0; i < textArray.size(); ++i) {
-            if (!"\n".equals(textArray.get(i))) {
+        Map<Position, String> textSplit = text.getTextSplit();
+        for (Entry<Position, String> entry : textSplit.entrySet()) {
+            if (!"\n".equals(entry.getValue())) {
+                addMatrix(text, entry.getKey());
                 sb.append("[(");
-                sb.append(this.processKerning(textArray.get(i), text.getFont()));
+                sb.append(this.processKerning(entry.getValue(), text.getFont()));
                 sb.append(")] TJ");
             } else {
                 sb.append(getNewLineStringForText(text));
