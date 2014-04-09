@@ -8,6 +8,14 @@ import java.util.List;
  *
  */
 public interface Page extends DocumentPart {
+    /**
+     * Percentage of the page that should be filled.
+     */
+    public static final double CUT_OFF_POINT_PERCENTAGE = 0.9;
+    /**
+     * Default size of a new line.
+     */
+    public static final int DEFAULT_NEW_LINE_SIZE = 10;
 
     /**
      * Adds a new part to the page content.
@@ -65,11 +73,6 @@ public interface Page extends DocumentPart {
      * @param filledHeight New filled height of the page.
      */
     void setFilledHeight(double filledHeight);
-
-    /**
-     * Processes the size of the document part.
-     */
-    void processContentSize();
 
     /**
      * Sets the page to use for overflowing content.
@@ -171,21 +174,30 @@ public interface Page extends DocumentPart {
 
     /**
      * Calculates and returns an open position.
+     * @param elementHeight height of the element that you are looking to position
      * @return Position that is available to use.
      */
-    Position getOpenPosition();
+    Position getOpenPosition(int elementHeight);
 
     /**
      * Calculates and returns an open position on or after the given height.
      * @param height Offset to find a position.
      * @return Position that is available to use.
      */
-    Position getOpenPositionOn(int height);
+    Position getOpenPosition(int height, int elementHeight);
 
     /**
      * Returns the available spaces on the given line.
      * @param pos Position to check on.
+     * @param ignoreSpacesBeforePositionWidth Whether or not to ignore open spaces that come before the given position's x value.
      * @return List of int arrays, each contains the start- and end point of the space.
      */
-    List<int[]> getOpenSpacesOn(Position pos);
+    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth);
+
+    /**
+     * Returns the available width at the given position.
+     * @param position Position to check.
+     * @return int containing the available width value.
+     */
+    int checkAvailableWidth(Position position);
 }

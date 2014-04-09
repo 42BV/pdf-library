@@ -3,6 +3,7 @@ package nl.mad.pdflibrary.api;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,8 +32,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private double scaleY;
     private double shearX;
     private double shearY;
-    private int contentWidth;
-    private int contentHeight;
     private Font font;
     private Map<Position, String> textSplit;
 
@@ -59,8 +58,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         scaleY = 1;
         shearX = 0;
         shearY = 0;
-        contentHeight = 0;
-        contentWidth = 0;
         this.setPosition(new Position());
     }
 
@@ -79,8 +76,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.shearX = copyFrom.getShearX();
         this.shearY = copyFrom.getShearY();
         this.textSplit = copyFrom.getTextSplit();
-        contentHeight = 0;
-        contentWidth = 0;
     }
 
     @Override
@@ -202,22 +197,31 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     }
 
     @Override
-    public void processContentSize(Page page, boolean inParagraph, int positionX) {
+    public void processContentSize(Page page, boolean inParagraph, int positionX, boolean wrappable) {
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(textString.split(" ")));
-        int leading = font.getLeading(textSize);
+        int leading = this.getLeading();
         this.textSplit = new LinkedHashMap<Position, String>();
         int i = 0;
         boolean stringsProcessed = false;
         Position pos = new Position(this.getPosition());
 
         while (!stringsProcessed && i < strings.size()) {
-            List<int[]> openSpaces = page.getOpenSpacesOn(pos);
-            i = splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
-            page.setFilledHeight(page.getFilledHeight() + leading);
-            pos = page.getOpenPosition();
-            if (pos == null) {
-                System.out.println("WE HAVE A LEAK");
-                //overflow
+            System.out.println("i: " + i + ", currentString: " + strings.get(i) + ", total size: " + strings.size());
+            System.out.println("Pos: " + pos.getX() + "." + pos.getY());
+            List<int[]> openSpaces = page.getOpenSpacesOn(pos, true);
+            for (int[] openSpace : openSpaces) {
+                System.out.println("Open space: " + openSpace[0] + "-" + openSpace[1]);
+            }
+            i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
+            if (i < (strings.size() - 1)) {
+                page.setFilledHeight(page.getFilledHeight() + leading);
+                pos = page.getOpenPosition(pos.getY() - leading, leading);
+                if (pos == null) {
+                    System.out.println("WE HAVE A LEAK");
+                    //overflow
+                }
+            } else if (!inParagraph && !wrappable) {
+                page.setFilledHeight(page.getFilledHeight() + leading);
             }
         }
     }
@@ -230,25 +234,26 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         boolean openSpacesFilled = false;
         FontMetrics metrics = font.getMetrics();
         int openSpaceIndex = 0;
+        int iReturnOffset = 0;
         while (!openSpacesFilled && i < strings.size()) {
             String s = strings.get(i);
-            //TODO: fix use of "space"
             double oldWidth = width;
+            //TODO: fix use of "space"
             width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
+            System.out.println("CurrentLine: " + currentLine.toString() + ", String: " + s);
+            System.out.println("Width of string: " + width + ", availableWidth: " + (openSpace[1] - openSpace[0]));
             if (width > openSpace[1] - openSpace[0]) {
-                //currentLine = new StringBuilder(processCutOff(oldWidth, (openSpace[1] - openSpace[0]), currentLine.toString(), strings, i, page));
+                //currentLine = new StringBuilder(processCutOff(openSpace[0] + oldWidth, openSpace[1], currentLine.toString(), strings, i, page, pos));
                 if (!currentLine.toString().isEmpty()) {
                     Position position = new Position(openSpace[0], pos.getY());
-                    textSplit.put(position, currentLine.toString());
+                    addTextSplitEntry(position, currentLine.toString());
                     currentLine = new StringBuilder();
                 }
                 if (openSpaceIndex != (openSpaces.size() - 1)) {
                     openSpace = openSpaces.get(openSpaceIndex + 1);
                     width = 0;
                     ++openSpaceIndex;
-                }
-
-                if (openSpaceIndex == (openSpaces.size() - 1)) {
+                } else {
                     openSpacesFilled = true;
                 }
             }
@@ -256,17 +261,29 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
             currentLine.append(' ');
 
             if (i == (strings.size() - 1)) {
-                Position position = new Position(openSpace[0], pos.getY());
-                //currentLine = new StringBuilder(processCutOff(oldWidth, (openSpace[1] - openSpace[0]), currentLine.toString(), strings, i, page));
-                textSplit.put(position, currentLine.toString());
+                if (!openSpacesFilled && width < openSpace[1] - openSpace[0]) {
+                    Position position = new Position((int) (openSpace[0] + width), pos.getY());
+                    //currentLine = new StringBuilder(processCutOff(oldWidth, (openSpace[1] - openSpace[0]), currentLine.toString(), strings, i, page));
+                    addTextSplitEntry(position, currentLine.toString());
+                } else {
+                    ++iReturnOffset;
+                }
             }
             ++i;
         }
-        return i;
+        return i - iReturnOffset;
     }
 
-    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex, Page page) {
-        if (width < (page.getWidth() * BasePage.CUT_OFF_POINT_PERCENTAGE) && FloatEqualityTester.equals(widthLimit, page.getWidth()) || width == 0) {
+    private void addTextSplitEntry(Position position, String string) {
+        if (textSplit.isEmpty()) {
+            this.setPosition(new Position(position.getX(), position.getY()));
+        }
+        textSplit.put(position, string);
+    }
+
+    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex, Page page, Position pos) {
+        if (widthLimit == (page.getWidth() - page.getMarginRight())
+                && page.checkAvailableWidth(pos) > ((page.getWidth() - page.getMarginRight()) * BasePage.CUT_OFF_POINT_PERCENTAGE) || width == 0) {
             double currentWidth = width;
             StringBuilder currentString = new StringBuilder(currentLine);
             FontMetrics metrics = font.getMetrics();
@@ -287,10 +304,12 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
                 }
                 ++i;
             }
+            System.out.println(currentString.toString());
             text.set(currentTextIndex, "");
             text.add(currentTextIndex + 1, String.valueOf(charArray).substring(i - 1));
             return currentString.toString();
         }
+        System.out.println("Over 90% already dude");
         return currentLine;
     }
 
@@ -325,13 +344,53 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public int getContentWidth(Page page, Position position) {
-        for (Entry<Position, String> entry : textSplit.entrySet()) {
-            Position linePos = entry.getKey();
-            if (position.getY() <= linePos.getY() && position.getY() >= linePos.getY() - font.getLeading(textSize)) {
-                FontMetrics metrics = font.getMetrics();
-                return (int) (metrics.getWidthPointOfString(entry.getValue(), textSize, true) + (metrics.getWidthPoint("space") * textSize));
+        FontMetrics metrics = font.getMetrics();
+        List<Entry<Position, String>> entries = this.getEntriesAtHeight(position.getY());
+        int width = 0;
+        for (Entry<Position, String> entry : entries) {
+            width += (int) (metrics.getWidthPointOfString(entry.getValue(), textSize, true) + (metrics.getWidthPoint("space") * textSize));
+        }
+        return width;
+    }
+
+    @Override
+    public int getLeading() {
+        return font.getLeading(textSize);
+    }
+
+    @Override
+    public int[] getPositionAt(int height) {
+        List<Entry<Position, String>> entries = this.getEntriesAtHeight(height);
+        int[] positions = new int[0];
+        if (!entries.isEmpty()) {
+            positions = new int[entries.size()];
+            for (int i = 0; i < entries.size(); ++i) {
+                positions[i] = entries.get(i).getKey().getX();
             }
         }
-        return 0;
+        return positions;
+    }
+
+    private List<Entry<Position, String>> getEntriesAtHeight(int height) {
+        List<Entry<Position, String>> entries = new LinkedList<>();
+        for (Entry<Position, String> entry : textSplit.entrySet()) {
+            Position linePos = entry.getKey();
+            if (height <= linePos.getY() + (Page.DEFAULT_NEW_LINE_SIZE / 2) && height >= linePos.getY() - font.getLeading(textSize)) {
+                entries.add(entry);
+            }
+        }
+        return entries;
+    }
+
+    @Override
+    public List<int[]> getUsedSpaces(int height) {
+        List<int[]> spaces = new LinkedList<>();
+        List<Entry<Position, String>> entries = getEntriesAtHeight(height);
+        FontMetrics metrics = font.getMetrics();
+        for (Entry<Position, String> entry : entries) {
+            double stringWidth = metrics.getWidthPointOfString(entry.getValue(), textSize, true) + (metrics.getWidthPoint("space") * textSize);
+            spaces.add(new int[] { entry.getKey().getX(), (int) (entry.getKey().getX() + stringWidth) });
+        }
+        return spaces;
     }
 }

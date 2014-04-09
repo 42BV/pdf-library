@@ -17,6 +17,7 @@ public class DocumentState {
     }
 
     public void updateState(List<Page> builderState) {
+        System.out.println("UPDATING STATE");
         state = new LinkedList<Page>();
         for (Page page : builderState) {
             Page newPage = new BasePage(page);
@@ -31,7 +32,7 @@ public class DocumentState {
             switch (part.getType()) {
             case TEXT:
                 Text text = new BaseText((Text) part);
-                text.processContentSize(page, false, 0);
+                text.processContentSize(page, false, 0, true);
                 page.add(text);
                 break;
             case PARAGRAPH:
@@ -53,15 +54,18 @@ public class DocumentState {
             switch (p.getType()) {
             case TEXT:
                 Text text = new BaseText((Text) p);
-                Position position = page.getOpenPosition();
+                Position position = page.getOpenPosition(text.getLeading());
                 text.setPosition(position);
-                text.processContentSize(page, false, 0);
                 page.add(text);
+                text.processContentSize(page, false, 0, false);
                 break;
             case PARAGRAPH:
                 Paragraph paragraph = new BaseParagraph((Paragraph) p);
-                Position pos = page.getOpenPosition();
+                System.out.println("Retrieving pos for paragraph");
+                Position pos = page.getOpenPosition(paragraph.getLeading());
+                paragraph.setPosition(pos);
                 page.add(paragraph);
+                paragraph.processContentSize(page);
                 break;
             default:
                 page.add(p);

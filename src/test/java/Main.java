@@ -22,8 +22,16 @@ public class Main {
 
     private static void documentStateTest() {
         DocumentBuilder builder = new DocumentBuilder();
-        builder.addPage().add(new BaseText("Fixed Test").on(0, 832).size(12))
-                .add(new BaseText("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test  "));
+        builder.addPage()
+                .add(new BaseText("Fixed Test").on(0, 832).size(12))
+                .add(new BaseText("Fixed Test 2").on(200, 815))
+                .add(new BaseText(
+                        "Test Test Test Test Test Test Test Test Test Test Test TEst Test Test Test Test Test Test Test Test Test Test Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest"));
+        //        builder.addParagraph()
+        //                .addText(builder.createText("Paragraaftest boe"))
+        //                .addText(builder.createText("Oh boehoe hoe boe."))
+        //                .addText(
+        //                        builder.createText("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test Test"));
         ((BaseText) (builder.getPreview().getPages().get(0).getContent().get(1))).getTextSplit().toString();
         builder.finish();
     }

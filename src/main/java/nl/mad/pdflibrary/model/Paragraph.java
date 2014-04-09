@@ -39,5 +39,4 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param page Page the paragraph is on.
      */
     void processContentSize(Page page);
-
 }

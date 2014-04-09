@@ -41,21 +41,19 @@ public class PdfText extends AbstractPdfObject {
      * @param text text to add to the document.
      */
     public void addMatrix(Text text) {
-        System.out.println(text.getText());
-        System.out.println(text.getPosition().getX());
-        System.out.println(text.getPosition().getY());
-        System.out.println();
         this.addMatrix(text, null);
     }
 
     private void addMatrix(Text text, Position position) {
+        this.addToByteRepresentation(createMatrix(text, position));
+    }
+
+    private String createMatrix(Text text, Position position) {
         Position pos = position;
         if (pos == null) {
             pos = text.getPosition();
         }
-        String byteRep = text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + pos.getX() + " " + pos.getY()
-                + " Tm\n";
-        this.addToByteRepresentation(byteRep);
+        return text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + pos.getX() + " " + pos.getY() + " Tm\n";
     }
 
     /**
@@ -79,7 +77,7 @@ public class PdfText extends AbstractPdfObject {
         Map<Position, String> textSplit = text.getTextSplit();
         for (Entry<Position, String> entry : textSplit.entrySet()) {
             if (!"\n".equals(entry.getValue())) {
-                addMatrix(text, entry.getKey());
+                sb.append(createMatrix(text, entry.getKey()));
                 sb.append("[(");
                 sb.append(this.processKerning(entry.getValue(), text.getFont()));
                 sb.append(")] TJ");
@@ -103,7 +101,7 @@ public class PdfText extends AbstractPdfObject {
      * @return String with kerning.
      */
     private String processKerning(String text, Font font) {
-        FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
+        FontMetrics metrics = font.getMetrics();
         StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < text.length(); ++i) {
             sb.append(text.charAt(i));

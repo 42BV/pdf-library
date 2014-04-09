@@ -149,6 +149,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param page Page the text is on.
      * @param inParagraph Whether or not the text is in a paragraph.
      * @param positionX The starting position of the paragraph. (not used if not in paragraph)
+     * @param wrappable Whether or not other text should be able to wrap around this.
      */
-    void processContentSize(Page page, boolean inParagraph, int positionX);
+    void processContentSize(Page page, boolean inParagraph, int positionX, boolean wrappable);
 }

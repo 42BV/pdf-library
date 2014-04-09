@@ -1,12 +1,12 @@
 package nl.mad.pdflibrary.api;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Observable;
-import nl.mad.pdflibrary.model.Observer;
 import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
@@ -19,7 +19,7 @@ import nl.mad.pdflibrary.model.Text;
  * added to the document. Changes made to the paragraph after adding it to the document will not be processed.
  * @author Dylan de Wolff
  */
-public class BaseParagraph extends AbstractPlaceableDocumentPart implements Paragraph, Observer {
+public class BaseParagraph extends AbstractPlaceableDocumentPart implements Paragraph {
 
     private List<Text> textCollection;
 
@@ -79,10 +79,14 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     @Override
     public void processContentSize(Page page) {
         for (int i = 0; i < textCollection.size(); ++i) {
+            Text t = textCollection.get(i);
+            System.out.println(t.getText());
             if (i == 0) {
                 processParagraphPosition(textCollection.get(i), page);
+            } else {
+                t.setPosition(page.getOpenPosition(t.getLeading()));
             }
-            textCollection.get(i).processContentSize(page, true, this.getPosition().getX());
+            t.processContentSize(page, true, this.getPosition().getX(), false);
         }
     }
 
@@ -92,33 +96,10 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         }
     }
 
-    @Override
-    public void update(Observable sender, ObserverEvent event, DocumentPart arg) {
-        switch (event) {
-        case RECALCULATE:
-            break;
-        case OVERFLOW:
-            handleOverflow(sender, event, arg);
-            break;
-        default:
-            break;
-        }
-    }
-
     private void handleOverflow(Observable sender, ObserverEvent event, DocumentPart arg) {
         List<Text> newTextList = new ArrayList<Text>();
         newTextList.add((Text) arg);
         newTextList.addAll(textCollection.subList(textCollection.indexOf(sender), textCollection.size()));
-        this.removeSenderIfDisposable(sender);
-    }
-
-    private void removeSenderIfDisposable(Observable sender) {
-        if (sender instanceof Text) {
-            Text text = (Text) sender;
-            if (text.getText().isEmpty()) {
-                this.textCollection.remove(text);
-            }
-        }
     }
 
     @Override
@@ -135,10 +116,45 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         int longestWidth = 0;
         for (Text t : textCollection) {
             int width = t.getContentWidth(page, position);
-            if (width > longestWidth) {
-                longestWidth = width;
-            }
+            longestWidth = Math.max(width, longestWidth);
         }
         return longestWidth;
+    }
+
+    @Override
+    public int getLeading() {
+        int leading = 0;
+        for (Text text : textCollection) {
+            int textLeading = text.getLeading();
+            leading = Math.max(leading, textLeading);
+        }
+        return leading;
+    }
+
+    @Override
+    public int[] getPositionAt(int height) {
+        ArrayList<Integer> positionsTemp = new ArrayList<>();
+        for (Text t : textCollection) {
+            int[] xPositions = t.getPositionAt(height);
+            for (int pos : xPositions) {
+                if (pos != -1) {
+                    positionsTemp.add(pos);
+                }
+            }
+        }
+        int[] positions = new int[positionsTemp.size()];
+        for (int i = 0; i < positionsTemp.size(); ++i) {
+            positions[i] = positionsTemp.get(i);
+        }
+        return positions;
+    }
+
+    @Override
+    public List<int[]> getUsedSpaces(int height) {
+        List<int[]> spaces = new LinkedList<int[]>();
+        for (Text t : textCollection) {
+            spaces.addAll(t.getUsedSpaces(height));
+        }
+        return spaces;
     }
 }

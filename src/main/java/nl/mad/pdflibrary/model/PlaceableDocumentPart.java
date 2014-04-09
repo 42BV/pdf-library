@@ -1,5 +1,7 @@
 package nl.mad.pdflibrary.model;
 
+import java.util.List;
+
 /**
  * Interface for placeable document parts. This extends DocumentPart and specifies methods for positioning the DocumentPart.
  * @author Dylan de Wolff
@@ -35,6 +37,27 @@ public interface PlaceableDocumentPart extends DocumentPart {
      * @return int containing width.
      */
     int getContentWidth(Page page, Position position);
+
+    /**
+     * Returns the size of the empty space required above the object.
+     * @return int containing leading value.
+     */
+    int getLeading();
+
+    /**
+     * Returns x values of positions of this object at the given height.
+     * @param height Height to check.
+     * @return the x values of the positions (there can be several different positions at the same height due to text wrapping and such)
+     * of this object at the given height. Returns -1 if the object is not at the given height.
+     */
+    int[] getPositionAt(int height);
+
+    /**
+     * Returns a list of int arrays containing the spaces used by the text. Each int array contains the starting x value of the text and the ending x value.
+     * @param height the y value where the spaces should be retrieved for.
+     * @return List of int arrays containing the spaces used.
+     */
+    List<int[]> getUsedSpaces(int height);
 
     //    /**
     //     * Checks if this document part intersects with the given document part.
