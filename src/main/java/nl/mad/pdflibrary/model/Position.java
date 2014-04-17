@@ -1,8 +1,8 @@
 package nl.mad.pdflibrary.model;
 
 public class Position {
-    private int x;
-    private int y;
+    private double x;
+    private double y;
     /**
      * Default value used when no value was specified.
      */
@@ -20,7 +20,7 @@ public class Position {
      * @param x The x value.
      * @param y The y value.
      */
-    public Position(int x, int y) {
+    public Position(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -30,19 +30,19 @@ public class Position {
         this.y = position.getY();
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public void setX(int x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 

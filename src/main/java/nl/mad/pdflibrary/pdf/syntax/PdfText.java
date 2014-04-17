@@ -27,12 +27,13 @@ public class PdfText extends AbstractPdfObject {
      * Adds the given Text object to the stream.
      * @param text Text object to be added.
      * @param fontReference font for the text.
+     * @param leading the space between two lines.
      * @return String containing overflow.
      */
-    public String addText(Text text, PdfIndirectObject fontReference) {
+    public String addText(Text text, PdfIndirectObject fontReference, int leading) {
         this.addFont(fontReference, text.getTextSize());
         this.addMatrix(text);
-        return this.addTextString(text);
+        return this.addTextString(text, leading);
     }
 
     /**
@@ -72,7 +73,7 @@ public class PdfText extends AbstractPdfObject {
      * @param text String that is to be added.
      * @return String containing overflow.
      */
-    public String addTextString(Text text) {
+    public String addTextString(Text text, int leading) {
         StringBuilder sb = new StringBuilder();
         Map<Position, String> textSplit = text.getTextSplit();
         for (Entry<Position, String> entry : textSplit.entrySet()) {
@@ -82,7 +83,7 @@ public class PdfText extends AbstractPdfObject {
                 sb.append(this.processKerning(entry.getValue(), text.getFont()));
                 sb.append(")] TJ");
             } else {
-                sb.append(getNewLineStringForText(text));
+                sb.append(getNewLineStringForText(text, leading));
             }
             sb.append("\n");
         }
@@ -90,8 +91,8 @@ public class PdfText extends AbstractPdfObject {
         return "";
     }
 
-    private String getNewLineStringForText(Text text) {
-        return " 0 " + -text.getFont().getLeading(text.getTextSize()) + " TD";
+    private String getNewLineStringForText(Text text, int leading) {
+        return " 0 " + -leading + " TD";
     }
 
     /**

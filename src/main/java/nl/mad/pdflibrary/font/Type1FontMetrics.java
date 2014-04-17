@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @see FontMetrics
  */
 public class Type1FontMetrics implements FontMetrics {
-    private final static Logger LOGGER = LoggerFactory.getLogger(Type1FontMetrics.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Type1FontMetrics.class);
     private AfmParser afm;
     private PfbParser pfb;
     private String filename;
@@ -33,7 +33,7 @@ public class Type1FontMetrics implements FontMetrics {
     /**
      * Creates a new instance of Type1FontMetrics and immediately parses the file corresponding to the given filename.
      * @param filename Font file to be parsed.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException 
      */
     public Type1FontMetrics(String filename) throws FileNotFoundException {
         this.filename = filename;
@@ -266,8 +266,8 @@ public class Type1FontMetrics implements FontMetrics {
     }
 
     @Override
-    public int getLeadingForSize(int textSize) {
-        return (int) (this.getAscent() * textSize * CONVERSION_TO_POINTS) + DEFAULT_LEADING_ADDITION;
+    public double getLineHeightForSize(int textSize) {
+        return (this.getAscent() + Math.abs(this.getDescent())) * textSize * CONVERSION_TO_POINTS;
     }
 
     public String getFullName() {
@@ -305,5 +305,15 @@ public class Type1FontMetrics implements FontMetrics {
     @Override
     public int[] getFontProgramLengths() {
         return pfb.getLengths();
+    }
+
+    @Override
+    public double getDescentPoint() {
+        return (this.getDescent() * CONVERSION_TO_POINTS);
+    }
+
+    @Override
+    public double getAscentPoint() {
+        return (this.getAscent() * CONVERSION_TO_POINTS);
     }
 }

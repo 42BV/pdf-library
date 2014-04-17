@@ -35,8 +35,17 @@ public interface Paragraph extends PlaceableDocumentPart {
     List<Text> getTextCollection();
 
     /**
+     * Adds a list of text to the paragraph.
+     * @param textCollection List of text to add.
+     * @return the paragraph.
+     */
+    Paragraph addText(List<Text> textCollection);
+
+    /**
      * Calculates the size of the content within the paragraph.
      * @param page Page the paragraph is on.
+     * @param fixedPosition Whether the paragraph has fixed positioning.
+     * @return a paragraph object if there is overflow, null otherwise
      */
-    void processContentSize(Page page);
+    Paragraph processContentSize(Page page, boolean fixedPosition);
 }

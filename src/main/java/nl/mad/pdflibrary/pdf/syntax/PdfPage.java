@@ -14,6 +14,7 @@ public class PdfPage extends PdfDictionary {
     private int marginRight;
     private int marginTop;
     private int marginBottom;
+    private int leading;
 
     /**
      * The amount of resources this page uses.
@@ -32,10 +33,11 @@ public class PdfPage extends PdfDictionary {
      * @param width Width of page.
      * @param height Height of page.
      */
-    public PdfPage(int width, int height) {
+    public PdfPage(int width, int height, int leading) {
         super(PdfObjectType.PAGE);
         this.width = width;
         this.height = height;
+        this.leading = leading;
         this.resourceCount = 0;
         this.initPage();
     }
@@ -239,5 +241,13 @@ public class PdfPage extends PdfDictionary {
         this.marginRight = marginRight;
         this.marginBottom = marginBottom;
         this.marginTop = marginTop;
+    }
+
+    public int getLeading() {
+        return leading;
+    }
+
+    public void setLeading(int leading) {
+        this.leading = leading;
     }
 }

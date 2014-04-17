@@ -12,7 +12,7 @@ import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.api.BasePage;
 import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.api.DocumentState;
+import nl.mad.pdflibrary.api.state.DocumentState;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;

@@ -139,6 +139,19 @@ public interface Text extends PlaceableDocumentPart {
     boolean textMatrixEquals(Text text);
 
     /**
+     * Sets the alignment of the text.
+     * @param alignment The alignment to use.
+     * @return the Text object.
+     */
+    Text align(Alignment alignment);
+
+    /**
+     * Returns the alignment of the text.
+     * @return Alignment used by the text.
+     */
+    Alignment getAlignment();
+
+    /**
      * Returns map of positions and strings, each string represents a single line in the document based on the text from this object.
      * @return Map<Position, String> String map containing the lines and position of the lines.
      */
@@ -147,9 +160,16 @@ public interface Text extends PlaceableDocumentPart {
     /**
      * Processes the text to check how the text will be divided into lines and where exactly the text is going to be positioned. 
      * @param page Page the text is on.
-     * @param inParagraph Whether or not the text is in a paragraph.
-     * @param positionX The starting position of the paragraph. (not used if not in paragraph)
-     * @param wrappable Whether or not other text should be able to wrap around this.
+     * @param positionX The starting position of the text.
+     * @param fixedPosition Whether or not the text is on a fixed position.
+     * @return a text object if there is overflow, null otherwise
      */
-    void processContentSize(Page page, boolean inParagraph, int positionX, boolean wrappable);
+    Text processContentSize(Page page, double positionX, boolean fixedPosition);
+
+    /**
+     * Determines the height of the content underneath the actual position of the text.
+     * @param page Page the text is on.
+     * @return double containing the height of the content.
+     */
+    double getContentHeightUnderBaseLine(Page page);
 }

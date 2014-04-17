@@ -25,9 +25,9 @@ public interface PlaceableDocumentPart extends DocumentPart {
      * Returns the height of this part's content. This value will not always be representative of the actual height of the part if the position 
      * was not specified by the user.
      * @param page page the content will be on.
-     * @return int containing height.
+     * @return double containing height.
      */
-    int getContentHeight(Page page);
+    double getContentHeight(Page page);
 
     /**
      * Returns the width of this part's content. This value will not always be representative of the actual width of the part if the position 
@@ -39,25 +39,29 @@ public interface PlaceableDocumentPart extends DocumentPart {
     int getContentWidth(Page page, Position position);
 
     /**
-     * Returns the size of the empty space required above the object.
-     * @return int containing leading value.
-     */
-    int getLeading();
-
-    /**
      * Returns x values of positions of this object at the given height.
      * @param height Height to check.
      * @return the x values of the positions (there can be several different positions at the same height due to text wrapping and such)
      * of this object at the given height. Returns -1 if the object is not at the given height.
      */
-    int[] getPositionAt(int height);
+    int[] getPositionAt(double height);
 
     /**
      * Returns a list of int arrays containing the spaces used by the text. Each int array contains the starting x value of the text and the ending x value.
      * @param height the y value where the spaces should be retrieved for.
      * @return List of int arrays containing the spaces used.
      */
-    List<int[]> getUsedSpaces(int height);
+    List<int[]> getUsedSpaces(double height);
+
+    /**
+     * @return double containing the clear space required above the object.
+     */
+    double getRequiredSpaceAbove();
+
+    /**
+     * @return double containing the clear space required below the object.
+     */
+    double getRequiredSpaceBelow();
 
     //    /**
     //     * Checks if this document part intersects with the given document part.

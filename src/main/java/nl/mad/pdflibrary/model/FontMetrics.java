@@ -91,6 +91,18 @@ public interface FontMetrics {
     int getDescent();
 
     /**
+     * Returns the descent of the font in points.
+     * @return double containing the descent in points.
+     */
+    double getDescentPoint();
+
+    /**
+     * Returns the ascent of the font in points.
+     * @return double containing the ascend in points.
+     */
+    double getAscentPoint();
+
+    /**
      * Returns the leading of the font.
      * @return int containing the leading.
      */
@@ -209,11 +221,11 @@ public interface FontMetrics {
     double getConversionToPointsValue();
 
     /**
-     * Returns the leading (space between two lines) that should be used for the given text size.
+     * Returns the height for the given text size.
      * @param textSize Size of the text.
-     * @return int containing the leading value.
+     * @return double containing the height value.
      */
-    int getLeadingForSize(int textSize);
+    double getLineHeightForSize(int textSize);
 
     /**
      * Returns the lenghts for the font program.

@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.syntax;
 
 import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.api.BaseFont;
+import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.PdfNameValue;
 import nl.mad.pdflibrary.pdf.syntax.PdfArray;
 import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
@@ -21,13 +22,14 @@ public class PdfPageTest {
 
     @Before
     public void setUp() throws Exception {
-        page = new PdfPage(200, 201);
+        page = new PdfPage(200, 201, Page.DEFAULT_NEW_LINE_SIZE);
     }
 
     @Test
     public void testCreation() {
         assertEquals(200, page.getWidth());
         assertEquals(201, page.getHeight());
+        assertEquals(Page.DEFAULT_NEW_LINE_SIZE, page.getLeading());
         assertEquals(PdfObjectType.PAGE, page.getType());
         assertEquals(4, ((PdfArray) page.get(PdfNameValue.MEDIA_BOX)).getSize());
     }

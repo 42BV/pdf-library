@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.pdf.structure.PdfBody;
 import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.syntax.PdfName;
@@ -40,7 +41,7 @@ public class PdfBodyTest {
 
     @Test
     public void testAddPage() {
-        PdfPage page = new PdfPage(pageSize, pageSize);
+        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE);
         body.addPage(page);
         int expectedObjectPos = 2;
         assertEquals("Page has not been correctly added to the body.", page, body.getAllIndirectObjects().get(expectedObjectPos).getObject());
@@ -62,7 +63,7 @@ public class PdfBodyTest {
     public void testGetIndirectObjects() {
         PdfName test = new PdfName("test");
         body.addObject(test);
-        PdfPage page = new PdfPage(pageSize, pageSize);
+        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE);
         body.addPage(page);
 
         int expectedTotalSize = 4;

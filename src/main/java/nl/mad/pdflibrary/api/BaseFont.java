@@ -97,8 +97,8 @@ public class BaseFont extends AbstractDocumentPart implements Font {
     }
 
     @Override
-    public int getLeading(int textSize) {
-        return fontFamily.getMetricsForStyle(style).getLeadingForSize(textSize);
+    public double getLineHeight(int textSize) {
+        return fontFamily.getMetricsForStyle(style).getLineHeightForSize(textSize);
     }
 
     @Override

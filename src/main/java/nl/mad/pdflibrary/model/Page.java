@@ -11,11 +11,11 @@ public interface Page extends DocumentPart {
     /**
      * Percentage of the page that should be filled.
      */
-    public static final double CUT_OFF_POINT_PERCENTAGE = 0.9;
+    double CUT_OFF_POINT_PERCENTAGE = 0.9;
     /**
      * Default size of a new line.
      */
-    public static final int DEFAULT_NEW_LINE_SIZE = 10;
+    int DEFAULT_NEW_LINE_SIZE = 3;
 
     /**
      * Adds a new part to the page content.
@@ -76,6 +76,7 @@ public interface Page extends DocumentPart {
 
     /**
      * Sets the page to use for overflowing content.
+     * @param page Page to use.
      */
     void overflowPage(Page page);
 
@@ -174,30 +175,57 @@ public interface Page extends DocumentPart {
 
     /**
      * Calculates and returns an open position.
-     * @param elementHeight height of the element that you are looking to position
      * @return Position that is available to use.
      */
-    Position getOpenPosition(int elementHeight);
+    Position getOpenPosition();
 
     /**
-     * Calculates and returns an open position on or after the given height.
-     * @param height Offset to find a position.
+     * Calculates and returns an open position.
+     * @param requiredSpaceAbove The empty space required above the position.
+     * @param requiredSpaceBelow The empty space required below the position.
      * @return Position that is available to use.
      */
-    Position getOpenPosition(int height, int elementHeight);
+    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow);
+
+    /**
+     * Calculates and returns an open position on or after the given height and width.
+     * @param height Height offset.
+     * @param width Width offset.
+     * @param requiredSpaceAbove The empty space required above the position.
+     * @param requiredSpaceBelow The empty space required below the position.
+     * @return Position that is available to use.
+     */
+    Position getOpenPosition(double height, double width, double requiredSpaceAbove, double requiredSpaceBelow);
 
     /**
      * Returns the available spaces on the given line.
      * @param pos Position to check on.
-     * @param ignoreSpacesBeforePositionWidth Whether or not to ignore open spaces that come before the given position's x value.
+     * @param ignoreSpacesBeforePositionWidth Whether to ignore open spaces that come before the given position's x value.
+     * @param requiredSpaceAbove Amount of empty space required above the given position.
+     * @param requiredSpaceBelow Amount of empty space required below the given position.
      * @return List of int arrays, each contains the start- and end point of the space.
      */
-    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth);
+    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow);
 
     /**
      * Returns the available width at the given position.
      * @param position Position to check.
+     * @param requiredSpaceAbove Amount of empty space required above the given position.
+     * @param requiredSpaceBelow Amount of empty space required below the given position.
      * @return int containing the available width value.
      */
-    int checkAvailableWidth(Position position);
+    int checkAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
+
+    /**
+     * @return int containing the space between two lines.
+     */
+    int getLeading();
+
+    /**
+     * Sets the leading value. The leading specifies the amount of space between two lines.
+     * @param leading Space between two lines.
+     * @return the page.
+     */
+    Page leading(int leading);
+
 }

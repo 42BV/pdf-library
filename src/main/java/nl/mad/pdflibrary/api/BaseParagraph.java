@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
-import nl.mad.pdflibrary.model.Observable;
-import nl.mad.pdflibrary.model.ObserverEvent;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Position;
@@ -36,22 +33,23 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
      */
     public BaseParagraph(Position position) {
         super(DocumentPartType.PARAGRAPH);
-        textCollection = new ArrayList<Text>();
+        textCollection = new LinkedList<Text>();
         this.setPosition(position);
     }
 
     /**
-     * Creates a new instance of Paragraph and fills the textCollection with the given list
-     * @param text List of text to add to the paragraph.
+     * Creates a new instance of paragraph based on the given paragraph.
+     * @param p paragraph to copy.
+     * @param copyCollection Whether or not this paragraph should copy the contents of the given paragraph.
      */
-    private BaseParagraph(List<Text> text) {
-        this(new Position());
-        this.textCollection = text;
-    }
-
-    public BaseParagraph(Paragraph p) {
+    public BaseParagraph(Paragraph p, boolean copyCollection) {
         super(DocumentPartType.PARAGRAPH);
-        this.textCollection = p.getTextCollection();
+        this.textCollection = new LinkedList<Text>();
+        if (copyCollection) {
+            for (Text t : p.getTextCollection()) {
+                textCollection.add(new BaseText(t));
+            }
+        }
         this.setPosition(p.getPosition());
     }
 
@@ -77,33 +75,61 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     }
 
     @Override
-    public void processContentSize(Page page) {
+    public Paragraph processContentSize(Page page, boolean fixedPosition) {
+        Paragraph overflowParagraph = null;
         for (int i = 0; i < textCollection.size(); ++i) {
             Text t = textCollection.get(i);
-            System.out.println(t.getText());
-            if (i == 0) {
-                processParagraphPosition(textCollection.get(i), page);
-            } else {
-                t.setPosition(page.getOpenPosition(t.getLeading()));
+            System.out.println("Handling ze: " + t.getText());
+            System.out.println(t.getPosition().getY());
+            double posX = processTextPosition(textCollection.get(i), page, fixedPosition);
+            Text overflow = t.processContentSize(page, posX, fixedPosition);
+            if (overflow != null) {
+                overflowParagraph = this.handleOverflow(i + 1, overflow);
             }
-            t.processContentSize(page, true, this.getPosition().getX(), false);
         }
+        return overflowParagraph;
     }
 
-    private void processParagraphPosition(Text text, Page page) {
-        if (this.getPosition().hasCustomPosition()) {
-            text.setPosition(this.getPosition());
+    private double processTextPosition(Text text, Page page, boolean fixedPosition) {
+        int index = textCollection.indexOf(text);
+        double posX = this.getPosition().getX();
+        if (!fixedPosition) {
+            posX -= page.getMarginLeft();
         }
+        if (index == 0) {
+            if (this.getPosition().hasCustomPosition()) {
+                text.setPosition(this.getPosition());
+            }
+        } else {
+            Text previous = textCollection.get(index - 1);
+            System.out.println("Previous: " + previous.getPosition().getY());
+            System.out.println("Previous contentheight: " + previous.getContentHeight(page));
+            System.out.println("New pos: "
+                    + (previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - page.getLeading() - text.getRequiredSpaceAbove()));
+            double newPositionY = previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - page.getLeading()
+                    - text.getRequiredSpaceAbove();
+            if (fixedPosition) {
+                Position pos = new Position(posX, newPositionY);
+                text.setPosition(pos);
+            } else {
+                text.setPosition(page.getOpenPosition(posX, newPositionY, text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow()));
+            }
+        }
+        return posX;
     }
 
-    private void handleOverflow(Observable sender, ObserverEvent event, DocumentPart arg) {
+    private Paragraph handleOverflow(int index, Text text) {
         List<Text> newTextList = new ArrayList<Text>();
-        newTextList.add((Text) arg);
-        newTextList.addAll(textCollection.subList(textCollection.indexOf(sender), textCollection.size()));
+        newTextList.add(text);
+        newTextList.addAll(textCollection.subList(index, textCollection.size()));
+        this.textCollection.removeAll(newTextList);
+        Paragraph overflowParagraph = new BaseParagraph(this, false);
+        overflowParagraph.addText(newTextList);
+        return overflowParagraph;
     }
 
     @Override
-    public int getContentHeight(Page page) {
+    public double getContentHeight(Page page) {
         int height = 0;
         for (Text t : textCollection) {
             height += t.getContentHeight(page);
@@ -122,17 +148,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     }
 
     @Override
-    public int getLeading() {
-        int leading = 0;
-        for (Text text : textCollection) {
-            int textLeading = text.getLeading();
-            leading = Math.max(leading, textLeading);
-        }
-        return leading;
-    }
-
-    @Override
-    public int[] getPositionAt(int height) {
+    public int[] getPositionAt(double height) {
         ArrayList<Integer> positionsTemp = new ArrayList<>();
         for (Text t : textCollection) {
             int[] xPositions = t.getPositionAt(height);
@@ -150,11 +166,33 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     }
 
     @Override
-    public List<int[]> getUsedSpaces(int height) {
+    public List<int[]> getUsedSpaces(double height) {
         List<int[]> spaces = new LinkedList<int[]>();
         for (Text t : textCollection) {
             spaces.addAll(t.getUsedSpaces(height));
         }
         return spaces;
+    }
+
+    @Override
+    public double getRequiredSpaceAbove() {
+        if (!textCollection.isEmpty()) {
+            return textCollection.get(0).getRequiredSpaceAbove();
+        }
+        return 0;
+    }
+
+    @Override
+    public double getRequiredSpaceBelow() {
+        if (!textCollection.isEmpty()) {
+            return textCollection.get(textCollection.size() - 1).getRequiredSpaceBelow();
+        }
+        return 0;
+    }
+
+    @Override
+    public Paragraph addText(List<Text> textCollection) {
+        this.textCollection.addAll(textCollection);
+        return this;
     }
 }

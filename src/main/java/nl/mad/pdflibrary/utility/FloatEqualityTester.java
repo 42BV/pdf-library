@@ -54,4 +54,44 @@ public final class FloatEqualityTester {
     public static boolean equals(float value, float value2, double epsilon) {
         return (Math.abs(value - value2) < epsilon);
     }
+
+    /**
+     * Checks if the first given double value is less than the second given double value.
+     * @param value First value
+     * @param value2 Second value
+     * @return True if the first value is less than the second value and the difference between the values is larger than the default epsilon value.
+     */
+    public static boolean lessThan(double value, double value2) {
+        return (value < value2) && !equals(value, value2, EPSILON);
+    }
+
+    /**
+     * Checks if the first given double value is greater than the second given double value.
+     * @param value First value
+     * @param value2 Second value
+     * @return True if the first value is greater than the second value and the difference between the value is larger than the default epsilon value.
+     */
+    public static boolean greaterThan(double value, double value2) {
+        return (value > value2) && !equals(value, value2);
+    }
+
+    /**
+     * Checks if the first given double value is greater than or equal to the second given double value.
+     * @param value First value
+     * @param value2 Second value
+     * @return True if the first value is greater than or equal to the second value.
+     */
+    public static boolean greaterThanOrEqualTo(double value, double value2) {
+        return (greaterThan(value, value2) || equals(value, value2));
+    }
+
+    /**
+     * Checks if the first given double value is less than or equal to the second given double value.
+     * @param value First value
+     * @param value2 Second value
+     * @return True if the first value is less than or equal to the second value.
+     */
+    public static boolean lessThanOrEqualTo(double value, double value2) {
+        return (lessThan(value, value2) || equals(value, value2));
+    }
 }

@@ -132,9 +132,9 @@ public class PdfDocument {
         String overflow = "";
         if (overrideMatrix) {
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
-            overflow = pdfText.addTextString(text);
+            overflow = pdfText.addTextString(text, currentPage.getLeading());
         } else {
-            overflow = pdfText.addText(text, getPdfFont(text.getFont()));
+            overflow = pdfText.addText(text, getPdfFont(text.getFont()), currentPage.getLeading());
         }
         ts.add(pdfText);
         handleOverflow(text, overflow);
@@ -222,7 +222,7 @@ public class PdfDocument {
      * @param page Page to add.
      */
     public void addPage(Page page) {
-        PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight());
+        PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight(), page.getLeading());
         pdfPage.setMargins(page.getMarginLeft(), page.getMarginRight(), page.getMarginBottom(), page.getMarginTop());
         currentPage = (PdfPage) body.addPage(pdfPage).getObject();
     }

@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import nl.mad.pdflibrary.api.BaseFont;
 import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
+import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.pdf.syntax.PdfFont;
@@ -28,7 +29,7 @@ public class PdfTextTest {
     public static void setUpTestObjects() throws Exception {
         fontReference = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont()), true);
         fontReference.getReference().setResourceReference("R1");
-        page = new PdfPage(300, 300);
+        page = new PdfPage(300, 300, Page.DEFAULT_NEW_LINE_SIZE);
         page.setMargins(10, 0, 0, 11);
     }
 
@@ -48,7 +49,7 @@ public class PdfTextTest {
 
         //expected result for font adding, matrix adding and text adding
         String expectedTotalResult = "/R1 10 Tf\n" + "1.0 0.0 0.0 1.0 20 20 Tm\n" + "[(T) 70 (est)] TJ\n";
-        pdfText.addText(text, fontReference);
+        pdfText.addText(text, fontReference, Page.DEFAULT_NEW_LINE_SIZE);
         assertEquals(expectedTotalResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
 
@@ -57,7 +58,7 @@ public class PdfTextTest {
         pdfText = new PdfText();
         Paragraph p = new BaseParagraph().addText(new BaseText("Test Test Test")).addText(new BaseText("Test2"));
         for (int i = 0; i < p.getTextCollection().size(); ++i) {
-            pdfText.addText(p.getTextCollection().get(i), fontReference);
+            pdfText.addText(p.getTextCollection().get(i), fontReference, Page.DEFAULT_NEW_LINE_SIZE);
         }
         String expectedResult = "/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est)] TJ\n[(T) 70 (est)] TJ\n"
                 + "[(T) 70 (est)] TJ\n/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est2)] TJ\n";
