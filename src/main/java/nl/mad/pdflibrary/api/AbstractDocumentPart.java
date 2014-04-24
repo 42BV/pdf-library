@@ -2,7 +2,6 @@ package nl.mad.pdflibrary.api;
 
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
-import nl.mad.pdflibrary.model.Observer;
 
 /**
  * AbstractDocumentPart is the abstract class for all the different document parts that can be added to an instance of Document.

@@ -35,7 +35,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private double scaleY = 1;
     private double shearX = 0;
     private double shearY = 0;
-    private Alignment alignment = Alignment.LEFT;
     private Font font;
     private Map<Position, String> textSplit;
     private Map<Position, Double> justificationOffsets;
@@ -79,7 +78,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.shearY = copyFrom.getShearY();
         this.textSplit = copyFrom.getTextSplit();
         this.justificationOffsets = copyFrom.getJustificationOffset();
-        this.alignment = copyFrom.getAlignment();
+        this.setAlignment(copyFrom.getAlignment());
     }
 
     @Override
@@ -324,7 +323,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         Position newPos = new Position(position);
         double remainingWidth = openSpaceSize - width;
         //do alignment
-        switch (alignment) {
+        switch (getAlignment()) {
         case RIGHT:
             newPos.setX(position.getX() + remainingWidth);
             break;
@@ -500,13 +499,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public Text align(Alignment alignment) {
-        this.alignment = alignment;
+        this.setAlignment(alignment);
         return this;
-    }
-
-    @Override
-    public Alignment getAlignment() {
-        return this.alignment;
     }
 
     @Override

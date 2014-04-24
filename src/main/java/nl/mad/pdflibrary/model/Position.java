@@ -25,6 +25,10 @@ public class Position {
         this.y = y;
     }
 
+    /**
+     * Creates a copy of the given position object.
+     * @param position Position to copy.
+     */
     public Position(Position position) {
         this.x = position.getX();
         this.y = position.getY();

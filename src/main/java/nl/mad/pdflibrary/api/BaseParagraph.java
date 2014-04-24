@@ -101,7 +101,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
             //                requiredWidth += a.getP
             //            }
             //processAnchorPosition(t, page, fixedPosition, AnchorLocation.ABOVE);
-            testProcessing(textCollection.get(i), page, fixedPosition);
+            anchorProcessing(textCollection.get(i), page, fixedPosition);
             double posX = processTextPosition(textCollection.get(i), page, fixedPosition);
             //processAnchorPosition(t, page, fixedPosition, AnchorLocation.BELOW);
             Text overflow = t.processContentSize(page, posX, fixedPosition);
@@ -123,7 +123,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         return newPos;
     }
 
-    private void testProcessing(Text text, Page page, boolean fixedPosition) {
+    private void anchorProcessing(Text text, Page page, boolean fixedPosition) {
         List<Anchor> anchorList = this.getAnchorsOn(text);
         System.out.println("Text = " + text.getText() + ", anchors = " + anchorList.size());
         if (anchorList.size() > 0) {
