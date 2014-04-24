@@ -37,7 +37,7 @@ public class BaseImage extends AbstractPlaceableDocumentPart {
 
     @Override
     public List<int[]> getUsedSpaces(double height) {
-        List<int[]> space = new LinkedList<>();
+        List<int[]> space = new LinkedList<int[]>();
         space.add(new int[] { (int) this.getPosition().getX(), (int) (this.getPosition().getX() + width) });
         return space;
     }

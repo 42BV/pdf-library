@@ -55,8 +55,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public BaseText(String text) {
         super(DocumentPartType.TEXT);
         textString = text;
-        textSplit = new LinkedHashMap<>();
-        justificationOffsets = new HashMap<>();
+        textSplit = new LinkedHashMap<Position, String>();
+        justificationOffsets = new HashMap<Position, Double>();
         textSize = DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
         this.setPosition(new Position());
@@ -462,7 +462,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     }
 
     private List<Entry<Position, String>> getEntriesAtHeight(double height) {
-        List<Entry<Position, String>> entries = new LinkedList<>();
+        List<Entry<Position, String>> entries = new LinkedList<Entry<Position, String>>();
         for (Entry<Position, String> entry : textSplit.entrySet()) {
             Position linePos = entry.getKey();
             if (FloatEqualityTester.lessThanOrEqualTo(height, linePos.getY() + this.getRequiredSpaceAbove())
@@ -476,7 +476,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public List<int[]> getUsedSpaces(double height) {
         System.out.println("  Getting used spaces for: " + this.textString);
-        List<int[]> spaces = new LinkedList<>();
+        List<int[]> spaces = new LinkedList<int[]>();
         List<Entry<Position, String>> entries = getEntriesAtHeight(height);
         FontMetrics metrics = font.getMetrics();
         for (int i = 0; i < entries.size(); ++i) {

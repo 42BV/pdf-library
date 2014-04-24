@@ -211,7 +211,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
 
     @Override
     public int[] getPositionAt(double height) {
-        ArrayList<Integer> positionsTemp = new ArrayList<>();
+        ArrayList<Integer> positionsTemp = new ArrayList<Integer>();
         for (Text t : textCollection) {
             int[] xPositions = t.getPositionAt(height);
             for (int pos : xPositions) {

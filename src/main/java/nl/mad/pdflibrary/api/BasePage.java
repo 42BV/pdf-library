@@ -290,7 +290,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public List<DocumentPart> getFixedPositionContent() {
-        List<DocumentPart> fixedPositionList = new ArrayList<>();
+        List<DocumentPart> fixedPositionList = new ArrayList<DocumentPart>();
         for (DocumentPart p : content) {
             if (p instanceof PlaceableDocumentPart) {
                 if (((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
@@ -303,7 +303,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public List<DocumentPart> getPositionlessContent() {
-        List<DocumentPart> positionlessContent = new ArrayList<>();
+        List<DocumentPart> positionlessContent = new ArrayList<DocumentPart>();
         for (DocumentPart p : content) {
             if (p instanceof PlaceableDocumentPart) {
                 if (!((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
@@ -343,7 +343,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     private List<int[]> getUsedSpacesFrom(PlaceableDocumentPart part, Position pos, double requiredSpaceAbove, double requiredSpaceBelow) {
-        List<int[]> usedSpaces = new ArrayList<>();
+        List<int[]> usedSpaces = new ArrayList<int[]>();
         double[] heights = new double[] { pos.getY(), pos.getY() + requiredSpaceAbove, pos.getY() - requiredSpaceBelow };
         for (double y : heights) {
             usedSpaces.addAll(part.getUsedSpaces(y));
