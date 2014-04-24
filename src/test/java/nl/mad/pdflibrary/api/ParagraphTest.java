@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class ParagraphTest {
     @Test
     public void testPositioning() {
         paragraph.on(200, 201);
-        assertEquals("The position was not set correctly. ", 200, paragraph.getPosition().getX());
-        assertEquals("The position was not set correctly. ", 201, paragraph.getPosition().getY());
+        assertEquals("The position was not set correctly. ", 200, paragraph.getPosition().getX(), FloatEqualityTester.EPSILON);
+        assertEquals("The position was not set correctly. ", 201, paragraph.getPosition().getY(), FloatEqualityTester.EPSILON);
     }
 }

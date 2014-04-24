@@ -71,8 +71,8 @@ public class TextTest {
     @Test
     public void testPositioning() {
         text.on(10, 11);
-        assertEquals("Text position was set incorrectly. ", 10, text.getPosition().getX());
-        assertEquals("Text position was set incorrectly. ", 11, text.getPosition().getY());
+        assertEquals("Text position was set incorrectly. ", 10, text.getPosition().getX(), FloatEqualityTester.EPSILON);
+        assertEquals("Text position was set incorrectly. ", 11, text.getPosition().getY(), FloatEqualityTester.EPSILON);
     }
 
     @Test
