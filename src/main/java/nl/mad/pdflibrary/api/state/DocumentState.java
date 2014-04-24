@@ -26,7 +26,7 @@ public class DocumentState {
      * Creates a new instance of DocumentState.
      */
     public DocumentState() {
-        state = new LinkedList<>();
+        state = new LinkedList<Page>();
     }
 
     /**
@@ -34,7 +34,7 @@ public class DocumentState {
      * @param builderState Builder state to process.
      */
     public void updateState(List<Page> builderState) {
-        List<Page> builderStateCopy = new LinkedList<>(builderState);
+        List<Page> builderStateCopy = new LinkedList<Page>(builderState);
         state = new LinkedList<Page>();
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
