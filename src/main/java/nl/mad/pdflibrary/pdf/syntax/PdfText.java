@@ -2,7 +2,9 @@ package nl.mad.pdflibrary.pdf.syntax;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import nl.mad.pdflibrary.model.Alignment;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Position;
@@ -32,7 +34,6 @@ public class PdfText extends AbstractPdfObject {
      */
     public String addText(Text text, PdfIndirectObject fontReference, int leading) {
         this.addFont(fontReference, text.getTextSize());
-        this.addMatrix(text);
         return this.addTextString(text, leading);
     }
 
@@ -71,13 +72,36 @@ public class PdfText extends AbstractPdfObject {
     /**
      * Adds the byte representation for the given text string.
      * @param text String that is to be added.
+     * @param leading Space between two lines.
      * @return String containing overflow.
      */
     public String addTextString(Text text, int leading) {
         StringBuilder sb = new StringBuilder();
         Map<Position, String> textSplit = text.getTextSplit();
-        for (Entry<Position, String> entry : textSplit.entrySet()) {
+        Map<Position, Double> justification = text.getJustificationOffset();
+        Set<Entry<Position, String>> entrySet = textSplit.entrySet();
+        if (text.getAlignment().equals(Alignment.JUSTIFIED)) {
+            System.out.println("");
+            System.out.println("Printing out positions for textSplit: ");
+            for (Entry<Position, String> entry : entrySet) {
+                System.out.println("    Position = " + entry.getKey() + ", value = " + entry.getValue());
+            }
+
+            System.out.println("Printing out positions for justified: ");
+            for (Entry<Position, Double> entry : justification.entrySet()) {
+                System.out.println("    Position = " + entry.getKey() + ", value = " + entry.getValue());
+            }
+        }
+        int i = 0;
+        for (Entry<Position, String> entry : entrySet) {
             if (!"\n".equals(entry.getValue())) {
+                if (Alignment.JUSTIFIED.equals(text.getAlignment())) {
+                    System.out.println(text.getText());
+                    System.out.println("Alignment is just!");
+                    if (i != entrySet.size() - 1) {
+                        sb.append(justification.get(entry.getKey()) + " Tw ");
+                    }
+                }
                 sb.append(createMatrix(text, entry.getKey()));
                 sb.append("[(");
                 sb.append(this.processKerning(entry.getValue(), text.getFont()));
@@ -85,6 +109,7 @@ public class PdfText extends AbstractPdfObject {
             } else {
                 sb.append(getNewLineStringForText(text, leading));
             }
+            ++i;
             sb.append("\n");
         }
         this.addToByteRepresentation(sb.toString());

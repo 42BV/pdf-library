@@ -18,6 +18,11 @@ public interface Page extends DocumentPart {
     int DEFAULT_NEW_LINE_SIZE = 3;
 
     /**
+     * The minimal space required for wrapping.
+     */
+    int MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING = 100;
+
+    /**
      * Adds a new part to the page content.
      * @param part DocumentPart to add.
      * @return the page object.
@@ -73,18 +78,6 @@ public interface Page extends DocumentPart {
      * @param filledHeight New filled height of the page.
      */
     void setFilledHeight(double filledHeight);
-
-    /**
-     * Sets the page to use for overflowing content.
-     * @param page Page to use.
-     */
-    void overflowPage(Page page);
-
-    /**
-     * Returns the page that is used for overflowing content.
-     * @return Page used for overflowing content.
-     */
-    Page getOverflowPage();
 
     /**
      * Sets the top margin of the page.
@@ -188,14 +181,24 @@ public interface Page extends DocumentPart {
     Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow);
 
     /**
-     * Calculates and returns an open position on or after the given height and width.
-     * @param height Height offset.
-     * @param width Width offset.
+     * Calculates and returns an open position.
      * @param requiredSpaceAbove The empty space required above the position.
      * @param requiredSpaceBelow The empty space required below the position.
+     * @param requiredWidth The empty space required to the side of the position.
      * @return Position that is available to use.
      */
-    Position getOpenPosition(double height, double width, double requiredSpaceAbove, double requiredSpaceBelow);
+    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
+
+    /**
+     * Calculates and returns an open position on or after the given height and width.
+     * @param width Width offset.     
+     * @param height Height offset.
+     * @param requiredSpaceAbove The empty space required above the position.
+     * @param requiredSpaceBelow The empty space required below the position.
+     * @param requiredWidth The empty space required to the side of the position.
+     * @return Position that is available to use.
+     */
+    Position getOpenPosition(double width, double height, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
 
     /**
      * Returns the available spaces on the given line.
@@ -214,7 +217,7 @@ public interface Page extends DocumentPart {
      * @param requiredSpaceBelow Amount of empty space required below the given position.
      * @return int containing the available width value.
      */
-    int checkAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
+    int checkTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
 
     /**
      * @return int containing the space between two lines.
@@ -227,5 +230,18 @@ public interface Page extends DocumentPart {
      * @return the page.
      */
     Page leading(int leading);
+
+    /**
+     * Sets the master page. The page will copy all attributes from the master page including content.
+     * @param master The page to use as master page.
+     * @return the page.
+     */
+    Page master(Page master);
+
+    /**
+     * Returns the master page of this page.
+     * @return the master page.
+     */
+    Page getMasterPage();
 
 }

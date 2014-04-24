@@ -27,9 +27,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
     private int marginBottom;
     private int marginLeft;
     private int marginRight;
+    private Page masterPage;
     private List<DocumentPart> content;
-    private Page overflowPage;
-    private static final int MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING = 100;
     private int leading = DEFAULT_NEW_LINE_SIZE;
 
     /**
@@ -62,6 +61,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
         this.filledHeight = marginTop;
         this.marginRight = page.getMarginRight();
         this.leading = page.getLeading();
+        this.masterPage = page.getMasterPage();
     }
 
     @Override
@@ -113,11 +113,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public void overflowPage(Page page) {
-        this.overflowPage = page;
-    }
-
-    @Override
     public double getRemainingHeight() {
         return this.getHeightWithoutMargins() - filledHeight;
     }
@@ -135,11 +130,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
     @Override
     public int getWidthWithoutMargins() {
         return this.width - marginRight - marginLeft;
-    }
-
-    @Override
-    public Page getOverflowPage() {
-        return this.overflowPage;
     }
 
     @Override
@@ -196,21 +186,28 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow) {
-        double posHeight = height - filledHeight - requiredSpaceAbove;
-        System.out.println(posHeight);
-        return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow);
+        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
     }
 
     @Override
-    public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow) {
+    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
+        double posHeight = height - filledHeight - requiredSpaceAbove;
+        return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, requiredWidth);
+    }
+
+    @Override
+    public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
         boolean openPositionFound = false;
         System.out.println("GetOpenPosition @ " + positionWidth + ":" + positionHeight);
         double potentialHeight = positionHeight;
+        if (requiredWidth == 0) {
+            requiredWidth = MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
+        }
         if (positionHeight > marginBottom) {
             double potentialWidth = positionWidth + marginLeft;
             Position position = new Position(potentialWidth, potentialHeight);
             while (!openPositionFound) {
-                if (checkAvailableWidth(position, requiredSpaceAbove, requiredSpaceBelow) > (MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING)) {
+                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow) > (requiredWidth)) {
                     return position;
                 }
                 if (potentialHeight <= marginBottom) {
@@ -223,8 +220,16 @@ public class BasePage extends AbstractDocumentPart implements Page {
         return null;
     }
 
+    private double getWidestOpenSpaceOn(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
+        int maxWidth = 0;
+        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
+            maxWidth = Math.max(maxWidth, openSpace[1] - openSpace[0]);
+        }
+        return maxWidth;
+    }
+
     @Override
-    public int checkAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
+    public int checkTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
         int availableWidth = 0;
         for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
             availableWidth += openSpace[1] - openSpace[0];
@@ -267,14 +272,16 @@ public class BasePage extends AbstractDocumentPart implements Page {
                     + (FloatEqualityTester.greaterThan(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThan(positionTopLimit, topLimit)));
             System.out.println("    Fourth check result: "
                     + (FloatEqualityTester.lessThan(positionBottomLimit, topLimit) && FloatEqualityTester.greaterThan(positionBottomLimit, bottomLimit)));
-            System.out.println("    topLimit: " + topLimit);
-            System.out.println("    bottomLimit: " + bottomLimit);
+            System.out.println("    PartTopLimit: " + topLimit);
+            System.out.println("    PartBottomLimit: " + bottomLimit);
             System.out.println("    PosTopLimit: " + positionTopLimit);
             System.out.println("    PosBottomLimit: " + positionBottomLimit);
 
             if ((FloatEqualityTester.lessThanOrEqualTo(y, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit))
-                    || (FloatEqualityTester.greaterThan(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThan(positionTopLimit, topLimit))
-                    || (FloatEqualityTester.lessThan(positionBottomLimit, topLimit) && FloatEqualityTester.greaterThan(positionBottomLimit, bottomLimit))) {
+                    || (FloatEqualityTester.greaterThanOrEqualTo(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThanOrEqualTo(positionTopLimit,
+                            topLimit))
+                    || (FloatEqualityTester.lessThanOrEqualTo(positionBottomLimit, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(positionBottomLimit,
+                            bottomLimit))) {
                 return true;
             }
         }
@@ -383,5 +390,22 @@ public class BasePage extends AbstractDocumentPart implements Page {
             this.leading = leading;
         }
         return this;
+    }
+
+    @Override
+    public Page master(Page master) {
+        this.masterPage = master;
+        this.marginBottom = master.getMarginBottom();
+        this.marginLeft = master.getMarginLeft();
+        this.marginRight = master.getMarginRight();
+        this.marginTop = master.getMarginTop();
+        this.width = master.getWidth();
+        this.height = master.getHeight();
+        return this;
+    }
+
+    @Override
+    public Page getMasterPage() {
+        return this.masterPage;
     }
 }

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import nl.mad.pdflibrary.model.Alignment;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
+import nl.mad.pdflibrary.model.PlaceableDocumentPart;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 
@@ -19,6 +21,7 @@ import nl.mad.pdflibrary.model.Text;
 public class BaseParagraph extends AbstractPlaceableDocumentPart implements Paragraph {
 
     private List<Text> textCollection;
+    private List<Anchor> anchors;
 
     /**
      * Creates a new instance of Paragraph with automatic positioning.
@@ -34,6 +37,7 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     public BaseParagraph(Position position) {
         super(DocumentPartType.PARAGRAPH);
         textCollection = new LinkedList<Text>();
+        anchors = new LinkedList<Anchor>();
         this.setPosition(position);
     }
 
@@ -45,9 +49,15 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     public BaseParagraph(Paragraph p, boolean copyCollection) {
         super(DocumentPartType.PARAGRAPH);
         this.textCollection = new LinkedList<Text>();
+        this.anchors = new LinkedList<Anchor>();
+        this.align(p.getAlignment());
         if (copyCollection) {
             for (Text t : p.getTextCollection()) {
-                textCollection.add(new BaseText(t));
+                Text newText = new BaseText(t);
+                textCollection.add(newText);
+                for (Anchor a : p.getAnchorsOn(t)) {
+                    anchors.add(new Anchor(a, newText));
+                }
             }
         }
         this.setPosition(p.getPosition());
@@ -77,11 +87,23 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     @Override
     public Paragraph processContentSize(Page page, boolean fixedPosition) {
         Paragraph overflowParagraph = null;
+        System.out.println("Text col: " + textCollection.size());
         for (int i = 0; i < textCollection.size(); ++i) {
             Text t = textCollection.get(i);
+            t.align(this.getAlignment());
+            System.out.println("The text alignment is: " + t.getAlignment());
             System.out.println("Handling ze: " + t.getText());
             System.out.println(t.getPosition().getY());
+            //            double requiredHeight = 0;
+            //            double requiredWidth = 0;
+            //            for (Anchor a : this.getAnchorsOn(t)) {
+            //                requiredHeight = Math.max(requiredHeight, a.getPart().getContentHeight(page));
+            //                requiredWidth += a.getP
+            //            }
+            //processAnchorPosition(t, page, fixedPosition, AnchorLocation.ABOVE);
+            testProcessing(textCollection.get(i), page, fixedPosition);
             double posX = processTextPosition(textCollection.get(i), page, fixedPosition);
+            //processAnchorPosition(t, page, fixedPosition, AnchorLocation.BELOW);
             Text overflow = t.processContentSize(page, posX, fixedPosition);
             if (overflow != null) {
                 overflowParagraph = this.handleOverflow(i + 1, overflow);
@@ -90,29 +112,69 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
         return overflowParagraph;
     }
 
+    private Position processAnchorPositions(Position position, Text text, Page page, boolean fixedPosition, List<Anchor> anchorList) {
+        Position newPos = new Position(position);
+        for (Anchor a : anchorList) {
+            PlaceableDocumentPart anchorPart = a.getPart();
+            anchorPart.setPosition(newPos);
+            page.add(anchorPart);
+            newPos = new Position(anchorPart.getContentWidth(page, newPos) + newPos.getX(), newPos.getY());
+        }
+        return newPos;
+    }
+
+    private void testProcessing(Text text, Page page, boolean fixedPosition) {
+        List<Anchor> anchorList = this.getAnchorsOn(text);
+        System.out.println("Text = " + text.getText() + ", anchors = " + anchorList.size());
+        if (anchorList.size() > 0) {
+            int index = textCollection.indexOf(text);
+            Text previous = null;
+            if (index != 0) {
+                previous = textCollection.get(index - 1);
+            }
+            double posX = this.getPosition().getX();
+            if (!fixedPosition) {
+                posX -= page.getMarginLeft();
+            }
+            //double posY = 0;//page.getHeight() - page.getFilledHeight() - page.getLeading();
+            if (previous != null) {
+                //posY = page.getFilledHeight() ;
+            }
+            double requiredWidth = Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
+            double requiredHeight = text.getRequiredSpaceBelow();
+            for (Anchor a : anchorList) {
+                if (AnchorLocation.LEFT.equals(a.getLocation()) || AnchorLocation.RIGHT.equals(a.getLocation())) {
+                    requiredWidth += a.getPart().getContentWidth(page, new Position());
+                    requiredHeight = Math.max(a.getPart().getContentHeight(page), requiredHeight);
+                }
+            }
+            System.out.println("Getting open pos for the anchor!");
+            Position position = page.getOpenPosition(text.getRequiredSpaceAbove(), requiredHeight, requiredWidth);
+            //TODO: overflow handling?
+            position = this.processAnchorPositions(position, text, page, fixedPosition, this.getAnchorsOn(text, AnchorLocation.LEFT));
+            position.setX(position.getX() + Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
+            this.processAnchorPositions(position, text, page, fixedPosition, this.getAnchorsOn(text, AnchorLocation.RIGHT));
+        }
+    }
+
     private double processTextPosition(Text text, Page page, boolean fixedPosition) {
         int index = textCollection.indexOf(text);
         double posX = this.getPosition().getX();
         if (!fixedPosition) {
             posX -= page.getMarginLeft();
         }
-        if (index == 0) {
-            if (this.getPosition().hasCustomPosition()) {
-                text.setPosition(this.getPosition());
-            }
+
+        if (index == 0 && this.getPosition().hasCustomPosition()) {
+            text.on(this.getPosition());
         } else {
             Text previous = textCollection.get(index - 1);
-            System.out.println("Previous: " + previous.getPosition().getY());
-            System.out.println("Previous contentheight: " + previous.getContentHeight(page));
-            System.out.println("New pos: "
-                    + (previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - page.getLeading() - text.getRequiredSpaceAbove()));
             double newPositionY = previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - page.getLeading()
                     - text.getRequiredSpaceAbove();
             if (fixedPosition) {
                 Position pos = new Position(posX, newPositionY);
-                text.setPosition(pos);
+                text.on(pos);
             } else {
-                text.setPosition(page.getOpenPosition(posX, newPositionY, text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow()));
+                text.on(page.getOpenPosition(posX, newPositionY, text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow(), 0));
             }
         }
         return posX;
@@ -194,5 +256,54 @@ public class BaseParagraph extends AbstractPlaceableDocumentPart implements Para
     public Paragraph addText(List<Text> textCollection) {
         this.textCollection.addAll(textCollection);
         return this;
+    }
+
+    @Override
+    public Anchor addAnchor(PlaceableDocumentPart part) {
+        Anchor a = new Anchor(part);
+        this.anchors.add(a);
+        return a;
+    }
+
+    @Override
+    public List<Anchor> getAnchorsOn(Text t) {
+        List<Anchor> anchorsOnText = new LinkedList<Anchor>();
+        if (t != null) {
+            System.out.println("Comparing anchor points: ");
+            System.out.println("    given: " + t);
+            for (Anchor a : anchors) {
+                System.out.println("   " + a.getAnchorPoint());
+                if (t.equals(a.getAnchorPoint())) {
+                    anchorsOnText.add(a);
+                }
+            }
+        }
+        return anchorsOnText;
+    }
+
+    @Override
+    public List<Anchor> getAnchors() {
+        return this.anchors;
+    }
+
+    private List<Anchor> getAnchorsOn(Text t, AnchorLocation location) {
+        List<Anchor> anchorsOnText = new LinkedList<Anchor>();
+        for (Anchor a : this.getAnchorsOn(t)) {
+            if (location.equals(a.getLocation())) {
+                anchorsOnText.add(a);
+            }
+        }
+        return anchorsOnText;
+    }
+
+    @Override
+    public Paragraph align(Alignment alignment) {
+        this.setAlignment(alignment);
+        return this;
+    }
+
+    @Override
+    public PlaceableDocumentPart copy() {
+        return new BaseParagraph(this, false);
     }
 }

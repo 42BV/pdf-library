@@ -139,19 +139,6 @@ public interface Text extends PlaceableDocumentPart {
     boolean textMatrixEquals(Text text);
 
     /**
-     * Sets the alignment of the text.
-     * @param alignment The alignment to use.
-     * @return the Text object.
-     */
-    Text align(Alignment alignment);
-
-    /**
-     * Returns the alignment of the text.
-     * @return Alignment used by the text.
-     */
-    Alignment getAlignment();
-
-    /**
      * Returns map of positions and strings, each string represents a single line in the document based on the text from this object.
      * @return Map<Position, String> String map containing the lines and position of the lines.
      */
@@ -172,4 +159,17 @@ public interface Text extends PlaceableDocumentPart {
      * @return double containing the height of the content.
      */
     double getContentHeightUnderBaseLine(Page page);
+
+    /**
+     * Returns map containing the justification offset per line.
+     * @return Map containing the offset per line.
+     */
+    Map<Position, Double> getJustificationOffset();
+
+    /**
+     * Sets the alignment of the text.
+     * @param alignment The alignment to use.
+     * @return the Text object.
+     */
+    Text align(Alignment alignment);
 }

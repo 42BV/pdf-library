@@ -63,6 +63,18 @@ public interface PlaceableDocumentPart extends DocumentPart {
      */
     double getRequiredSpaceBelow();
 
+    /**
+     * Returns the alignment of the part.
+     * @return Alignment used by the part.
+     */
+    Alignment getAlignment();
+
+    /**
+     * Creates a copy of the object.
+     * @return Copy of the object.
+     */
+    PlaceableDocumentPart copy();
+
     //    /**
     //     * Checks if this document part intersects with the given document part.
     //     * @param part Part to check for possible intersections.

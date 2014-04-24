@@ -2,6 +2,7 @@ package nl.mad.pdflibrary.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Page;
+import nl.mad.pdflibrary.model.PlaceableDocumentPart;
 import nl.mad.pdflibrary.model.Position;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.utility.Constants;
@@ -29,13 +31,14 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private String textString;
     private int textSize;
     private static final int DEFAULT_TEXT_SIZE = 12;
-    private double scaleX;
-    private double scaleY;
-    private double shearX;
-    private double shearY;
-    private Alignment alignment;
+    private double scaleX = 1;
+    private double scaleY = 1;
+    private double shearX = 0;
+    private double shearY = 0;
+    private Alignment alignment = Alignment.LEFT;
     private Font font;
     private Map<Position, String> textSplit;
+    private Map<Position, Double> justificationOffsets;
 
     /**
      * Creates a new text instance with the given text. Will use default text size, default font and 
@@ -54,12 +57,9 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         super(DocumentPartType.TEXT);
         textString = text;
         textSplit = new LinkedHashMap<>();
+        justificationOffsets = new HashMap<>();
         textSize = DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
-        scaleX = 1;
-        scaleY = 1;
-        shearX = 0;
-        shearY = 0;
         this.setPosition(new Position());
     }
 
@@ -78,6 +78,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.shearX = copyFrom.getShearX();
         this.shearY = copyFrom.getShearY();
         this.textSplit = copyFrom.getTextSplit();
+        this.justificationOffsets = copyFrom.getJustificationOffset();
+        this.alignment = copyFrom.getAlignment();
     }
 
     @Override
@@ -229,6 +231,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
                 stringsProcessed = true;
             }
         }
+
         if (!fixedPosition) {
             //page.setFilledHeight(page.getFilledHeight() + this.getRequiredSpaceBelow());
         }
@@ -288,6 +291,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
                     lastAdditionIndex = i;
                     ++additions;
                     Position position = new Position(openSpace[0], pos.getY());
+                    width = metrics.getWidthPointOfString(currentLine.toString(), textSize, true) + (metrics.getWidthPoint("space") * textSize);
+                    position = processAlignment(currentLine.toString(), position, width, openSpace[1] - openSpace[0]);
                     addTextSplitEntry(position, currentLine.toString());
                     currentLine = new StringBuilder();
                 }
@@ -313,6 +318,28 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         }
         System.out.println("Returning the i value: " + (lastAdditionIndex + cutOffAdditions));
         return lastAdditionIndex + cutOffAdditions;
+    }
+
+    private Position processAlignment(String line, Position position, double width, int openSpaceSize) {
+        Position newPos = new Position(position);
+        double remainingWidth = openSpaceSize - width;
+        //do alignment
+        switch (alignment) {
+        case RIGHT:
+            newPos.setX(position.getX() + remainingWidth);
+            break;
+        case CENTERED:
+            newPos.setX(position.getX() + (remainingWidth / 2));
+            break;
+        case JUSTIFIED:
+            int wordAmount = line.split(" ").length;
+            double justificationOffset = remainingWidth / wordAmount;
+            justificationOffsets.put(newPos, justificationOffset);
+            break;
+        default:
+            break;
+        }
+        return newPos;
     }
 
     private void addTextSplitEntry(Position position, String string) {
@@ -359,8 +386,9 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         Position newPos;
         if (!fixedPosition) {
             newPos = page.getOpenPosition(positionX, pos.getY() - leading - this.getRequiredSpaceAbove(), this.getRequiredSpaceAbove(),
-                    this.getRequiredSpaceBelow());
-            page.setFilledHeight(page.getFilledHeight() + leading + this.getRequiredSpaceAbove());
+                    this.getRequiredSpaceBelow(), 0);
+            double heightDifference = (page.getHeight() - page.getFilledHeight()) - pos.getY();
+            page.setFilledHeight(page.getFilledHeight() + heightDifference + page.getLeading() + this.getRequiredSpaceBelow());
 
         } else {
             newPos = new Position(positionX, pos.getY() - leading - this.getRequiredSpaceAbove());
@@ -479,5 +507,15 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Alignment getAlignment() {
         return this.alignment;
+    }
+
+    @Override
+    public Map<Position, Double> getJustificationOffset() {
+        return this.justificationOffsets;
+    }
+
+    @Override
+    public PlaceableDocumentPart copy() {
+        return new BaseText(this);
     }
 }

@@ -1,5 +1,6 @@
 package nl.mad.pdflibrary.api;
 
+import nl.mad.pdflibrary.model.Alignment;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.PlaceableDocumentPart;
 import nl.mad.pdflibrary.model.Position;
@@ -12,6 +13,7 @@ import nl.mad.pdflibrary.model.Position;
  */
 public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart implements PlaceableDocumentPart {
     private Position position;
+    private Alignment alignment = Alignment.LEFT;
 
     /**
      * Creates a new instance of AbstractPlaceableDocumentPart.
@@ -29,5 +31,14 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
     @Override
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    @Override
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    protected void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
     }
 }

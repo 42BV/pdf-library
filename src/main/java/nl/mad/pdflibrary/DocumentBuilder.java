@@ -77,7 +77,6 @@ public class DocumentBuilder {
      * Use this method to add text, fonts or paragraphs to a specific page in the document.
      * 
      * @param part New document part to be added to the document.
-     * @param pagenumber Number of the page to add this part to.
      * @see DocumentPart
      * @return the builder object.
      */
@@ -100,18 +99,37 @@ public class DocumentBuilder {
      * @see Font
      */
     public Font addFont() {
-        Font font = new BaseFont();
+        Font font = this.createFont();
         this.addPart(font);
         return font;
     }
 
     /**
+     * Creates a new font and returns it.
+     * @return new font object.
+     * @see Font
+     */
+    public Font createFont() {
+        Font font = new BaseFont();
+        return font;
+    }
+
+    /**
+     * Creates a new page and returns it.
+     * @return new page object.
+     * @see Page
+     */
+    public Page createPage() {
+        return new BasePage(defaultPageWidth, defaultPageHeight);
+    }
+
+    /**
      * Creates a new page and adds it to the document. Use the returned page object to specify the attributes of the page.
-     * @return page object
+     * @return page object.
      * @see Page
      */
     public Page addPage() {
-        Page page = new BasePage(defaultPageWidth, defaultPageHeight);
+        Page page = this.createPage();
         pages.add(page);
         this.currentPageNumber = this.getPageAmount();
         return page;
