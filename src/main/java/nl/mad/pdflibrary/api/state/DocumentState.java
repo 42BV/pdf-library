@@ -3,15 +3,15 @@ package nl.mad.pdflibrary.api.state;
 import java.util.LinkedList;
 import java.util.List;
 
-import nl.mad.pdflibrary.api.BaseImage;
-import nl.mad.pdflibrary.api.BasePage;
-import nl.mad.pdflibrary.api.BaseParagraph;
-import nl.mad.pdflibrary.api.BaseText;
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Page;
 import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PlaceableDocumentPart;
 import nl.mad.pdflibrary.model.Position;
+import nl.mad.pdflibrary.model.StatePage;
+import nl.mad.pdflibrary.model.StateParagraph;
+import nl.mad.pdflibrary.model.StatePlaceableDocumentPart;
+import nl.mad.pdflibrary.model.StateText;
 import nl.mad.pdflibrary.model.Text;
 
 /**
@@ -38,10 +38,10 @@ public class DocumentState {
         state = new LinkedList<Page>();
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
-            Page newPage = new BasePage(page);
+            StatePage newPage = new BaseStatePage(page);
             Page masterPage = page.getMasterPage();
             if (masterPage != null) {
-                Page masterCopy = new BasePage(page.getMasterPage());
+                StatePage masterCopy = new BaseStatePage(page.getMasterPage());
                 processPageContent(masterPage, masterCopy);
                 newPage.master(masterCopy);
                 newPage.addAll(masterCopy.getContent());
@@ -54,7 +54,7 @@ public class DocumentState {
         }
     }
 
-    private Page processPageContent(Page oldPage, Page newPage) {
+    private Page processPageContent(Page oldPage, StatePage newPage) {
         processFixedPositionContent(oldPage.getFixedPositionContent(), newPage);
         return processPositioning(oldPage.getPositionlessContent(), newPage);
     }
@@ -64,16 +64,16 @@ public class DocumentState {
      * @param content Content to add.
      * @param page Page to add content to.
      */
-    private void processFixedPositionContent(List<DocumentPart> content, Page page) {
+    private void processFixedPositionContent(List<DocumentPart> content, StatePage page) {
         for (DocumentPart part : content) {
             switch (part.getType()) {
             case TEXT:
-                Text text = new BaseText((Text) part);
+                StateText text = new BaseStateText((Text) part);
                 text.processContentSize(page, text.getPosition().getX(), true);
                 page.add(text);
                 break;
             case PARAGRAPH:
-                Paragraph paragraph = new BaseParagraph((Paragraph) part, true);
+                StateParagraph paragraph = new BaseStateParagraph((Paragraph) part, true);
                 paragraph.processContentSize(page, true);
                 page.add(paragraph);
                 break;
@@ -89,38 +89,32 @@ public class DocumentState {
      * @param page Page to add content to.
      * @return Instance of page if there is overflow, null otherwise.
      */
-    private Page processPositioning(List<DocumentPart> content, Page page) {
+    private Page processPositioning(List<DocumentPart> content, StatePage page) {
         int i = 0;
         boolean overflowFound = false;
         while (!overflowFound && i < content.size()) {
             DocumentPart p = content.get(i);
             Position position = null;
-            if (p instanceof PlaceableDocumentPart) {
-                PlaceableDocumentPart part = (PlaceableDocumentPart) p;
-                position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow());
+            switch (p.getType()) {
+            case TEXT:
+                StateText text = new BaseStateText((Text) p);
+                position = getPositionForPart(page, text);
                 if (position == null) {
                     return handleOverflow(page, i, null, content);
                 }
-            }
-            switch (p.getType()) {
-            case TEXT:
-                Text text = new BaseText((Text) p);
-                System.out.println("Handling text: " + text.getText());
                 text.on(position);
                 page.add(text);
-                Text overflowText = text.processContentSize(page, 0, false);
+                StateText overflowText = text.processContentSize(page, 0, false);
                 if (overflowText != null) {
-                    System.out.println("Handling text overflow here!");
-                    System.out.println("overflowText = " + overflowText.getTextSplit().toString());
-                    System.out.println("Remainder of original = " + text.getTextSplit().toString());
                     return handleOverflow(page, i + 1, overflowText, content);
                 }
                 break;
             case PARAGRAPH:
-                Paragraph paragraph = new BaseParagraph((Paragraph) p, true);
-                System.out.println("Handling paragraph with text size = " + paragraph.getTextCollection().size() + ", anchors size = "
-                        + paragraph.getAnchors().size());
-
+                StateParagraph paragraph = new BaseStateParagraph((Paragraph) p, true);
+                position = getPositionForPart(page, paragraph);
+                if (position == null) {
+                    return handleOverflow(page, i, null, content);
+                }
                 paragraph.on(position);
                 page.add(paragraph);
                 Paragraph overflowParagraph = paragraph.processContentSize(page, false);
@@ -129,10 +123,11 @@ public class DocumentState {
                 }
                 break;
             case IMAGE:
-                BaseImage imageP = (BaseImage) p;
-                BaseImage image = new BaseImage((int) imageP.getContentHeight(null), imageP.getContentWidth(null, null));
-                image.on(position);
-                page.add(image);
+                //                BaseImage imageP = (BaseImage) p;
+                //                BaseImage image = new BaseImage((int) imageP.getContentHeight(null), imageP.getContentWidth(null, null));
+                //                image.on(position);
+                //                page.add(image);
+                break;
             default:
                 page.add(p);
                 break;
@@ -140,6 +135,17 @@ public class DocumentState {
             ++i;
         }
         return null;
+    }
+
+    /**
+     * @param page Page to place the part on.
+     * @param p The part to add.
+     * @return
+     */
+    private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
+        Position position = null;
+        position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow());
+        return position;
     }
 
     /**
@@ -151,7 +157,7 @@ public class DocumentState {
      * @return the new page with the overflowing content.
      */
     private Page handleOverflow(Page page, int overflowIndex, DocumentPart overflowContent, List<DocumentPart> content) {
-        Page overflowPage = new BasePage(page);
+        Page overflowPage = new BaseStatePage(page);
         List<DocumentPart> newContent = new LinkedList<DocumentPart>();
         newContent.add(overflowContent);
         newContent.addAll(content.subList(overflowIndex, content.size()));

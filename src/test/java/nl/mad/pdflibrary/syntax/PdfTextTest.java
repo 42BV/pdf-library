@@ -5,11 +5,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 
 import nl.mad.pdflibrary.api.BaseFont;
-import nl.mad.pdflibrary.api.BaseParagraph;
 import nl.mad.pdflibrary.api.BaseText;
+import nl.mad.pdflibrary.api.state.BaseStateParagraph;
+import nl.mad.pdflibrary.api.state.BaseStateText;
 import nl.mad.pdflibrary.model.Page;
-import nl.mad.pdflibrary.model.Paragraph;
-import nl.mad.pdflibrary.model.Text;
+import nl.mad.pdflibrary.model.StateParagraph;
+import nl.mad.pdflibrary.model.StateText;
 import nl.mad.pdflibrary.pdf.syntax.PdfFont;
 import nl.mad.pdflibrary.pdf.syntax.PdfIndirectObject;
 import nl.mad.pdflibrary.pdf.syntax.PdfObjectType;
@@ -45,7 +46,8 @@ public class PdfTextTest {
 
     @Test
     public void testTextAdding() throws UnsupportedEncodingException {
-        Text text = new BaseText("Test").size(10).on(20, 20);
+        StateText text = new BaseStateText("Test");
+        text.size(10).on(20, 20);
 
         //expected result for font adding, matrix adding and text adding
         String expectedTotalResult = "/R1 10 Tf\n" + "1.0 0.0 0.0 1.0 20 20 Tm\n" + "[(T) 70 (est)] TJ\n";
@@ -56,9 +58,10 @@ public class PdfTextTest {
     @Test
     public void testParagraphTextAdding() throws UnsupportedEncodingException {
         pdfText = new PdfText();
-        Paragraph p = new BaseParagraph().addText(new BaseText("Test Test Test")).addText(new BaseText("Test2"));
+        StateParagraph p = new BaseStateParagraph();
+        p.addText(new BaseText("Test Test Test")).addText(new BaseText("Test2"));
         for (int i = 0; i < p.getTextCollection().size(); ++i) {
-            pdfText.addText(p.getTextCollection().get(i), fontReference, Page.DEFAULT_NEW_LINE_SIZE);
+            pdfText.addText(p.getStateTextCollection().get(i), fontReference, Page.DEFAULT_NEW_LINE_SIZE);
         }
         String expectedResult = "/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est)] TJ\n[(T) 70 (est)] TJ\n"
                 + "[(T) 70 (est)] TJ\n/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est2)] TJ\n";

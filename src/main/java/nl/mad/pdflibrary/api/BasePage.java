@@ -1,16 +1,12 @@
 package nl.mad.pdflibrary.api;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.DocumentPartType;
 import nl.mad.pdflibrary.model.Page;
-import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PlaceableDocumentPart;
-import nl.mad.pdflibrary.model.Position;
-import nl.mad.pdflibrary.utility.FloatEqualityTester;
 
 /**
  * Base implementation of the page interface. BasePage stores a collection of DocumentParts and stores page specific
@@ -21,8 +17,6 @@ import nl.mad.pdflibrary.utility.FloatEqualityTester;
 public class BasePage extends AbstractDocumentPart implements Page {
     private int width;
     private int height;
-    private double filledWidth;
-    private double filledHeight;
     private int marginTop;
     private int marginBottom;
     private int marginLeft;
@@ -41,8 +35,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
         content = new ArrayList<DocumentPart>();
         this.width = width;
         this.height = height;
-        this.filledHeight = 0;
-        this.filledWidth = 0;
     }
 
     /**
@@ -54,11 +46,9 @@ public class BasePage extends AbstractDocumentPart implements Page {
         content = new ArrayList<DocumentPart>();
         this.width = page.getWidth();
         this.height = page.getHeight();
-        this.filledWidth = 0;
         this.marginBottom = page.getMarginBottom();
         this.marginLeft = page.getMarginLeft();
         this.marginTop = page.getMarginTop();
-        this.filledHeight = marginTop;
         this.marginRight = page.getMarginRight();
         this.leading = page.getLeading();
         this.masterPage = page.getMasterPage();
@@ -93,36 +83,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public double getFilledWidth() {
-        return this.filledWidth;
-    }
-
-    @Override
-    public double getFilledHeight() {
-        return this.filledHeight;
-    }
-
-    @Override
-    public void setFilledWidth(double filledWidth) {
-        this.filledWidth = filledWidth;
-    }
-
-    @Override
-    public void setFilledHeight(double filledHeight) {
-        this.filledHeight = filledHeight;
-    }
-
-    @Override
-    public double getRemainingHeight() {
-        return this.getHeightWithoutMargins() - filledHeight;
-    }
-
-    @Override
-    public double getRemainingWidth() {
-        return this.getWidthWithoutMargins() - filledWidth;
-    }
-
-    @Override
     public int getHeightWithoutMargins() {
         return this.height - marginTop - marginBottom;
     }
@@ -139,9 +99,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Page marginTop(int marginTop) {
-        if (filledHeight == this.marginTop) {
-            filledHeight = marginTop;
-        }
         this.marginTop = marginTop;
         return this;
     }
@@ -180,115 +137,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Position getOpenPosition() {
-        return this.getOpenPosition(0, 0);
-    }
-
-    @Override
-    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow) {
-        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
-    }
-
-    @Override
-    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
-        double posHeight = height - filledHeight - requiredSpaceAbove;
-        return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, requiredWidth);
-    }
-
-    @Override
-    public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
-        boolean openPositionFound = false;
-        System.out.println("GetOpenPosition @ " + positionWidth + ":" + positionHeight);
-        double potentialHeight = positionHeight;
-        if (requiredWidth == 0) {
-            requiredWidth = MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
-        }
-        if (positionHeight > marginBottom) {
-            double potentialWidth = positionWidth + marginLeft;
-            Position position = new Position(potentialWidth, potentialHeight);
-            while (!openPositionFound) {
-                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow) > (requiredWidth)) {
-                    return position;
-                }
-                if (potentialHeight <= marginBottom) {
-                    return null;
-                }
-                potentialHeight -= leading;
-                position = new Position(potentialWidth, potentialHeight);
-            }
-        }
-        return null;
-    }
-
-    private double getWidestOpenSpaceOn(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
-        int maxWidth = 0;
-        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
-            maxWidth = Math.max(maxWidth, openSpace[1] - openSpace[0]);
-        }
-        return maxWidth;
-    }
-
-    @Override
-    public int checkTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
-        int availableWidth = 0;
-        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
-            availableWidth += openSpace[1] - openSpace[0];
-        }
-        return availableWidth;
-    }
-
-    private List<PlaceableDocumentPart> getPartsOnLine(Position pos, double requiredSpaceAbove, double requiredSpaceBelow) {
-        List<PlaceableDocumentPart> contentOnSameLine = new ArrayList<PlaceableDocumentPart>();
-        List<DocumentPart> pageContent = new LinkedList<DocumentPart>(content);
-        for (int i = 0; i < pageContent.size(); ++i) {
-            DocumentPart p = pageContent.get(i);
-            if (p instanceof PlaceableDocumentPart) {
-                if (DocumentPartType.PARAGRAPH.equals(p.getType())) {
-                    Paragraph paragraph = (Paragraph) p;
-                    pageContent.addAll(i + 1, paragraph.getTextCollection());
-                } else {
-                    PlaceableDocumentPart part = (PlaceableDocumentPart) p;
-                    if (onSameLine(pos, requiredSpaceAbove, requiredSpaceBelow, part)) {
-                        contentOnSameLine.add(part);
-                    }
-                }
-            }
-        }
-        return contentOnSameLine;
-    }
-
-    private boolean onSameLine(Position position, double requiredSpaceAbove, double requiredSpaceBelow, PlaceableDocumentPart part) {
-        if (part.getPosition().hasCustomPosition()) {
-            double topLimit = part.getPosition().getY() + part.getRequiredSpaceAbove();
-            double bottomLimit = part.getPosition().getY() - part.getContentHeight(this) + part.getRequiredSpaceAbove();
-            double y = position.getY();
-            double positionTopLimit = y + requiredSpaceAbove;
-            double positionBottomLimit = y - requiredSpaceBelow;
-            System.out.println("OnSameLine check for pos: " + position.getX() + ":" + position.getY());
-            System.out.println("    Part pos: " + part.getPosition().getX() + ", " + part.getPosition().getY());
-            System.out.println("    First check result: " + FloatEqualityTester.lessThanOrEqualTo(y, topLimit));
-            System.out.println("    Second check result: " + FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit));
-            System.out.println("    Third check result: "
-                    + (FloatEqualityTester.greaterThan(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThan(positionTopLimit, topLimit)));
-            System.out.println("    Fourth check result: "
-                    + (FloatEqualityTester.lessThan(positionBottomLimit, topLimit) && FloatEqualityTester.greaterThan(positionBottomLimit, bottomLimit)));
-            System.out.println("    PartTopLimit: " + topLimit);
-            System.out.println("    PartBottomLimit: " + bottomLimit);
-            System.out.println("    PosTopLimit: " + positionTopLimit);
-            System.out.println("    PosBottomLimit: " + positionBottomLimit);
-
-            if ((FloatEqualityTester.lessThanOrEqualTo(y, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit))
-                    || (FloatEqualityTester.greaterThanOrEqualTo(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThanOrEqualTo(positionTopLimit,
-                            topLimit))
-                    || (FloatEqualityTester.lessThanOrEqualTo(positionBottomLimit, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(positionBottomLimit,
-                            bottomLimit))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public List<DocumentPart> getFixedPositionContent() {
         List<DocumentPart> fixedPositionList = new ArrayList<DocumentPart>();
         for (DocumentPart p : content) {
@@ -318,65 +166,6 @@ public class BasePage extends AbstractDocumentPart implements Page {
     public Page addAll(List<DocumentPart> parts) {
         this.content.addAll(parts);
         return this;
-    }
-
-    @Override
-    public List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow) {
-        List<PlaceableDocumentPart> parts = this.getPartsOnLine(pos, requiredSpaceAbove, requiredSpaceBelow);
-        List<int[]> openSpaces = new ArrayList<int[]>();
-
-        //this might cause trouble with fixed position stuff beyond the margins
-        int startingPoint = marginLeft;
-        if (ignoreSpacesBeforePositionWidth) {
-            startingPoint = (int) pos.getX();
-        }
-        openSpaces.add(new int[] { startingPoint, (width - marginRight) });
-        for (PlaceableDocumentPart part : parts) {
-            for (int[] usedSpace : getUsedSpacesFrom(part, pos, requiredSpaceAbove, requiredSpaceBelow)) {
-                System.out.println("Adjusting open spaces for part (pos): " + part.getPosition().getX() + ":" + part.getPosition().getY() + ", "
-                        + part.getType());
-                System.out.println("   " + usedSpace[0] + "-" + usedSpace[1]);
-                openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
-            }
-        }
-        return openSpaces;
-    }
-
-    private List<int[]> getUsedSpacesFrom(PlaceableDocumentPart part, Position pos, double requiredSpaceAbove, double requiredSpaceBelow) {
-        List<int[]> usedSpaces = new ArrayList<int[]>();
-        double[] heights = new double[] { pos.getY(), pos.getY() + requiredSpaceAbove, pos.getY() - requiredSpaceBelow };
-        for (double y : heights) {
-            usedSpaces.addAll(part.getUsedSpaces(y));
-        }
-        return usedSpaces;
-    }
-
-    private List<int[]> adjustOpenSpaces(List<int[]> openSpaces, int[] usedSpace) {
-        List<int[]> newOpenSpaces = new ArrayList<int[]>();
-        for (int[] openSpace : openSpaces) {
-            if (usedSpace[0] >= openSpace[0] && usedSpace[1] <= openSpace[1]) {
-                if (openSpace[0] != usedSpace[0]) {
-                    addOpenSpaceToList(newOpenSpaces, new int[] { openSpace[0], usedSpace[0] });
-                }
-                if (usedSpace[1] != openSpace[1]) {
-                    addOpenSpaceToList(newOpenSpaces, new int[] { usedSpace[1], openSpace[1] });
-                }
-            } else if (usedSpace[0] < openSpace[0] && usedSpace[1] > openSpace[0] && !(usedSpace[1] > openSpace[1])) {
-                addOpenSpaceToList(newOpenSpaces, new int[] { usedSpace[1], openSpace[1] });
-            } else if (usedSpace[0] < openSpace[1] && usedSpace[1] > openSpace[1] && !(usedSpace[0] < openSpace[0])) {
-                addOpenSpaceToList(newOpenSpaces, new int[] { openSpace[0], usedSpace[0] });
-            } else if (!(usedSpace[0] < openSpace[0] && usedSpace[1] > openSpace[1])) {
-                addOpenSpaceToList(newOpenSpaces, openSpace);
-            }
-        }
-        return newOpenSpaces;
-    }
-
-    private List<int[]> addOpenSpaceToList(List<int[]> openSpaces, int[] newOpenSpace) {
-        if (newOpenSpace[0] != newOpenSpace[1]) {
-            openSpaces.add(newOpenSpace);
-        }
-        return openSpaces;
     }
 
     @Override

@@ -8,6 +8,7 @@ import nl.mad.pdflibrary.model.Alignment;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Position;
+import nl.mad.pdflibrary.model.StateText;
 import nl.mad.pdflibrary.model.Text;
 
 /**
@@ -27,12 +28,12 @@ public class PdfText extends AbstractPdfObject {
 
     /**
      * Adds the given Text object to the stream.
-     * @param text Text object to be added.
+     * @param text StateText object to be added.
      * @param fontReference font for the text.
      * @param leading the space between two lines.
      * @return String containing overflow.
      */
-    public String addText(Text text, PdfIndirectObject fontReference, int leading) {
+    public String addText(StateText text, PdfIndirectObject fontReference, int leading) {
         this.addFont(fontReference, text.getTextSize());
         return this.addTextString(text, leading);
     }
@@ -75,7 +76,7 @@ public class PdfText extends AbstractPdfObject {
      * @param leading Space between two lines.
      * @return String containing overflow.
      */
-    public String addTextString(Text text, int leading) {
+    public String addTextString(StateText text, int leading) {
         StringBuilder sb = new StringBuilder();
         Map<Position, String> textSplit = text.getTextSplit();
         Map<Position, Double> justification = text.getJustificationOffset();

@@ -3,10 +3,11 @@ package nl.mad.pdflibrary.model;
 import java.util.Map;
 
 /**
- * Interface for text classes that are used in the state of the document.
+ * Interface for text objects that are used in calculating the state of the document.
+ * 
  * @author Dylan de Wolff
  */
-public interface StateText extends Text {
+public interface StateText extends Text, StatePlaceableDocumentPart {
 
     /**
      * Returns map of positions and strings, each string represents a single line in the document based on the text from this object.
@@ -21,7 +22,7 @@ public interface StateText extends Text {
      * @param fixedPosition Whether or not the text is on a fixed position.
      * @return a text object if there is overflow, null otherwise
      */
-    Text processContentSize(Page page, double positionX, boolean fixedPosition);
+    StateText processContentSize(StatePage page, double positionX, boolean fixedPosition);
 
     /**
      * Determines the height of the content underneath the actual position of the text.
@@ -29,4 +30,10 @@ public interface StateText extends Text {
      * @return double containing the height of the content.
      */
     double getContentHeightUnderBaseLine(Page page);
+
+    /**
+     * Returns map containing the justification offset per line.
+     * @return Map containing the offset per line.
+     */
+    Map<Position, Double> getJustificationOffset();
 }

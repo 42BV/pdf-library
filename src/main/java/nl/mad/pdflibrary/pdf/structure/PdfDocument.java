@@ -13,8 +13,10 @@ import nl.mad.pdflibrary.model.DocumentPart;
 import nl.mad.pdflibrary.model.Font;
 import nl.mad.pdflibrary.model.FontMetrics;
 import nl.mad.pdflibrary.model.Page;
-import nl.mad.pdflibrary.model.Paragraph;
 import nl.mad.pdflibrary.model.PdfNameValue;
+import nl.mad.pdflibrary.model.StatePage;
+import nl.mad.pdflibrary.model.StateParagraph;
+import nl.mad.pdflibrary.model.StateText;
 import nl.mad.pdflibrary.model.Text;
 import nl.mad.pdflibrary.pdf.syntax.PdfDictionary;
 import nl.mad.pdflibrary.pdf.syntax.PdfFile;
@@ -63,13 +65,13 @@ public class PdfDocument {
     public void add(DocumentPart part) {
         switch (part.getType()) {
         case TEXT:
-            if (part instanceof Text) {
-                this.addText((Text) part, false);
+            if (part instanceof StateText) {
+                this.addText((StateText) part, false);
             }
             break;
         case PARAGRAPH:
-            if (part instanceof Paragraph) {
-                this.addParagraph((Paragraph) part);
+            if (part instanceof StateParagraph) {
+                this.addParagraph((StateParagraph) part);
             }
             break;
         case FONT:
@@ -78,8 +80,8 @@ public class PdfDocument {
             }
             break;
         case PAGE:
-            if (part instanceof Page) {
-                this.addPage((Page) part);
+            if (part instanceof StatePage) {
+                this.addPage((StatePage) part);
             }
         default:
             break;
@@ -100,18 +102,14 @@ public class PdfDocument {
      * Adds a paragraph object to the document.
      * @param paragraph Paragraph to be added.
      */
-    private void addParagraph(Paragraph paragraph) {
-        List<Text> textCollection = paragraph.getTextCollection();
+    private void addParagraph(StateParagraph paragraph) {
+        List<StateText> textCollection = paragraph.getStateTextCollection();
         for (int i = 0; i < textCollection.size(); ++i) {
             boolean ignoreMatrix = true;
-
+            //TODO: Check if this is still actually used
             if (i == 0) {
                 ignoreMatrix = false;
             }
-            //NO SUPPORT YET FOR MORE THAN ONE MATRIX IN A PARAGRAPH
-            //                    else if (!textCollection.get(i).textMatrixEquals(textCollection.get(i - 1))) {
-            //                        ignoreMatrix = false;
-            //                    }
             this.addText(textCollection.get(i), ignoreMatrix);
         }
 
@@ -119,11 +117,11 @@ public class PdfDocument {
 
     /**
      * Adds the given text object to the PdfTextStream of the current page.
-     * @param text Text that needs to be added.
+     * @param text StateText that needs to be added.
      * @param overrideMatrix if true the matrix of the text will be disregarded. This should be true when the new text object has the same
      * matrix as the text object before it.
      */
-    private void addText(Text text, boolean overrideMatrix) {
+    private void addText(StateText text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
         PdfText pdfText = new PdfText();

@@ -17,12 +17,20 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
+        testCutOff();
         presentation1();
         presentation2();
         presentation3();
         presentation4();
         presentation5();
         //documentStateTest();
+    }
+
+    private static void testCutOff() {
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().marginLeft(20);
+        builder.addText("van ambitities naar resultaatgericht ondernemen’").on(400, 100).font(builder.createFont().bold()).size(13);
+        builder.finish();
     }
 
     private static void presentation1() {
@@ -249,8 +257,6 @@ public class Main {
         builder.addText("Woeloewoeloe neeneyd");
         DocumentState state = builder.getPreview();//.getPages().get(0).getContent().get(1))).getTextSplit().toString();
         BaseText jantje = ((BaseText) state.getPages().get(0).getContent().get(6));
-        System.out.println(jantje.getContentHeight(state.getPages().get(0)));
-        System.out.println(((BaseText) state.getPages().get(0).getContent().get(6)).getTextSplit().toString());
         builder.finish();
     }
 }

@@ -11,7 +11,7 @@ public interface Page extends DocumentPart {
     /**
      * Percentage of the page that should be filled.
      */
-    double CUT_OFF_POINT_PERCENTAGE = 0.9;
+    double CUT_OFF_POINT_PERCENTAGE = 0.7;
     /**
      * Default size of a new line.
      */
@@ -54,30 +54,6 @@ public interface Page extends DocumentPart {
      * @return Height of the page.
      */
     int getHeight();
-
-    /**
-     * Retrieves the filled width of this page.
-     * @return Filled width of the page.
-     */
-    double getFilledWidth();
-
-    /**
-     * Retrieves the filled height of this page.
-     * @return Filled height of the page.
-     */
-    double getFilledHeight();
-
-    /**
-     * Retrieves the filled width of this page.
-     * @param filledWidth New filled width of the page.
-     */
-    void setFilledWidth(double filledWidth);
-
-    /**
-     * Retrieves the filled height of this page.
-     * @param filledHeight New filled height of the page.
-     */
-    void setFilledHeight(double filledHeight);
 
     /**
      * Sets the top margin of the page.
@@ -138,16 +114,6 @@ public interface Page extends DocumentPart {
     int getWidthWithoutMargins();
 
     /**
-     * @return the unfilled height.
-     */
-    double getRemainingHeight();
-
-    /**
-     * @return the unfilled width.
-     */
-    double getRemainingWidth();
-
-    /**
      * Returns the content that have a explicit position.
      * @return list of document parts that have fixed positions
      */
@@ -165,59 +131,6 @@ public interface Page extends DocumentPart {
      * @return the page.
      */
     Page addAll(List<DocumentPart> parts);
-
-    /**
-     * Calculates and returns an open position.
-     * @return Position that is available to use.
-     */
-    Position getOpenPosition();
-
-    /**
-     * Calculates and returns an open position.
-     * @param requiredSpaceAbove The empty space required above the position.
-     * @param requiredSpaceBelow The empty space required below the position.
-     * @return Position that is available to use.
-     */
-    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow);
-
-    /**
-     * Calculates and returns an open position.
-     * @param requiredSpaceAbove The empty space required above the position.
-     * @param requiredSpaceBelow The empty space required below the position.
-     * @param requiredWidth The empty space required to the side of the position.
-     * @return Position that is available to use.
-     */
-    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
-
-    /**
-     * Calculates and returns an open position on or after the given height and width.
-     * @param width Width offset.     
-     * @param height Height offset.
-     * @param requiredSpaceAbove The empty space required above the position.
-     * @param requiredSpaceBelow The empty space required below the position.
-     * @param requiredWidth The empty space required to the side of the position.
-     * @return Position that is available to use.
-     */
-    Position getOpenPosition(double width, double height, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
-
-    /**
-     * Returns the available spaces on the given line.
-     * @param pos Position to check on.
-     * @param ignoreSpacesBeforePositionWidth Whether to ignore open spaces that come before the given position's x value.
-     * @param requiredSpaceAbove Amount of empty space required above the given position.
-     * @param requiredSpaceBelow Amount of empty space required below the given position.
-     * @return List of int arrays, each contains the start- and end point of the space.
-     */
-    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow);
-
-    /**
-     * Returns the available width at the given position.
-     * @param position Position to check.
-     * @param requiredSpaceAbove Amount of empty space required above the given position.
-     * @param requiredSpaceBelow Amount of empty space required below the given position.
-     * @return int containing the available width value.
-     */
-    int checkTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
 
     /**
      * @return int containing the space between two lines.

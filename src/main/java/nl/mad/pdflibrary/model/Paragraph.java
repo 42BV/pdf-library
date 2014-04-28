@@ -51,12 +51,11 @@ public interface Paragraph extends PlaceableDocumentPart {
     Anchor addAnchor(PlaceableDocumentPart part);
 
     /**
-     * Calculates the size of the content within the paragraph.
-     * @param page Page the paragraph is on.
-     * @param fixedPosition Whether the paragraph has fixed positioning.
-     * @return a paragraph object if there is overflow, null otherwise
+     * Adds the given anchor to the paragraph. Anchors allow for the addition of images and tables to a paragraph.
+     * @param anchor The anchor you wish to add to the paragraph.
+     * @return The anchor instance.
      */
-    Paragraph processContentSize(Page page, boolean fixedPosition);
+    Anchor addAnchor(Anchor anchor);
 
     /**
      * Returns a list containing the anchors for the given text.
