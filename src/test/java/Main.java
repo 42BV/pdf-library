@@ -1,13 +1,17 @@
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import nl.mad.pdflibrary.DocumentBuilder;
-import nl.mad.pdflibrary.api.BaseImage;
-import nl.mad.pdflibrary.api.BaseText;
-import nl.mad.pdflibrary.api.state.DocumentState;
-import nl.mad.pdflibrary.model.Alignment;
-import nl.mad.pdflibrary.model.Page;
-import nl.mad.pdflibrary.model.Paragraph;
-import nl.mad.pdflibrary.model.Text;
+import nl.mad.toucanpdf.DocumentBuilder;
+import nl.mad.toucanpdf.api.BaseImage;
+import nl.mad.toucanpdf.api.BaseText;
+import nl.mad.toucanpdf.api.DocumentState;
+import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageType;
+import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.Paragraph;
+import nl.mad.toucanpdf.model.Text;
 
 public class Main {
 
@@ -17,84 +21,44 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        testCutOff();
-        presentation1();
-        presentation2();
-        presentation3();
+        //testCutOff();
+        //presentation1();
+        //presentation2();
+        // presentation3();
         presentation4();
-        presentation5();
+        //presentation5();
         //documentStateTest();
-    }
-
-    private static void testCutOff() {
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.addPage().marginLeft(20);
-        builder.addText("van ambitities naar resultaatgericht ondernemen’").on(400, 100).font(builder.createFont().bold()).size(13);
-        builder.finish();
-    }
-
-    private static void presentation1() {
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.title("General");
-        Page page = builder.addPage().marginLeft(20).marginTop(20).marginRight(20);
-        builder.addText("Fixed text").on(20, 820);
-        builder.addText("Document Title").size(20).font(builder.addFont().bold());
-        builder.addParagraph()
-                .addText(
-                        builder.createText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida. Nulla eget nunc molestie turpis molestie venenatis. Nunc blandit commodo ipsum vitae bibendum. Nulla vestibulum pretium lacus, non vehicula tortor pretium in. Quisque vehicula dui ac tellus accumsan, sed pulvinar sem euismod. Suspendisse sagittis dictum sagittis. "))
-                .addText(
-                        builder.createText("Sed fermentum, nunc et dapibus viverra, eros ligula tempor nulla, non pulvinar eros lacus at turpis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam et enim et felis porta gravida. Pellentesque ullamcorper risus quis cursus rhoncus. Aenean fermentum dui a condimentum eleifend. Sed consequat at mi at tincidunt. Donec lobortis bibendum sem, ut blandit urna blandit a. Sed tristique, metus sed blandit pretium, felis arcu mollis ante, eget mattis lacus dolor at sem. "));
-        builder.finish();
-    }
-
-    private static void presentation2() {
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.title("Cutoff & overflow");
-        Page page = builder.addPage();
-        page.marginLeft(20)
-                .marginTop(20)
-                .marginRight(20)
-                .marginBottom(20)
-                .add(new BaseImage(750, page.getWidth()))
-                .add(builder
-                        .createText("Ditisechteenhelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelehelelangetekst."))
-                .add(builder
-                        .createText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida. Nulla eget nunc molestie turpis molestie venenatis. Nunc blandit commodo ipsum vitae bibendum. Nulla vestibulum pretium lacus, non vehicula tortor pretium in. Quisque vehicula dui ac tellus accumsan, sed pulvinar sem euismod. Suspendisse sagittis dictum sagittis. "));
-        builder.finish();
-    }
-
-    private static void presentation3() {
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.title("Master pages");
-        //creating master page
-        Page page = builder.createPage().marginLeft(20).marginTop(20).marginRight(20);
-        page.add(builder.createText("Master page content").size(16).font(builder.createFont().italic()));
-        //adding page with master page
-        builder.addPage().master(page).add(builder.createText("Page content"));
-        builder.finish();
     }
 
     private static void presentation4() {
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("Anchors");
         builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
-        Text firstParagraphSection = builder.createText("First paragraph section");
-        BaseImage image = new BaseImage(200, 200);
-        builder.addParagraph().addText(firstParagraphSection).addText(builder.createText("Second paragraph section")).addAnchor(image)
-                .leftOf(firstParagraphSection);
-        builder.finish();
-    }
-
-    private static void presentation5() {
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.title("Alignment");
-        builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
-        builder.addText("Left aligned").align(Alignment.LEFT); //LEFT alignment is default
-        builder.addText("Centered").align(Alignment.CENTERED);
-        builder.addText("Right aligned").align(Alignment.RIGHT);
-        Text justified = builder
-                .addText("Justified. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapienbibendumsitamet. Mauris quis est et magna lobortisviverra. Quisque vitaeelementummagna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. ");
-        justified.align(Alignment.JUSTIFIED);
+        Text firstParagraphSection = builder
+                .createText("First paragraph section. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida.");
+        InputStream img = null;
+        InputStream img2 = null;
+        try {
+            img = new FileInputStream("/home/dylan/workspace/pdf-library/src/main/resources/test.jpg");
+            img2 = new FileInputStream("/home/dylan/workspace/pdf-library/src/main/resources/mario.jpg");
+        } catch (IOException e) {
+            System.out.println("IOexception");
+        }
+        Image imageLeft = new BaseImage(200, 200, img, ImageType.JPEG);
+        Image image = new BaseImage(100, 100, img2, ImageType.JPEG);
+        Image imageRight2 = new BaseImage(imageLeft);
+        Image imageRight = new BaseImage(image);
+        //builder.addPart(image);
+        Paragraph par = builder.addParagraph().addText(firstParagraphSection).addText(builder.createText("Second paragraph section"));
+        par.addAnchor(imageLeft).above(firstParagraphSection);
+        //par.addAnchor(imageLeft).above(firstParagraphSection);
+        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
+        par.addAnchor(imageLeft).rightOf(firstParagraphSection);
+        par.addAnchor(imageLeft).rightOf(firstParagraphSection);
+        par.addAnchor(imageLeft).rightOf(firstParagraphSection);
+        //par.addAnchor(imageRight).leftOf(firstParagraphSection);
+        //par.addAnchor(imageRight).rightOf(firstParagraphSection);
+        //par.addAnchor(imageRight).leftOf(firstParagraphSection);
         builder.finish();
     }
 
@@ -130,7 +94,7 @@ public class Main {
         //        "2Test test test test test test test test test test test test test test test test test test test test test testtest test test test test test test test test"));
         Text secondParagraphText = builder.createText("Oh boehoe hoe boe.");
         Text thirdParagraphText = builder.createText("Waka waka heehey");
-        BaseImage image = new BaseImage(300, 100);
+        //BaseImage image = new BaseImage(300, 100);
         Paragraph par = builder
                 .addParagraph()
                 .align(Alignment.JUSTIFIED)
@@ -143,9 +107,9 @@ public class Main {
                 .addText(builder.createText("Woeloewoeloe neeney"))
                 .addText(
                         builder.createText("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test TestTest Test Test Test Test Test Test Test"));
-        par.addAnchor(image).leftOf(secondParagraphText);
-        par.addAnchor(new BaseImage(100, 100)).rightOf(secondParagraphText);
-        par.addAnchor(new BaseImage(200, 300)).leftOf(thirdParagraphText);
+        //par.addAnchor(image).leftOf(secondParagraphText);
+        //par.addAnchor(new BaseImage(100, 100)).rightOf(secondParagraphText);
+        //par.addAnchor(new BaseImage(200, 300)).leftOf(thirdParagraphText);
         builder.addText(
                 "Woe loe loe loe neeneyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyeyey wekkie bekke zzzzzzzzzerreroeo kaskdsakdaksk skadkasdkask daskdkasdkas dkaskdkas dkasdkaskd asdkaskdask dkasdkas dkaskdks ")
                 .align(Alignment.JUSTIFIED);
