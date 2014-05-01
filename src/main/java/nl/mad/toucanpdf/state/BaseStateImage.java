@@ -45,7 +45,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public List<int[]> getUsedSpaces(double height) {
-        List<int[]> space = new LinkedList<>();
+        List<int[]> space = new LinkedList<int[]>();
         space.add(new int[] { (int) this.getPosition().getX(), (int) (this.getPosition().getX() + getWidth()) });
         return space;
     }
