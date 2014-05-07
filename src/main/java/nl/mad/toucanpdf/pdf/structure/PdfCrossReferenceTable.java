@@ -147,16 +147,16 @@ public class PdfCrossReferenceTable {
         private boolean inUse;
 
         /**
-         * The format used to specify the starting point of indirect objects
+         * The format used to specify the starting point of indirect objects.
          */
         private static final String START_BYTE_FORMAT = "0000000000";
 
         /**
-         * The format used to specify the generation number of indirect objects
+         * The format used to specify the generation number of indirect objects.
          */
         private static final String GENERATION_FORMAT = "00000";
         /**
-         * Specifies the syntax for objects that are or are not in use
+         * Specifies the syntax for objects that are or are not in use.
          */
         private static final char NOT_IN_USE = 'f';
         private static final char IN_USE = 'n';

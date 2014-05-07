@@ -71,9 +71,6 @@ public final class UnicodeConverter {
                 StringTokenizer st = new StringTokenizer(currentLine, " ;\r\n\t\f");
                 String value = st.nextToken();
                 int key = Integer.parseInt(st.nextToken(), KEY_RADIX);
-                if ("endash".equals(value)) {
-                    System.out.println("The key for endash = " + key);
-                }
                 if (unicodeToPostscriptTemp.get(key) == null) {
                     unicodeToPostscriptTemp.put(key, value);
                 }

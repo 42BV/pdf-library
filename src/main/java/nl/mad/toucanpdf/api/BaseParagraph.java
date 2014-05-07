@@ -67,8 +67,8 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
     }
 
     @Override
-    public Paragraph addText(List<Text> textCollection) {
-        this.textCollection.addAll(textCollection);
+    public Paragraph addText(List<Text> text) {
+        this.textCollection.addAll(text);
         return this;
     }
 

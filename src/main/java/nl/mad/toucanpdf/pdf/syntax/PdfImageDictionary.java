@@ -4,9 +4,17 @@ import nl.mad.toucanpdf.image.ImageParser;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.PdfNameValue;
 
+/**
+ * Represents a XObject image dictionary from the PDF specification.
+ * @author Dylan de Wolff
+ */
 public class PdfImageDictionary extends PdfXObject {
     private Image image;
 
+    /**
+     * Creates a new instance of PdfImageDictionary and fills the dictionary based on the given image.
+     * @param part Image to embed.
+     */
     public PdfImageDictionary(Image part) {
         image = part;
         ImageParser parser = image.getImageParser();
@@ -15,8 +23,8 @@ public class PdfImageDictionary extends PdfXObject {
         this.put(PdfNameValue.HEIGHT, new PdfNumber(parser.getHeight()));
         this.put(PdfNameValue.COLOR_SPACE, parser.getColorSpace().getPdfName());
         this.put(PdfNameValue.BITS_PER_COMPONENT, new PdfNumber(parser.getBitsPerComponent()));
-        this.addFilter(new PdfName(parser.getFilter().getPdfName()));
+        this.addFilter(parser.getFilter());
+        this.addFilter(image.getCompressionMethod());
         this.add(new PdfFile(parser.getData()));
     }
-
 }

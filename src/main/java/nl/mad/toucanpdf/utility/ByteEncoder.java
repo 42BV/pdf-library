@@ -1,5 +1,7 @@
 package nl.mad.toucanpdf.utility;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -22,5 +24,20 @@ public final class ByteEncoder {
      */
     public static byte[] getBytes(String s) {
         return s.getBytes(DEFAULT_BYTE_ENCODING);
+    }
+
+    /**
+     * Converts the given ByteArrayOutputStream into a string.
+     * @param baos ByteArrayOutputStream to convert.
+     * @return String containing the result.
+     */
+    public static String getString(ByteArrayOutputStream baos) {
+        try {
+            return baos.toString(DEFAULT_BYTE_ENCODING.name());
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "";
     }
 }

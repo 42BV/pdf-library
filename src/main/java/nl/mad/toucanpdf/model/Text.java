@@ -1,6 +1,5 @@
 package nl.mad.toucanpdf.model;
 
-
 /**
  * Interface for Text classes. Text classes store the data necessary to add text to a document. 
  * @author Dylan de Wolff
@@ -143,4 +142,17 @@ public interface Text extends PlaceableDocumentPart {
      * @return the Text object.
      */
     Text align(Alignment alignment);
+
+    /**
+     * Sets the compression method to use for this text object. The default compression is Flate.
+     * @param method The compression method to use.
+     * @return the Text object.
+     */
+    Text compress(Compression method);
+
+    /**
+     * Returns the compression method this text object uses.
+     * @return Compression object.
+     */
+    Compression getCompressionMethod();
 }

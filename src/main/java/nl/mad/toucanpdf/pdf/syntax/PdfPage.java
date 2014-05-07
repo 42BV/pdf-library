@@ -32,6 +32,7 @@ public class PdfPage extends PdfDictionary {
      * Creates a new instance of PdfPage with the given width and height.
      * @param width Width of page.
      * @param height Height of page.
+     * @param leading the space between lines.
      */
     public PdfPage(int width, int height, int leading) {
         super(PdfObjectType.PAGE);
@@ -137,7 +138,6 @@ public class PdfPage extends PdfDictionary {
      */
     private PdfName getKeyForType(PdfObjectType type) {
         PdfName key = null;
-
         switch (type) {
         case FONT:
             key = new PdfName(PdfNameValue.FONT);
@@ -236,16 +236,16 @@ public class PdfPage extends PdfDictionary {
 
     /**
      * Sets the values for all margins.
-     * @param marginLeft Left margin to use.
-     * @param marginRight Right margin to use.
-     * @param marginBottom Bottom margin to use.
-     * @param marginTop Top margin to use.
+     * @param leftMargin Left margin to use.
+     * @param rightMargin Right margin to use.
+     * @param bottomMargin Bottom margin to use.
+     * @param topMargin Top margin to use.
      */
-    public void setMargins(int marginLeft, int marginRight, int marginBottom, int marginTop) {
-        this.marginLeft = marginLeft;
-        this.marginRight = marginRight;
-        this.marginBottom = marginBottom;
-        this.marginTop = marginTop;
+    public void setMargins(int leftMargin, int rightMargin, int bottomMargin, int topMargin) {
+        this.marginLeft = leftMargin;
+        this.marginRight = rightMargin;
+        this.marginBottom = bottomMargin;
+        this.marginTop = topMargin;
     }
 
     public int getLeading() {

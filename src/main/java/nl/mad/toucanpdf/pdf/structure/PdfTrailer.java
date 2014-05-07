@@ -76,7 +76,7 @@ public class PdfTrailer extends PdfDictionary {
      * Writes the trailer to the given OutputStream.
      * @see nl.mad.toucanpdf.pdf.syntax.PdfDictionary#writeToFile(java.io.OutputStream)
      * @param os OutputStream which will be written to.
-     * @throws IOException
+     * @throws IOException throws an IOException if an error occured during the writing.
      */
     @Override
     public void writeToFile(OutputStream os) throws IOException {

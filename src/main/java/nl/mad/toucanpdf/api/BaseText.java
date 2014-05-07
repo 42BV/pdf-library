@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf.api;
 
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
@@ -25,6 +26,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private double shearX = 0;
     private double shearY = 0;
     private Font font;
+    private Compression compressionMethod = Compression.FLATE;
 
     /**
      * Creates a new text instance with the given text. Will use default text size, default font and 
@@ -191,5 +193,16 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public Text align(Alignment alignment) {
         this.setAlignment(alignment);
         return this;
+    }
+
+    @Override
+    public Text compress(Compression method) {
+        this.compressionMethod = method;
+        return this;
+    }
+
+    @Override
+    public Compression getCompressionMethod() {
+        return this.compressionMethod;
     }
 }

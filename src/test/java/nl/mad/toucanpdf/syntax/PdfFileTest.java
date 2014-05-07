@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PdfFileTest {
-    PdfFile file;
+    private PdfFile file;
 
     @Before
     public void setUp() throws Exception {

@@ -1,5 +1,10 @@
 package nl.mad.toucanpdf.model;
 
+/**
+ * This class stores the position for document parts.
+ * @author Dylan de Wolff
+ *
+ */
 public class Position {
     private double x;
     private double y;

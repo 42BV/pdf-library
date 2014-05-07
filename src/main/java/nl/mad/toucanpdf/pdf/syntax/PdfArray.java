@@ -2,7 +2,7 @@ package nl.mad.toucanpdf.pdf.syntax;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,14 +11,13 @@ import java.util.List;
  * @author Dylan de Wolff
  */
 public class PdfArray extends AbstractPdfObject {
-    private List<AbstractPdfObject> values;
+    private List<AbstractPdfObject> values = new LinkedList<AbstractPdfObject>();
 
     /**
      * Creates a new instance of PdfArray.
      */
     public PdfArray() {
         super(PdfObjectType.ARRAY);
-        this.values = new ArrayList<AbstractPdfObject>();
     }
 
     /**
@@ -27,7 +26,8 @@ public class PdfArray extends AbstractPdfObject {
      */
     public PdfArray(List<AbstractPdfObject> values) {
         this();
-        this.values = new ArrayList<AbstractPdfObject>(values);
+        System.out.println(values.size());
+        this.values = new LinkedList<AbstractPdfObject>(values);
     }
 
     /**
@@ -40,10 +40,10 @@ public class PdfArray extends AbstractPdfObject {
 
     /**
      * Adds a list of values to the array.
-     * @param values List of objects to be added.
+     * @param valueList List of objects to be added.
      */
-    public void addValues(List<AbstractPdfObject> values) {
-        this.values.addAll(values);
+    public void addValues(List<AbstractPdfObject> valueList) {
+        this.values.addAll(valueList);
     }
 
     @Override
@@ -57,11 +57,28 @@ public class PdfArray extends AbstractPdfObject {
         os.write(']');
     }
 
+    /**
+     * Returns the size of the values array.
+     * @return int containing the size.
+     */
     public int getSize() {
         return values.size();
     }
 
+    /**
+     * Returns the values list.
+     * @return List with values.
+     */
     public List<AbstractPdfObject> getValues() {
         return values;
+    }
+
+    /**
+     * Adds a value on the given position.
+     * @param index Position to add the value on.
+     * @param value Value to add.
+     */
+    public void addValue(int index, AbstractPdfObject value) {
+        this.values.add(index, value);
     }
 }

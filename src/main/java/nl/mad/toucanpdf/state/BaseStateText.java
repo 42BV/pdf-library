@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
@@ -27,7 +28,8 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
  */
 public class BaseStateText extends BaseText implements StateText {
     private Map<Position, String> textSplit = new LinkedHashMap<Position, String>();;
-    private Map<Position, Double> justificationOffsets = new HashMap<Position, Double>();;
+    private Map<Position, Double> justificationOffsets = new HashMap<Position, Double>();
+    private DocumentPart originalObject;
 
     /**
      * Creates a new instance of BaseStateText.
@@ -102,6 +104,7 @@ public class BaseStateText extends BaseText implements StateText {
      * @return index determining how many strings have been processed.
      */
     private int splitText(List<int[]> openSpaces, List<String> strings, Position pos, Page page) {
+        //TODO: This can probably be refactored into two seperate methods (open space determination/looping and filling a single open space)
         List<String> stringsCopy = new LinkedList<String>(strings);
         stringsCopy.add("");
         StringBuilder currentLine = new StringBuilder();
@@ -119,7 +122,6 @@ public class BaseStateText extends BaseText implements StateText {
         while (!openSpacesFilled && i < stringsCopy.size()) {
             String s = stringsCopy.get(i);
             double oldWidth = width;
-            //TODO: fix use of "space"
             if (i != (stringsCopy.size() - 1)) {
                 width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             }
@@ -129,9 +131,6 @@ public class BaseStateText extends BaseText implements StateText {
                     strings.add(i + 1, stringsCopy.get(i + 1));
                     ++cutOffAdditions;
                     currentLine = new StringBuilder(cutOffLine);
-                    for (String str : strings) {
-                        System.out.println("Stringie : " + str);
-                    }
                 }
                 if (!currentLine.toString().isEmpty()) {
                     lastAdditionIndex = i;
@@ -154,16 +153,10 @@ public class BaseStateText extends BaseText implements StateText {
             currentLine.append(' ');
             ++i;
         }
-        if (cutOffAdditions > 0) {
-            //--cutOffAdditions;
-        }
         //if we only do a single loop we should still skip the current text if it was added.
         if (lastAdditionIndex == 0 && additions > 0) {
             ++lastAdditionIndex;
         }
-        System.out.println("Last addition index: " + lastAdditionIndex);
-        System.out.println("CutOffAddition: " + cutOffAdditions);
-        System.out.println("Returned index: " + (lastAdditionIndex + cutOffAdditions));
         return lastAdditionIndex + cutOffAdditions;
     }
 
@@ -298,6 +291,7 @@ public class BaseStateText extends BaseText implements StateText {
             sb.append(" ");
         }
         StateText overflowText = new BaseStateText(this);
+        overflowText.setOriginalObject(this.getOriginalObject());
         overflowText.text(sb.toString()).on(new Position());
         return overflowText;
     }
@@ -367,7 +361,6 @@ public class BaseStateText extends BaseText implements StateText {
 
     @Override
     public List<int[]> getUsedSpaces(double height) {
-        System.out.println("  Getting used spaces for: " + this.getText());
         List<int[]> spaces = new LinkedList<int[]>();
         List<Entry<Position, String>> entries = getEntriesAtHeight(height);
         FontMetrics metrics = getFont().getMetrics();
@@ -400,4 +393,15 @@ public class BaseStateText extends BaseText implements StateText {
         return this.justificationOffsets;
     }
 
+    @Override
+    public void setOriginalObject(DocumentPart originalObject) {
+        if (this.originalObject == null) {
+            this.originalObject = originalObject;
+        }
+    }
+
+    @Override
+    public DocumentPart getOriginalObject() {
+        return this.originalObject;
+    }
 }

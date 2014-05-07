@@ -79,6 +79,11 @@ public class PdfDictionary extends AbstractPdfObject {
         return this.content.get(key);
     }
 
+    /**
+     * Returns the AbstractPdfObject corresponding to the given key.
+     * @param key Key to check for.
+     * @return The object corresponding to the given key or null if no object was found.
+     */
     public AbstractPdfObject get(PdfNameValue key) {
         return this.get(new PdfName(key));
     }

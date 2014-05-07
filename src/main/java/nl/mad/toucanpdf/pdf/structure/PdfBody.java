@@ -85,7 +85,7 @@ public class PdfBody {
      * the indirect objects. This is needed for the creation of the cross reference table.
      * 
      * @param os The data output stream that will be written to.
-     * @throws IOException
+     * @throws IOException throws IOException in case the writing went wrong.
      */
     public void writeToFile(DataOutputStream os) throws IOException {
         for (PdfIndirectObject object : getAllIndirectObjects()) {

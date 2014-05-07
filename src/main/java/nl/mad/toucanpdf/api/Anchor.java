@@ -19,7 +19,6 @@ public class Anchor {
      * @param part The document part you wish to attach to an anchor point.
      */
     public Anchor(PlaceableFixedSizeDocumentPart part) {
-        //TODO: Add type limitation? (only images/tables?)
         this.part = part;
         location = AnchorLocation.BELOW;
     }
@@ -58,53 +57,53 @@ public class Anchor {
 
     /**
      * Positions the part above the given anchor point.
-     * @param anchorPoint the text to attach the anchor to.
+     * @param newAnchorPoint the text to attach the anchor to.
      * @return the anchor.
      */
-    public Anchor above(Text anchorPoint) {
-        this.anchorPoint = anchorPoint;
+    public Anchor above(Text newAnchorPoint) {
+        this.anchorPoint = newAnchorPoint;
         this.location = AnchorLocation.ABOVE;
         return this;
     }
 
     /**
      * Positions the part beneath the given anchor point.
-     * @param anchorPoint the text to attach the anchor to.
+     * @param newAnchorPoint the text to attach the anchor to.
      * @return the anchor.
      */
-    public Anchor beneath(Text anchorPoint) {
-        this.anchorPoint = anchorPoint;
+    public Anchor beneath(Text newAnchorPoint) {
+        this.anchorPoint = newAnchorPoint;
         this.location = AnchorLocation.BELOW;
         return this;
     }
 
     /**
      * Positions the part to the left of the given anchor point.
-     * @param anchorPoint the text to attach the anchor to.
+     * @param newAnchorPoint the text to attach the anchor to.
      * @return the anchor.
      */
-    public Anchor leftOf(Text anchorPoint) {
-        this.anchorPoint = anchorPoint;
+    public Anchor leftOf(Text newAnchorPoint) {
+        this.anchorPoint = newAnchorPoint;
         this.location = AnchorLocation.LEFT;
         return this;
     }
 
     /**
      * Positions the part to the right of the given anchor point.
-     * @param anchorPoint the text to attach the anchor to.
+     * @param newAnchorPoint the text to attach the anchor to.
      * @return the anchor.
      */
-    public Anchor rightOf(Text anchorPoint) {
-        this.anchorPoint = anchorPoint;
+    public Anchor rightOf(Text newAnchorPoint) {
+        this.anchorPoint = newAnchorPoint;
         this.location = AnchorLocation.RIGHT;
         return this;
     }
 
     /**
      * Sets the part the anchor will attach.
-     * @param part the part the anchor will attach.
+     * @param documentPart the part the anchor will attach.
      */
-    public void part(PlaceableFixedSizeDocumentPart part) {
-        this.part = part;
+    public void part(PlaceableFixedSizeDocumentPart documentPart) {
+        this.part = documentPart;
     }
 }

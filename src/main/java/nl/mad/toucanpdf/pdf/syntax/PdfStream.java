@@ -1,12 +1,16 @@
 package nl.mad.toucanpdf.pdf.syntax;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.PdfNameValue;
 import nl.mad.toucanpdf.utility.ByteEncoder;
+import nl.mad.toucanpdf.utility.Compressor;
 import nl.mad.toucanpdf.utility.Constants;
 
 /**
@@ -31,9 +35,10 @@ public class PdfStream extends PdfDictionary {
     /**
      * Specifies the command used to specify the end of a text stream.
      */
-    private static final String END_TEXT_STREAM = "ET";
+    private static final String END_TEXT_STREAM = "ET\n";
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
+    private List<Compression> filterList = new LinkedList<Compression>();
     //somehow limit this to objects that are actually supposed to be part of the contents?
     private List<AbstractPdfObject> contents;
 
@@ -54,34 +59,46 @@ public class PdfStream extends PdfDictionary {
         this.put(LENGTH, new PdfNumber(0));
     }
 
-    /**
-     * Creates a new instance of PdfStream with the given filters.
-     * @param filters Array containing the filters on the stream.
-     */
-    public PdfStream(PdfArray filters) {
-        this(PdfObjectType.STREAM);
-        this.put(FILTER, filters);
-    }
-
     @Override
     public void writeToFile(OutputStream os) throws IOException {
-        updateLength();
+        ByteArrayOutputStream bigBaos = new ByteArrayOutputStream();
+        for (int i = 0; i < contents.size(); ++i) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (checkWriteBefore(i)) {
+                baos.write(getWriteBeforeStreamContent(contents.get(i)));
+            }
+            contents.get(i).writeToFile(baos);
+            if (checkWriteAfter(i)) {
+                baos.write(getWriteAfterStreamContent(contents.get(i)));
+            }
+            String s = ByteEncoder.getString(baos);
+            if (!s.endsWith("\n")) {
+                baos.write(Constants.LINE_SEPARATOR);
+            }
+            baos.flush();
+            bigBaos.write(baos.toByteArray());
+            baos.close();
+        }
+        bigBaos.flush();
+        bigBaos.close();
+        byte[] data = processCompression(bigBaos.toByteArray());
+        updateLength(data);
         super.writeToFile(os);
         os.write(Constants.LINE_SEPARATOR);
         os.write(ByteEncoder.getBytes(START_STREAM));
-        System.out.println("starting stream write");
-
-        for (int i = 0; i < contents.size(); ++i) {
-            if (checkWriteBefore(i)) {
-                os.write(getWriteBeforeStreamContent(contents.get(i)));
-            }
-            contents.get(i).writeToFile(os);
-            if (checkWriteAfter(i)) {
-                os.write(getWriteAfterStreamContent(contents.get(i)));
-            }
+        os.write(data);
+        if (this.filterList.size() > 0) {
             os.write(Constants.LINE_SEPARATOR);
         }
         os.write(ByteEncoder.getBytes(END_STREAM));
+    }
+
+    private byte[] processCompression(byte[] data) {
+        byte[] compressedData = data;
+        for (Compression com : filterList) {
+            compressedData = Compressor.compress(compressedData, com);
+        }
+        return compressedData;
     }
 
     /**
@@ -113,25 +130,12 @@ public class PdfStream extends PdfDictionary {
 
     /**
      * Updates the length of the stream.
+     * @param streamContent Content of the stream
      * @throws IOException 
      */
-    private void updateLength() throws IOException {
+    private void updateLength(byte[] streamContent) throws IOException {
         PdfNumber number = (PdfNumber) this.get(LENGTH);
-        int length = 0;
-        for (int i = 0; i < contents.size(); ++i) {
-            if (checkWriteBefore(i)) {
-                length += getWriteBeforeStreamContent(contents.get(i)).length;
-            }
-            length += contents.get(i).getByteRepresentation().length;
-            if (checkWriteAfter(i)) {
-                int afterStreamContentLength = getWriteAfterStreamContent(contents.get(i)).length;
-                if (afterStreamContentLength > 0) {
-                    //we take the length of the end of stream indicator minus one since we do not want to take the end of line into account.
-                    length += afterStreamContentLength - 1;
-                }
-            }
-        }
-        number.setNumber(length);
+        number.setNumber(streamContent.length);
     }
 
     /**
@@ -164,17 +168,36 @@ public class PdfStream extends PdfDictionary {
         this.contents.add(object);
     }
 
-    /**
-     * Adds a filter to the filter array.
-     * @param filter Object containing the filter.
-     */
-    public void addFilter(AbstractPdfObject filter) {
+    private PdfArray getFilterArray() {
         PdfArray array = (PdfArray) this.get(FILTER);
         if (array == null) {
             array = new PdfArray();
             this.put(FILTER, array);
         }
-        array.addValue(filter);
+        return array;
+    }
+
+    /**
+     * Adds a filter to the filter array. The filter is added to the front of the array.
+     * The filters should be in order of how they were applied. The filter that was applied first should be last in the array, while the filter 
+     * that was applied last should be the first in the array.
+     * @param method Compression method to use.
+     */
+    public void addFilter(Compression method) {
+        PdfName name = new PdfName(method.getPdfName());
+        PdfArray array = getFilterArray();
+        boolean nameExists = false;
+        for (AbstractPdfObject object : array.getValues()) {
+            if (object instanceof PdfName) {
+                if (((PdfName) object).equals(name)) {
+                    nameExists = true;
+                }
+            }
+        }
+        if (!nameExists) {
+            array.addValue(0, name);
+            filterList.add(method);
+        }
     }
 
     public int getContentSize() {

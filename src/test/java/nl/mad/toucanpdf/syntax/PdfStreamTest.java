@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.PdfNameValue;
 import nl.mad.toucanpdf.pdf.syntax.PdfArray;
 import nl.mad.toucanpdf.pdf.syntax.PdfName;
@@ -20,32 +21,24 @@ import org.junit.Test;
 
 public class PdfStreamTest {
     private PdfStream stream;
-    private PdfArray filters;
 
     @Before
     public void setUp() throws Exception {
-        filters = new PdfArray();
-        filters.addValue(new PdfName("test"));
-        stream = new PdfStream(filters);
+        stream = new PdfStream();
     }
 
     @Test
     public void testCreation() {
         assertEquals(PdfObjectType.STREAM, stream.getType());
         assertEquals(0, ((PdfNumber) stream.get(PdfNameValue.LENGTH)).getNumber(), FloatEqualityTester.EPSILON);
-        assertEquals(filters, stream.get(PdfNameValue.FILTER));
     }
 
     @Test
     public void testAddFilter() {
         //add to exisiting filter array
-        stream.addFilter(new PdfName("test2"));
-        assertEquals(filters, stream.get(PdfNameValue.FILTER));
-
-        //add to empty array
-        stream = new PdfStream();
-        stream.addFilter(new PdfName("test"));
+        stream.addFilter(Compression.ASCII_85);
         assertEquals(1, ((PdfArray) stream.get(PdfNameValue.FILTER)).getSize());
+        assertEquals(new PdfName(Compression.ASCII_85.getPdfName()), ((PdfArray) stream.get(PdfNameValue.FILTER)).getValues().get(0));
     }
 
     @Test
@@ -60,6 +53,11 @@ public class PdfStreamTest {
         stream.add(content4);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         stream.writeToFile(baos);
-        assertEquals("<<\n /Length 19\n /Filter [ /test ]\n>>\nstream\n/test\nBT\nET\n(test3)\n(test4)\nendstream", baos.toString());
+        assertEquals("<<\n /Length 28\n>>\nstream\n/test\nBT\nET\n(test3)\n(test4)\nendstream", baos.toString());
+        stream.addFilter(Compression.FLATE);
+        baos.reset();
+        stream.writeToFile(baos);
+        assertEquals(90, baos.size());
+        baos.close();
     }
 }

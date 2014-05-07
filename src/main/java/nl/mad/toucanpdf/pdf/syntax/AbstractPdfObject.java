@@ -43,6 +43,10 @@ public abstract class AbstractPdfObject {
         this.byteRepresentation = byteRepresentation;
     }
 
+    /**
+     * Converts the given string and sets the byte representation to the resulting bytes.
+     * @param s Strng to use.
+     */
     public final void setByteRepresentation(String s) {
         this.setByteRepresentation(ByteEncoder.getBytes(s));
     }
@@ -54,7 +58,7 @@ public abstract class AbstractPdfObject {
     /**
      * Writes the byte representation to the given OutputStream.
      * @param os OutputStream which will be written to.
-     * @throws IOException
+     * @throws IOException throws IOException if an error occured during the writing.
      */
     public void writeToFile(OutputStream os) throws IOException {
         os.write(byteRepresentation);

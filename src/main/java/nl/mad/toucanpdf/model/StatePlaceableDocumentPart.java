@@ -2,7 +2,12 @@ package nl.mad.toucanpdf.model;
 
 import java.util.List;
 
-public interface StatePlaceableDocumentPart extends PlaceableDocumentPart {
+/**
+ * This interface specifies the methods that should be implemented by all placeable document parts in the preview state.
+ * @author Dylan de Wolff
+ *
+ */
+public interface StatePlaceableDocumentPart extends StateDocumentPart, PlaceableDocumentPart {
     /**
      * Returns the height of this part's content. This value will not always be representative of the actual height of the part if the position 
      * was not specified by the user.

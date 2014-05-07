@@ -27,7 +27,7 @@ public class PdfHeader {
     /**
      * Writes the header to the OutputStream.
      * @param os OutputStream which will be written to.
-     * @throws IOException
+     * @throws IOException throws an IOException if an error occured during the writing.
      */
     public void writeToFile(OutputStream os) throws IOException {
         os.write(VERSION);

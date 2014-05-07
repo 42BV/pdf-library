@@ -98,8 +98,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Page marginTop(int marginTop) {
-        this.marginTop = marginTop;
+    public Page marginTop(int margin) {
+        this.marginTop = margin;
         return this;
     }
 
@@ -109,8 +109,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Page marginBottom(int marginBottom) {
-        this.marginBottom = marginBottom;
+    public Page marginBottom(int margin) {
+        this.marginBottom = margin;
         return this;
     }
 
@@ -120,8 +120,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Page marginLeft(int marginLeft) {
-        this.marginLeft = marginLeft;
+    public Page marginLeft(int margin) {
+        this.marginLeft = margin;
         return this;
     }
 
@@ -131,8 +131,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Page marginRight(int marginRight) {
-        this.marginRight = marginRight;
+    public Page marginRight(int margin) {
+        this.marginRight = margin;
         return this;
     }
 
@@ -174,9 +174,9 @@ public class BasePage extends AbstractDocumentPart implements Page {
     }
 
     @Override
-    public Page leading(int leading) {
-        if (leading >= 0) {
-            this.leading = leading;
+    public Page leading(int leadingSize) {
+        if (leadingSize >= 0) {
+            this.leading = leadingSize;
         }
         return this;
     }

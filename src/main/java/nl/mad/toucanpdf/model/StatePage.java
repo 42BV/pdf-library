@@ -7,7 +7,7 @@ import java.util.List;
  * 
  * @author Dylan de Wolff
  */
-public interface StatePage extends Page {
+public interface StatePage extends StateDocumentPart, Page {
     /**
      * Retrieves the filled width of this page.
      * @return Filled width of the page.

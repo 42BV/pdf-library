@@ -54,8 +54,8 @@ public class BaseFont extends AbstractDocumentPart implements Font {
     }
 
     @Override
-    public Font family(FontFamilyType fontFamily) {
-        this.family = fontFamily;
+    public Font family(FontFamilyType fontFamilyType) {
+        this.family = fontFamilyType;
         if (FontFamily.getDefaultFontFamily(family) != null) {
             this.fontFamily = FontFamily.getDefaultFontFamily(family);
         }

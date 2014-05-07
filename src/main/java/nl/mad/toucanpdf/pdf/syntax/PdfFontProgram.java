@@ -3,14 +3,14 @@ package nl.mad.toucanpdf.pdf.syntax;
 import nl.mad.toucanpdf.model.PdfNameValue;
 
 /**
- * This class stores the program 
+ * This class represents the PDF syntax of an embedded font program. 
  * @author Dylan de Wolff
  *
  */
 public class PdfFontProgram extends PdfStream {
 
     /**
-     * Creates a new instance of PdfFontProgram
+     * Creates a new instance of PdfFontProgram.
      */
     public PdfFontProgram() {
         super();

@@ -2,10 +2,8 @@ package nl.mad.toucanpdf.model;
 
 import java.util.List;
 
-import nl.mad.toucanpdf.utility.UnicodeConverter;
-
 /**
- * Interface for font metric
+ * Interface for font metric.
  * @author Dylan de Wolff
  *
  */
@@ -27,7 +25,6 @@ public interface FontMetrics {
      * Returns width of the character corresponding to the given character name.
      * @param name Name of the character.
      * @return Width of the character.
-     * @see UnicodeConverter
      */
     int getWidth(String name);
 
@@ -44,7 +41,6 @@ public interface FontMetrics {
      * @param characterName Name of the first character.
      * @param secondCharacterName Name of the second character.
      * @return int containing the kerning value.
-     * @see UnicodeConverter
      */
     int getKerning(String characterName, String secondCharacterName);
 

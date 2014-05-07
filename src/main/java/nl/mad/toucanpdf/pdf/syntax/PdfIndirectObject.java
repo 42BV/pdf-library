@@ -56,7 +56,7 @@ public class PdfIndirectObject {
     /**
      * Writes the file to the given OutputStream.
      * @param os OutputStream to write to.
-     * @throws IOException
+     * @throws IOException throws an IOException if an error occured during the writing.
      */
     public void writeToFile(OutputStream os) throws IOException {
         String objectLine = number + " " + generation + " " + START;

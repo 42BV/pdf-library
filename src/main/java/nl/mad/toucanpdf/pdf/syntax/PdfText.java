@@ -18,7 +18,6 @@ import nl.mad.toucanpdf.model.Text;
  * @see nl.mad.toucanpdf.model.Text
  */
 public class PdfText extends AbstractPdfObject {
-
     /**
      * Creates a new instance of PdfText.
      */
@@ -27,15 +26,14 @@ public class PdfText extends AbstractPdfObject {
     }
 
     /**
-     * Adds the given Text object to the stream.
+     * Creates the PDF syntax for the given text object.
      * @param text StateText object to be added.
      * @param fontReference font for the text.
      * @param leading the space between two lines.
-     * @return String containing overflow.
      */
-    public String addText(StateText text, PdfIndirectObject fontReference, int leading) {
+    public void addText(StateText text, PdfIndirectObject fontReference, int leading) {
         this.addFont(fontReference, text.getTextSize());
-        return this.addTextString(text, leading);
+        this.addTextString(text, leading);
     }
 
     /**
@@ -71,34 +69,19 @@ public class PdfText extends AbstractPdfObject {
     }
 
     /**
-     * Adds the byte representation for the given text string.
-     * @param text String that is to be added.
+     * Adds the byte representation for the given text object.
+     * @param text Text object that is to be added.
      * @param leading Space between two lines.
-     * @return String containing overflow.
      */
-    public String addTextString(StateText text, int leading) {
+    public void addTextString(StateText text, int leading) {
         StringBuilder sb = new StringBuilder();
         Map<Position, String> textSplit = text.getTextSplit();
         Map<Position, Double> justification = text.getJustificationOffset();
         Set<Entry<Position, String>> entrySet = textSplit.entrySet();
-        if (text.getAlignment().equals(Alignment.JUSTIFIED)) {
-            System.out.println("");
-            System.out.println("Printing out positions for textSplit: ");
-            for (Entry<Position, String> entry : entrySet) {
-                System.out.println("    Position = " + entry.getKey() + ", value = " + entry.getValue());
-            }
-
-            System.out.println("Printing out positions for justified: ");
-            for (Entry<Position, Double> entry : justification.entrySet()) {
-                System.out.println("    Position = " + entry.getKey() + ", value = " + entry.getValue());
-            }
-        }
         int i = 0;
         for (Entry<Position, String> entry : entrySet) {
             if (!"\n".equals(entry.getValue())) {
                 if (Alignment.JUSTIFIED.equals(text.getAlignment())) {
-                    System.out.println(text.getText());
-                    System.out.println("Alignment is just!");
                     if (i != entrySet.size() - 1) {
                         sb.append(justification.get(entry.getKey()) + " Tw ");
                     }
@@ -114,7 +97,6 @@ public class PdfText extends AbstractPdfObject {
             sb.append("\n");
         }
         this.addToByteRepresentation(sb.toString());
-        return "";
     }
 
     private String getNewLineStringForText(Text text, int leading) {

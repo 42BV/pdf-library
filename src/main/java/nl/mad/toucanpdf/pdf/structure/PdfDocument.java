@@ -3,12 +3,13 @@ package nl.mad.toucanpdf.pdf.structure;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontMetrics;
@@ -49,13 +50,14 @@ public class PdfDocument {
     private PdfTrailer trailer;
     private PdfPage currentPage;
     private Map<Font, PdfIndirectObject> fontList = new HashMap<Font, PdfIndirectObject>();
+    private Map<ByteBuffer, PdfIndirectObject> imageList = new HashMap<ByteBuffer, PdfIndirectObject>();
     private static final String CREATOR = "Toucan-PDF";
+    private static final Compression DEFAULT_COMPRESSION_METHOD = Compression.FLATE;
 
     /**
      * Creates a new instance of PdfDocument.
-     * @throws UnsupportedEncodingException
      */
-    public PdfDocument() throws UnsupportedEncodingException {
+    public PdfDocument() {
         this.header = new PdfHeader();
         this.body = new PdfBody();
         this.xref = new PdfCrossReferenceTable();
@@ -107,10 +109,17 @@ public class PdfDocument {
     }
 
     private void addImage(Image part) {
-        PdfImageDictionary imageDic = new PdfImageDictionary(part);
-        PdfIndirectObject imageRef = body.addObject(imageDic);
+        ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
+        PdfIndirectObject imageRef = imageList.get(buffer);
+        if (imageRef == null) {
+            PdfImageDictionary imageDic = new PdfImageDictionary(part);
+            imageRef = body.addObject(imageDic);
+            imageList.put(buffer, imageRef);
+        }
         this.getCurrentPage().addResource(imageRef);
-        this.getCurrentPageStream().add(new PdfGraphicsState(imageRef.getReference().getResourceReference(), part));
+        PdfStream stream = this.getCurrentPageStream();
+        stream.add(new PdfGraphicsState(imageRef.getReference().getResourceReference(), part));
+        stream.addFilter(part.getCompressionMethod());
     }
 
     /**
@@ -149,6 +158,7 @@ public class PdfDocument {
             pdfText.addText(text, getPdfFont(text.getFont()), currentPage.getLeading());
         }
         ts.add(pdfText);
+        ts.addFilter(text.getCompressionMethod());
     }
 
     /**
@@ -189,6 +199,7 @@ public class PdfDocument {
             byte[] fontProgramFile = metrics.getFontFile();
             if (fontProgramFile != null) {
                 PdfFontProgram fontProgram = new PdfFontProgram();
+                fontProgram.addFilter(DEFAULT_COMPRESSION_METHOD);
                 fontProgram.setFontProgram(new PdfFile(fontProgramFile));
                 fontProgram.setLengths(metrics.getFontProgramLengths());
                 PdfIndirectObject indirectFontFile = body.addObject(fontProgram);

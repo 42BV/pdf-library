@@ -1,7 +1,7 @@
 package nl.mad.toucanpdf.model;
 
 /**
- * Interface for DocumentParts. These parts can be added to an instance of Document.
+ * Interface for DocumentParts. These parts can be added to an instance of DocumentBuilder.
  * @author Dylan de Wolff
  *
  */

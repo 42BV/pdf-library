@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PdfFontTest {
-    PdfFont pdfFont;
-    Font font;
+    private PdfFont pdfFont;
+    private Font font;
 
     @Before
     public void setUp() throws Exception {

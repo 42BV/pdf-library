@@ -7,7 +7,7 @@ import java.util.List;
 import nl.mad.toucanpdf.api.AbstractParagraph;
 import nl.mad.toucanpdf.api.Anchor;
 import nl.mad.toucanpdf.api.AnchorLocation;
-import nl.mad.toucanpdf.api.BaseParagraph;
+import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
@@ -17,8 +17,12 @@ import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.StateImage;
 import nl.mad.toucanpdf.model.StatePage;
 import nl.mad.toucanpdf.model.StateParagraph;
+import nl.mad.toucanpdf.model.StatePlaceableDocumentPart;
 import nl.mad.toucanpdf.model.StateText;
 import nl.mad.toucanpdf.model.Text;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of the StateParagraph class. This class offers the same functionality as the BaseParagraph class. 
@@ -30,7 +34,9 @@ import nl.mad.toucanpdf.model.Text;
  *
  */
 public class BaseStateParagraph extends AbstractParagraph implements StateParagraph {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateParagraph.class);
     private List<StateText> textCollection;
+    private DocumentPart originalObject;
 
     /**
      * Creates a copy of the given paragraph object. 
@@ -86,6 +92,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             if (overflow != null) {
                 overflowParagraph = this.handleOverflow(i + 1, overflow);
             }
+            processAnchorAlignment(getAnchorsOn(t, AnchorLocation.LEFT), page);
         }
         return overflowParagraph;
     }
@@ -127,6 +134,32 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         return null;
     }
 
+    private void processAnchorAlignment(List<Anchor> anchors, StatePage page) {
+        if (anchors.size() > 0) {
+            List<int[]> openSpaces = null;
+            List<int[]> usedSpaces = new LinkedList<int[]>();
+            PlaceableFixedSizeDocumentPart highestPart = anchors.get(0).getPart();
+            for (Anchor a : anchors) {
+                PlaceableFixedSizeDocumentPart part = a.getPart();
+                if (part.getHeight() > highestPart.getHeight()) {
+                    highestPart = part;
+                }
+                if (part instanceof StatePlaceableDocumentPart) {
+                    StatePlaceableDocumentPart statePart = (StatePlaceableDocumentPart) a.getPart();
+                    usedSpaces.addAll(statePart.getUsedSpaces(statePart.getPosition().getY()));
+                }
+            }
+
+            openSpaces = page.getOpenSpacesOn(new Position(page.getMarginLeft(), highestPart.getPosition().getY()), true, 0, highestPart.getHeight());
+            for (int[] openSpace : openSpaces) {
+                System.out.println("OpenSpace = " + openSpace[0] + "- " + openSpace[1]);
+            }
+            for (int[] usedSpace : usedSpaces) {
+                System.out.println("UsedSpace = " + usedSpace[0] + "- " + usedSpace[1]);
+            }
+        }
+    }
+
     /**
      * Removes anchors that cause overflow from the given list.
      * @param text Text the anchors are on.
@@ -159,7 +192,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             //if the current anchor doesn't fit we'll remove it
             if (requiredWidthTotal > page.getWidthWithoutMargins() || requiredHeight > page.getHeightWithoutMargins()) {
                 this.removeAnchor(a);
-                //TODO: Log removal
+                LOGGER.warn("The given anchor did not fit on the page. The anchor has been removed.", a);
                 requiredWidthTotal = requiredWidthTotalOld;
             }
         }
@@ -331,8 +364,9 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         newTextList.add(text);
         newTextList.addAll(textCollection.subList(index, textCollection.size()));
         this.textCollection.removeAll(newTextList);
-        Paragraph overflowParagraph = new BaseParagraph(this, false);
+        BaseStateParagraph overflowParagraph = new BaseStateParagraph(this, false);
         overflowParagraph.addText(newTextList);
+        overflowParagraph.setOriginalObject(this.getOriginalObject());
         return overflowParagraph;
     }
 
@@ -417,8 +451,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     }
 
     @Override
-    public Paragraph addText(List<Text> textCollection) {
-        for (Text t : textCollection) {
+    public Paragraph addText(List<Text> text) {
+        for (Text t : text) {
             this.addText(t);
         }
         return this;
@@ -427,5 +461,17 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     @Override
     public List<StateText> getStateTextCollection() {
         return this.textCollection;
+    }
+
+    @Override
+    public void setOriginalObject(DocumentPart originalObject) {
+        if (this.originalObject == null) {
+            this.originalObject = originalObject;
+        }
+    }
+
+    @Override
+    public DocumentPart getOriginalObject() {
+        return this.originalObject;
     }
 }

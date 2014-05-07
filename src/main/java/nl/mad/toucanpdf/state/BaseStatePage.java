@@ -26,6 +26,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 public class BaseStatePage extends BasePage implements StatePage {
     private double filledWidth = 0;
     private double filledHeight = 0;
+    private DocumentPart originalObject;
 
     /**
      * Creates a new instance of BaseStatePage with the given width and height.
@@ -208,15 +209,6 @@ public class BaseStatePage extends BasePage implements StatePage {
             double y = position.getY();
             double positionTopLimit = y + requiredSpaceAbove;
             double positionBottomLimit = y - requiredSpaceBelow;
-            if (part.getType().equals(DocumentPartType.IMAGE)) {
-                System.out.println("Image stuff!");
-                System.out.println("top limit of image: " + topLimit);
-                System.out.println("bottom limit of image: " + bottomLimit);
-                System.out.println("pos Y : " + y);
-                System.out.println("Position top limit: " + positionTopLimit);
-                System.out.println("Position bottom limit: " + positionBottomLimit);
-                System.out.println();
-            }
 
             if ((FloatEqualityTester.lessThanOrEqualTo(y, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit))
                     || (FloatEqualityTester.greaterThanOrEqualTo(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThanOrEqualTo(positionTopLimit,
@@ -303,5 +295,17 @@ public class BaseStatePage extends BasePage implements StatePage {
             openSpaces.add(newOpenSpace);
         }
         return openSpaces;
+    }
+
+    @Override
+    public void setOriginalObject(DocumentPart originalObject) {
+        if (this.originalObject == null) {
+            this.originalObject = originalObject;
+        }
+    }
+
+    @Override
+    public DocumentPart getOriginalObject() {
+        return this.originalObject;
     }
 }
