@@ -80,11 +80,11 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public void processContentSize(StatePage page) {
-        this.processContentSize(page, this.wrappingAllowed());
+        this.processContentSize(page, this.wrappingAllowed(), true);
     }
 
     @Override
-    public void processContentSize(StatePage page, boolean wrapping) {
+    public void processContentSize(StatePage page, boolean wrapping, boolean processAlignment) {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         Position pos = new Position(this.getPosition());
@@ -99,8 +99,12 @@ public class BaseStateImage extends BaseImage implements StateImage {
             int openSpaceWidth = (openSpace[1] - openSpace[0]);
             if (openSpaceWidth >= this.getWidth() && (page.getAvailableHeight(pos, requiredSpaceAbove, requiredSpaceBelow) >= this.getHeight())) {
                 imagePositioned = true;
+                if (processAlignment) {
+                    this.processAlignment(pos, openSpaceWidth);
+                }
                 this.setPosition(pos);
             }
+            ++i;
         }
         if (!wrapping) {
             adjustFilledHeight(page);
@@ -108,7 +112,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
     }
 
     private void adjustFilledHeight(StatePage page) {
-        page.setFilledHeight(page.getFilledHeight() + this.getHeight());
+        page.setFilledHeight(page.getFilledHeight() + this.getHeight() + Page.DEFAULT_NEW_LINE_SIZE * 2);
     }
 
     @Override
@@ -121,5 +125,25 @@ public class BaseStateImage extends BaseImage implements StateImage {
     @Override
     public DocumentPart getOriginalObject() {
         return this.originalObject;
+    }
+
+    private void processAlignment(Position pos, int openSpaceWidth) {
+        int remainder = openSpaceWidth - this.getWidth();
+        double adjustment = 0;
+        if (remainder > 0) {
+            switch (this.getAlignment()) {
+            case CENTERED:
+                adjustment += remainder / 2;
+                break;
+            case RIGHT:
+                adjustment += remainder;
+                break;
+            case LEFT:
+            case JUSTIFIED:
+            default:
+                break;
+            }
+        }
+        pos.adjustX(adjustment);
     }
 }

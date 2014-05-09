@@ -38,7 +38,6 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
-        this.setPosition(new Position());
         this.height = image.getHeight();
         this.width = image.getWidth();
     }
@@ -53,7 +52,6 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(int height, int width, InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
-        this.setPosition(new Position());
         this.height = height;
         this.width = width;
     }
@@ -70,13 +68,15 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
 
     /**
      * Creates a copy of the given Image object.
-     * @param baseImage Image to copy.
+     * @param image Image to copy.
      */
-    public BaseImage(Image baseImage) {
+    public BaseImage(Image image) {
         this();
-        this.height = baseImage.getHeight();
-        this.width = baseImage.getWidth();
-        this.image = baseImage.getImageParser();
+        this.height = image.getHeight();
+        this.width = image.getWidth();
+        this.image = image.getImageParser();
+        this.wrappable = image.wrappingAllowed();
+        this.setAlignment(image.getAlignment());
     }
 
     @Override
@@ -145,11 +145,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         return this.wrappable;
     }
 
-    /**
-     * Allows you to set whether other parts may wrap around this image.
-     * @param isWrappable determines whether wrapping is allowed. True if it is allowed, false otherwise.
-     * @return this image instance.
-     */
+    @Override
     public Image allowWrapping(boolean isWrappable) {
         this.wrappable = isWrappable;
         return this;

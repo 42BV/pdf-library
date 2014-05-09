@@ -56,6 +56,22 @@ public class Position {
     }
 
     /**
+     * Adjusts the Y value by the given amount.
+     * @param adjustment Adjustment to apply.
+     */
+    public void adjustY(double adjustment) {
+        this.y += adjustment;
+    }
+
+    /**
+     * Adjusts the X value by the given amount.
+     * @param adjustment Adjustment to apply.
+     */
+    public void adjustX(double adjustment) {
+        this.x += adjustment;
+    }
+
+    /**
      * Checks if this Position has custom positioning.
      * @return True if either x or y are not equal to the default unused value, false otherwise.
      */
@@ -77,5 +93,10 @@ public class Position {
      */
     public boolean hasCustomXValue() {
         return x != UNUSED_VALUE;
+    }
+
+    @Override
+    public String toString() {
+        return x + ":" + y;
     }
 }

@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import nl.mad.toucanpdf.DocumentBuilder;
 import nl.mad.toucanpdf.api.BaseImage;
@@ -23,22 +24,37 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        //testCutOff();
-        //presentation1();
-        //presentation2();
-        // presentation3();
-        presentation4();
-        //presentation5();
+        presentation1();
+        newTest();
         //documentStateTest();
     }
 
-    private static void presentation4() {
+    private static void presentation1() throws FileNotFoundException {
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.title("pres1");
+        builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
+        builder.addImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
+        builder.addImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), ImageType.JPEG).align(Alignment.RIGHT).height(230).width(170);
+        builder.finish();
+    }
+
+    public static void presentation2() {
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.title("pres2");
+        builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
+        Text text = builder.addText("Test text");
+        DocumentState preview = builder.getPreview();
+        List<Text> previewTextObjects = preview.getPreviewFor(text);
+        builder.finish();
+    }
+
+    private static void newTest() {
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("Test");
         Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         System.out.println("DeveloperPage: " + page.toString());
         Text firstParagraphSection = builder
-                .createText("First paragraph section. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida.");
+                .createText("First paragraph section. ëëëë (Lorem). (Zowel intern als extern) ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida.");
         InputStream img = null;
         InputStream img2 = null;
         try {
@@ -49,9 +65,10 @@ public class Main {
         }
         Image imageLeft = new BaseImage(200, 200, img, ImageType.JPEG);
         Image image = new BaseImage(100, 100, img2, ImageType.JPEG);
-        Image imageRight2 = new BaseImage(imageLeft);
-        Image imageRight = new BaseImage(image);
-        //builder.addPart(image);
+        //TODO: Update builder for images
+        Image image3 = new BaseImage(image).allowWrapping(true);
+        builder.addPart(image3);
+        builder.addPart(new BaseImage(image3).align(Alignment.RIGHT));
         Paragraph par = builder
                 .addParagraph()
                 .addText(firstParagraphSection)
@@ -64,43 +81,24 @@ public class Main {
 
         Text text = builder
                 .addText("Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text Loooooooooooooooooooooooooooooooong text wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie wookieedookie ");
-        par.addAnchor(imageLeft).above(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        //par.addAnchor(imageLeft).above(firstParagraphSection);
-        //par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        //par.addAnchor(imageLeft).leftOf(firstParagraphSection);
-        //par.addAnchor(imageLeft).rightOf(firstParagraphSection);
-        par.addAnchor(imageLeft).rightOf(firstParagraphSection);
-        par.addAnchor(imageRight).leftOf(firstParagraphSection);
-        //par.addAnchor(imageRight).rightOf(firstParagraphSection);
-        //par.addAnchor(imageRight).leftOf(firstParagraphSection);
-        DocumentState preview = builder.getPreview();
-        System.out.println(preview.getPreviewFor(page));
-        System.out.println(preview.getPreviewFor(text));
-
-        for (Text t : preview.getPreviewFor(text)) {
-            System.out.println("Text found: ");
-            System.out.println("    " + t.getText());
-        }
-        for (Paragraph p : preview.getPreviewFor(par)) {
-            System.out.println("Paragraph found: ");
-            System.out.println("    " + p.toString());
-            for (Text t : p.getTextCollection()) {
-                System.out.println("          " + t.getText());
-            }
-        }
-
+        par.addAnchor(new BaseImage(image).align(Alignment.CENTERED)).above(firstParagraphSection);
+        par.addAnchor(new BaseImage(image).align(Alignment.RIGHT)).leftOf(firstParagraphSection);
+        par.addAnchor(image).rightOf(firstParagraphSection);
+        par.addAnchor(image.align(Alignment.RIGHT)).beneath(firstParagraphSection);
         try {
             builder.finish(new FileOutputStream("/home/dylan/Dropbox/42 - Stage/testPDFFiles/test.pdf"));
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        DocumentState preview = builder.getPreview();
+        List<Image> previewResults = preview.getPreviewFor(image3);
+        for (Image previewImage : previewResults) {
+            System.out.println("Preview image3 pos: " + previewImage.getPosition());
+        }
+        List<Paragraph> previewResult = preview.getPreviewFor(par);
+        System.out.println("Anchor 0 pos: " + previewResult.get(0).getAnchors().get(0).getPart().getPosition());
     }
 
     private static void documentStateTest() {

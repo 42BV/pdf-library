@@ -21,6 +21,7 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
      */
     public AbstractPlaceableDocumentPart(DocumentPartType type) {
         super(type);
+        this.position = new Position();
     }
 
     @Override

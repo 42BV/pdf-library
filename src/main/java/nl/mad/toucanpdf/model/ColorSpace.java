@@ -9,9 +9,17 @@ import nl.mad.toucanpdf.image.ImageParser;
  * @see ImageParser
  */
 public enum ColorSpace {
-    DEVICE_GRAY(PdfNameValue.DEVICE_GRAY), DEVICE_RGB(PdfNameValue.DEVICE_RGB), DEVICE_CMYK(PdfNameValue.DEVICE_CMYK), CAL_GRAY(PdfNameValue.CAL_GRAY), CAL_RGB(
-            PdfNameValue.CAL_RGB), LAB(PdfNameValue.LAB), ICC_BASED(PdfNameValue.ICC_BASED), INDEXED(PdfNameValue.INDEXED), PATTERN(PdfNameValue.PATTERN), SEPARATION(
-            PdfNameValue.SEPARATION), DEVICE_N(PdfNameValue.DEVICE_N);
+    DEVICE_GRAY(PdfNameValue.DEVICE_GRAY),
+    DEVICE_RGB(PdfNameValue.DEVICE_RGB),
+    DEVICE_CMYK(PdfNameValue.DEVICE_CMYK),
+    CAL_GRAY(PdfNameValue.CAL_GRAY),
+    CAL_RGB(PdfNameValue.CAL_RGB),
+    LAB(PdfNameValue.LAB),
+    ICC_BASED(PdfNameValue.ICC_BASED),
+    INDEXED(PdfNameValue.INDEXED),
+    PATTERN(PdfNameValue.PATTERN),
+    SEPARATION(PdfNameValue.SEPARATION),
+    DEVICE_N(PdfNameValue.DEVICE_N);
 
     private PdfNameValue pdfName;
 

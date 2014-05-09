@@ -86,9 +86,10 @@ public class PdfText extends AbstractPdfObject {
                         sb.append(justification.get(entry.getKey()) + " Tw ");
                     }
                 }
+                String textToProcess = getEscapedString(entry.getValue());
                 sb.append(createMatrix(text, entry.getKey()));
                 sb.append("[(");
-                sb.append(this.processKerning(entry.getValue(), text.getFont()));
+                sb.append(this.processKerning(textToProcess, text.getFont()));
                 sb.append(")] TJ");
             } else {
                 sb.append(getNewLineStringForText(text, leading));
@@ -97,6 +98,13 @@ public class PdfText extends AbstractPdfObject {
             sb.append("\n");
         }
         this.addToByteRepresentation(sb.toString());
+    }
+
+    private String getEscapedString(String value) {
+        String newValue = "" + value;
+        newValue = newValue.replace("(", "\\(");
+        newValue = newValue.replace(")", "\\)");
+        return newValue;
     }
 
     private String getNewLineStringForText(Text text, int leading) {

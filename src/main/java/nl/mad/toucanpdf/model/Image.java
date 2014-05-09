@@ -83,4 +83,11 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @return Compression method that is currently set.
      */
     Compression getCompressionMethod();
+
+    /**
+     * Allows you to set whether other parts may wrap around this image.
+     * @param isWrappable determines whether wrapping is allowed. True if it is allowed, false otherwise.
+     * @return this image instance.
+     */
+    Image allowWrapping(boolean isWrappable);
 }

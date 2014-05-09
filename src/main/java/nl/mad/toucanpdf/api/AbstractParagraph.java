@@ -10,11 +10,15 @@ import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Dylan de Wolff
  *
  */
 public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart implements Paragraph {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractParagraph.class);
     private List<Anchor> anchors;
 
     /**
@@ -44,7 +48,11 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
 
     @Override
     public Anchor addAnchor(Anchor a) {
-        this.anchors.add(a);
+        if (this.getAnchorOn(a.getAnchorPoint(), a.getLocation()) == null) {
+            this.anchors.add(a);
+        } else {
+            LOGGER.info("The given anchor could not be added on the given text and location. Only a single anchor is allowed per location.", a);
+        }
         return a;
     }
 
@@ -59,6 +67,21 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
             }
         }
         return anchorsOnText;
+    }
+
+    /**
+     * Returns the anchor that has been attached to the given text on the given location.
+     * @param t Text to check.
+     * @param location Location to check.
+     * @return Anchor that has been attached on the given text object and location.
+     */
+    protected Anchor getAnchorOn(Text t, AnchorLocation location) {
+        for (Anchor a : this.getAnchorsOn(t)) {
+            if (location.equals(a.getLocation())) {
+                return a;
+            }
+        }
+        return null;
     }
 
     @Override

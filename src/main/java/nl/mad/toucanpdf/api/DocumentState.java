@@ -199,6 +199,7 @@ public class DocumentState {
         paragraph.on(position);
         page.add(paragraph);
         addToStateLink(p, paragraph);
+        System.out.println("Paragraph blabla: " + paragraph.getPosition());
         Paragraph overflowParagraph = paragraph.processContentSize(page, false);
         if (overflowParagraph != null) {
             return handleOverflow(page, i + 1, overflowParagraph, content);
@@ -240,6 +241,7 @@ public class DocumentState {
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
         Position position = null;
         position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow());
+        System.out.println("position = " + position + ", part = " + part.getType());
         return position;
     }
 

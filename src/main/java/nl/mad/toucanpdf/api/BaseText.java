@@ -46,7 +46,6 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         textString = text;
         textSize = DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
-        this.setPosition(new Position());
     }
 
     /**

@@ -3,12 +3,15 @@ package nl.mad.toucanpdf;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import nl.mad.toucanpdf.api.Anchor;
 import nl.mad.toucanpdf.api.BaseFont;
+import nl.mad.toucanpdf.api.BaseImage;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.api.BaseParagraph;
 import nl.mad.toucanpdf.api.BaseText;
@@ -16,6 +19,8 @@ import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
+import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.Text;
@@ -421,5 +426,29 @@ public class DocumentBuilder {
     public DocumentState getPreview() {
         state.updateState(pages);
         return state;
+    }
+
+    /**
+     * Adds an image to the document. Use the returned image instance to adjust attributes of the image.
+     * @param imageFile InputStream containing the image file to parse.
+     * @param format The format of the image.
+     * @return image object
+     */
+    public Image addImage(InputStream imageFile, ImageType format) {
+        Image image = createImage(imageFile, format);
+        this.addPart(image);
+        return image;
+    }
+
+    /**
+     * Creates a new image instance. Use the returned instance to adjust attributes of the image. 
+     * You can use this method to create images and add them to anchors without directly adding the image to the document as well.
+     * @param imageFile InputStream containing the image file to parse.
+     * @param format The format of the image.
+     * @return image object
+     * @see Anchor
+     */
+    public Image createImage(InputStream imageFile, ImageType format) {
+        return new BaseImage(imageFile, format);
     }
 }

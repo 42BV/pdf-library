@@ -102,8 +102,10 @@ public class Anchor {
     /**
      * Sets the part the anchor will attach.
      * @param documentPart the part the anchor will attach.
+     * @return the anchor.
      */
-    public void part(PlaceableFixedSizeDocumentPart documentPart) {
+    public Anchor part(PlaceableFixedSizeDocumentPart documentPart) {
         this.part = documentPart;
+        return this;
     }
 }
