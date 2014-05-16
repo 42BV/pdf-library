@@ -8,8 +8,8 @@ import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.StateText;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.state.StateSplittableText;
 
 /**
  * PdfText stores the PDF stream version of a Text object. 
@@ -18,6 +18,8 @@ import nl.mad.toucanpdf.model.Text;
  * @see nl.mad.toucanpdf.model.Text
  */
 public class PdfText extends AbstractPdfObject {
+    private static final String WORD_SPACING = " Tw ";
+
     /**
      * Creates a new instance of PdfText.
      */
@@ -31,7 +33,7 @@ public class PdfText extends AbstractPdfObject {
      * @param fontReference font for the text.
      * @param leading the space between two lines.
      */
-    public void addText(StateText text, PdfIndirectObject fontReference, int leading) {
+    public void addText(StateSplittableText text, PdfIndirectObject fontReference, int leading) {
         this.addFont(fontReference, text.getTextSize());
         this.addTextString(text, leading);
     }
@@ -73,17 +75,21 @@ public class PdfText extends AbstractPdfObject {
      * @param text Text object that is to be added.
      * @param leading Space between two lines.
      */
-    public void addTextString(StateText text, int leading) {
-        StringBuilder sb = new StringBuilder();
+    public void addTextString(StateSplittableText text, int leading) {
         Map<Position, String> textSplit = text.getTextSplit();
         Map<Position, Double> justification = text.getJustificationOffset();
         Set<Entry<Position, String>> entrySet = textSplit.entrySet();
+        addTextString(entrySet, text, justification, leading);
+    }
+
+    private void addTextString(Set<Entry<Position, String>> entrySet, Text text, Map<Position, Double> justification, int leading) {
+        StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Entry<Position, String> entry : entrySet) {
             if (!"\n".equals(entry.getValue())) {
                 if (Alignment.JUSTIFIED.equals(text.getAlignment())) {
                     if (i != entrySet.size() - 1) {
-                        sb.append(justification.get(entry.getKey()) + " Tw ");
+                        sb.append(justification.get(entry.getKey()) + WORD_SPACING);
                     }
                 }
                 String textToProcess = getEscapedString(entry.getValue());

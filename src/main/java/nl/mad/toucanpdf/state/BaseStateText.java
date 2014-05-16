@@ -9,15 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import nl.mad.toucanpdf.api.BaseText;
-import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.StatePage;
-import nl.mad.toucanpdf.model.StateText;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.state.AbstractStateSplittableText;
+import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 /**
@@ -26,8 +25,8 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
  * 
  * @author Dylan de Wolff
  */
-public class BaseStateText extends BaseText implements StateText {
-    private Map<Position, String> textSplit = new LinkedHashMap<Position, String>();;
+public class BaseStateText extends AbstractStateSplittableText implements StateText {
+    private Map<Position, String> textSplit = new LinkedHashMap<Position, String>();
     private Map<Position, Double> justificationOffsets = new HashMap<Position, Double>();
     private DocumentPart originalObject;
 
@@ -297,11 +296,6 @@ public class BaseStateText extends BaseText implements StateText {
     }
 
     @Override
-    public Map<Position, String> getTextSplit() {
-        return this.textSplit;
-    }
-
-    @Override
     public double getContentHeight(Page page) {
         double lowestHeight = this.getPosition().getY();
         double highestHeight = 0;
@@ -319,7 +313,7 @@ public class BaseStateText extends BaseText implements StateText {
     }
 
     @Override
-    public int getContentWidth(Page page, Position position) {
+    public double getContentWidth(Page page, Position position) {
         FontMetrics metrics = getFont().getMetrics();
         List<Entry<Position, String>> entries = this.getEntriesAtHeight(position.getY());
         int width = 0;
@@ -380,17 +374,6 @@ public class BaseStateText extends BaseText implements StateText {
     @Override
     public double getRequiredSpaceBelow() {
         return Math.abs(getFont().getMetrics().getDescentPoint() * getTextSize());
-    }
-
-    @Override
-    public Text align(Alignment alignment) {
-        this.setAlignment(alignment);
-        return this;
-    }
-
-    @Override
-    public Map<Position, Double> getJustificationOffset() {
-        return this.justificationOffsets;
     }
 
     @Override

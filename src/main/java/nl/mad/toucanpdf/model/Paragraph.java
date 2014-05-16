@@ -2,8 +2,6 @@ package nl.mad.toucanpdf.model;
 
 import java.util.List;
 
-import nl.mad.toucanpdf.api.Anchor;
-
 /**
  * Interface for paragraph classes. Paragraph objects store a collection of other document parts that should be kept together.
  * @author Dylan de Wolff

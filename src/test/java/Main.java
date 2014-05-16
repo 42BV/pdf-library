@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import nl.mad.toucanpdf.DocumentBuilder;
+import nl.mad.toucanpdf.api.BaseCell;
 import nl.mad.toucanpdf.api.BaseImage;
+import nl.mad.toucanpdf.api.BaseTable;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Alignment;
@@ -14,6 +16,9 @@ import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
+import nl.mad.toucanpdf.model.PlaceableDocumentPart;
+import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
 
 public class Main {
@@ -24,9 +29,32 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        presentation1();
-        newTest();
+        presentation();
+        //newTest();
         //documentStateTest();
+    }
+
+    private static void presentation() throws FileNotFoundException {
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.title("pres1");
+        Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
+        Table table = new BaseTable(page.getWidthWithoutMargins()).columns(5).border(0.1);
+        //table.setPosition(new Position(100, 100));
+        Text cont = new BaseText("Test test test test");
+        Text cont2 = new BaseText("Test Test Test Test Tesese");
+        Text cont3 = new BaseText("Test Test Test Test Tese");
+        Text cont4 = new BaseText("Test Test Test Test Teses");
+        Text cont5 = new BaseText("Test Test Test Test Te");
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
+        table.addCell(new BaseCell(cont2).columnSpan(4));
+        table.addCell(new BaseCell(cont).columnSpan(3));
+        table.addCell(new BaseCell(cont3).columnSpan(2));
+        table.addCell(new BaseCell(i1));
+        System.out.println("CEll height: " + table.getContent().get(3).getHeight());
+        table.addCell(new BaseCell(cont5).columnSpan(32));
+        builder.addPart(table);
+        //System.out.println(builder.getPreview().getPages().get(0).getContent());
+        builder.finish();
     }
 
     private static void presentation1() throws FileNotFoundException {
@@ -35,6 +63,10 @@ public class Main {
         builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         builder.addImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
         builder.addImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), ImageType.JPEG).align(Alignment.RIGHT).height(230).width(170);
+        PlaceableDocumentPart part = new BaseTable();
+        part.setPosition(new Position(400, 50));
+        builder.addPart(part);
+        System.out.println(builder.getPreview().getPages().get(0).getContent());
         builder.finish();
     }
 

@@ -11,13 +11,13 @@ public interface PlaceableFixedSizeDocumentPart extends PlaceableDocumentPart {
      * Returns the width of the part.
      * @return Width of the part.
      */
-    int getWidth();
+    double getWidth();
 
     /**
      * Returns the height of the part.
      * @return Height of the part.
      */
-    int getHeight();
+    double getHeight();
 
     /**
      * Returns whether or not other parts are allowed to wrap around this part.

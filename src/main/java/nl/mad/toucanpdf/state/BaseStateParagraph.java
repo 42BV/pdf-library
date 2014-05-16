@@ -5,8 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import nl.mad.toucanpdf.api.AbstractParagraph;
-import nl.mad.toucanpdf.api.Anchor;
-import nl.mad.toucanpdf.api.AnchorLocation;
+import nl.mad.toucanpdf.api.BaseAnchor;
+import nl.mad.toucanpdf.model.Anchor;
+import nl.mad.toucanpdf.model.AnchorLocation;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
@@ -14,12 +15,13 @@ import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.StateImage;
-import nl.mad.toucanpdf.model.StatePage;
-import nl.mad.toucanpdf.model.StateParagraph;
-import nl.mad.toucanpdf.model.StatePlaceableDocumentPart;
-import nl.mad.toucanpdf.model.StateText;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateParagraph;
+import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
+import nl.mad.toucanpdf.model.state.StatePlaceableFixedSizeDocumentPart;
+import nl.mad.toucanpdf.model.state.StateText;
+import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 StateText newText = new BaseStateText(t);
                 textCollection.add(newText);
                 for (Anchor a : p.getAnchorsOn(t)) {
-                    Anchor newAnchor = this.addAnchor(new Anchor(a, newText));
+                    Anchor newAnchor = this.addAnchor(new BaseAnchor(a, newText));
                     newAnchor.part(convertAnchorPart(newAnchor.getPart()));
                 }
             }
@@ -208,9 +210,9 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             int[] openSpace = openSpaces.get(a);
             int availableWidth = openSpace[1] - openSpace[0];
             PlaceableFixedSizeDocumentPart part = anchor.getPart();
-            int partWidth = part.getWidth();
+            double partWidth = part.getWidth();
             //if the current anchor fits in this open space we'll add it to the processed anchors.
-            if (availableWidth > partWidth) {
+            if (FloatEqualityTester.greaterThan(availableWidth, partWidth)) {
                 position.setX(openSpace[1] - partWidth);
                 anchorPlaced = true;
             }
@@ -234,20 +236,14 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             PlaceableFixedSizeDocumentPart anchorPart = null;
             anchorPart = anchor.getPart();
             anchorPart.setPosition(newPos);
-            switch (anchorPart.getType()) {
-            case IMAGE:
-                boolean wrapping = true;
-                boolean alignment = false;
-                //Text should not wrap around images that are above or below a text.
-                if (AnchorLocation.ABOVE.equals(location) || AnchorLocation.BELOW.equals(location)) {
-                    wrapping = false;
-                    alignment = true;
-                }
-                ((StateImage) anchorPart).processContentSize(page, wrapping, alignment);
-                break;
-            default:
-                break;
+            boolean wrapping = true;
+            boolean alignment = false;
+            //Text should not wrap around images that are above or below a text.
+            if (AnchorLocation.ABOVE.equals(location) || AnchorLocation.BELOW.equals(location)) {
+                wrapping = false;
+                alignment = true;
             }
+            ((StatePlaceableFixedSizeDocumentPart) anchorPart).processContentSize(page, wrapping, alignment);
             page.add(anchorPart);
             newPos = new Position(anchorPart.getWidth() + anchorPart.getPosition().getX(), newPos.getY());
             double newPosX = newPos.getX();
@@ -335,10 +331,10 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     }
 
     @Override
-    public int getContentWidth(Page page, Position position) {
-        int longestWidth = 0;
+    public double getContentWidth(Page page, Position position) {
+        double longestWidth = 0;
         for (StateText t : textCollection) {
-            int width = t.getContentWidth(page, position);
+            double width = t.getContentWidth(page, position);
             longestWidth = Math.max(width, longestWidth);
         }
         return longestWidth;

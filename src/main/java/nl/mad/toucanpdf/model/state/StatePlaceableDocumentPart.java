@@ -1,13 +1,17 @@
-package nl.mad.toucanpdf.model;
+package nl.mad.toucanpdf.model.state;
 
 import java.util.List;
+
+import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.PlaceableDocumentPart;
+import nl.mad.toucanpdf.model.Position;
 
 /**
  * This interface specifies the methods that should be implemented by all placeable document parts in the preview state.
  * @author Dylan de Wolff
  *
  */
-public interface StatePlaceableDocumentPart extends StateDocumentPart, PlaceableDocumentPart {
+public interface StatePlaceableDocumentPart extends StateDocumentPart, PlaceableDocumentPart, StateSpacing {
     /**
      * Returns the height of this part's content. This value will not always be representative of the actual height of the part if the position 
      * was not specified by the user.
@@ -23,7 +27,7 @@ public interface StatePlaceableDocumentPart extends StateDocumentPart, Placeable
      * @param position Position to check the width of.
      * @return int containing width.
      */
-    int getContentWidth(Page page, Position position);
+    double getContentWidth(Page page, Position position);
 
     /**
      * Returns x values of positions of this object at the given height.
@@ -39,14 +43,4 @@ public interface StatePlaceableDocumentPart extends StateDocumentPart, Placeable
      * @return List of int arrays containing the spaces used.
      */
     List<int[]> getUsedSpaces(double height);
-
-    /**
-     * @return double containing the clear space required above the object.
-     */
-    double getRequiredSpaceAbove();
-
-    /**
-     * @return double containing the clear space required below the object.
-     */
-    double getRequiredSpaceBelow();
 }

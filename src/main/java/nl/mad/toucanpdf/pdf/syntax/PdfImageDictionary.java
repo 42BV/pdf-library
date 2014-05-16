@@ -1,7 +1,7 @@
 package nl.mad.toucanpdf.pdf.syntax;
 
-import nl.mad.toucanpdf.image.ImageParser;
 import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageParser;
 import nl.mad.toucanpdf.model.PdfNameValue;
 
 /**

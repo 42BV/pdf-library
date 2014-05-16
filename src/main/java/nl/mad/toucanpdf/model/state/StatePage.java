@@ -1,6 +1,9 @@
-package nl.mad.toucanpdf.model;
+package nl.mad.toucanpdf.model.state;
 
 import java.util.List;
+
+import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.Position;
 
 /**
  * Interface for page objects that are used in calculating the state of the document.

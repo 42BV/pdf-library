@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import nl.mad.toucanpdf.model.ColorSpace;
 import nl.mad.toucanpdf.model.Compression;
+import nl.mad.toucanpdf.model.ImageParser;
 
 /**
  * This is the default JPEG parsing implementation for the ImageParser interface.

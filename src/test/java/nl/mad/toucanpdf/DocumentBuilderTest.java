@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
-import nl.mad.toucanpdf.DocumentBuilder;
+import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.Page;
@@ -28,6 +28,14 @@ public class DocumentBuilderTest {
     @Test
     public void testCreation() {
         assertEquals(false, builder.getCreationDate() == null);
+    }
+
+    @Test
+    public void testAddPart() {
+        builder.addPart(null);
+        assertEquals(0, builder.getPageAmount());
+        builder.addPart(new BasePage(200, 200));
+        assertEquals(0, builder.getPageAmount());
     }
 
     @Test
@@ -56,13 +64,20 @@ public class DocumentBuilderTest {
     @Test
     public void testPage() {
         int expectedAmount = builder.getPageAmount() + 1;
-        builder.addPage().size(200, 200);
+        builder.setDefaultPageSize(300, 300);
+        Page page = builder.addPage();
         assertEquals("The new page has not been added correctly.", expectedAmount, builder.getPageAmount());
+        assertEquals("The default page size was set incorrectly.", 300, page.getWidth());
+        builder.setDefaultPageSize(0, 0);
         Page testPage = builder.addPage(1);
+        assertEquals("The default page size was set incorrectly.", 300, testPage.getWidth());
         assertEquals("The new page has not been added correctly on the given position. ", testPage, builder.getPage(1));
+        builder.setDefaultPageSize(100, 0);
+        testPage = builder.addPage(1);
+        assertEquals("The default page size was set incorrectly.", 300, testPage.getWidth());
         builder.addPage(0);
-        assertEquals("The new page has been added on an incorrect position. ", 2, builder.getPageAmount());
-        Page page = builder.getPage(-1);
+        assertEquals("The new page has been added on an incorrect position. ", 3, builder.getPageAmount());
+        page = builder.getPage(-1);
         assertEquals(null, page);
         page = builder.getPage(999);
         assertEquals(null, page);
@@ -91,6 +106,11 @@ public class DocumentBuilderTest {
         builder.addText("Test");
         assertEquals(3, p.getContent().size());
         assertEquals(1, p2.getContent().size());
+    }
+
+    @Test
+    public void testPreviewRetrieval() {
+        assertEquals(true, builder.getPreview() != null);
     }
 
     @Test

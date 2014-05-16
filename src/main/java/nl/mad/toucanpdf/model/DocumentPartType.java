@@ -5,5 +5,10 @@ package nl.mad.toucanpdf.model;
  * @author Dylan de Wolff
  */
 public enum DocumentPartType {
-    TEXT, IMAGE, PARAGRAPH, FONT, PAGE
+    TEXT,
+    IMAGE,
+    PARAGRAPH,
+    FONT,
+    PAGE,
+    TABLE
 }

@@ -1,6 +1,8 @@
-package nl.mad.toucanpdf.model;
+package nl.mad.toucanpdf.model.state;
 
 import java.util.List;
+
+import nl.mad.toucanpdf.model.Paragraph;
 
 /**
  * Interface for paragraph objects that are used in calculating the state of the document.

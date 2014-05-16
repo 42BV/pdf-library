@@ -6,21 +6,26 @@ import java.util.List;
 import java.util.Map;
 
 import nl.mad.toucanpdf.font.parser.AfmParser;
+import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.StateDocumentPart;
-import nl.mad.toucanpdf.model.StatePage;
-import nl.mad.toucanpdf.model.StateParagraph;
-import nl.mad.toucanpdf.model.StatePlaceableDocumentPart;
-import nl.mad.toucanpdf.model.StateText;
+import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.state.StateDocumentPart;
+import nl.mad.toucanpdf.model.state.StateImage;
+import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateParagraph;
+import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
+import nl.mad.toucanpdf.model.state.StateTable;
+import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.state.BaseStateImage;
 import nl.mad.toucanpdf.state.BaseStatePage;
 import nl.mad.toucanpdf.state.BaseStateParagraph;
+import nl.mad.toucanpdf.state.BaseStateTable;
 import nl.mad.toucanpdf.state.BaseStateText;
 
 import org.slf4j.Logger;
@@ -114,10 +119,20 @@ public class DocumentState {
                 addToStateLink(part, paragraph);
                 break;
             case IMAGE:
-                StatePlaceableDocumentPart image = new BaseStateImage((Image) part);
-                image.setOriginalObject(image);
+                StateImage image = new BaseStateImage((Image) part);
+                image.setOriginalObject(part);
+                image.processContentSize(page);
                 page.add(image);
                 addToStateLink(part, image);
+            case TABLE:
+                //TODO: Table fix stuff!
+                StateTable table = new BaseStateTable((Table) part);
+                for (Cell c : ((Table) part).getContent()) {
+                    table.addCell(c);
+                }
+                table.setOriginalObject(part);
+                table.processContentSize(page);
+                page.add(table);
             default:
                 break;
             }
@@ -146,6 +161,9 @@ public class DocumentState {
             case IMAGE:
                 overflow = addPositionlessImage(content, page, i, p);
                 break;
+            case TABLE:
+                overflow = addPositionlessTable(content, page, i, p);
+                break;
             default:
                 page.add(p);
                 break;
@@ -158,6 +176,25 @@ public class DocumentState {
         return null;
     }
 
+    private Page addPositionlessTable(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
+        //TODO: These 4 methods can probably be simplified
+        Position position;
+        StateTable table = new BaseStateTable((Table) p);
+        for (Cell c : ((Table) p).getContent()) {
+            table.addCell(c);
+        }
+        table.setOriginalObject(p);
+        position = getPositionForPart(page, table);
+        if (position == null) {
+            return handleOverflow(page, i, null, content);
+        }
+        table.on(position);
+        table.processContentSize(page);
+        page.add(table);
+        addToStateLink(p, table);
+        return null;
+    }
+
     /**
      * Adds the given part to the page.
      * @param content Content to be added.
@@ -166,7 +203,6 @@ public class DocumentState {
      * @param p part to add.
      */
     private Page addPositionlessImage(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
-        //TODO: These 3 methodes can probably be simplified
         Position position;
         BaseStateImage image = new BaseStateImage((Image) p);
         image.setOriginalObject(p);

@@ -7,7 +7,7 @@ import nl.mad.toucanpdf.model.PdfNameValue;
  * @author Dylan de Wolff
  *
  */
-public class PdfXObject extends PdfStream {
+public abstract class PdfXObject extends PdfStream {
 
     /**
      * Creates a new instance of PdfXObject.

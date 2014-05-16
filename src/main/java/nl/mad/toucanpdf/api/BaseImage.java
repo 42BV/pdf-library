@@ -2,12 +2,12 @@ package nl.mad.toucanpdf.api;
 
 import java.io.InputStream;
 
-import nl.mad.toucanpdf.image.ImageParser;
 import nl.mad.toucanpdf.image.JPEG;
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageParser;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;

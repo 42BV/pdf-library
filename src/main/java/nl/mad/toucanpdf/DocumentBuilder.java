@@ -9,13 +9,13 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import nl.mad.toucanpdf.api.Anchor;
 import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BaseImage;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.api.BaseParagraph;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.api.DocumentState;
+import nl.mad.toucanpdf.model.Anchor;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;

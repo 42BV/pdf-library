@@ -11,8 +11,8 @@ import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.StatePage;
-import nl.mad.toucanpdf.model.StatePlaceableDocumentPart;
+import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 /**

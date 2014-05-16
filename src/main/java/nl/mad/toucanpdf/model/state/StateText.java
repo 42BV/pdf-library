@@ -1,19 +1,14 @@
-package nl.mad.toucanpdf.model;
+package nl.mad.toucanpdf.model.state;
 
-import java.util.Map;
+import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.Text;
 
 /**
  * Interface for text objects that are used in calculating the state of the document.
  * 
  * @author Dylan de Wolff
  */
-public interface StateText extends Text, StatePlaceableDocumentPart {
-
-    /**
-     * Returns map of positions and strings, each string represents a single line in the document based on the text from this object.
-     * @return Map<Position, String> String map containing the lines and position of the lines.
-     */
-    Map<Position, String> getTextSplit();
+public interface StateText extends Text, StatePlaceableDocumentPart, StateSplittableText {
 
     /**
      * Processes the text to check how the text will be divided into lines and where exactly the text is going to be positioned. 
@@ -31,9 +26,4 @@ public interface StateText extends Text, StatePlaceableDocumentPart {
      */
     double getContentHeightUnderBaseLine(Page page);
 
-    /**
-     * Returns map containing the justification offset per line.
-     * @return Map containing the offset per line.
-     */
-    Map<Position, Double> getJustificationOffset();
 }

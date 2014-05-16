@@ -1,4 +1,6 @@
-package nl.mad.toucanpdf.model;
+package nl.mad.toucanpdf.model.state;
+
+import nl.mad.toucanpdf.model.DocumentPart;
 
 /**
  * This interface specifies the methods that should be implemented by all document parts that are stored in the preview state.

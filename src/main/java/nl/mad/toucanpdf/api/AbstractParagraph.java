@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Anchor;
+import nl.mad.toucanpdf.model.AnchorLocation;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
@@ -42,7 +44,7 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
 
     @Override
     public Anchor addAnchor(PlaceableFixedSizeDocumentPart part) {
-        Anchor a = new Anchor(part);
+        Anchor a = new BaseAnchor(part);
         return addAnchor(a);
     }
 

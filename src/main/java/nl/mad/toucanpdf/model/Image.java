@@ -1,7 +1,6 @@
 package nl.mad.toucanpdf.model;
 
 import nl.mad.toucanpdf.api.BaseImage;
-import nl.mad.toucanpdf.image.ImageParser;
 
 /**
  * This interface specifies which methods any Image class should implement. 

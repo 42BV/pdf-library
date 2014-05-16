@@ -16,24 +16,28 @@ import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.PdfNameValue;
-import nl.mad.toucanpdf.model.StatePage;
-import nl.mad.toucanpdf.model.StateParagraph;
-import nl.mad.toucanpdf.model.StatePlaceableDocumentPart;
-import nl.mad.toucanpdf.model.StateText;
+import nl.mad.toucanpdf.model.state.StateCell;
+import nl.mad.toucanpdf.model.state.StateCellContent;
+import nl.mad.toucanpdf.model.state.StateImage;
+import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateParagraph;
+import nl.mad.toucanpdf.model.state.StateSplittableText;
+import nl.mad.toucanpdf.model.state.StateTable;
+import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.pdf.syntax.PdfDictionary;
 import nl.mad.toucanpdf.pdf.syntax.PdfFile;
 import nl.mad.toucanpdf.pdf.syntax.PdfFont;
 import nl.mad.toucanpdf.pdf.syntax.PdfFontDescriptor;
 import nl.mad.toucanpdf.pdf.syntax.PdfFontProgram;
-import nl.mad.toucanpdf.pdf.syntax.PdfGraphicsState;
+import nl.mad.toucanpdf.pdf.syntax.PdfImage;
 import nl.mad.toucanpdf.pdf.syntax.PdfImageDictionary;
 import nl.mad.toucanpdf.pdf.syntax.PdfIndirectObject;
 import nl.mad.toucanpdf.pdf.syntax.PdfObjectType;
 import nl.mad.toucanpdf.pdf.syntax.PdfPage;
 import nl.mad.toucanpdf.pdf.syntax.PdfStream;
 import nl.mad.toucanpdf.pdf.syntax.PdfString;
+import nl.mad.toucanpdf.pdf.syntax.PdfTable;
 import nl.mad.toucanpdf.pdf.syntax.PdfText;
-import nl.mad.toucanpdf.state.BaseStateImage;
 import nl.mad.toucanpdf.utility.Constants;
 
 /**
@@ -90,8 +94,12 @@ public class PdfDocument {
                 this.addPage((StatePage) part);
             }
         case IMAGE:
-            if (part instanceof StatePlaceableDocumentPart) {
-                this.addImage((BaseStateImage) part);
+            if (part instanceof StateImage) {
+                this.addImage((StateImage) part);
+            }
+        case TABLE:
+            if (part instanceof StateTable) {
+                this.addTable((StateTable) part);
             }
         default:
             break;
@@ -108,6 +116,28 @@ public class PdfDocument {
         }
     }
 
+    private void addTable(StateTable part) {
+        PdfTable table = new PdfTable(part);
+        PdfStream stream = this.getCurrentPageStream();
+        stream.add(table);
+        for (StateCell c : part.getStateCellCollection()) {
+            StateCellContent content = c.getStateCellContent();
+            if (content != null) {
+                switch (content.getType()) {
+                case IMAGE:
+                    addImage((Image) content);
+                    break;
+                case TEXT:
+                    StateSplittableText text = (StateSplittableText) content;
+                    this.addText(text, false);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
     private void addImage(Image part) {
         ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
         PdfIndirectObject imageRef = imageList.get(buffer);
@@ -118,7 +148,7 @@ public class PdfDocument {
         }
         this.getCurrentPage().addResource(imageRef);
         PdfStream stream = this.getCurrentPageStream();
-        stream.add(new PdfGraphicsState(imageRef.getReference().getResourceReference(), part));
+        stream.add(new PdfImage(imageRef.getReference().getResourceReference(), part));
         stream.addFilter(part.getCompressionMethod());
     }
 
@@ -145,7 +175,7 @@ public class PdfDocument {
      * @param overrideMatrix if true the matrix of the text will be disregarded. This should be true when the new text object has the same
      * matrix as the text object before it.
      */
-    private void addText(StateText text, boolean overrideMatrix) {
+    private void addText(StateSplittableText text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
         currentPage.add(font);
         PdfText pdfText = new PdfText();

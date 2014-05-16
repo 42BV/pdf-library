@@ -3,6 +3,7 @@ package nl.mad.toucanpdf.api;
 import java.util.LinkedList;
 import java.util.List;
 
+import nl.mad.toucanpdf.model.Anchor;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
@@ -49,7 +50,7 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
                 Text newText = new BaseText(t);
                 textCollection.add(newText);
                 for (Anchor a : p.getAnchorsOn(t)) {
-                    this.addAnchor(new Anchor(a, newText));
+                    this.addAnchor(new BaseAnchor(a, newText));
                 }
             }
         }
@@ -62,6 +63,7 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
         return this;
     }
 
+    @Override
     public List<Text> getTextCollection() {
         return this.textCollection;
     }

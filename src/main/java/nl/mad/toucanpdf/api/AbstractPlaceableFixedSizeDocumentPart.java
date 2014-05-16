@@ -13,11 +13,11 @@ public abstract class AbstractPlaceableFixedSizeDocumentPart extends AbstractPla
     /**
      * Height of the object.
      */
-    protected int height;
+    protected double height;
     /**
      * Width of the object.
      */
-    protected int width;
+    protected double width;
 
     /**
      * Creates a new instance with the given type.
@@ -28,12 +28,12 @@ public abstract class AbstractPlaceableFixedSizeDocumentPart extends AbstractPla
     }
 
     @Override
-    public int getWidth() {
+    public double getWidth() {
         return this.width;
     }
 
     @Override
-    public int getHeight() {
+    public double getHeight() {
         return this.height;
     }
 

@@ -1,6 +1,5 @@
 package nl.mad.toucanpdf.model;
 
-import nl.mad.toucanpdf.image.ImageParser;
 
 /**
  * This enum is used to specify the color space that an image uses.

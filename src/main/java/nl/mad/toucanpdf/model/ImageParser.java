@@ -1,7 +1,5 @@
-package nl.mad.toucanpdf.image;
+package nl.mad.toucanpdf.model;
 
-import nl.mad.toucanpdf.model.ColorSpace;
-import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.pdf.syntax.PdfImageDictionary;
 
 /**
