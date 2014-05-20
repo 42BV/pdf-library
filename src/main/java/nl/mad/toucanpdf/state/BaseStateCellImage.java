@@ -36,16 +36,18 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     }
 
     @Override
-    public double calculateContentHeight(double availableWidth, double leading, Position position) {
+    public double calculateContentHeight(double availableWidth, double leading, Position position, boolean processPositioning) {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         double requiredHeight = requiredSpaceAbove + requiredSpaceBelow;
+        if(processPositioning) {
         Position pos = new Position(position);
         pos.adjustY(-requiredSpaceAbove);
         this.setPosition(pos);
         //        if (processAlignment) {
         //            this.processAlignment(pos, availableWidth);
         //        }
+        }
         return requiredHeight;
     }
 

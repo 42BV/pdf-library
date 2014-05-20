@@ -89,36 +89,54 @@ public class BaseStateImage extends BaseImage implements StateImage {
     }
 
     @Override
-    public void processContentSize(StatePage page) {
-        this.processContentSize(page, this.wrappingAllowed(), true);
+    public boolean processContentSize(StatePage page) {
+        return this.processContentSize(page, this.wrappingAllowed(), true);
     }
 
     @Override
-    public void processContentSize(StatePage page, boolean wrapping, boolean processAlignment) {
+    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment) {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         Position pos = new Position(this.getPosition());
-        List<int[]> openSpaces = page.getOpenSpacesOn(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow());
-        int i = 0;
+        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow());
         boolean imagePositioned = false;
-        while (!imagePositioned && i < openSpaces.size()) {
-            int[] openSpace = openSpaces.get(i);
-            if (pos.getX() < openSpace[0]) {
-                pos.setX(openSpace[0]);
-            }
-            int openSpaceWidth = (openSpace[1] - openSpace[0]);
-            if (openSpaceWidth >= this.getWidth() && (page.getAvailableHeight(pos, requiredSpaceAbove, requiredSpaceBelow) >= this.getHeight())) {
-                imagePositioned = true;
-                if (processAlignment) {
-                    this.processAlignment(pos, openSpaceWidth);
-                }
-                this.setPosition(pos);
-            }
-            ++i;
+        while(pos != null && !imagePositioned) {
+            int i = 0;
+            System.out.println(openSpaces.size());
+	        while (!imagePositioned && i < openSpaces.size()) {
+	            int[] openSpace = openSpaces.get(i);
+	            if (pos.getX() < openSpace[0]) {
+	                pos.setX(openSpace[0]);
+	            }
+	            int openSpaceWidth = (openSpace[1] - openSpace[0]);
+	            System.out.println(openSpaceWidth);
+	            	            System.out.println(openSpaceWidth >= this.getWidth());
+	            	            System.out.println((page.getAvailableHeight(pos, requiredSpaceAbove, requiredSpaceBelow) >= this.getHeight()));
+	            	            System.out.println("Available hieght: " + (page.getAvailableHeight(pos, requiredSpaceAbove, requiredSpaceBelow)));
+	            if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
+	            	System.out.println("Yep");
+	                imagePositioned = true;
+	                if (processAlignment) {
+	                    this.processAlignment(pos, openSpaceWidth);
+	                }
+	                this.setPosition(pos);
+	            }
+	            ++i;
+	        }
+        System.out.println("looking for iamge pos");
+        requiredSpaceAbove += page.getLeading();
+        	pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this.width);
+        	System.out.println(pos);
+        	openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow());
         }
+        if(pos != null) {
         if (!wrapping) {
             adjustFilledHeight(page);
+        } }
+        else {
+        	return true;
         }
+        return false;
     }
 
     private void adjustFilledHeight(StatePage page) {

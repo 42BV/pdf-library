@@ -11,4 +11,12 @@ public interface StateCell extends Cell {
     Cell setPosition(Position position);
 
     StateCellContent getStateCellContent();
+
+	void processContentSize(double leading);
+
+	boolean isFiller();
+
+	Cell setFiller(boolean filler);
+
+	void setContent(StateCellContent content);
 }

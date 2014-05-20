@@ -35,8 +35,11 @@ public class Position {
      * @param position Position to copy.
      */
     public Position(Position position) {
+    	this();
+    	if(position !=  null) {
         this.x = position.getX();
         this.y = position.getY();
+    	}
     }
 
     public double getX() {

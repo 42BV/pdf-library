@@ -25,7 +25,7 @@ public class BaseStateCellText extends AbstractStateSplittableText implements St
     private DocumentPart originalObject;
 
     @Override
-    public double calculateContentHeight(double availableWidth, double leading, Position position) {
+    public double calculateContentHeight(double availableWidth, double leading, Position position, boolean processPositioning) {
         textSplit = new LinkedHashMap<Position, String>();
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
         leading += getRequiredSpaceBelow();
@@ -34,29 +34,36 @@ public class BaseStateCellText extends AbstractStateSplittableText implements St
         FontMetrics metrics = getFont().getMetrics();
         StringBuilder currentLine = new StringBuilder();
         Position pos = new Position(position);
+        int lineAdditions = 0;
 
         for (int i = 0; i < strings.size(); ++i) {
             String s = strings.get(i);
             double oldWidth = width;
             width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
-            System.out.println("Width = " + width);
             if (width > availableWidth) {
                 String line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
-                pos.adjustY(-(getRequiredSpaceAbove() + leading));
-                textSplit.put(new Position(pos.getX(), pos.getY()), line);
-                pos.adjustY(-getRequiredSpaceBelow());
+                processLineAddition(processPositioning, pos, leading, currentLine.toString());
+                lineAdditions += 1;
                 width = 0;
                 currentLine = new StringBuilder();
             } else if (i == (strings.size() - 1)) {
                 currentLine.append(s);
-                pos.adjustY(-(getRequiredSpaceAbove() + leading));
-                textSplit.put(new Position(pos.getX(), pos.getY()), currentLine.toString());
-                pos.adjustY(-getRequiredSpaceBelow());
+                processLineAddition(processPositioning, pos, leading, currentLine.toString());
+                lineAdditions += 1;
             } else {
                 currentLine.append(s + " ");
             }
         }
-        return textSplit.size() * (leading + this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow());
+        return lineAdditions * (leading + this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow());
+    }
+    
+    private void processLineAddition(boolean processPositioning, Position pos, double leading, String line) {
+    	if(processPositioning) {
+    		System.out.println("Processing content size of text " + pos);
+        pos.adjustY(-(getRequiredSpaceAbove() + leading));
+        textSplit.put(new Position(pos.getX(), pos.getY()), line);
+        pos.adjustY(-getRequiredSpaceBelow());
+    	}
     }
 
     private String processCutOff(StringBuilder currentLine, String currentString, double currentWidth, double availableWidth, List<String> strings,

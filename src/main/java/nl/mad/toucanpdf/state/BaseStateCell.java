@@ -11,6 +11,7 @@ import nl.mad.toucanpdf.model.state.StateCellContent;
 
 public class BaseStateCell extends AbstractCell implements StateCell {
     private StateCellContent content;
+    private boolean filler;
 
     public BaseStateCell(Cell c) {
         super(c);
@@ -42,9 +43,16 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     @Override
     public double getRequiredHeight(double leading) {
         if (this.content != null) {
-            return Math.max(height, this.content.calculateContentHeight(this.getWidth(), leading, this.getPosition()));
+            return Math.max(height, this.content.calculateContentHeight(this.getWidth(), leading, this.getPosition(), false));
         }
         return height;
+    }
+    
+    @Override
+    public void processContentSize(double leading) {
+    	if(this.content != null) {
+    		this.content.calculateContentHeight(this.getWidth(), leading, this.getPosition(), true);
+    	}
     }
 
     @Override
@@ -69,5 +77,21 @@ public class BaseStateCell extends AbstractCell implements StateCell {
             return Math.max(width, this.content.getRequiredWidth());
         }
         return width;
+    }
+    
+    @Override
+    public boolean isFiller() {
+    	return this.filler;
+    }
+    
+    @Override
+    public Cell setFiller(boolean filler) {
+    	this.filler = filler;
+		return this;
+    }
+    
+    @Override
+    public void setContent(StateCellContent content) {
+    	this.content = content;
     }
 }

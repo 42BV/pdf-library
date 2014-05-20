@@ -12,6 +12,7 @@ import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
+import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
@@ -180,18 +181,25 @@ public class DocumentState {
         //TODO: These 4 methods can probably be simplified
         Position position;
         StateTable table = new BaseStateTable((Table) p);
+    	if(checkContentSize(table, page)) {
         for (Cell c : ((Table) p).getContent()) {
             table.addCell(c);
         }
         table.setOriginalObject(p);
+        table.updateHeight(page);
+        System.out.println("TABLE REQUIRED SPACE: " + table.getRequiredSpaceBelow());
         position = getPositionForPart(page, table);
         if (position == null) {
             return handleOverflow(page, i, null, content);
         }
         table.on(position);
-        table.processContentSize(page);
-        page.add(table);
-        addToStateLink(p, table);
+        if(!table.processContentSize(page)) {
+        	page.add(table);
+        	addToStateLink(p, table);
+        } else {
+            return handleOverflow(page, i, null, content);
+        }
+    	}
         return null;
     }
 
@@ -205,15 +213,21 @@ public class DocumentState {
     private Page addPositionlessImage(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
         Position position;
         BaseStateImage image = new BaseStateImage((Image) p);
+        if(checkContentSize(image, page)) {
         image.setOriginalObject(p);
         position = getPositionForPart(page, image);
         if (position == null) {
             return handleOverflow(page, i, null, content);
         }
         image.on(position);
-        image.processContentSize(page);
+        if(!image.processContentSize(page)) {
         page.add(image);
         addToStateLink(p, image);
+        
+    } else {
+        return handleOverflow(page, i, null, content);
+    }
+        } 
         return null;
     }
 
@@ -277,7 +291,6 @@ public class DocumentState {
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
         Position position = null;
         position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow());
-        System.out.println("position = " + position + ", part = " + part.getType());
         return position;
     }
 
@@ -342,6 +355,14 @@ public class DocumentState {
             }
         }
         return null;
+    }
+    
+    private boolean checkContentSize(PlaceableFixedSizeDocumentPart part, Page page) {
+    	if(part.getWidth() > page.getWidthWithoutMargins() || part.getHeight() > page.getHeightWithoutMargins()) {
+    		LOGGER.warn("The given document part of type: " + part.getType() + " is too large to fit on the page and has therefore been removed from the document.");
+    		return false;
+    	} 
+		return true;    	
     }
 
     /**

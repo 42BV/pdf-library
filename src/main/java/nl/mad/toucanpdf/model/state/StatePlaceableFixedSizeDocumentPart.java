@@ -11,7 +11,7 @@ public interface StatePlaceableFixedSizeDocumentPart extends StatePlaceableDocum
      * Processes the size of the part and positions it accordingly.
      * @param page The page to add the part to.
      */
-    void processContentSize(StatePage page);
+    boolean processContentSize(StatePage page);
 
     /**
      * Processes the size of the part and positions it accordingly.
@@ -19,6 +19,6 @@ public interface StatePlaceableFixedSizeDocumentPart extends StatePlaceableDocum
      * @param wrapping Whether wrapping around the part should be allowed.
      * @param processAlignment Whether alignment should be applied.
      */
-    void processContentSize(StatePage page, boolean wrapping, boolean processAlignment);
+    boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment);
 
 }

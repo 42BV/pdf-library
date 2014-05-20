@@ -26,8 +26,6 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
  * @author Dylan de Wolff
  */
 public class BaseStateText extends AbstractStateSplittableText implements StateText {
-    private Map<Position, String> textSplit = new LinkedHashMap<Position, String>();
-    private Map<Position, Double> justificationOffsets = new HashMap<Position, Double>();
     private DocumentPart originalObject;
 
     /**
@@ -179,8 +177,8 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
             break;
         case JUSTIFIED:
             int wordAmount = Math.max((line.split(" ").length - 1), 0);
-            double justificationOffset = remainingWidth / wordAmount;
-            justificationOffsets.put(newPos, justificationOffset);
+            double offset = remainingWidth / wordAmount;
+            justificationOffset.put(newPos, offset);
             break;
         default:
             break;

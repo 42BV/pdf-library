@@ -2,6 +2,7 @@ package nl.mad.toucanpdf.pdf.syntax;
 
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -40,14 +41,16 @@ public class PdfTable extends PdfPath {
         System.out.println(table);
         System.out.println(table.getContent());
         if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
-            for (Cell c : table.getContent()) {
+            for (StateCell c : table.getStateCellCollection()) {
+            	//if(!c.isFiller()) {
                 Position pos = c.getPosition();
                 drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
                 System.out.println("Column: " + pos.getX() + " , " + pos.getY() + ", " + c.getWidth() + ", " + c.getHeight());
                 System.out.println("    " + (pos.getY() - c.getHeight()));
                 System.out.println("    " + c.getContent());
                 this.strokePath();
-            }
+                //}
+            }            
         }
     }
 }

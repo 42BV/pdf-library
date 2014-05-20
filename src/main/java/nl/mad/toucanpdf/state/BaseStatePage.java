@@ -239,6 +239,44 @@ public class BaseStatePage extends BasePage implements StatePage {
         }
         return openSpaces;
     }
+    
+    @Override
+    public List<int[]> getOpenSpacesIncludingHeight(Position pos,boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow) {
+    	if(pos != null) {
+    	List<int[]> openSpaces = this.getOpenSpacesOn(pos, ignoreSpacesBeforePositionWidth, requiredSpaceAbove, requiredSpaceBelow);
+    		 for (DocumentPart p : getContent()) {
+    	            if (p instanceof StatePlaceableDocumentPart) {
+    	            	StatePlaceableDocumentPart part = ((StatePlaceableDocumentPart) p);
+    	                Position position = part.getPosition();
+    	                if (position.getY() < pos.getY()) {
+    	                	for(int[] usedSpace : part.getUsedSpaces(position.getY())) {
+    	                	openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
+    	                	int i = 0;
+    	                	boolean usedSpaceAdded = false;
+    	                	while(!usedSpaceAdded && i < openSpaces.size()) {
+    	                		int[] openSpace = openSpaces.get(i);
+    	                		if(openSpace[1] == usedSpace[0]) {
+    	                			int[] newOpenSpace = new int[] {usedSpace[0], usedSpace[1], (int) (pos.getY() - position.getY())};
+    	                			openSpaces.add(openSpaces.indexOf(openSpace) + 1, newOpenSpace);
+    	                			usedSpaceAdded = true;
+    	                		}
+    	                		++i;
+    	                	}
+    	                }
+    	            }
+    	            }   	        
+    	}
+    		 for(int i = 0; i < openSpaces.size(); ++i) {
+    			 int[] openSpace = openSpaces.get(i);
+    			 if(openSpace.length != 3) {
+        			 int[] newOpenSpace = new int[] {openSpace[0], openSpace[1], (int) (pos.getY() - this.getMarginBottom())}; 
+        			 openSpaces.set(i, newOpenSpace);
+    			 }
+    		 }
+    		 return openSpaces;
+    	}
+    	return new LinkedList<int[]>();
+    }
 
     /**
      * Returns the used spaces from the given document part on the given position.

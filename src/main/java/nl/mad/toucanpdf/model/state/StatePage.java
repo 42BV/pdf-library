@@ -106,4 +106,16 @@ public interface StatePage extends StateDocumentPart, Page {
      * @return int containing the available height value.
      */
     int getAvailableHeight(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
+    
+    /**
+     * Returns the available spaces on the given line and includes the height of each open space.
+     * @param pos Position to check on.
+     * @param ignoreSpacesBeforePositionWidth Whether to ignore open spaces that come before the given position's x value.
+     * @param requiredSpaceAbove Amount of empty space required above the given position.
+     * @param requiredSpaceBelow Amount of empty space required below the given position.
+     * @return List of int arrays, each contains respectively the start, end and height of the open space..
+     */
+	List<int[]> getOpenSpacesIncludingHeight(Position pos,
+			boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove,
+			double requiredSpaceBelow);
 }
