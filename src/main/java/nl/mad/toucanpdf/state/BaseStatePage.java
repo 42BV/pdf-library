@@ -13,6 +13,7 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
+import nl.mad.toucanpdf.model.state.StateSpacing;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 /**
@@ -86,23 +87,19 @@ public class BaseStatePage extends BasePage implements StatePage {
     }
 
     @Override
-    public Position getOpenPosition() {
-        return this.getOpenPosition(0, 0);
+    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
+        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, spacing, MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
     }
 
     @Override
-    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow) {
-        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
-    }
-
-    @Override
-    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
+    public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth) {
         double posHeight = getHeight() - filledHeight - requiredSpaceAbove;
-        return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, requiredWidth);
+        return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, spacing, requiredWidth);
     }
 
     @Override
-    public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth) {
+    public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing,
+            double requiredWidth) {
         boolean openPositionFound = false;
         int marginBottom = getMarginBottom();
         double potentialHeight = positionHeight;
@@ -113,10 +110,13 @@ public class BaseStatePage extends BasePage implements StatePage {
             double potentialWidth = positionWidth + getMarginLeft();
             Position position = new Position(potentialWidth, potentialHeight);
             while (!openPositionFound) {
-                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow) > (requiredWidth)) {
+                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) > (requiredWidth)) {
                     return position;
                 }
-                if (potentialHeight <= marginBottom) {
+                System.out.println("potential height: " + potentialHeight);
+                System.out.println("Required space below: " + requiredSpaceBelow);
+                System.out.println(potentialHeight - requiredSpaceBelow <= marginBottom);
+                if (potentialHeight - requiredSpaceBelow <= marginBottom) {
                     return null;
                 }
                 potentialHeight -= getLeading();
@@ -133,18 +133,18 @@ public class BaseStatePage extends BasePage implements StatePage {
      * @param requiredSpaceBelow Free space required below the given position.
      * @return double containing the width.
      */
-    private double getWidestOpenSpaceOn(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
+    private double getWidestOpenSpaceOn(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
         int maxWidth = 0;
-        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
+        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow, spacing)) {
             maxWidth = Math.max(maxWidth, openSpace[1] - openSpace[0]);
         }
         return maxWidth;
     }
 
     @Override
-    public int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
+    public int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
         int availableWidth = 0;
-        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow)) {
+        for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow, spacing)) {
             availableWidth += openSpace[1] - openSpace[0];
         }
         return availableWidth;
@@ -174,18 +174,18 @@ public class BaseStatePage extends BasePage implements StatePage {
      * @param requiredSpaceBelow Required free space below the given position.
      * @return List of document parts that overlap with the given position.
      */
-    private List<StatePlaceableDocumentPart> getPartsOnLine(Position pos, double requiredSpaceAbove, double requiredSpaceBelow) {
+    private List<StatePlaceableDocumentPart> getPartsOnLine(Position pos, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
         List<StatePlaceableDocumentPart> contentOnSameLine = new ArrayList<StatePlaceableDocumentPart>();
         List<DocumentPart> pageContent = new LinkedList<DocumentPart>(getContent());
         for (int i = 0; i < pageContent.size(); ++i) {
             DocumentPart p = pageContent.get(i);
-            if (p instanceof StatePlaceableDocumentPart) {
+            if (p instanceof StatePlaceableDocumentPart && !p.equals(spacing)) {
                 if (DocumentPartType.PARAGRAPH.equals(p.getType())) {
                     Paragraph paragraph = (Paragraph) p;
                     pageContent.addAll(i + 1, paragraph.getTextCollection());
                 } else {
                     StatePlaceableDocumentPart part = (StatePlaceableDocumentPart) p;
-                    if (onSameLine(pos, requiredSpaceAbove, requiredSpaceBelow, part)) {
+                    if (onSameLine(pos, requiredSpaceAbove, requiredSpaceBelow, spacing, part)) {
                         contentOnSameLine.add(part);
                     }
                 }
@@ -202,13 +202,18 @@ public class BaseStatePage extends BasePage implements StatePage {
      * @param part Part to compare the position with.
      * @return true if the given position overlaps with the given part, false otherwise.
      */
-    private boolean onSameLine(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StatePlaceableDocumentPart part) {
+    private boolean onSameLine(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing ignoreObj, StatePlaceableDocumentPart part) {
         if (part.getPosition().hasCustomPosition()) {
             double topLimit = part.getPosition().getY() + part.getRequiredSpaceAbove();
-            double bottomLimit = part.getPosition().getY() - part.getContentHeight(this) + part.getRequiredSpaceAbove();
+            double bottomLimit = part.getPosition().getY() - part.getContentHeight(this) - part.getMarginBottom();// + part.getRequiredSpaceAbove();
             double y = position.getY();
             double positionTopLimit = y + requiredSpaceAbove;
             double positionBottomLimit = y - requiredSpaceBelow;
+            System.out.println("    Top Limit: " + topLimit);
+            System.out.println("    Bottom Limit: " + bottomLimit);
+            System.out.println("    Y: " + y);
+            System.out.println("    positionTopLimit: " + positionTopLimit);
+            System.out.println("    positionBottomLimit: " + positionBottomLimit);
 
             if ((FloatEqualityTester.lessThanOrEqualTo(y, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit))
                     || (FloatEqualityTester.greaterThanOrEqualTo(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThanOrEqualTo(positionTopLimit,
@@ -222,16 +227,17 @@ public class BaseStatePage extends BasePage implements StatePage {
     }
 
     @Override
-    public List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow) {
-        List<StatePlaceableDocumentPart> parts = this.getPartsOnLine(pos, requiredSpaceAbove, requiredSpaceBelow);
+    public List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
+            StateSpacing spacing) {
+        List<StatePlaceableDocumentPart> parts = this.getPartsOnLine(pos, requiredSpaceAbove, requiredSpaceBelow, spacing);
         List<int[]> openSpaces = new ArrayList<int[]>();
 
         //this might cause trouble with fixed position stuff beyond the margins
         int startingPoint = getMarginLeft();
         if (ignoreSpacesBeforePositionWidth) {
-            startingPoint = (int) pos.getX();
+            startingPoint = (int) (pos.getX() + spacing.getRequiredSpaceLeft());
         }
-        openSpaces.add(new int[] { startingPoint, (getWidth() - getMarginRight()) });
+        openSpaces.add(new int[] { startingPoint, (int) ((getWidth() - getMarginRight()) - spacing.getRequiredSpaceRight()) });
         for (StatePlaceableDocumentPart part : parts) {
             for (int[] usedSpace : getUsedSpacesFrom(part, pos, requiredSpaceAbove, requiredSpaceBelow)) {
                 openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
@@ -239,43 +245,45 @@ public class BaseStatePage extends BasePage implements StatePage {
         }
         return openSpaces;
     }
-    
+
     @Override
-    public List<int[]> getOpenSpacesIncludingHeight(Position pos,boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow) {
-    	if(pos != null) {
-    	List<int[]> openSpaces = this.getOpenSpacesOn(pos, ignoreSpacesBeforePositionWidth, requiredSpaceAbove, requiredSpaceBelow);
-    		 for (DocumentPart p : getContent()) {
-    	            if (p instanceof StatePlaceableDocumentPart) {
-    	            	StatePlaceableDocumentPart part = ((StatePlaceableDocumentPart) p);
-    	                Position position = part.getPosition();
-    	                if (position.getY() < pos.getY()) {
-    	                	for(int[] usedSpace : part.getUsedSpaces(position.getY())) {
-    	                	openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
-    	                	int i = 0;
-    	                	boolean usedSpaceAdded = false;
-    	                	while(!usedSpaceAdded && i < openSpaces.size()) {
-    	                		int[] openSpace = openSpaces.get(i);
-    	                		if(openSpace[1] == usedSpace[0]) {
-    	                			int[] newOpenSpace = new int[] {usedSpace[0], usedSpace[1], (int) (pos.getY() - position.getY())};
-    	                			openSpaces.add(openSpaces.indexOf(openSpace) + 1, newOpenSpace);
-    	                			usedSpaceAdded = true;
-    	                		}
-    	                		++i;
-    	                	}
-    	                }
-    	            }
-    	            }   	        
-    	}
-    		 for(int i = 0; i < openSpaces.size(); ++i) {
-    			 int[] openSpace = openSpaces.get(i);
-    			 if(openSpace.length != 3) {
-        			 int[] newOpenSpace = new int[] {openSpace[0], openSpace[1], (int) (pos.getY() - this.getMarginBottom())}; 
-        			 openSpaces.set(i, newOpenSpace);
-    			 }
-    		 }
-    		 return openSpaces;
-    	}
-    	return new LinkedList<int[]>();
+    public List<int[]> getOpenSpacesIncludingHeight(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove,
+            double requiredSpaceBelow, StateSpacing spacing) {
+        if (pos != null) {
+            List<int[]> openSpaces = this.getOpenSpacesOn(pos, ignoreSpacesBeforePositionWidth, requiredSpaceAbove, requiredSpaceBelow, spacing);
+            for (DocumentPart p : getContent()) {
+                if (p instanceof StatePlaceableDocumentPart) {
+                    StatePlaceableDocumentPart part = ((StatePlaceableDocumentPart) p);
+                    Position position = part.getPosition();
+                    if (position.getY() < pos.getY()) {
+                        for (int[] usedSpace : part.getUsedSpaces(position.getY(), this.getWidth())) {
+                            openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
+                            int i = 0;
+                            boolean usedSpaceAdded = false;
+                            while (!usedSpaceAdded && i < openSpaces.size()) {
+                                int[] openSpace = openSpaces.get(i);
+                                if (openSpace[1] == usedSpace[0]) {
+                                    int[] newOpenSpace = new int[] { usedSpace[0], usedSpace[1], (int) (pos.getY() - position.getY()) };
+                                    openSpaces.add(openSpaces.indexOf(openSpace) + 1, newOpenSpace);
+                                    usedSpaceAdded = true;
+                                }
+                                ++i;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < openSpaces.size(); ++i) {
+                int[] openSpace = openSpaces.get(i);
+                //if the open spaces does not include height of the open space
+                if (openSpace.length != 3) {
+                    int[] newOpenSpace = new int[] { openSpace[0], openSpace[1], (int) (pos.getY() - this.getMarginBottom()) };
+                    openSpaces.set(i, newOpenSpace);
+                }
+            }
+            return openSpaces;
+        }
+        return new LinkedList<int[]>();
     }
 
     /**
@@ -290,7 +298,7 @@ public class BaseStatePage extends BasePage implements StatePage {
         List<int[]> usedSpaces = new ArrayList<int[]>();
         double[] heights = new double[] { pos.getY(), pos.getY() + requiredSpaceAbove, pos.getY() - requiredSpaceBelow };
         for (double y : heights) {
-            usedSpaces.addAll(part.getUsedSpaces(y));
+            usedSpaces.addAll(part.getUsedSpaces(y, this.getWidth()));
         }
         return usedSpaces;
     }

@@ -52,6 +52,34 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      */
     Table allowWrapping(boolean isWrappable);
 
+    /**
+     * Sets the top margin of the table.
+     * @param marginTop the top margin to set
+     * @return This table.
+     */
+    Table marginTop(int marginTop);
+
+    /**
+     * Sets the bottom margin of the image.
+     * @param marginBottom the bottom margin to set
+     * @return This image.
+     */
+    Table marginBottom(int marginBottom);
+
+    /**
+     * Sets the right margin of the table.
+     * @param marginRight the right margin to set
+     * @return This table.
+     */
+    Table marginRight(int marginRight);
+
+    /**
+     * Sets the left margin of the table.
+     * @param marginLeft the left margin to set
+     * @return This table.
+     */
+    Table marginLeft(int marginLeft);
+
     Cell addCell(PlaceableDocumentPart part);
 
     Cell addCell(String s);

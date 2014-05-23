@@ -7,5 +7,7 @@ import nl.mad.toucanpdf.model.Table;
 public interface StateTable extends Table, StatePlaceableFixedSizeDocumentPart {
     List<StateCell> getStateCellCollection();
 
-	void updateHeight(StatePage page);
+    boolean updateHeight(StatePage page);
+
+    void removeContent();
 }

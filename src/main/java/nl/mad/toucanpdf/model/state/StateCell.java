@@ -4,7 +4,7 @@ import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
 
 public interface StateCell extends Cell {
-    double getRequiredHeight(double leading);
+    double getRequiredHeight(double leading, double borderWidth);
 
     double getRequiredWidth();
 
@@ -12,11 +12,7 @@ public interface StateCell extends Cell {
 
     StateCellContent getStateCellContent();
 
-	void processContentSize(double leading);
+    void processContentSize(double leading, double borderWidth);
 
-	boolean isFiller();
-
-	Cell setFiller(boolean filler);
-
-	void setContent(StateCellContent content);
+    void setContent(StateCellContent content);
 }

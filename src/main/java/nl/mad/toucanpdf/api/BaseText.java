@@ -56,13 +56,17 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         super(DocumentPartType.TEXT);
         this.textString = copyFrom.getText();
         this.font = copyFrom.getFont();
-        this.setPosition(copyFrom.getPosition());
         this.textSize = copyFrom.getTextSize();
         this.scaleX = copyFrom.getScaleX();
         this.scaleY = copyFrom.getScaleY();
         this.shearX = copyFrom.getShearX();
         this.shearY = copyFrom.getShearY();
         this.setAlignment(copyFrom.getAlignment());
+        this.setPosition(copyFrom.getPosition());
+        this.marginBottom = copyFrom.getMarginBottom();
+        this.marginLeft = copyFrom.getMarginLeft();
+        this.marginTop = copyFrom.getMarginTop();
+        this.marginRight = copyFrom.getMarginRight();
     }
 
     @Override
@@ -203,5 +207,29 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     @Override
     public Compression getCompressionMethod() {
         return this.compressionMethod;
+    }
+
+    @Override
+    public Text marginTop(int marginTop) {
+        this.setMarginTop(marginTop);
+        return this;
+    }
+
+    @Override
+    public Text marginBottom(int marginBottom) {
+        this.setMarginBottom(marginBottom);
+        return this;
+    }
+
+    @Override
+    public Text marginRight(int marginRight) {
+        this.setMarginRight(marginRight);
+        return this;
+    }
+
+    @Override
+    public Text marginLeft(int marginLeft) {
+        this.setMarginLeft(marginLeft);
+        return this;
     }
 }

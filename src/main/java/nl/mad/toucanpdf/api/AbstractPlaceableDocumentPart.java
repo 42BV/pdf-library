@@ -14,6 +14,10 @@ import nl.mad.toucanpdf.model.Position;
 public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart implements PlaceableDocumentPart {
     private Position position;
     private Alignment alignment = Alignment.LEFT;
+    protected int marginLeft = 0;
+    protected int marginRight = 0;
+    protected int marginTop = 0;
+    protected int marginBottom = 0;
 
     /**
      * Creates a new instance of AbstractPlaceableDocumentPart.
@@ -41,5 +45,53 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
 
     protected void setAlignment(Alignment alignment) {
         this.alignment = alignment;
+    }
+
+    @Override
+    public int getMarginLeft() {
+        return this.marginLeft;
+    }
+
+    @Override
+    public int getMarginRight() {
+        return this.marginRight;
+    }
+
+    @Override
+    public int getMarginTop() {
+        return this.marginTop;
+    }
+
+    @Override
+    public int getMarginBottom() {
+        return this.marginBottom;
+    }
+
+    @Override
+    public void setMarginLeft(int marginLeft) {
+        if (marginLeft >= 0) {
+            this.marginLeft = marginLeft;
+        }
+    }
+
+    @Override
+    public void setMarginRight(int marginRight) {
+        if (marginRight >= 0) {
+            this.marginRight = marginRight;
+        }
+    }
+
+    @Override
+    public void setMarginTop(int marginTop) {
+        if (marginTop >= 0) {
+            this.marginTop = marginTop;
+        }
+    }
+
+    @Override
+    public void setMarginBottom(int marginBottom) {
+        if (marginBottom >= 0) {
+            this.marginBottom = marginBottom;
+        }
     }
 }

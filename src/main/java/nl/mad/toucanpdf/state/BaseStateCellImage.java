@@ -27,12 +27,12 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
 
     @Override
     public double getRequiredSpaceAbove() {
-        return 0;
+        return marginTop;
     }
 
     @Override
     public double getRequiredSpaceBelow() {
-        return this.height;
+        return this.height + marginBottom;
     }
 
     @Override
@@ -40,19 +40,28 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         double requiredHeight = requiredSpaceAbove + requiredSpaceBelow;
-        if(processPositioning) {
-        Position pos = new Position(position);
-        pos.adjustY(-requiredSpaceAbove);
-        this.setPosition(pos);
-        //        if (processAlignment) {
-        //            this.processAlignment(pos, availableWidth);
-        //        }
+        availableWidth -= marginRight + marginLeft;
+        if (processPositioning) {
+            Position pos = new Position(position);
+            pos.adjustX(marginLeft);
+            pos.adjustY(-requiredSpaceAbove);
+            this.setPosition(pos);
         }
         return requiredHeight;
     }
 
     @Override
     public double getRequiredWidth() {
-        return this.width;
+        return this.width + marginLeft + marginRight;
+    }
+
+    @Override
+    public double getRequiredSpaceLeft() {
+        return this.marginLeft;
+    }
+
+    @Override
+    public double getRequiredSpaceRight() {
+        return this.marginRight;
     }
 }

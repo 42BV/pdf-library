@@ -39,7 +39,6 @@ public class PdfStream extends PdfDictionary {
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
     private List<Compression> filterList = new LinkedList<Compression>();
-    //somehow limit this to objects that are actually supposed to be part of the contents?
     private List<AbstractPdfObject> contents;
 
     /**

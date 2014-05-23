@@ -89,4 +89,32 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @return this image instance.
      */
     Image allowWrapping(boolean isWrappable);
+
+    /**
+     * Sets the top margin of the image.
+     * @param marginTop the top margin to set
+     * @return This image.
+     */
+    Image marginTop(int marginTop);
+
+    /**
+     * Sets the bottom margin of the image.
+     * @param marginBottom the bottom margin to set
+     * @return This image.
+     */
+    Image marginBottom(int marginBottom);
+
+    /**
+     * Sets the right margin of the image.
+     * @param marginRight the right margin to set
+     * @return This image.
+     */
+    Image marginRight(int marginRight);
+
+    /**
+     * Sets the left margin of the image.
+     * @param marginLeft the left margin to set
+     * @return This image.
+     */
+    Image marginLeft(int marginLeft);
 }

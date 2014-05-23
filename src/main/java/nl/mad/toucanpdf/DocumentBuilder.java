@@ -13,6 +13,7 @@ import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BaseImage;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.api.BaseParagraph;
+import nl.mad.toucanpdf.api.BaseTable;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Anchor;
@@ -23,6 +24,8 @@ import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
+import nl.mad.toucanpdf.model.PlaceableDocumentPart;
+import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.pdf.structure.PdfDocument;
 
@@ -60,6 +63,10 @@ public class DocumentBuilder {
     private List<Page> pages;
     private String filename;
     private DocumentState state;
+    private int defaultMarginTop = 0;
+    private int defaultMarginLeft = 0;
+    private int defaultMarginRight = 0;
+    private int defaultMarginBottom = 10;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -96,6 +103,15 @@ public class DocumentBuilder {
             }
         }
         return this;
+    }
+
+    private void setDefaultMargins(PlaceableDocumentPart part) {
+        if (part != null) {
+            part.setMarginBottom(defaultMarginBottom);
+            part.setMarginLeft(defaultMarginLeft);
+            part.setMarginRight(defaultMarginRight);
+            part.setMarginTop(defaultMarginTop);
+        }
     }
 
     /**
@@ -341,7 +357,9 @@ public class DocumentBuilder {
      * @see Text
      */
     public Text createText(String s) {
-        return new BaseText(s);
+        Text text = new BaseText(s);
+        setDefaultMargins(text);
+        return text;
     }
 
     /**
@@ -351,8 +369,19 @@ public class DocumentBuilder {
      * @see Paragraph
      */
     public Paragraph addParagraph() {
-        Paragraph paragraph = new BaseParagraph();
+        Paragraph paragraph = createParagraph();
         this.addPart(paragraph);
+        return paragraph;
+    }
+
+    /**
+     * Creates a new paragraph object. Use the returned paragraph object to position the paragraph or add text.
+     * @return paragraph object.
+     * @see Paragraph
+     */
+    public Paragraph createParagraph() {
+        Paragraph paragraph = new BaseParagraph();
+        setDefaultMargins(paragraph);
         return paragraph;
     }
 
@@ -449,6 +478,112 @@ public class DocumentBuilder {
      * @see Anchor
      */
     public Image createImage(InputStream imageFile, ImageType format) {
-        return new BaseImage(imageFile, format);
+        Image image = new BaseImage(imageFile, format);
+        setDefaultMargins(image);
+        return image;
+    }
+
+    /**
+    * Creates a new image instance. Use the returned instance to adjust attributes of the image. 
+    * You can use this method to create images and add them to anchors without directly adding the image to the document as well.
+    * @param imageFile InputStream containing the image file to parse.
+    * @param format The format of the image.
+    * @return image object
+    * @see Anchor
+    */
+    public Image createImage(InputStream imageFile, String filename) {
+        Image image = new BaseImage(imageFile, filename);
+        setDefaultMargins(image);
+        return image;
+    }
+
+    /**
+     * Creates a new table and adds it to the document. Use the returned table object to specify the attributes of the table.
+     * @return table object.
+     * @see Table
+     */
+    public Table addTable() {
+        Table table = this.createTable();
+        this.addPart(table);
+        return table;
+    }
+
+    /**
+     * Creates a new table and returns it. 
+     * @return table object.
+     * @see Table
+     */
+    public Table createTable() {
+        Table table = new BaseTable(pages.get(currentPageNumber - 1).getWidthWithoutMargins());
+        setDefaultMargins(table);
+        return table;
+    }
+
+    /**
+     * @return the defaultMarginTop
+     */
+    public int getDefaultMarginTop() {
+        return defaultMarginTop;
+    }
+
+    /**
+     * Sets the default top margin to use for each object added to the document. 
+     * @param marginTop the defaultMarginTop to set
+     * @return the builder.
+     */
+    public DocumentBuilder setDefaultMarginTop(int marginTop) {
+        this.defaultMarginTop = marginTop;
+        return this;
+    }
+
+    /**
+     * @return the defaultMarginLeft
+     */
+    public int getDefaultMarginLeft() {
+        return defaultMarginLeft;
+    }
+
+    /**
+     * Sets the default left margin to use for each object added to the document. 
+     * @param marginLeft the defaultMarginLeft to set
+     * @return the builder.
+     */
+    public DocumentBuilder setDefaultMarginLeft(int marginLeft) {
+        this.defaultMarginLeft = marginLeft;
+        return this;
+    }
+
+    /**
+     * @return the defaultMarginRight
+     */
+    public int getDefaultMarginRight() {
+        return defaultMarginRight;
+    }
+
+    /**
+     * Sets the default right margin to use for each object added to the document. 
+     * @param marginRight the defaultMarginRight to set
+     * @return this builder.
+     */
+    public DocumentBuilder setDefaultMarginRight(int marginRight) {
+        this.defaultMarginRight = marginRight;
+        return this;
+    }
+
+    /**
+     * @return the defaultMarginBottom
+     */
+    public int getDefaultMarginBottom() {
+        return defaultMarginBottom;
+    }
+
+    /**
+     * Sets the default bottom margin to use for each object added to the document.
+     * @param marginBottom the defaultMarginBottom to set
+     * @return this builder.
+     */
+    public DocumentBuilder setDefaultMarginBottom(int marginBottom) {
+        this.defaultMarginBottom = marginBottom;
+        return this;
     }
 }

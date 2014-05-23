@@ -96,4 +96,28 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
         this.setAlignment(alignment);
         return this;
     }
+
+    @Override
+    public Paragraph marginTop(int marginTop) {
+        this.setMarginTop(marginTop);
+        return this;
+    }
+
+    @Override
+    public Paragraph marginBottom(int marginBottom) {
+        this.setMarginBottom(marginBottom);
+        return this;
+    }
+
+    @Override
+    public Paragraph marginRight(int marginRight) {
+        this.setMarginRight(marginRight);
+        return this;
+    }
+
+    @Override
+    public Paragraph marginLeft(int marginLeft) {
+        this.setMarginLeft(marginLeft);
+        return this;
+    }
 }

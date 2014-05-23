@@ -2,11 +2,10 @@ package nl.mad.toucanpdf.state;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import nl.mad.toucanpdf.model.DocumentPart;
@@ -54,18 +53,19 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
     @Override
     public StateText processContentSize(StatePage page, double positionX, boolean fixedPosition) {
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
-        double leading = page.getLeading() + getRequiredSpaceBelow();
+        double leading = page.getLeading() + getRequiredSpaceBelowLine();
         this.textSplit = new LinkedHashMap<Position, String>();
         int i = 0;
         boolean stringsProcessed = false;
         Position pos = new Position(this.getPosition());
         StateText overflowText = null;
+        System.out.println("New Text object");
 
         while (!stringsProcessed && i < strings.size()) {
             List<int[]> openSpaces = getOpenSpaces(pos, page, fixedPosition);
             i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
-            pos = handleTextAddition(page, leading, pos, positionX, fixedPosition);
-            //this might cause trouble if the final text has been added and there is no more room on the page
+            boolean isLast = (i == (strings.size() - 1));
+            pos = handleTextAddition(page, leading, pos, positionX, fixedPosition, isLast);
             if (pos == null) {
                 overflowText = handleOverflow(i, strings);
                 stringsProcessed = true;
@@ -84,10 +84,11 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
     private List<int[]> getOpenSpaces(Position pos, StatePage page, boolean fixedPosition) {
         List<int[]> openSpaces;
         if (!fixedPosition) {
-            openSpaces = page.getOpenSpacesOn(pos, true, getRequiredSpaceAbove(), getRequiredSpaceBelow());
+            System.out.println(pos);
+            openSpaces = page.getOpenSpacesOn(pos, true, getRequiredSpaceAboveLine(), getRequiredSpaceBelowLine(), this);
         } else {
             openSpaces = new ArrayList<int[]>();
-            openSpaces.add(new int[] { (int) pos.getX(), page.getWidth() - page.getMarginRight() });
+            openSpaces.add(new int[] { (int) pos.getX(), (int) (page.getWidth() - page.getMarginRight() - getRequiredSpaceRight()) });
         }
         return openSpaces;
     }
@@ -252,16 +253,21 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
      * @param fixedPosition Whether the text has a fixed position.
      * @return
      */
-    private Position handleTextAddition(StatePage page, double leading, Position pos, double positionX, boolean fixedPosition) {
+    private Position handleTextAddition(StatePage page, double leading, Position pos, double positionX, boolean fixedPosition, boolean isLast) {
         Position newPos;
         if (!fixedPosition) {
-            newPos = page.getOpenPosition(positionX, pos.getY() - leading - this.getRequiredSpaceAbove(), this.getRequiredSpaceAbove(),
-                    this.getRequiredSpaceBelow(), 0);
+            newPos = page.getOpenPosition(positionX, pos.getY() - leading - this.getRequiredSpaceAboveLine(), this.getRequiredSpaceAboveLine(),
+                    this.getRequiredSpaceBelowLine(), this, 0);
+            System.out.println("New pos: " + newPos);
             double heightDifference = (page.getHeight() - page.getFilledHeight()) - pos.getY();
-            page.setFilledHeight(page.getFilledHeight() + heightDifference + page.getLeading() + this.getRequiredSpaceBelow());
+            double spaceBelow = this.getRequiredSpaceBelowLine();
+            if (isLast) {
+                spaceBelow = this.getRequiredSpaceBelow();
+            }
+            page.setFilledHeight(page.getFilledHeight() + heightDifference + page.getLeading() + spaceBelow);
 
         } else {
-            newPos = new Position(positionX, pos.getY() - leading - this.getRequiredSpaceAbove());
+            newPos = new Position(positionX, pos.getY() - leading - this.getRequiredSpaceAboveLine());
         }
         return newPos;
     }
@@ -302,12 +308,12 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
             highestHeight = Math.max(highestHeight, posY);
             lowestHeight = Math.min(lowestHeight, posY);
         }
-        return highestHeight - lowestHeight + this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow();
+        return highestHeight - lowestHeight + this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine();
     }
 
     @Override
     public double getContentHeightUnderBaseLine(Page page) {
-        return this.getContentHeight(page) - getRequiredSpaceAbove();
+        return this.getContentHeight(page) - getRequiredSpaceAboveLine();
     }
 
     @Override
@@ -341,37 +347,64 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
      */
     private List<Entry<Position, String>> getEntriesAtHeight(double height) {
         List<Entry<Position, String>> entries = new LinkedList<Entry<Position, String>>();
+        int i = 0;
         for (Entry<Position, String> entry : textSplit.entrySet()) {
             Position linePos = entry.getKey();
-            if (FloatEqualityTester.lessThanOrEqualTo(height, linePos.getY() + this.getRequiredSpaceAbove())
-                    && FloatEqualityTester.greaterThanOrEqualTo(height, linePos.getY() - this.getRequiredSpaceBelow())) {
+            double requiredSpaceAbove = this.getRequiredSpaceAboveLine();
+            double requiredSpaceBelow = this.getRequiredSpaceBelowLine();
+            if (i == 0) {
+                requiredSpaceAbove = this.getRequiredSpaceAbove();
+            }
+            if (i == (textSplit.size() - 1)) {
+                requiredSpaceBelow = this.getRequiredSpaceBelow();
+            }
+            if (FloatEqualityTester.lessThanOrEqualTo(height, linePos.getY() + requiredSpaceAbove)
+                    && FloatEqualityTester.greaterThanOrEqualTo(height, linePos.getY() - requiredSpaceBelow)) {
                 entries.add(entry);
             }
+            ++i;
         }
         return entries;
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height) {
+    public List<int[]> getUsedSpaces(double height, int pageWidth) {
         List<int[]> spaces = new LinkedList<int[]>();
         List<Entry<Position, String>> entries = getEntriesAtHeight(height);
         FontMetrics metrics = getFont().getMetrics();
         for (int i = 0; i < entries.size(); ++i) {
             Entry<Position, String> entry = entries.get(i);
             double stringWidth = metrics.getWidthPointOfString(entry.getValue(), getTextSize(), true);
-            spaces.add(new int[] { (int) entry.getKey().getX(), (int) (entry.getKey().getX() + stringWidth) });
+            if ((entry.equals(getFirstTextSplitEntry()) && this.marginTop > 0) || (entry.equals(getLastTextSplitEntry()) && this.getMarginBottom() > 0)) {
+                spaces.add(new int[] { (int) 0, pageWidth });
+            } else {
+                spaces.add(new int[] { (int) entry.getKey().getX(), (int) (entry.getKey().getX() + stringWidth) });
+            }
         }
         return spaces;
     }
 
+    private Entry<Position, String> getFirstTextSplitEntry() {
+        return textSplit.entrySet().iterator().next();
+    }
+
+    private Entry<Position, String> getLastTextSplitEntry() {
+        Iterator<Entry<Position, String>> iterator = textSplit.entrySet().iterator();
+        Entry<Position, String> lastEntry = null;
+        while (iterator.hasNext()) {
+            lastEntry = iterator.next();
+        }
+        return lastEntry;
+    }
+
     @Override
     public double getRequiredSpaceAbove() {
-        return getFont().getMetrics().getAscentPoint() * getTextSize();
+        return this.getRequiredSpaceAboveLine() + marginTop;
     }
 
     @Override
     public double getRequiredSpaceBelow() {
-        return Math.abs(getFont().getMetrics().getDescentPoint() * getTextSize());
+        return this.getRequiredSpaceBelowLine() + marginBottom;
     }
 
     @Override
@@ -384,5 +417,15 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
     @Override
     public DocumentPart getOriginalObject() {
         return this.originalObject;
+    }
+
+    @Override
+    public double getRequiredSpaceLeft() {
+        return marginLeft;
+    }
+
+    @Override
+    public double getRequiredSpaceRight() {
+        return marginRight;
     }
 }

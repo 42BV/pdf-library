@@ -74,4 +74,32 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @return List of anchors.
      */
     List<Anchor> getAnchors();
+
+    /**
+     * Sets the top margin of the paragraph.
+     * @param marginTop the top margin to set
+     * @return This paragraph.
+     */
+    Paragraph marginTop(int marginTop);
+
+    /**
+     * Sets the bottom margin of the paragraph.
+     * @param marginBottom the bottom margin to set
+     * @return This paragraph.
+     */
+    Paragraph marginBottom(int marginBottom);
+
+    /**
+     * Sets the right margin of the paragraph.
+     * @param marginRight the right margin to set
+     * @return This paragraph.
+     */
+    Paragraph marginRight(int marginRight);
+
+    /**
+     * Sets the left margin of the paragraph.
+     * @param marginLeft the left margin to set
+     * @return This paragraph.
+     */
+    Paragraph marginLeft(int marginLeft);
 }

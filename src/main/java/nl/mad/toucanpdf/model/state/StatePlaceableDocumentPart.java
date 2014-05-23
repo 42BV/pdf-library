@@ -40,7 +40,8 @@ public interface StatePlaceableDocumentPart extends StateDocumentPart, Placeable
     /**
      * Returns a list of int arrays containing the spaces used by the text. Each int array contains the starting x value of the text and the ending x value.
      * @param height the y value where the spaces should be retrieved for.
+     * @param pageWidth the width of the page the content is on.
      * @return List of int arrays containing the spaces used.
      */
-    List<int[]> getUsedSpaces(double height);
+    List<int[]> getUsedSpaces(double height, int pageWidth);
 }

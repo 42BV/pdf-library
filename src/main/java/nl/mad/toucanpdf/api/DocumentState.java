@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import nl.mad.toucanpdf.font.parser.AfmParser;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Image;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DocumentState {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AfmParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentState.class);
     private List<Page> state = new LinkedList<Page>();
     private Map<DocumentPart, List<DocumentPart>> stateLink = new HashMap<DocumentPart, List<DocumentPart>>();
 
@@ -82,17 +81,18 @@ public class DocumentState {
     }
 
     private void addToStateLink(DocumentPart old, DocumentPart newPart) {
+        DocumentPart oldObject = old;
         //if we're dealing with an object that resulted from overflow
         if (old instanceof StateDocumentPart) {
-            this.addToStateLink(((StateDocumentPart) old).getOriginalObject(), newPart);
+            oldObject = ((StateDocumentPart) old).getOriginalObject();
         } else {
-            List<DocumentPart> results = this.stateLink.get(old);
+            List<DocumentPart> results = this.stateLink.get(oldObject);
             if (results != null) {
                 results.add(newPart);
             } else {
                 List<DocumentPart> newList = new LinkedList<DocumentPart>();
                 newList.add(newPart);
-                stateLink.put(old, newList);
+                stateLink.put(oldObject, newList);
             }
         }
     }
@@ -181,25 +181,33 @@ public class DocumentState {
         //TODO: These 4 methods can probably be simplified
         Position position;
         StateTable table = new BaseStateTable((Table) p);
-    	if(checkContentSize(table, page)) {
-        for (Cell c : ((Table) p).getContent()) {
-            table.addCell(c);
+        if (checkContentSize(table, page)) {
+            for (Cell c : ((Table) p).getContent()) {
+                table.addCell(c);
+            }
+            table.setOriginalObject(p);
+            if (table.updateHeight(page)) {
+                return handleOverflow(page, i, null, content);
+            }
+            System.out.println("TABLE REQUIRED SPACE: " + table.getRequiredSpaceBelow());
+            System.out.println("TAble height: " + table.getHeight());
+            position = getPositionForPart(page, table);
+            System.out.println("found position: " + position);
+            if (position == null) {
+                return handleOverflow(page, i, null, content);
+            }
+            table.on(position);
+            table.removeContent();
+            for (Cell c : ((Table) p).getContent()) {
+                table.addCell(c);
+            }
+            if (!table.processContentSize(page)) {
+                page.add(table);
+                addToStateLink(p, table);
+            } else {
+                return handleOverflow(page, i, null, content);
+            }
         }
-        table.setOriginalObject(p);
-        table.updateHeight(page);
-        System.out.println("TABLE REQUIRED SPACE: " + table.getRequiredSpaceBelow());
-        position = getPositionForPart(page, table);
-        if (position == null) {
-            return handleOverflow(page, i, null, content);
-        }
-        table.on(position);
-        if(!table.processContentSize(page)) {
-        	page.add(table);
-        	addToStateLink(p, table);
-        } else {
-            return handleOverflow(page, i, null, content);
-        }
-    	}
         return null;
     }
 
@@ -213,21 +221,21 @@ public class DocumentState {
     private Page addPositionlessImage(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
         Position position;
         BaseStateImage image = new BaseStateImage((Image) p);
-        if(checkContentSize(image, page)) {
-        image.setOriginalObject(p);
-        position = getPositionForPart(page, image);
-        if (position == null) {
-            return handleOverflow(page, i, null, content);
+        if (checkContentSize(image, page)) {
+            image.setOriginalObject(p);
+            position = getPositionForPart(page, image);
+            if (position == null) {
+                return handleOverflow(page, i, null, content);
+            }
+            image.on(position);
+            if (!image.processContentSize(page)) {
+                page.add(image);
+                addToStateLink(p, image);
+
+            } else {
+                return handleOverflow(page, i, null, content);
+            }
         }
-        image.on(position);
-        if(!image.processContentSize(page)) {
-        page.add(image);
-        addToStateLink(p, image);
-        
-    } else {
-        return handleOverflow(page, i, null, content);
-    }
-        } 
         return null;
     }
 
@@ -247,9 +255,9 @@ public class DocumentState {
             return handleOverflow(page, i, null, content);
         }
         paragraph.on(position);
+        System.out.println("Paragraph blabla: " + paragraph.getPosition());
         page.add(paragraph);
         addToStateLink(p, paragraph);
-        System.out.println("Paragraph blabla: " + paragraph.getPosition());
         Paragraph overflowParagraph = paragraph.processContentSize(page, false);
         if (overflowParagraph != null) {
             return handleOverflow(page, i + 1, overflowParagraph, content);
@@ -268,15 +276,16 @@ public class DocumentState {
         Position position;
         StateText text = new BaseStateText((Text) p);
         text.setOriginalObject(p);
+        System.out.println("processing text: " + text.getText());
         position = getPositionForPart(page, text);
         if (position == null) {
             return handleOverflow(page, i, null, content);
         }
         text.on(position);
-        page.add(text);
-        addToStateLink(p, text);
 
         StateText overflowText = text.processContentSize(page, 0, false);
+        page.add(text);
+        addToStateLink(p, text);
         if (overflowText != null) {
             return handleOverflow(page, i + 1, overflowText, content);
         }
@@ -290,7 +299,7 @@ public class DocumentState {
      */
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
         Position position = null;
-        position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow());
+        position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow(), part);
         return position;
     }
 
@@ -356,13 +365,15 @@ public class DocumentState {
         }
         return null;
     }
-    
+
     private boolean checkContentSize(PlaceableFixedSizeDocumentPart part, Page page) {
-    	if(part.getWidth() > page.getWidthWithoutMargins() || part.getHeight() > page.getHeightWithoutMargins()) {
-    		LOGGER.warn("The given document part of type: " + part.getType() + " is too large to fit on the page and has therefore been removed from the document.");
-    		return false;
-    	} 
-		return true;    	
+        if (part.getWidth() + part.getMarginLeft() + part.getMarginRight() > page.getWidthWithoutMargins()
+                || part.getHeight() + part.getMarginTop() + part.getMarginBottom() > page.getHeightWithoutMargins()) {
+            LOGGER.warn("The given document part of type: " + part.getType()
+                    + " is too large to fit on the page and has therefore been removed from the document.");
+            return false;
+        }
+        return true;
     }
 
     /**

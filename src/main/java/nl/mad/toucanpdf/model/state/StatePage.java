@@ -47,26 +47,22 @@ public interface StatePage extends StateDocumentPart, Page {
 
     /**
      * Calculates and returns an open position.
+     * @param requiredSpaceAbove The empty space required above the position.
+     * @param requiredSpaceBelow The empty space required below the position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @return Position that is available to use.
      */
-    Position getOpenPosition();
+    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing);
 
     /**
      * Calculates and returns an open position.
      * @param requiredSpaceAbove The empty space required above the position.
      * @param requiredSpaceBelow The empty space required below the position.
-     * @return Position that is available to use.
-     */
-    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow);
-
-    /**
-     * Calculates and returns an open position.
-     * @param requiredSpaceAbove The empty space required above the position.
-     * @param requiredSpaceBelow The empty space required below the position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @param requiredWidth The empty space required to the side of the position.
      * @return Position that is available to use.
      */
-    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
+    Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth);
 
     /**
      * Calculates and returns an open position on or after the given height and width.
@@ -74,10 +70,11 @@ public interface StatePage extends StateDocumentPart, Page {
      * @param height Height offset.
      * @param requiredSpaceAbove The empty space required above the position.
      * @param requiredSpaceBelow The empty space required below the position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @param requiredWidth The empty space required to the side of the position.
      * @return Position that is available to use.
      */
-    Position getOpenPosition(double width, double height, double requiredSpaceAbove, double requiredSpaceBelow, double requiredWidth);
+    Position getOpenPosition(double width, double height, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth);
 
     /**
      * Returns the available spaces on the given line.
@@ -85,18 +82,21 @@ public interface StatePage extends StateDocumentPart, Page {
      * @param ignoreSpacesBeforePositionWidth Whether to ignore open spaces that come before the given position's x value.
      * @param requiredSpaceAbove Amount of empty space required above the given position.
      * @param requiredSpaceBelow Amount of empty space required below the given position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @return List of int arrays, each contains the start- and end point of the space.
      */
-    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow);
+    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
+            StateSpacing spacing);
 
     /**
      * Returns the available width at the given position.
      * @param position Position to check.
      * @param requiredSpaceAbove Amount of empty space required above the given position.
      * @param requiredSpaceBelow Amount of empty space required below the given position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @return int containing the available width value.
      */
-    int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
+    int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing);
 
     /**
      * Returns the available height at the given position.
@@ -106,16 +106,16 @@ public interface StatePage extends StateDocumentPart, Page {
      * @return int containing the available height value.
      */
     int getAvailableHeight(Position position, double requiredSpaceAbove, double requiredSpaceBelow);
-    
+
     /**
      * Returns the available spaces on the given line and includes the height of each open space.
      * @param pos Position to check on.
      * @param ignoreSpacesBeforePositionWidth Whether to ignore open spaces that come before the given position's x value.
      * @param requiredSpaceAbove Amount of empty space required above the given position.
      * @param requiredSpaceBelow Amount of empty space required below the given position.
+     * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
      * @return List of int arrays, each contains respectively the start, end and height of the open space..
      */
-	List<int[]> getOpenSpacesIncludingHeight(Position pos,
-			boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove,
-			double requiredSpaceBelow);
+    List<int[]> getOpenSpacesIncludingHeight(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
+            StateSpacing spacing);
 }

@@ -155,4 +155,32 @@ public interface Text extends PlaceableDocumentPart {
      * @return Compression object.
      */
     Compression getCompressionMethod();
+
+    /**
+     * Sets the top margin of the text.
+     * @param marginTop the top margin to set
+     * @return This text.
+     */
+    Text marginTop(int marginTop);
+
+    /**
+     * Sets the bottom margin of the text.
+     * @param marginBottom the bottom margin to set
+     * @return This text.
+     */
+    Text marginBottom(int marginBottom);
+
+    /**
+     * Sets the right margin of the text.
+     * @param marginRight the right margin to set
+     * @return This text.
+     */
+    Text marginRight(int marginRight);
+
+    /**
+     * Sets the left margin of the text.
+     * @param marginLeft the left margin to set
+     * @return This text.
+     */
+    Text marginLeft(int marginLeft);
 }

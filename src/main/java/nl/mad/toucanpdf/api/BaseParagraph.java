@@ -55,6 +55,10 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
             }
         }
         this.setPosition(p.getPosition());
+        this.marginBottom = p.getMarginBottom();
+        this.marginLeft = p.getMarginLeft();
+        this.marginTop = p.getMarginTop();
+        this.marginBottom = p.getMarginBottom();
     }
 
     @Override

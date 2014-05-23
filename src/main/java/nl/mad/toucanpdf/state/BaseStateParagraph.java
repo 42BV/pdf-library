@@ -59,6 +59,10 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 }
             }
         }
+        this.marginBottom = p.getMarginBottom();
+        this.marginLeft = p.getMarginLeft();
+        this.marginRight = p.getMarginRight();
+        this.marginTop = p.getMarginTop();
         this.setPosition(p.getPosition());
     }
 
@@ -82,7 +86,16 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     public Paragraph processContentSize(StatePage page, boolean fixedPosition) {
         Paragraph overflowParagraph = null;
         for (int i = 0; i < textCollection.size(); ++i) {
+            System.out.println("handling text: " + textCollection.get(i).getText());
             StateText t = (StateText) textCollection.get(i);
+            t.marginLeft(t.getMarginLeft() + this.marginLeft);
+            t.marginRight(t.getMarginRight() + this.marginRight);
+            if (i == 0) {
+                t.marginTop(t.getMarginTop() + this.marginTop);
+            }
+            if (i == (textCollection.size() - 1)) {
+                t.marginBottom(t.getMarginBottom() + this.marginBottom);
+            }
             t.align(this.getAlignment());
             double posX = 0;
             if (this.getAnchorsOn(t).size() > 0) {
@@ -121,7 +134,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             if (this.textCollection.indexOf(text) == 0) {
                 requiredSpaceAbove = 0;
             }
-            Position position = page.getOpenPosition(requiredSpaceAbove, requiredHeight, requiredWidth);
+            Position position = page.getOpenPosition(requiredSpaceAbove, requiredHeight, text, requiredWidth);
             if (position == null) {
                 Paragraph overflow = handleAnchorOverflow(anchorList, requiredWidth, requiredHeight, page, text);
                 if (overflow == null) {
@@ -131,12 +144,15 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 }
             }
             position = this.processAnchorPositions(position, page, this.getAnchorOn(text, AnchorLocation.ABOVE), AnchorLocation.ABOVE);
+            position.adjustY(-text.getMarginTop());
             position = this.processAnchorPositions(position, page, this.getAnchorOn(text, AnchorLocation.LEFT), AnchorLocation.LEFT);
             Position startingPositionForText = new Position(position);
-            startingPositionForText.setY(startingPositionForText.getY() - text.getRequiredSpaceAbove());
-            position = getMinimalStartingPositionForRightAnchor(position, page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight));
+            startingPositionForText.adjustY(-text.getRequiredSpaceAboveLine());
+            //TODO:Margins?
+            position = getMinimalStartingPositionForRightAnchor(position,
+                    page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight, text));
             position = getStartingPositionRightAnchor(this.getAnchorOn(text, AnchorLocation.RIGHT), position,
-                    page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight), page);
+                    page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight, text), page);
             text.on(startingPositionForText);
             this.processAnchorPositions(position, page, this.getAnchorOn(text, AnchorLocation.RIGHT), AnchorLocation.RIGHT);
         }
@@ -160,15 +176,17 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         //process requiredWidth and requiredHeight
         for (Anchor a : anchorList) {
             PlaceableFixedSizeDocumentPart part = a.getPart();
+            double totalPartWidth = part.getWidth() + part.getMarginLeft() + part.getMarginRight();
+            double totalPartHeight = part.getHeight() + part.getMarginTop() + part.getMarginBottom();
             if (AnchorLocation.LEFT.equals(a.getLocation())) {
-                requiredWidthLeft += part.getWidth();
-                requiredHeight = Math.max(part.getHeight(), requiredHeight);
+                requiredWidthLeft += totalPartWidth;
+                requiredHeight = Math.max(totalPartHeight, requiredHeight);
             } else if (AnchorLocation.RIGHT.equals(a.getLocation())) {
-                requiredWidthLeft += part.getWidth();
-                requiredHeight = Math.max(part.getHeight(), requiredHeight);
+                requiredWidthRight += totalPartWidth;
+                requiredHeight = Math.max(totalPartHeight, requiredHeight);
             } else if (AnchorLocation.ABOVE.equals(a.getLocation()) || AnchorLocation.BELOW.equals(a.getLocation())) {
-                requiredWidthAboveOrUnder = Math.max(part.getWidth(), requiredWidthAboveOrUnder);
-                requiredHeight += part.getHeight();
+                requiredWidthAboveOrUnder = Math.max(totalPartWidth, requiredWidthAboveOrUnder);
+                requiredHeight += totalPartHeight;
             }
             double requiredWidthTotalOld = requiredWidthTotal;
             requiredWidthTotal = Math.max(requiredWidthLeft + requiredWidthRight + Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING, requiredWidthAboveOrUnder);
@@ -199,24 +217,29 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     }
 
     private Position getStartingPositionRightAnchor(Anchor anchor, Position pos, List<int[]> openSpaces, StatePage page) {
-        /*this method determines the starting position of the anchor to the right of a text object.
-        this is achieved by checking how much space the right anchor requires.
-        The starting position has to be as accurate as possible as to not waste space and to get the correct placement on the text.*/
         Position position = new Position(pos);
-        int a = openSpaces.size() - 1;
-        boolean anchorPlaced = false;
-        //Go through the open spaces and anchors list from back to front
-        while (a >= 0 && !anchorPlaced) {
-            int[] openSpace = openSpaces.get(a);
-            int availableWidth = openSpace[1] - openSpace[0];
-            PlaceableFixedSizeDocumentPart part = anchor.getPart();
-            double partWidth = part.getWidth();
-            //if the current anchor fits in this open space we'll add it to the processed anchors.
-            if (FloatEqualityTester.greaterThan(availableWidth, partWidth)) {
-                position.setX(openSpace[1] - partWidth);
-                anchorPlaced = true;
+        if (anchor != null) {
+            /*this method determines the starting position of the anchor to the right of a text object.
+            this is achieved by checking how much space the right anchor requires.
+            The starting position has to be as accurate as possible as to not waste space and to get the correct placement on the text.*/
+
+            int a = openSpaces.size() - 1;
+            boolean anchorPlaced = false;
+            //Go through the open spaces and anchors list from back to front
+            while (a >= 0 && !anchorPlaced) {
+                int[] openSpace = openSpaces.get(a);
+                int availableWidth = openSpace[1] - openSpace[0];
+                PlaceableFixedSizeDocumentPart part = anchor.getPart();
+                double partWidth = part.getWidth() + part.getMarginLeft() + part.getMarginRight();
+                //if the current anchor fits in this open space we'll add it to the processed anchors.
+                if (FloatEqualityTester.greaterThan(availableWidth, partWidth)) {
+                    position.setX(openSpace[1] - partWidth);
+                    anchorPlaced = true;
+                }
+                --a;
             }
-            --a;
+        } else {
+            position = new Position(pos.getY(), page.getWidth());
         }
         return position;
     }
@@ -235,6 +258,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             Position newPos = new Position(position);
             PlaceableFixedSizeDocumentPart anchorPart = null;
             anchorPart = anchor.getPart();
+            newPos.adjustX(anchorPart.getMarginLeft());
+            newPos.adjustY(-anchorPart.getMarginTop());
             anchorPart.setPosition(newPos);
             boolean wrapping = true;
             boolean alignment = false;
@@ -245,14 +270,14 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             }
             ((StatePlaceableFixedSizeDocumentPart) anchorPart).processContentSize(page, wrapping, alignment);
             page.add(anchorPart);
-            newPos = new Position(anchorPart.getWidth() + anchorPart.getPosition().getX(), newPos.getY());
+            newPos = new Position(anchorPart.getWidth() + anchorPart.getMarginRight() + anchorPart.getPosition().getX(), newPos.getY());
             double newPosX = newPos.getX();
             double newPosY = newPos.getY();
 
             //To ensure that text will not wrap around the images we have to increase the position values.
             if ((AnchorLocation.ABOVE.equals(location) || AnchorLocation.BELOW.equals(location)) && anchorPart != null) {
                 //TODO: Fix this magic number (perhaps there is something wrong in the calculation somewhere?)
-                newPosY = newPos.getY() - anchorPart.getHeight() - (Page.DEFAULT_NEW_LINE_SIZE * 3);
+                newPosY = newPos.getY() - anchorPart.getHeight() - anchorPart.getMarginBottom() - (Page.DEFAULT_NEW_LINE_SIZE * 3);
                 newPosX = page.getMarginLeft();
             }
             return new Position(newPosX, newPosY);
@@ -284,12 +309,12 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         }
 
         if (index == 0) {
-            text.on(this.getPosition());
+            text.on(page.getOpenPosition(text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow(), text, 0));
         } else {
             StateText previous = textCollection.get(index - 1);
             if (fixedPosition) {
-                double newPositionY = previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - page.getLeading()
-                        - text.getRequiredSpaceAbove();
+                double newPositionY = previous.getPosition().getY() - previous.getContentHeightUnderBaseLine(page) - previous.getRequiredSpaceBelow()
+                        - page.getLeading() - text.getRequiredSpaceAbove();
                 Position position = new Position(posX, newPositionY);
                 text.on(position);
             } else {
@@ -297,7 +322,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 if (a != null) {
                     page.setFilledHeight(page.getFilledHeight() + text.getRequiredSpaceAbove());
                 }
-                text.on(page.getOpenPosition(text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow(), 0));
+                text.on(page.getOpenPosition(text.getRequiredSpaceAbove(), text.getRequiredSpaceBelow(), text, 0));
             }
         }
         return posX;
@@ -359,10 +384,10 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height) {
+    public List<int[]> getUsedSpaces(double height, int pageWidth) {
         List<int[]> spaces = new LinkedList<int[]>();
         for (StateText t : textCollection) {
-            spaces.addAll(t.getUsedSpaces(height));
+            spaces.addAll(t.getUsedSpaces(height, pageWidth));
         }
         return spaces;
     }
@@ -433,5 +458,15 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     @Override
     public DocumentPart getOriginalObject() {
         return this.originalObject;
+    }
+
+    @Override
+    public double getRequiredSpaceLeft() {
+        return this.marginLeft;
+    }
+
+    @Override
+    public double getRequiredSpaceRight() {
+        return this.marginRight;
     }
 }

@@ -21,9 +21,9 @@ public class BaseTable extends AbstractTable implements Table {
 
     @Override
     public Cell addCell(PlaceableDocumentPart part) {
-        //Cell c = new Cell(part);
-        //this.content.add(c);
-        return null;
+        Cell c = new BaseCell(part);
+        this.content.add(c);
+        return c;
     }
 
     @Override

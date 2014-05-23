@@ -31,6 +31,15 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     }
 
     /**
+     * 
+     * @param imageStream
+     * @param filename
+     */
+    public BaseImage(InputStream imageStream, String filename) {
+        this(imageStream, getTypeFromFilename(filename));
+    }
+
+    /**
      * Creates a new BaseImage instance.
      * @param imageStream InputStream with the image file to use.
      * @param type The format of the image.
@@ -62,6 +71,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
             image = new JPEG(imageStream);
             break;
         default:
+            //TODO: Log unsupported image type
             break;
         }
     }
@@ -77,6 +87,11 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.image = image.getImageParser();
         this.wrappable = image.wrappingAllowed();
         this.setAlignment(image.getAlignment());
+        this.setPosition(image.getPosition());
+        this.marginBottom = image.getMarginBottom();
+        this.marginLeft = image.getMarginLeft();
+        this.marginTop = image.getMarginTop();
+        this.marginRight = image.getMarginRight();
     }
 
     @Override
@@ -149,5 +164,47 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public Image allowWrapping(boolean isWrappable) {
         this.wrappable = isWrappable;
         return this;
+    }
+
+    @Override
+    public Image marginTop(int marginTop) {
+        this.setMarginTop(marginTop);
+        return this;
+    }
+
+    @Override
+    public Image marginBottom(int marginBottom) {
+        this.setMarginBottom(marginBottom);
+        return this;
+    }
+
+    @Override
+    public Image marginRight(int marginRight) {
+        this.setMarginRight(marginRight);
+        return this;
+    }
+
+    @Override
+    public Image marginLeft(int marginLeft) {
+        this.setMarginLeft(marginLeft);
+        return this;
+    }
+
+    /**
+     * Returns the imagetype corresponding to the given filename.
+     * @param filename filename to check.
+     * @return The type of the image, null if no corresponding image type could be discovered.
+     */
+    public static ImageType getTypeFromFilename(String filename) {
+        if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+            return ImageType.JPEG;
+        } else if (filename.endsWith(".png")) {
+            return ImageType.PNG;
+        } else if (filename.endsWith(".gif")) {
+            return ImageType.GIF;
+        } else if (filename.endsWith(".bmp")) {
+            return ImageType.BMP;
+        }
+        return null;
     }
 }

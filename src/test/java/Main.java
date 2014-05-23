@@ -5,24 +5,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
-
 import nl.mad.toucanpdf.DocumentBuilder;
 import nl.mad.toucanpdf.api.BaseCell;
+import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BaseImage;
 import nl.mad.toucanpdf.api.BaseTable;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Font;
+import nl.mad.toucanpdf.model.FontFamilyType;
+import nl.mad.toucanpdf.model.FontStyle;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
-import nl.mad.toucanpdf.model.PlaceableDocumentPart;
-import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
-import nl.mad.toucanpdf.model.state.StatePage;
+
+import org.apache.log4j.BasicConfigurator;
 
 public class Main {
 
@@ -37,59 +38,75 @@ public class Main {
         //newTest();
         //documentStateTest();
     }
-    
-
-    private static void presentation() throws FileNotFoundException {
-    	BasicConfigurator.configure();
-        DocumentBuilder builder = new DocumentBuilder();
-        builder.title("pres1");
-        Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);    
-        builder.addText("Hello this is fixed").on(30, 795);
-        StatePage page2 = (StatePage) builder.getPreview().getPreviewFor(page).get(0);
-        List<int[]> openSpaces = page2.getOpenSpacesIncludingHeight(new Position(0, page.getHeight()), true, 0, 400);
-        for(int[] openSpace : openSpaces) {
-        	System.out.println("Openspace: " + openSpace[0] + " - " + openSpace[1] + ", height: " + openSpace[2]);
-        }
-        builder.finish();
-    }
 
     private static void presentation1() throws FileNotFoundException {
-    	BasicConfigurator.configure();
+        Font DEFAULT_FONT = new BaseFont(FontFamilyType.HELVETICA, FontStyle.NORMAL);
+        BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("pres1");
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(false).height(200).width(150);
+        Image i2 = new BaseImage(i1).align(Alignment.CENTERED);
         Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
-        builder.addText("Hi");
-        Table table = new BaseTable(page.getWidthWithoutMargins()).columns(5).border(1);
+        Text text = builder
+                .createText(
+                        "hi tst test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test end")
+                .align(Alignment.RIGHT);
+        Paragraph p = builder.addParagraph().addText(text).addText(builder.createText("Hello"));
+        p.addAnchor(i1).leftOf(text);
+        //p.addAnchor(i2).above(text);
+        //p.addAnchor(i2).rightOf(text);
+        //p.addAnchor(i2).beneath(text);
+
+        builder.addText("Hi2aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Text rwz = builder.createText("Dit is de titel van de tweede paragraaf").font(builder.createFont().bold());
+        System.out.println("Marginade: " + rwz.getMarginBottom());
+        builder.addParagraph()
+                .addText(rwz)
+                .addText(
+                        builder.createText("Dit is de opvolgende tekst. Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst. Dit is de opvolgende tekst. Dit is de opvolgende tekst. Dit is de opvolgende tekst."));
+        Table table = new BaseTable(page.getWidthWithoutMargins()).columns(5).border(1).align(Alignment.CENTERED);
         //table.setPosition(new Position(100, 100));
-        Text cont = new BaseText("Test test test test");
-        Text cont2 = new BaseText("Test Test Test Test Tesese");
+        Text cont = new BaseText(
+                "Test test test test test test test test test test test test test test test test test test test test test test test test test test test test");
+        ;
+        Text cont2 = new BaseText("Test Test Test Test Tesese").align(Alignment.CENTERED);
         Text cont3 = new BaseText("Test Test Test Test Tese");
         Text cont4 = new BaseText("Test Test Test Test Teses");
         Text cont5 = new BaseText("Test Test Test Test Te");
-        Image i1 = new BaseImage(new FileInputStream("C:/Users/Dylan/Pictures/001.jpg"), ImageType.JPEG).allowWrapping(true).height(1000).width(200);
-        //TODO: Large amount of pages is causing issues (the object count is incorrect, skipping 2 for each stream for some reason)
-        //ALSO TEST ADDING HUGE SHIT TO TABLES
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
-//        builder.addPart(i1);
+        //TODO: It is actually just fine, no clue why there were issues on the PC when adding a huge amount of images.
+        //DO ALIGNMENT FOR CONTENT IN TABLES (seems to be something wrong with right alignment on text)
+        //ALLOW INVERT COLOR OPTION ON IMAGES (this is better than just forcing CMYK to inverted)
+        //cell width slightly too large
         //Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
-        table.addCell(new BaseCell(cont2).columnSpan(4));
+
+        //builder.addPart(i1);
+        //builder.addPart(i1);
+        //builder.addPart(i1);
+
+        table.addCell(new BaseCell(cont2).columnSpan(1));
         table.addCell(new BaseCell(cont).columnSpan(3));
-        table.addCell(new BaseCell(cont3).columnSpan(2));
-        table.addCell(new BaseCell(i1));
+        //cont3 not showing up?
+        table.addCell(new BaseCell(cont3).columnSpan(1));
+        //table.addCell(new BaseCell(new BaseImage(i1)));
         //System.out.println("CEll height: " + table.getContent().get(3).getHeight());
         table.addCell(new BaseCell(cont5).columnSpan(2));
-        builder.addPart(table);
-        builder.addText("Hello this is fixed").on(30, 795);
+        //builder.addPart(table);
+
+        Table table2 = builder.addTable().columns(7).align(Alignment.CENTERED);
+        table2.addCell(builder.createText("Eric Meijer").font(DEFAULT_FONT).size(11)).width(100);
+        table2.addCell(builder.createText("Robert Bor").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Lucas Bos").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Theo Essen").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Jeroen van Schagen").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Bas de Vos").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Sander Benschop").font(DEFAULT_FONT).size(11));
+        table2.addCell(builder.createText("Projectleider").font(DEFAULT_FONT).size(11)).width(100);
+        for (int i = 0; i < 6; ++i) {
+            table2.addCell(builder.createText("Teamlid").font(DEFAULT_FONT).size(11));
+        }
+
+        builder.addText("Heloooooooooooooooooooooooooooo");
+        //builder.addText("Hello this is fixed").on(30, 795).marginTop(190).marginBottom(100);
         //System.out.println(builder.getPreview().getPages().get(0).getContent());
         builder.finish();
     }
@@ -100,14 +117,14 @@ public class Main {
         builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         builder.addImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
         builder.addImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), ImageType.JPEG).align(Alignment.RIGHT).height(230).width(170);
-        PlaceableDocumentPart part = new BaseTable();
-        part.setPosition(new Position(400, 50));
-        builder.addPart(part);
+        //PlaceableDocumentPart part = new BaseTable();
+        //part.setPosition(new Position(400, 50));
+        //builder.addPart(part);
         System.out.println(builder.getPreview().getPages().get(0).getContent());
         builder.finish();
     }
 
-    public static void presentation2() {
+    public static void presentation21() {
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("pres2");
         builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);

@@ -28,4 +28,14 @@ public abstract class AbstractStateSplittableText extends BaseText implements St
     public Map<Position, Double> getJustificationOffset() {
         return this.justificationOffset;
     }
+
+    @Override
+    public double getRequiredSpaceAboveLine() {
+        return (getFont().getMetrics().getAscentPoint() * getTextSize());
+    }
+
+    @Override
+    public double getRequiredSpaceBelowLine() {
+        return Math.abs(getFont().getMetrics().getDescentPoint() * getTextSize());
+    }
 }
