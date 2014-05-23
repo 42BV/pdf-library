@@ -44,7 +44,7 @@ public class Main {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("pres1");
-        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(false).height(200).width(150);
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(false).width(200, true);
         Image i2 = new BaseImage(i1).align(Alignment.CENTERED);
         Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         Text text = builder

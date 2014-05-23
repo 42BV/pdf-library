@@ -11,6 +11,7 @@ import nl.mad.toucanpdf.model.ImageParser;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.utility.PointsConverter;
 
 /**
  * This is the base implementation for the image interface. This class can be added to an instance of DocumentBuilder in order to add 
@@ -22,6 +23,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     private ImageParser image;
     private Compression compressionMethod = Compression.FLATE;
     private boolean wrappable;
+    private double scale = 1;
 
     /**
      * Creates a new BaseImage instance.
@@ -47,8 +49,11 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
-        this.height = image.getHeight();
-        this.width = image.getWidth();
+        this.height = PointsConverter.getPointsForPixels(image.getHeight());
+        this.width = PointsConverter.getPointsForPixels(image.getWidth());
+        if (this.width > 0 && this.height > 0) {
+            scale = this.width / this.height;
+        }
     }
 
     /**
@@ -123,8 +128,10 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
 
     @Override
     public Image height(int height, boolean scaleWidth) {
-        //do some scaling 
         this.height = Math.max(1, height);
+        if (scaleWidth) {
+            this.width = this.height * scale;
+        }
         return this;
     }
 
@@ -136,6 +143,9 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     @Override
     public Image width(int width, boolean scaleHeight) {
         this.width = Math.max(1, width);
+        if (scaleHeight) {
+            this.height = this.width * scale;
+        }
         return this;
     }
 
