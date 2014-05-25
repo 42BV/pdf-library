@@ -18,7 +18,7 @@ import nl.mad.toucanpdf.utility.Constants;
  */
 public class PdfDictionary extends AbstractPdfObject {
     private Map<PdfName, AbstractPdfObject> content;
-    private static final String OPEN_DICTIONARY = "<<\n";
+    private static final String OPEN_DICTIONARY = "<<" + Constants.LINE_SEPARATOR_STRING;
     private static final String CLOSE_DICTIONARY = ">>";
 
     /**

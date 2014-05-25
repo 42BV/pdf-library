@@ -16,6 +16,7 @@
     </scm>
 
     <properties>
+        <jmockit.version>1.7</jmockit.version>
         <junit.version>4.11</junit.version>
         <java.version>1.7</java.version>
         <slf4j.version>1.7.6</slf4j.version>
@@ -34,7 +35,12 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
-        
+        <dependency>
+		   <groupId>com.googlecode.jmockit</groupId>
+		   <artifactId>jmockit</artifactId>
+		   <version>${jmockit.version}</version>
+		   <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

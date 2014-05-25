@@ -13,9 +13,13 @@ import nl.mad.toucanpdf.model.FontStyle;
 public final class Constants {
 
     /**
-     * Specifies the default line separator value.
+     * Specifies the default line separator string value.
      */
-    public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(System.getProperty("line.separator"));
+	public static final String LINE_SEPARATOR_STRING = "\n";
+    /**
+     * Specifies the default line separator byte value.
+     */
+    public static final byte[] LINE_SEPARATOR = ByteEncoder.getBytes(LINE_SEPARATOR_STRING);//System.getProperty("line.separator"));
     /**
      * Specifies the location of the resources folder.
      */

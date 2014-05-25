@@ -8,6 +8,7 @@ import nl.mad.toucanpdf.pdf.syntax.PdfNumber;
 import nl.mad.toucanpdf.utility.ByteEncoder;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 

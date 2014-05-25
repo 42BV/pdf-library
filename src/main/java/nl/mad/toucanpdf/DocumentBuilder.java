@@ -514,7 +514,11 @@ public class DocumentBuilder {
      * @see Table
      */
     public Table createTable() {
-        Table table = new BaseTable(pages.get(currentPageNumber - 1).getWidthWithoutMargins());
+    	int width = defaultPageWidth;
+    	if((currentPageNumber - 1) > 0) {
+    		width = pages.get(currentPageNumber - 1).getWidthWithoutMargins();
+    	}
+        Table table = new BaseTable(width);
         setDefaultMargins(table);
         return table;
     }

@@ -3,6 +3,8 @@ package nl.mad.toucanpdf.pdf.syntax;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import nl.mad.toucanpdf.utility.Constants;
+
 /**
  * This class represents a graphics state within the PDF specification. 
  * This class is extended by other objects such as PdfImage or PdfTable. The PdfGraphicsState class itself only
@@ -13,8 +15,8 @@ import java.io.OutputStream;
  *
  */
 public abstract class PdfGraphicsState extends AbstractPdfObject {
-    private static final String SAVE_GRAPHICS_STATE = "q\n";
-    private static final String RESTORE_GRAPHICS_STATE = "Q\n";
+    private static final String SAVE_GRAPHICS_STATE = "q" + Constants.LINE_SEPARATOR_STRING;
+    private static final String RESTORE_GRAPHICS_STATE = "Q" + Constants.LINE_SEPARATOR_STRING;
 
     /**
      * Creates a new instance of PdfGraphicsState.

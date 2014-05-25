@@ -42,14 +42,7 @@ public class Type1FontMetricsTest {
         assertEquals("Parsing .pfb did not go correctly, this could be caused by not being able to find the document. ", true, fontFile.length > 0);
         //on second retrieval it will not parse and simply return the array
         assertEquals("Second font file retrieval went wrong.", true, metrics.getFontFile().length > 0);
-
     }
-
-    //
-    //    @Test
-    //    public void testNonExistingFontFile() {
-    //
-    //    }
 
     @Test
     public void testGetWidth() {
@@ -80,11 +73,19 @@ public class Type1FontMetricsTest {
         assertEquals("Width of string with kerning in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
                 metrics.getWidthPointOfString("AC", textSize, true), FloatEqualityTester.EPSILON);
     }
-
-    //    @Test
-    //    public void testGetLeading() {
-    //        int expectedLeading = (int) ((ascend * textSize * metrics.getConversionToPointsValue()) + FontMetrics.DEFAULT_LEADING_ADDITION);
-    //        assertEquals("Calculated leading is incorrect. ", expectedLeading, metrics.getLeadingForSize(textSize));
-    //        assertEquals("Parsed leading is incorrect. ", 0, metrics.getLeading());
-    //    }
+    
+    @Test
+    public void testRemainingGetters() {
+    	System.out.println("NSa");
+    	assertEquals("Helvetica", metrics.getFontName());
+    	assertEquals(0.278, metrics.getWidthPoint(32), FloatEqualityTester.EPSILON);
+    	assertEquals(10.175, metrics.getLineHeightForSize(11), FloatEqualityTester.EPSILON);
+    	assertEquals("Helvetica", metrics.getFullName());
+    	assertEquals("Medium", metrics.getWeight());
+    	assertEquals(false, metrics.isFixedPitch());
+    	assertEquals("ExtendedRoman", metrics.getCharacterSet());
+    	assertEquals(-100, metrics.getUnderlinePosition());
+    	assertEquals(50, metrics.getUnderlineThickness());
+    	assertEquals("AdobeStandardEncoding", metrics.getEncodingScheme());
+    }
 }

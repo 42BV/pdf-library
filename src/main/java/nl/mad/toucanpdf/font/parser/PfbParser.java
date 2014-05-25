@@ -41,7 +41,7 @@ public class PfbParser {
      * @param file Array of bytes containing the data in the file.
      */
     private void parse(byte[] file) {
-        if (file != null) {
+        if (file.length > 0) {
             try {
                 ByteArrayInputStream input = new ByteArrayInputStream(file);
                 pfbData = new byte[(int) (file.length - HEADER_LENGTH)];
@@ -72,6 +72,8 @@ public class PfbParser {
             } catch (IOException e) {
                 LOGGER.error("An IOException occured during the parsing of a Pfb file.");
             }
+        } else {
+        	LOGGER.warn("Received empty inputstream for .pfb file.");
         }
     }
 
@@ -82,6 +84,7 @@ public class PfbParser {
      */
     private byte[] readInput(InputStream file) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+    	if(file != null) {
         byte[] tempBuffer = new byte[BUFFER_SIZE];
         int amountRead = -1;
         try {
@@ -92,6 +95,8 @@ public class PfbParser {
             }
         } catch (IOException e) {
             LOGGER.error("An IOException occured while reading the Pfb file.");
+        }} else {
+        	LOGGER.warn("Given inputstream in PFB parser is null");
         }
         return out.toByteArray();
     }

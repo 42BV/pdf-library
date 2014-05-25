@@ -10,6 +10,7 @@ import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StateSplittableText;
+import nl.mad.toucanpdf.utility.Constants;
 
 /**
  * PdfText stores the PDF stream version of a Text object. 
@@ -19,6 +20,8 @@ import nl.mad.toucanpdf.model.state.StateSplittableText;
  */
 public class PdfText extends AbstractPdfObject {
     private static final String WORD_SPACING = " Tw ";
+    private static final String MATRIX = " Tm" + Constants.LINE_SEPARATOR_STRING;
+    private static final String FONT = " Tf" + Constants.LINE_SEPARATOR_STRING;
 
     /**
      * Creates a new instance of PdfText.
@@ -56,7 +59,7 @@ public class PdfText extends AbstractPdfObject {
         if (pos == null) {
             pos = text.getPosition();
         }
-        return text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + pos.getX() + " " + pos.getY() + " Tm\n";
+        return text.getScaleX() + " " + text.getShearX() + " " + text.getShearY() + " " + text.getScaleY() + " " + pos.getX() + " " + pos.getY() + MATRIX;
     }
 
     /**
@@ -66,7 +69,7 @@ public class PdfText extends AbstractPdfObject {
      * @param fontSize Size of the font.
      */
     public void addFont(PdfIndirectObject font, int fontSize) {
-        String byteRep = "/" + font.getReference().getResourceReference() + " " + fontSize + " Tf\n";
+        String byteRep = "/" + font.getReference().getResourceReference() + " " + fontSize + FONT;
         this.addToByteRepresentation(byteRep);
     }
 
@@ -86,7 +89,7 @@ public class PdfText extends AbstractPdfObject {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Entry<Position, String> entry : entrySet) {
-            if (!"\n".equals(entry.getValue())) {
+            if (!Constants.LINE_SEPARATOR_STRING.equals(entry.getValue())) {
                 if (Alignment.JUSTIFIED.equals(text.getAlignment())) {
                     if (i != entrySet.size() - 1) {
                         sb.append(justification.get(entry.getKey()) + WORD_SPACING);
@@ -101,7 +104,7 @@ public class PdfText extends AbstractPdfObject {
                 sb.append(getNewLineStringForText(text, leading));
             }
             ++i;
-            sb.append("\n");
+            sb.append(Constants.LINE_SEPARATOR_STRING);
         }
         this.addToByteRepresentation(sb.toString());
     }

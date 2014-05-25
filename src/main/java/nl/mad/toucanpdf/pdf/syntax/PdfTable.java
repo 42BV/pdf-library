@@ -30,22 +30,15 @@ public class PdfTable extends PdfPath {
             Position pos = table.getPosition();
             this.setLineWidth(table.getBorderWidth());
             drawRectangle(pos.getX(), pos.getY() - table.getHeight(), table.getWidth(), table.getHeight());
-            System.out.println("Table: " + pos.getX() + ", " + pos.getY() + ", " + table.getWidth() + ", " + table.getHeight());
-            System.out.println("    " + (pos.getY() - table.getHeight()));
             this.strokePath();
         }
     }
 
     private void drawCells() {
-        System.out.println(table);
-        System.out.println(table.getContent());
         if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
             for (StateCell c : table.getStateCellCollection()) {
                 Position pos = c.getPosition();
                 drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
-                System.out.println("Column: " + pos.getX() + " , " + pos.getY() + ", " + c.getWidth() + ", " + c.getHeight());
-                System.out.println("    " + (pos.getY() - c.getHeight()));
-                System.out.println("    " + c.getContent());
                 this.strokePath();
             }
         }

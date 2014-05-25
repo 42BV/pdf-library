@@ -86,11 +86,7 @@ public class PdfCrossReferenceTable {
     }
 
     private void updateLowestObjectNumber(int number) {
-        if (lowestObjectNumber == null) {
-            this.lowestObjectNumber = Integer.valueOf(number);
-        } else if (number < lowestObjectNumber.intValue()) {
-            this.lowestObjectNumber = Integer.valueOf(number);
-        }
+    	lowestObjectNumber = Math.min(number, lowestObjectNumber.intValue());
     }
 
     public int getCrossReferenceAmount() {

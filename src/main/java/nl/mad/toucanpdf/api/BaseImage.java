@@ -49,8 +49,12 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
+    	height = 0;
+    	width = 0;
+        if(image != null) {
         this.height = PointsConverter.getPointsForPixels(image.getHeight());
         this.width = PointsConverter.getPointsForPixels(image.getWidth());
+        }
         if (this.width > 0 && this.height > 0) {
             scale = this.width / this.height;
         }
@@ -71,6 +75,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     }
 
     private void parse(InputStream imageStream, ImageType type) {
+    	if(imageStream != null) {
         switch (type) {
         case JPEG:
             image = new JPEG(imageStream);
@@ -79,6 +84,9 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
             //TODO: Log unsupported image type
             break;
         }
+    	} else {
+    		
+    	}
     }
 
     /**

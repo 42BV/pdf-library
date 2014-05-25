@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,8 +11,11 @@ import java.util.Calendar;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
+import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
+import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
 
 import org.junit.Before;
@@ -61,6 +65,37 @@ public class DocumentBuilderTest {
         assertEquals(DocumentPartType.PARAGRAPH, builder.getPage(1).getContent().get(0).getType());
     }
 
+    @Test 
+    public void testImage() {
+    	Image i = builder.addImage(null, ImageType.JPEG);
+    	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(0).getType());
+    	i = builder.createImage(null, "test.jpg");
+    	assertTrue(i != null);
+    }
+    
+    @Test
+    public void testTable() {
+    	Table t = builder.addTable();
+    	assertEquals(DocumentPartType.TABLE, builder.getPage(1).getContent().get(0).getType());
+    }
+    
+    @Test
+    public void testMargins() {
+    	builder.setDefaultMarginLeft(5);
+    	builder.setDefaultMarginBottom(10);
+    	builder.setDefaultMarginRight(6);
+    	builder.setDefaultMarginTop(30);
+    	assertEquals(5, builder.getDefaultMarginLeft());
+    	assertEquals(10, builder.getDefaultMarginBottom());
+    	assertEquals(6, builder.getDefaultMarginRight());
+    	assertEquals(30, builder.getDefaultMarginTop());
+    	Text text = builder.addText();
+    	assertEquals(5, text.getMarginLeft());
+    	assertEquals(10, text.getMarginBottom());
+    	assertEquals(6, text.getMarginRight());
+    	assertEquals(30, text.getMarginTop());
+    }
+    
     @Test
     public void testPage() {
         int expectedAmount = builder.getPageAmount() + 1;

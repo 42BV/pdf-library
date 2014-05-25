@@ -2,6 +2,7 @@ package nl.mad.toucanpdf.pdf.syntax;
 
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.utility.Constants;
 
 /**
  * This class represents an image in the PDF syntax. This class should be added to an PdfStream in order to draw the image.
@@ -9,8 +10,8 @@ import nl.mad.toucanpdf.model.Position;
  *
  */
 public class PdfImage extends PdfGraphicsState {
-    private static final String SHOW_XOBJECT = " Do\n";
-    private static final String TRANSLATE = " cm\n";
+    private static final String SHOW_XOBJECT = " Do" + Constants.LINE_SEPARATOR_STRING;
+    private static final String TRANSLATE = " cm" + Constants.LINE_SEPARATOR_STRING;
 
     /**
      * Creates a new instance of PdfImage.
@@ -28,8 +29,10 @@ public class PdfImage extends PdfGraphicsState {
      * @param image Image to draw.
      */
     private void addTranslation(Image image) {
+    	if(image != null) {
         Position pos = image.getPosition();
         this.addToByteRepresentation(image.getWidth() + " 0 0 " + image.getHeight() + " " + pos.getX() + " " + (pos.getY() - image.getHeight()) + TRANSLATE);
+    	}
     }
 
     /**

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import nl.mad.toucanpdf.utility.ByteEncoder;
+import nl.mad.toucanpdf.utility.Constants;
 
 /**
  * This represents a PDF indirect object. This means it contains an object and a object number plus generation number. 
@@ -19,11 +20,11 @@ public class PdfIndirectObject {
     /**
      * contains the PDF syntax used to specify an indirect object.
      */
-    protected static final String START = "obj\n";
+    protected static final String START = "obj" + Constants.LINE_SEPARATOR_STRING;
     /**
      * contains the PDF syntax used to specify the end of an indirect object.
      */
-    protected static final String END = "\nendobj\n\n";
+    protected static final String END = Constants.LINE_SEPARATOR_STRING + "endobj" + Constants.LINE_SEPARATOR_STRING + Constants.LINE_SEPARATOR_STRING;
     /**
      * The actual PdfObject that is contained within this indirect object.
      */

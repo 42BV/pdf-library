@@ -40,10 +40,11 @@ public class PdfTrailer extends PdfDictionary {
      * @param crossReferenceStartByte The start position of the cross reference table.
      * @param catalogReference The catalog object reference.
      */
-    public PdfTrailer(int objectAmount, byte[] crossReferenceStartByte, PdfIndirectObjectReference catalogReference) {
+    public PdfTrailer(int objectAmount, byte[] crossReferenceStartByte, PdfIndirectObjectReference catalogReference, PdfIndirectObject info) {
         super(PdfObjectType.TRAILER);
         this.objectAmount = objectAmount + 1;
         this.crossReferenceStartByte = crossReferenceStartByte;
+        this.info = info;
         this.fillObjectSpecification(catalogReference);
     }
 

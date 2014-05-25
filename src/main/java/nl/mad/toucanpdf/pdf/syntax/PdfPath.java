@@ -1,5 +1,7 @@
 package nl.mad.toucanpdf.pdf.syntax;
 
+import nl.mad.toucanpdf.utility.Constants;
+
 /**
  * PdfPath represents the Path object from the PDF specification.
  * This class can be used to draw all kinds of shapes. 
@@ -9,11 +11,11 @@ package nl.mad.toucanpdf.pdf.syntax;
 public class PdfPath extends AbstractPdfObject {
     private static final String MOVE = " m ";
     private static final String DRAW_LINE = " l ";
-    private static final String STROKE_PATH = " S\n";
+    private static final String STROKE_PATH = " S" + Constants.LINE_SEPARATOR_STRING;
     private static final String DRAW_RECTANGLE = " re ";
     private static final String CLOSE_SUBPATH = " h ";
-    private static final String CLOSE_SUBPATH_AND_STROKE_LINE = "s\n";
-    private static final String FILL_PATH = " f\n";
+    private static final String CLOSE_SUBPATH_AND_STROKE_LINE = "s" + Constants.LINE_SEPARATOR_STRING;
+    private static final String FILL_PATH = " f" + Constants.LINE_SEPARATOR_STRING;
     private static final String LINE_WIDTH = " w ";
 
     /**
@@ -93,7 +95,7 @@ public class PdfPath extends AbstractPdfObject {
     /**
      * Closes off the current subpath by drawing a line from the current position towards the starting point of the current subpath. 
      * Strokes the path afterwards.
-     * This method achieves the same result as using the closeSubpath() method followed by the strokeLine() method, it 
+     * This method achieves the same result as using the closeSubpath() method followed by the strokePath() method, it 
      * uses a different operator though and is mostly here for the sake of completion. 
      * When both these methods are used right after each other it is better to use this method simply because it requires a single operator less.
      */

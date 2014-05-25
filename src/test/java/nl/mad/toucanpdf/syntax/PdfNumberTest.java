@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf.syntax;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.mad.toucanpdf.pdf.syntax.AbstractPdfObject;
+import nl.mad.toucanpdf.pdf.syntax.PdfName;
 import nl.mad.toucanpdf.pdf.syntax.PdfNumber;
 import nl.mad.toucanpdf.pdf.syntax.PdfObjectType;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
@@ -59,6 +61,23 @@ public class PdfNumberTest {
         baos.reset();
         number.writeToFile(baos);
         assertEquals(expectedResult, baos.toString());
+    }
+    
+    @Test
+    public void testEquals() {
+    	PdfNumber test1 = new PdfNumber(1);
+    	PdfNumber test2 = new PdfNumber(2);
+    	PdfName test3 = new PdfName("1");
+    	
+    	assertEquals(number.hashCode(), test1.hashCode());
+    	assertEquals(true, number.equals(test1));
 
+    	assertTrue(number.hashCode() != test2.hashCode());
+    	assertEquals(false, number.equals(test2));   
+    	
+    	assertTrue(number.hashCode() != test3.hashCode());
+    	assertEquals(false, number.equals(test3));    
+    	
+    	assertEquals(false, number.equals(null));
     }
 }

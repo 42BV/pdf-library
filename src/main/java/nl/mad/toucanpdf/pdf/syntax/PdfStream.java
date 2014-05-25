@@ -23,7 +23,7 @@ public class PdfStream extends PdfDictionary {
     /**
      * Contains the syntax used to indicate the start of a stream.
      */
-    private static final String START_STREAM = "stream\n";
+    private static final String START_STREAM = "stream" + Constants.LINE_SEPARATOR_STRING;
     /**
      * Contains the syntax used to indicate the end of a stream.
      */
@@ -31,11 +31,11 @@ public class PdfStream extends PdfDictionary {
     /**
      * Specifies the command used to specify the start of a text stream.
      */
-    private static final String BEGIN_TEXT_STREAM = "BT\n";
+    private static final String BEGIN_TEXT_STREAM = "BT" + Constants.LINE_SEPARATOR_STRING;
     /**
      * Specifies the command used to specify the end of a text stream.
      */
-    private static final String END_TEXT_STREAM = "ET\n";
+    private static final String END_TEXT_STREAM = "ET" + Constants.LINE_SEPARATOR_STRING;
     private static final PdfName LENGTH = new PdfName(PdfNameValue.LENGTH);
     private static final PdfName FILTER = new PdfName(PdfNameValue.FILTER);
     private List<Compression> filterList = new LinkedList<Compression>();
@@ -71,7 +71,7 @@ public class PdfStream extends PdfDictionary {
                 baos.write(getWriteAfterStreamContent(contents.get(i)));
             }
             String s = ByteEncoder.getString(baos);
-            if (!s.endsWith("\n")) {
+            if (!s.endsWith(Constants.LINE_SEPARATOR_STRING)) {
                 baos.write(Constants.LINE_SEPARATOR);
             }
             baos.flush();

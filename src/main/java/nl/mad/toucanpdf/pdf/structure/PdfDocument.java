@@ -139,17 +139,17 @@ public class PdfDocument {
     }
 
     private void addImage(Image part) {
-        ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
-        PdfIndirectObject imageRef = imageList.get(buffer);
-        if (imageRef == null) {
-            PdfImageDictionary imageDic = new PdfImageDictionary(part);
-            imageRef = body.addObject(imageDic);
-            imageList.put(buffer, imageRef);
-        }
-        this.getCurrentPage().addResource(imageRef);
-        PdfStream stream = this.getCurrentPageStream();
-        stream.add(new PdfImage(imageRef.getReference().getResourceReference(), part));
-        stream.addFilter(part.getCompressionMethod());
+	        ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
+	        PdfIndirectObject imageRef = imageList.get(buffer);
+	        if (imageRef == null) {
+	            PdfImageDictionary imageDic = new PdfImageDictionary(part);
+	            imageRef = body.addObject(imageDic);
+	            imageList.put(buffer, imageRef);
+	        }
+	        this.getCurrentPage().addResource(imageRef);
+	        PdfStream stream = this.getCurrentPageStream();
+	        stream.add(new PdfImage(imageRef.getReference().getResourceReference(), part));
+	        stream.addFilter(part.getCompressionMethod());
     }
 
     /**

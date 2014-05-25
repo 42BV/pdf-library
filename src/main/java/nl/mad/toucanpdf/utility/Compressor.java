@@ -62,6 +62,7 @@ public final class Compressor {
         case LZW:
         case RUN_LENGTH:
         default:
+        	//TODO: Log unsupported compression
             return data;
         }
     }

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import nl.mad.toucanpdf.api.AbstractTable;
+import nl.mad.toucanpdf.api.BaseCell;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Page;
@@ -300,14 +301,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public Cell addCell(PlaceableDocumentPart part) {
-        // TODO Auto-generated method stub
-        return null;
+    	Cell c = new BaseCell(part);
+        this.addCell(c);
+        return c;
     }
 
     @Override
     public Cell addCell(String s) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.addCell(new BaseStateText(s));
     }
 
     @Override
@@ -329,8 +330,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public PlaceableDocumentPart copy() {
-        // TODO Auto-generated method stub
-        return null;
+        return new BaseStateTable(this);
     }
 
     @Override

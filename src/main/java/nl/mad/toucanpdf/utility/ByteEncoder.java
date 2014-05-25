@@ -40,4 +40,8 @@ public final class ByteEncoder {
         }
         return "";
     }
+    
+    public static String getString(byte[] data) {
+    	return new String(data, DEFAULT_BYTE_ENCODING);
+    }
 }

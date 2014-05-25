@@ -70,6 +70,7 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
                 overflowText = handleOverflow(i, strings);
                 stringsProcessed = true;
             }
+        	System.out.println("at end: " + !stringsProcessed + ", " + (i < strings.size()));
         }
         return overflowText;
     }
@@ -212,6 +213,7 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
      */
     private String processCutOff(double width, int widthLimit, double widthOfCurrentString, String currentLine, List<String> text, int currentTextIndex,
             Page page) {
+    	System.out.println("Check = " + (widthLimit - width) + " > " + ((page.getWidth() - page.getMarginRight()) * (1.0 - Page.CUT_OFF_POINT_PERCENTAGE)));
         if (FloatEqualityTester.greaterThan((widthLimit - width), ((page.getWidth() - page.getMarginRight()) * (1.0 - Page.CUT_OFF_POINT_PERCENTAGE)))) {
             int textSize = getTextSize();
             double currentWidth = width;
@@ -237,7 +239,12 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
             if (i != 0) {
                 currentString.append('-');
                 text.set(currentTextIndex, "");
-                text.set(currentTextIndex + 1, String.valueOf(charArray).substring(i - 1));
+                String stringToAdd = String.valueOf(charArray).substring(i - 1);
+                if(text.size() > currentTextIndex + 1) {
+                text.set(currentTextIndex + 1, stringToAdd);
+                } else {
+                	text.add(stringToAdd);
+                }
             }
             return currentString.toString();
         }
@@ -375,6 +382,10 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
         for (int i = 0; i < entries.size(); ++i) {
             Entry<Position, String> entry = entries.get(i);
             double stringWidth = metrics.getWidthPointOfString(entry.getValue(), getTextSize(), true);
+            System.out.println("First check: " + (entry.equals(getFirstTextSplitEntry())));
+            System.out.println("Second check: " + (this.marginTop > 0));
+            System.out.println("Third check: " + (entry.equals(getLastTextSplitEntry())));
+            System.out.println("Four check: " + (this.getMarginBottom() > 0));
             if ((entry.equals(getFirstTextSplitEntry()) && this.marginTop > 0) || (entry.equals(getLastTextSplitEntry()) && this.getMarginBottom() > 0)) {
                 spaces.add(new int[] { (int) 0, pageWidth });
             } else {

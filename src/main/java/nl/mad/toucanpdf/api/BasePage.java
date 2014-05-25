@@ -17,10 +17,10 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 public class BasePage extends AbstractDocumentPart implements Page {
     private int width;
     private int height;
-    private int marginTop;
-    private int marginBottom;
-    private int marginLeft;
-    private int marginRight;
+    private int marginTop = 0;
+    private int marginBottom = 0;
+    private int marginLeft = 0;
+    private int marginRight = 0;
     private Page masterPage;
     private List<DocumentPart> content;
     private int leading = DEFAULT_NEW_LINE_SIZE;

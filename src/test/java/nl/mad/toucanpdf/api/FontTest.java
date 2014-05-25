@@ -11,6 +11,7 @@ import nl.mad.toucanpdf.model.FontFamily;
 import nl.mad.toucanpdf.model.FontFamilyType;
 import nl.mad.toucanpdf.model.FontStyle;
 import nl.mad.toucanpdf.utility.Constants;
+import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,5 +62,10 @@ public class FontTest {
         font = new BaseFont();
         assertEquals("The font family was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getFamily(), font.getFamily());
         assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());
+    }
+    
+    @Test
+    public void testLineHeightCalculation() {
+    	assertEquals(11.1, font.getLineHeight(12), FloatEqualityTester.EPSILON);
     }
 }

@@ -3,6 +3,7 @@ package nl.mad.toucanpdf.api;
 import static org.junit.Assert.assertEquals;
 import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BaseText;
+import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.FontFamilyType;
 import nl.mad.toucanpdf.model.FontStyle;
@@ -94,5 +95,26 @@ public class TextTest {
         Text t = new BaseText(text);
         boolean actualResult = text.getText().equals(t.getText()) && text.getScaleX() == t.getScaleX();
         assertEquals("The text object was not copied correctly. ", true, actualResult);
+        t = (Text) text.copy();
+        actualResult = text.getText().equals(t.getText()) && text.getScaleX() == t.getScaleX();
+        assertEquals("The text object was not copied correctly. ", true, actualResult);
+    }
+    
+    @Test
+    public void testMargins() {
+    	text.marginBottom(10);
+    	text.marginLeft(1);
+    	text.marginRight(15);
+    	text.marginTop(30);
+    	assertEquals(10, text.getMarginBottom());
+    	assertEquals(1, text.getMarginLeft());
+    	assertEquals(15, text.getMarginRight());
+    	assertEquals(30, text.getMarginTop());
+    }
+    
+    @Test
+    public void testCompress() {
+    	text.compress(Compression.ASCII_85);
+    	assertEquals(Compression.ASCII_85, text.getCompressionMethod());
     }
 }
