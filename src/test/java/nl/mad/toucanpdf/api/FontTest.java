@@ -58,10 +58,13 @@ public class FontTest {
     }
 
     @Test
-    public void testDefaultConstructor() {
+    public void testConstructor() {
         font = new BaseFont();
         assertEquals("The font family was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getFamily(), font.getFamily());
         assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());
+        font = new BaseFont(font);
+        assertEquals("The font family was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getFamily(), font.getFamily());
+        assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());        
     }
     
     @Test

@@ -1,7 +1,9 @@
 package nl.mad.toucanpdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.util.Calendar;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
+import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.Table;
@@ -65,10 +69,15 @@ public class DocumentBuilderTest {
     @Test
     public void testImage() {
         //TODO: this
-        //    	Image i = builder.addImage(null, ImageType.JPEG);
-        //    	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(0).getType());
-        //    	i = builder.createImage(null, "test.jpg");
-        //    	assertTrue(i != null);
+    	byte[] imageData = new byte[0];
+    	ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+    	
+            	Image i = builder.addImage(bais, ImageType.JPEG);
+            	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(0).getType());
+            	i = builder.createImage(null, "test.jpg");
+            	assertTrue(i != null);
+            	i = builder.addImage(imageData, ImageType.JPEG);
+            	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(1).getType());
     }
 
     @Test

@@ -50,7 +50,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(byte[] image, ImageType type) {
         this();
         this.parse(image, type);
-        setInitialWidth();
+        setInitialSize();
     }
 
     /**
@@ -61,10 +61,10 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
-        setInitialWidth();
+        setInitialSize();
     }
 
-    private void setInitialWidth() {
+    private void setInitialSize() {
         height = 0;
         width = 0;
         if (image != null) {
@@ -99,15 +99,13 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         if (imageStream != null) {
             switch (type) {
             case JPEG:
-                image = new JPEG(imageStream);
+            	image = new JPEG(imageStream);
                 break;
             default:
                 //TODO: Log unsupported image type
                 break;
             }
-        } else {
-
-        }
+        } 
     }
 
     /**
@@ -235,13 +233,14 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
      * @return The type of the image, null if no corresponding image type could be discovered.
      */
     public static ImageType getTypeFromFilename(String filename) {
-        if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+    	String file = filename.toLowerCase();
+        if (file.endsWith(".jpg") || file.endsWith(".jpeg")) {
             return ImageType.JPEG;
-        } else if (filename.endsWith(".png")) {
+        } else if (file.endsWith(".png")) {
             return ImageType.PNG;
-        } else if (filename.endsWith(".gif")) {
+        } else if (file.endsWith(".gif")) {
             return ImageType.GIF;
-        } else if (filename.endsWith(".bmp")) {
+        } else if (file.endsWith(".bmp")) {
             return ImageType.BMP;
         }
         return null;
