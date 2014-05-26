@@ -470,6 +470,32 @@ public class DocumentBuilder {
     }
 
     /**
+     * Adds an image to the document. Use the returned image instance to adjust attributes of the image.
+     * @param imageData image data to use.
+     * @param format The format of the image.
+     * @return image object
+     */
+    public Image addImage(byte[] imageData, ImageType format) {
+        Image image = createImage(imageData, format);
+        this.addPart(image);
+        return image;
+    }
+
+    /**
+     * Creates a new image instance. Use the returned instance to adjust attributes of the image. 
+     * You can use this method to create images and add them to anchors without directly adding the image to the document as well.
+     * @param imageData Byte[] containing the image data.
+     * @param format The format of the image.
+     * @return image object
+     * @see Anchor
+     */
+    public Image createImage(byte[] imageData, ImageType format) {
+        Image image = new BaseImage(imageData, format);
+        setDefaultMargins(image);
+        return image;
+    }
+
+    /**
      * Creates a new image instance. Use the returned instance to adjust attributes of the image. 
      * You can use this method to create images and add them to anchors without directly adding the image to the document as well.
      * @param imageFile InputStream containing the image file to parse.
@@ -514,10 +540,10 @@ public class DocumentBuilder {
      * @see Table
      */
     public Table createTable() {
-    	int width = defaultPageWidth;
-    	if((currentPageNumber - 1) > 0) {
-    		width = pages.get(currentPageNumber - 1).getWidthWithoutMargins();
-    	}
+        int width = defaultPageWidth;
+        if ((currentPageNumber - 1) > 0) {
+            width = pages.get(currentPageNumber - 1).getWidthWithoutMargins();
+        }
         Table table = new BaseTable(width);
         setDefaultMargins(table);
         return table;

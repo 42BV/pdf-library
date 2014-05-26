@@ -1,5 +1,6 @@
 package nl.mad.toucanpdf.api;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import nl.mad.toucanpdf.image.JPEG;
@@ -33,12 +34,23 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     }
 
     /**
-     * 
-     * @param imageStream
-     * @param filename
+     * Creates a new instance of BaseImage using the given inputstream and image filename.
+     * @param imageStream InputStream for the image.
+     * @param filename Filename of the image.
      */
     public BaseImage(InputStream imageStream, String filename) {
         this(imageStream, getTypeFromFilename(filename));
+    }
+
+    /**
+     * Creates a new instance of BaseImage using the given image data and type.
+     * @param image Image data in bytes.
+     * @param type Image type.
+     */
+    public BaseImage(byte[] image, ImageType type) {
+        this();
+        this.parse(image, type);
+        setInitialWidth();
     }
 
     /**
@@ -49,11 +61,15 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public BaseImage(InputStream imageStream, ImageType type) {
         this();
         this.parse(imageStream, type);
-    	height = 0;
-    	width = 0;
-        if(image != null) {
-        this.height = PointsConverter.getPointsForPixels(image.getHeight());
-        this.width = PointsConverter.getPointsForPixels(image.getWidth());
+        setInitialWidth();
+    }
+
+    private void setInitialWidth() {
+        height = 0;
+        width = 0;
+        if (image != null) {
+            this.height = PointsConverter.getPointsForPixels(image.getHeight());
+            this.width = PointsConverter.getPointsForPixels(image.getWidth());
         }
         if (this.width > 0 && this.height > 0) {
             scale = this.width / this.height;
@@ -74,19 +90,24 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.width = width;
     }
 
+    private void parse(byte[] imageData, ImageType type) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+        this.parse(bais, type);
+    }
+
     private void parse(InputStream imageStream, ImageType type) {
-    	if(imageStream != null) {
-        switch (type) {
-        case JPEG:
-            image = new JPEG(imageStream);
-            break;
-        default:
-            //TODO: Log unsupported image type
-            break;
+        if (imageStream != null) {
+            switch (type) {
+            case JPEG:
+                image = new JPEG(imageStream);
+                break;
+            default:
+                //TODO: Log unsupported image type
+                break;
+            }
+        } else {
+
         }
-    	} else {
-    		
-    	}
     }
 
     /**

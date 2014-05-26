@@ -53,6 +53,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning) {
+        System.out.println("Table contents: " + this.getContent().size());
         MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
         int columnAmount = this.getColumnAmount();
         BigDecimal cellWidth = new BigDecimal(this.getWidth() / columnAmount);
@@ -301,7 +302,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public Cell addCell(PlaceableDocumentPart part) {
-    	Cell c = new BaseCell(part);
+        Cell c = new BaseCell(part);
         this.addCell(c);
         return c;
     }

@@ -34,9 +34,81 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         presentation1();
+        presentationN();
+        presentationN2();
+        presentationN3();
         //presentation1();
         //newTest();
         //documentStateTest();
+    }
+
+    private static void presentationN() {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.title("presLines");
+        Table table = builder.addTable().columns(6).align(Alignment.CENTERED);
+        table.addCell("Cell 1").columnSpan(3);
+        table.addCell("Cell 2").columnSpan(2);
+        table.addCell("Cell 3").columnSpan(1);
+        table.addCell("Cell 4").columnSpan(1);
+        table.addCell("Cell 5").columnSpan(1);
+        table.addCell("Cell 6").columnSpan(1);
+        table.addCell("Cell 7").columnSpan(1);
+        table.addCell("Cell 8").columnSpan(1);
+        table.addCell("Cell 9").columnSpan(1);
+        builder.finish();
+
+    }
+
+    private static void presentationN2() throws FileNotFoundException {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
+        builder.setDefaultMarginBottom(0);
+        builder.title("presMargins");
+        builder.addText(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id diam nec sapien consequat placerat. Curabitur fermentum lectus sed neque ultricies lobortis. Morbi a metus ut lectus pretium malesuada. Duis et nisl vel nisi interdum auctor. Duis quis dui nec orci fermentum venenatis. Quisque et nibh tristique, ullamcorper risus vel, molestie erat. Nullam vestibulum, purus a congue mollis, elit neque egestas mauris, vitae blandit sapien turpis vitae velit. Aliquam erat volutpat. Curabitur at accumsan massa. Proin gravida, sem ut feugiat accumsan, est mi blandit orci, at posuere dolor nunc sit amet eros. Maecenas est arcu, pretium et urna a, volutpat lobortis purus. Nullam varius magna odio, vitae dictum ligula sollicitudin sed. ")
+                .marginBottom(10);
+        Table table = builder.addTable().columns(6).align(Alignment.CENTERED).marginBottom(15);
+        table.addCell("Cell 1").columnSpan(3);
+        table.addCell("Cell 2").columnSpan(2);
+        table.addCell("Cell 3").columnSpan(1);
+        table.addCell("Cell 4").columnSpan(1);
+        table.addCell("Cell 5").columnSpan(1);
+        table.addCell("Cell 6").columnSpan(1);
+        table.addCell("Cell 7").columnSpan(1);
+        table.addCell("Cell 8").columnSpan(1);
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(true).align(Alignment.LEFT).width(200)
+                .height(200).marginRight(10);
+        builder.addPart(i1);
+        builder.addText("Donec lorem massa, fermentum volutpat tincidunt sed, euismod ac felis. Morbi sagittis lobortis porta. Suspendisse condimentum magna nisi, quis pulvinar metus varius vitae. Fusce ut fermentum eros. Sed blandit varius ultricies. Nam fringilla, sapien id pellentesque accumsan, urna orci vehicula lorem, hendrerit mattis odio magna id massa. Suspendisse placerat nulla at ornare consequat. Pellentesque posuere quis orci vel tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse auctor neque a lacus egestas imperdiet in eu tellus. Proin diam dolor, mollis vel varius in, mollis sed felis. Proin sit amet luctus quam. ");
+        builder.finish();
+    }
+
+    private static void presentationN3() throws FileNotFoundException {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
+        builder.setDefaultMarginBottom(0);
+        builder.title("presMargins2");
+        builder.addText(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id diam nec sapien consequat placerat. Curabitur fermentum lectus sed neque ultricies lobortis. Morbi a metus ut lectus pretium malesuada. Duis et nisl vel nisi interdum auctor. Duis quis dui nec orci fermentum venenatis. Quisque et nibh tristique, ullamcorper risus vel, molestie erat. Nullam vestibulum, purus a congue mollis, elit neque egestas mauris, vitae blandit sapien turpis vitae velit. Aliquam erat volutpat. Curabitur at accumsan massa. Proin gravida, sem ut feugiat accumsan, est mi blandit orci, at posuere dolor nunc sit amet eros. Maecenas est arcu, pretium et urna a, volutpat lobortis purus. Nullam varius magna odio, vitae dictum ligula sollicitudin sed. ")
+                .marginBottom(10);
+        Table table = builder.addTable().columns(6).align(Alignment.CENTERED);
+        table.addCell("Cell 1").columnSpan(3);
+        table.addCell("Cell 2").columnSpan(2);
+        table.addCell("Cell 3").columnSpan(1);
+        table.addCell("Cell 4").columnSpan(1);
+        table.addCell("Cell 5").columnSpan(1);
+        table.addCell("Cell 6").columnSpan(1);
+        table.addCell("Cell 7").columnSpan(1);
+        table.addCell("Cell 8").columnSpan(1);
+        table.addCell("Cell 9").columnSpan(1);
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(false).align(Alignment.CENTERED)
+                .width(200).height(200);
+        builder.addPart(i1);
+        builder.addText("Donec lorem massa, fermentum volutpat tincidunt sed, euismod ac felis. Morbi sagittis lobortis porta. Suspendisse condimentum magna nisi, quis pulvinar metus varius vitae. Fusce ut fermentum eros. Sed blandit varius ultricies. Nam fringilla, sapien id pellentesque accumsan, urna orci vehicula lorem, hendrerit mattis odio magna id massa. Suspendisse placerat nulla at ornare consequat. Pellentesque posuere quis orci vel tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse auctor neque a lacus egestas imperdiet in eu tellus. Proin diam dolor, mollis vel varius in, mollis sed felis. Proin sit amet luctus quam. ");
+        builder.finish();
     }
 
     private static void presentation1() throws FileNotFoundException {
@@ -44,7 +116,7 @@ public class Main {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
         builder.title("pres1");
-        Image i1 = new BaseImage(new FileInputStream("C:/Users/Dylan/Pictures/001.jpg"), "penguin.jpg").allowWrapping(false).width(200, true);
+        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(false).width(200, true);
         Image i2 = new BaseImage(i1).align(Alignment.CENTERED);
         Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         Text text = builder
@@ -65,6 +137,7 @@ public class Main {
                 .addText(
                         builder.createText("Dit is de opvolgende tekst. Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst.Dit is de opvolgende tekst. Dit is de opvolgende tekst. Dit is de opvolgende tekst. Dit is de opvolgende tekst."));
         Table table = new BaseTable(page.getWidthWithoutMargins()).columns(5).border(1).align(Alignment.CENTERED);
+
         //table.setPosition(new Position(100, 100));
         Text cont = new BaseText(
                 "Test test test test test test test test test test test test test test test test test test test test test test test test test test test test");
@@ -93,6 +166,9 @@ public class Main {
         //builder.addPart(table);
 
         Table table2 = builder.addTable().columns(7).align(Alignment.CENTERED);
+        for (int i = 0; i < 6; ++i) {
+            //table2.addCell(new BaseCell().height(100).width(20));
+        }
         table2.addCell(builder.createText("Eric Meijer").font(DEFAULT_FONT).size(11)).width(100);
         table2.addCell(builder.createText("Robert Bor").font(DEFAULT_FONT).size(11));
         table2.addCell(builder.createText("Lucas Bos").font(DEFAULT_FONT).size(11));

@@ -376,6 +376,8 @@ public class DocumentState {
         return true;
     }
 
+    //TODO: add preview for tables
+
     /**
      * Returns the preview objects corresponding to the given text object.
      * @param text Text object to get the corresponding preview objects for.

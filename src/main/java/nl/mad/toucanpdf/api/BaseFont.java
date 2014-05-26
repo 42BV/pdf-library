@@ -27,6 +27,17 @@ public class BaseFont extends AbstractDocumentPart implements Font {
     }
 
     /**
+     * Creates a new instance of BaseFont and copies the given font.
+     * @param font Font to copy.
+     */
+    public BaseFont(Font font) {
+        super(DocumentPartType.FONT);
+        this.family = font.getFamily();
+        this.style = font.getStyle();
+        this.fontFamily = font.getFontFamily();
+    }
+
+    /**
      * Create a new instance of Font. Will try to use a default base font since none was supplied.
      * @param family Font family.
      * @param style Style of font (bold, italic).

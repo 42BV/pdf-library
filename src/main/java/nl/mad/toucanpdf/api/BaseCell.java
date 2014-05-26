@@ -7,6 +7,7 @@ public class BaseCell extends AbstractCell implements Cell {
     private PlaceableDocumentPart content;
 
     public BaseCell(PlaceableDocumentPart content) {
+        super();
         this.content = content;
     }
 
@@ -16,7 +17,7 @@ public class BaseCell extends AbstractCell implements Cell {
     }
 
     public BaseCell() {
-
+        super();
     }
 
     @Override

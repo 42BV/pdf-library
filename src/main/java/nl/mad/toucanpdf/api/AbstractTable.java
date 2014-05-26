@@ -108,25 +108,25 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table marginTop(int marginTop) {
-        this.marginTop(marginTop);
+        this.setMarginTop(marginTop);
         return this;
     }
 
     @Override
     public Table marginBottom(int marginBottom) {
-        this.marginBottom(marginBottom);
+        this.setMarginBottom(marginBottom);
         return this;
     }
 
     @Override
     public Table marginRight(int marginRight) {
-        this.marginRight(marginRight);
+        this.setMarginRight(marginRight);
         return this;
     }
 
     @Override
     public Table marginLeft(int marginLeft) {
-        this.marginLeft(marginLeft);
+        this.setMarginLeft(marginLeft);
         return this;
     }
 }
