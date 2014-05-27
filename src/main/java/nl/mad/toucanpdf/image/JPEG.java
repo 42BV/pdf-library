@@ -47,11 +47,13 @@ public class JPEG implements ImageParser {
             //TODO: Handle adobe jpg's
             BufferedImage image = ImageIO.read(stream);
             image = convertImage(image);
-            retrieveData(image);
-            determineColorSpace(image);
-            retrieveBitsPerComponent(image);
+            if(image != null) {
+	            retrieveData(image);
+	            determineColorSpace(image);
+	            retrieveBitsPerComponent(image);
+	            retrieveImageSize(image);
+            }
             filter = Compression.DCT;
-            retrieveImageSize(image);
             stream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,12 +82,15 @@ public class JPEG implements ImageParser {
      * @return The same image if no conversion was necessary, a converted image otherwise. 
      */
     private BufferedImage convertImage(BufferedImage image) {
-        if (image.getColorModel().getNumComponents() == RGB_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_INT_RGB) {
-            image = convertImageToType(image, BufferedImage.TYPE_INT_RGB);
-        } else if (image.getColorModel().getNumComponents() == GRAY_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
-            image = convertImageToType(image, BufferedImage.TYPE_BYTE_GRAY);
-        }
-        return image;
+    	if(image != null) {
+	        if (image.getColorModel().getNumComponents() == RGB_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_INT_RGB) {
+	            image = convertImageToType(image, BufferedImage.TYPE_INT_RGB);
+	        } else if (image.getColorModel().getNumComponents() == GRAY_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+	            image = convertImageToType(image, BufferedImage.TYPE_BYTE_GRAY);
+	        }
+	        return image;
+    	}
+    	return null;
     }
 
     /**
