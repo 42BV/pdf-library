@@ -125,6 +125,7 @@ public class DocumentState {
                 image.processContentSize(page);
                 page.add(image);
                 addToStateLink(part, image);
+                break;
             case TABLE:
                 //TODO: Table fix stuff!
                 StateTable table = new BaseStateTable((Table) part);
@@ -134,7 +135,9 @@ public class DocumentState {
                 table.setOriginalObject(part);
                 table.processContentSize(page);
                 page.add(table);
+                break;
             default:
+            	//TODO: Log unsupported document part type
                 break;
             }
         }

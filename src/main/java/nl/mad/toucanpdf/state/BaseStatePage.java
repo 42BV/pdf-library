@@ -88,10 +88,18 @@ public class BaseStatePage extends BasePage implements StatePage {
 
     @Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
-        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, spacing, MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
+    	        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, spacing, this.getMinimalWidthForWrapping(spacing));
     }
 
-    @Override
+    private double getMinimalWidthForWrapping(StateSpacing spacing) {
+		if(this.getWidthWithoutMargins() > this.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
+			return MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
+		} else {
+			return this.getWidthWithoutMargins() - spacing.getRequiredSpaceLeft() - spacing.getRequiredSpaceRight();
+		}
+	}
+
+	@Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth) {
         double posHeight = getHeight() - filledHeight - requiredSpaceAbove;
         return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, spacing, requiredWidth);
@@ -104,13 +112,14 @@ public class BaseStatePage extends BasePage implements StatePage {
         int marginBottom = getMarginBottom();
         double potentialHeight = positionHeight;
         if (requiredWidth == 0) {
-            requiredWidth = MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
+            requiredWidth = this.getMinimalWidthForWrapping(spacing);
         }
         if (positionHeight > marginBottom) {
             double potentialWidth = positionWidth + getMarginLeft();
             Position position = new Position(potentialWidth, potentialHeight);
             while (!openPositionFound) {
-                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) > (requiredWidth)) {
+            	System.out.println(getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth));
+                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth)) {
                     return position;
                 }
                 System.out.println("potential height: " + potentialHeight);

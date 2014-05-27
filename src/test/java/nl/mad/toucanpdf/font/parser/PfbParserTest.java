@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 public class PfbParserTest {
     private Logger log = Logger.getRootLogger();
-    private Logger logger = Logger.getLogger(PfbParser.class);
     private TestAppender appender = new TestAppender();    
 	
 	@Before	
@@ -46,7 +45,7 @@ public class PfbParserTest {
     
     @After
     public void tearDown() {
-    	logger.removeAppender(appender);
+    	log.removeAppender(appender);
     }
 
 }

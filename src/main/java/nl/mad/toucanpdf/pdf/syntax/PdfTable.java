@@ -25,13 +25,10 @@ public class PdfTable extends PdfPath {
     }
 
     private void drawCells() {
-        if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
+        if (FloatEqualityTester.greaterThanOrEqualTo(table.getBorderWidth(), 0)) {
+            this.setLineWidth(table.getBorderWidth());
             for (StateCell c : table.getStateCellCollection()) {
-                this.setLineWidth(table.getBorderWidth());
                 Position pos = c.getPosition();
-                System.out.println("Printing cell on : " + pos);
-                System.out.println("    height: " + c.getHeight());
-                System.out.println("    width: " + c.getWidth());
                 drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
                 this.strokePath();
             }
