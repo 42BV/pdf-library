@@ -1,14 +1,13 @@
 package nl.mad.toucanpdf.model.state;
 
 import nl.mad.toucanpdf.model.Page;
-import nl.mad.toucanpdf.model.Text;
 
 /**
  * Interface for text objects that are used in calculating the state of the document.
  * 
  * @author Dylan de Wolff
  */
-public interface StateText extends Text, StatePlaceableDocumentPart, StateSplittableText {
+public interface StateText extends StatePlaceableDocumentPart, StateSplittableText {
 
     /**
      * Processes the text to check how the text will be divided into lines and where exactly the text is going to be positioned. 

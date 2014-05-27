@@ -15,7 +15,7 @@ public final class Constants {
     /**
      * Specifies the default line separator string value.
      */
-	public static final String LINE_SEPARATOR_STRING = "\n";
+    public static final String LINE_SEPARATOR_STRING = "\n";
     /**
      * Specifies the default line separator byte value.
      */

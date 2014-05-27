@@ -54,6 +54,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning) {
         System.out.println("Table contents: " + this.getContent().size());
+        int totalCellAmount = this.getContent().size();
         MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
         int columnAmount = this.getColumnAmount();
         BigDecimal cellWidth = new BigDecimal(this.getWidth() / columnAmount);
@@ -73,7 +74,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         Position cellPos = new Position(this.getPosition());
 
         // TODO: Support custom widths
-        for (int i = 0; i < content.size(); ++i) {
+        for (int i = 0; i < totalCellAmount; ++i) {
             StateCell c = content.get(i);
             c.columnSpan(Math.min(columnAmount, c.getColumnSpan()));
             int columns = c.getColumnSpan();
@@ -82,11 +83,13 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             BigDecimal remainingColumns = new BigDecimal(remainder);
             cellWidth = availableWidth.divide(remainingColumns, mc);
 
+            System.out.println();
             System.out.println("currently handling cell " + i);
             System.out.println("Available width: " + availableWidth);
             System.out.println("Dividing by: " + (columnAmount - currentFilledColumns));
             System.out.println("cellWidth: " + cellWidth);
             System.out.println("Content: " + c.getContent());
+            System.out.println();
             if (c.getContent() instanceof Text) {
                 System.out.println(((Text) c.getContent()).getText());
             }
@@ -97,9 +100,10 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 availableWidth = availableWidth.subtract(reqWidth);
                 processCellAddition(c, cellPos, currentRowCells, reqWidth, processPositioning);
                 rowHeight = calculateHeight(rowHeight, c, page, height);
+                System.out.println("RowHeight after addition: " + rowHeight);
                 currentFilledColumns += columns;
             } else {
-                if (processPositioning) {
+                if (processPositioning && this.getDrawFiller()) {
                     fillRemainderOfRow(rowHeight, cellWidth, columnAmount - currentFilledColumns, cellPos);
                 }
                 processRow(currentRowCells, rowHeight);
@@ -112,15 +116,16 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, availableWidth.divide(new BigDecimal(columnAmount), mc), c);
                 availableWidth = availableWidth.subtract(reqWidth);
                 processCellAddition(c, cellPos, currentRowCells, reqWidth, processPositioning);
-                rowHeight = calculateHeight(rowHeight, c, page, height);
-                System.out.println("Added to new row");
+                rowHeight = calculateHeight(0, c, page, height);
+                System.out.println("Added to new row: " + rowHeight);
             }
             if (processPositioning) {
                 c.processContentSize(page.getLeading(), this.borderWidth);
             }
 
-            if (i == (content.size() - 1)) {
-                if (processPositioning) {
+            if (i == (totalCellAmount - 1)) {
+                System.out.println("WE ARE VICTIORIOUS");
+                if (processPositioning && this.getDrawFiller()) {
                     remainder = columnAmount - currentFilledColumns;
                     if (remainder == 0) ++remainder;
                     cellWidth = availableWidth.divide(new BigDecimal(remainder), mc);
@@ -131,6 +136,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 if (!wrapping && processPositioning) {
                     this.adjustFilledHeight(page);
                 }
+                return false;
             }
         }
         return false;
@@ -161,14 +167,16 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private double calculateHeight(double rowHeight, StateCell c, StatePage page, double currentTableHeight) {
         if (c.getContent() != null) {
             double requiredHeight = c.getRequiredHeight(page.getLeading(), this.borderWidth);
+            System.out.println("Required hght from cell: " + requiredHeight);
             if (requiredHeight + currentTableHeight > page.getHeightWithoutMargins()) {
                 c.setContent(null);
                 return rowHeight;
                 //TODO: LOG content too large
             }
             return Math.max(rowHeight, requiredHeight + (this.borderWidth * 2));
+        } else {
+            return Math.max(rowHeight, c.getHeight());
         }
-        return rowHeight;
     }
 
     private Position calculatePosition(StatePage page) {
@@ -229,22 +237,23 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     private List<Cell> fillRemainderOfRow(double rowHeight, BigDecimal cellWidth, int remainingColumns, Position pos) {
-        if (remainingColumns > 0) {
-            for (int i = 0; i < remainingColumns; ++i) {
-                StateCell c = new BaseStateCell();
-                System.out.println("Adding empty cell: " + pos);
-                c.setPosition(new Position(pos));
-                this.addCell((c.width(cellWidth.doubleValue()).height(rowHeight)));
-                System.out.println("cellWidth = " + cellWidth);
-                pos.adjustX(cellWidth.doubleValue());
-            }
+        for (int i = 0; i < remainingColumns; ++i) {
+            StateCell c = new BaseStateCell();
+            System.out.println("Adding empty cell: " + pos);
+            c.setPosition(new Position(pos));
+            this.addCell((c.width(cellWidth.doubleValue()).height(rowHeight)));
+            System.out.println("cellWidth = " + cellWidth);
+            System.out.println("CellHeight = " + rowHeight);
+            pos.adjustX(cellWidth.doubleValue());
         }
         return this.getContent();
     }
 
     private void processRow(List<StateCell> currentRowCells, double cellHeight) {
+        System.out.println("Setting height for row! " + cellHeight);
         for (Cell c : currentRowCells) {
             c.height(cellHeight);
+            System.out.println("Height : " + c.getHeight());
         }
     }
 

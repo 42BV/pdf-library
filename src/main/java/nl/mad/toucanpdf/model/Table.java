@@ -100,4 +100,8 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
     Table border(double borderWidth);
 
     double getBorderWidth();
+
+    Table drawFillerCells(boolean draw);
+
+    boolean getDrawFiller();
 }

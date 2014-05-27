@@ -28,9 +28,8 @@ public class BaseStateCell extends AbstractCell implements StateCell {
                 return new BaseStateCellText((Text) part);
             case IMAGE:
                 return new BaseStateCellImage((Image) part);
-            case PARAGRAPH:
-            case TABLE:
             default:
+                //TODO: Log unsupported object
                 break;
             }
         }

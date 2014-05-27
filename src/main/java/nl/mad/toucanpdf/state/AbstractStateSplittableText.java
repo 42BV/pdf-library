@@ -1,4 +1,4 @@
-package nl.mad.toucanpdf.model.state;
+package nl.mad.toucanpdf.state;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.Map;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.state.StateSplittableText;
 
 public abstract class AbstractStateSplittableText extends BaseText implements StateSplittableText {
     protected Map<Position, String> textSplit = new LinkedHashMap<Position, String>();

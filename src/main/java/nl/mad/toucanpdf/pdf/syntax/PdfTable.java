@@ -21,23 +21,17 @@ public class PdfTable extends PdfPath {
     public PdfTable(StateTable table) {
         super(PdfObjectType.TABLE);
         this.table = table;
-        drawTableBorder();
         drawCells();
-    }
-
-    private void drawTableBorder() {
-        if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
-            Position pos = table.getPosition();
-            this.setLineWidth(table.getBorderWidth());
-            drawRectangle(pos.getX(), pos.getY() - table.getHeight(), table.getWidth(), table.getHeight());
-            this.strokePath();
-        }
     }
 
     private void drawCells() {
         if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
             for (StateCell c : table.getStateCellCollection()) {
+                this.setLineWidth(table.getBorderWidth());
                 Position pos = c.getPosition();
+                System.out.println("Printing cell on : " + pos);
+                System.out.println("    height: " + c.getHeight());
+                System.out.println("    width: " + c.getWidth());
                 drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
                 this.strokePath();
             }

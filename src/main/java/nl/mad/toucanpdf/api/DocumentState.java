@@ -201,6 +201,7 @@ public class DocumentState {
             for (Cell c : ((Table) p).getContent()) {
                 table.addCell(c);
             }
+            System.out.println("Total content size before processing cont: " + table.getContent().size());
             if (!table.processContentSize(page)) {
                 page.add(table);
                 addToStateLink(p, table);

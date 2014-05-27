@@ -9,7 +9,6 @@ import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
-import nl.mad.toucanpdf.model.state.AbstractStateSplittableText;
 import nl.mad.toucanpdf.model.state.StateCellText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 

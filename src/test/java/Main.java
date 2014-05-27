@@ -33,13 +33,23 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        presentation1();
-        presentationN();
-        presentationN2();
-        presentationN3();
+        tableMain();
+        //        presentation1();
+        //        presentationN();
+        //        presentationN2();
+        //        presentationN3();
         //presentation1();
         //newTest();
         //documentStateTest();
+    }
+
+    private static void tableMain() {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        Table table = builder.addTable().columns(5).drawFillerCells(false);
+        table.addCell(new BaseCell().height(100).width(100).columnSpan(2));
+        table.addCell(new BaseCell(new BaseText("Hellooooooooooooooooooooooooooo")).columnSpan(5));
+        builder.finish();
     }
 
     private static void presentationN() {

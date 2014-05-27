@@ -14,6 +14,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     protected boolean wrappingAllowed = false;
     protected Compression compression;
     protected double borderWidth = 1.0;
+    private boolean drawFillerCells = true;
 
     public AbstractTable(int pageWidth) {
         super(DocumentPartType.TABLE);
@@ -34,6 +35,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.marginLeft = table.getMarginLeft();
         this.marginTop = table.getMarginTop();
         this.marginBottom = table.getMarginBottom();
+        this.drawFillerCells = table.getDrawFiller();
     }
 
     @Override
@@ -128,5 +130,16 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     public Table marginLeft(int marginLeft) {
         this.setMarginLeft(marginLeft);
         return this;
+    }
+
+    @Override
+    public Table drawFillerCells(boolean draw) {
+        this.drawFillerCells = draw;
+        return this;
+    }
+
+    @Override
+    public boolean getDrawFiller() {
+        return this.drawFillerCells;
     }
 }
