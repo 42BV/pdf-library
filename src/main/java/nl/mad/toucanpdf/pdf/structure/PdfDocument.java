@@ -28,6 +28,7 @@ import nl.mad.toucanpdf.pdf.syntax.PdfDictionary;
 import nl.mad.toucanpdf.pdf.syntax.PdfFile;
 import nl.mad.toucanpdf.pdf.syntax.PdfFont;
 import nl.mad.toucanpdf.pdf.syntax.PdfFontDescriptor;
+import nl.mad.toucanpdf.pdf.syntax.PdfFontEncoding;
 import nl.mad.toucanpdf.pdf.syntax.PdfFontProgram;
 import nl.mad.toucanpdf.pdf.syntax.PdfImage;
 import nl.mad.toucanpdf.pdf.syntax.PdfImageDictionary;
@@ -139,17 +140,17 @@ public class PdfDocument {
     }
 
     private void addImage(Image part) {
-	        ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
-	        PdfIndirectObject imageRef = imageList.get(buffer);
-	        if (imageRef == null) {
-	            PdfImageDictionary imageDic = new PdfImageDictionary(part);
-	            imageRef = body.addObject(imageDic);
-	            imageList.put(buffer, imageRef);
-	        }
-	        this.getCurrentPage().addResource(imageRef);
-	        PdfStream stream = this.getCurrentPageStream();
-	        stream.add(new PdfImage(imageRef.getReference().getResourceReference(), part));
-	        stream.addFilter(part.getCompressionMethod());
+        ByteBuffer buffer = ByteBuffer.wrap(part.getImageParser().getData());
+        PdfIndirectObject imageRef = imageList.get(buffer);
+        if (imageRef == null) {
+            PdfImageDictionary imageDic = new PdfImageDictionary(part);
+            imageRef = body.addObject(imageDic);
+            imageList.put(buffer, imageRef);
+        }
+        this.getCurrentPage().addResource(imageRef);
+        PdfStream stream = this.getCurrentPageStream();
+        stream.add(new PdfImage(imageRef.getReference().getResourceReference(), part));
+        stream.addFilter(part.getCompressionMethod());
     }
 
     /**
@@ -177,8 +178,10 @@ public class PdfDocument {
      */
     private void addText(StateSplittableText text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
+        PdfFont fontObj = (PdfFont) font.getObject();
+        fontObj.getEncoding().updateDifferences(text.getText());
         currentPage.add(font);
-        PdfText pdfText = new PdfText();
+        PdfText pdfText = new PdfText(fontObj);
         PdfStream ts = getCurrentPageStream();
 
         if (overrideMatrix) {
@@ -236,7 +239,8 @@ public class PdfDocument {
                 newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getFontFamily().getSubType());
             }
 
-            PdfFont newFont = new PdfFont(font);
+            PdfIndirectObject enc = body.addObject(new PdfFontEncoding(font));
+            PdfFont newFont = new PdfFont(font, enc);
             PdfIndirectObject indirectFont = body.addObject(newFont);
             PdfIndirectObject indirectFontDictionary = body.addObject(newFontDescriptor);
             newFont.setFontDescriptorReference(indirectFontDictionary.getReference());

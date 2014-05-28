@@ -85,7 +85,7 @@ public class FontFamily {
      */
     private void fillMetrics(String filename) {
         try {
-            //somehow do this without if (map with subtype, parser?)
+            //do this without if (map with subtype, parser?)
             if (subType == FontType.TYPE1) {
                 metrics.put(filename, new Type1FontMetrics(filename));
             }

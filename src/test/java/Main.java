@@ -22,6 +22,7 @@ import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.utility.UnicodeConverter;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -33,7 +34,8 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        tableMain();
+        testUnicodeConverter();
+        //tableMain();
         //        presentation1();
         //        presentationN();
         //        presentationN2();
@@ -41,6 +43,18 @@ public class Main {
         //presentation1();
         //newTest();
         //documentStateTest();
+    }
+
+    private static void testUnicodeConverter() {
+        System.out.println();
+        System.out.println(UnicodeConverter.getPostscriptForUnicode((int) ' '));
+        System.out.println(0x0020);
+
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addText("abcdefghiijklmnopqrstuvwxyz12").font(new BaseFont(FontFamilyType.COURIER, FontStyle.NORMAL));
+        builder.finish();
+
     }
 
     private static void tableMain() {

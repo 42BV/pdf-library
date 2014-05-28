@@ -87,7 +87,8 @@ public enum PdfNameValue {
     INDEXED("Indexed"),
     PATTERN("Pattern"),
     SEPARATION("Separation"),
-    DEVICE_N("DeviceN");
+    DEVICE_N("DeviceN"),
+    DIFFERENCES("Differences");
 
     private String string;
 

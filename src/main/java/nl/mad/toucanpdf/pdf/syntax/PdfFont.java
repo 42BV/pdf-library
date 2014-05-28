@@ -12,14 +12,16 @@ import nl.mad.toucanpdf.model.PdfNameValue;
  * @author Dylan de Wolff
  */
 public class PdfFont extends PdfDictionary {
+    private PdfFontEncoding encoding;
 
     /**
      * Creates a new PdfFont instance from the given font.
      * @param font Font to use.
      */
-    public PdfFont(Font font) {
+    public PdfFont(Font font, PdfIndirectObject encoding) {
         super(PdfObjectType.FONT);
         this.processFont(font);
+        this.setFontEncodingReference(encoding);
     }
 
     /**
@@ -47,18 +49,29 @@ public class PdfFont extends PdfDictionary {
     }
 
     /**
-     * If the encoding is specified in a separate dictionary, use this method to set the reference.
-     * @param encoding Reference to the used encoding.
+     * If the encoding is specified in a separate dictionary, use this method to set it.
+     * @param newEncoding The encoding object to use.
      */
-    public void setFontEncodingReference(PdfIndirectObjectReference encoding) {
-        put(PdfNameValue.ENCODING, encoding);
+    public void setFontEncodingReference(PdfIndirectObject newEncoding) {
+        if (newEncoding != null && newEncoding.getObject() instanceof PdfFontEncoding) {
+            this.encoding = (PdfFontEncoding) newEncoding.getObject();
+            this.put(PdfNameValue.ENCODING, newEncoding.getReference());
+        }
     }
 
     /**
      * If the used encoding is a default one, use this method to set the encoding type.
-     * @param encoding Encoding to use.
+     * @param newEncoding Encoding to use.
      */
-    public void setFontEncoding(PdfName encoding) {
-        put(PdfNameValue.ENCODING, encoding);
+    public void setFontEncoding(PdfName newEncoding) {
+        put(PdfNameValue.ENCODING, newEncoding);
+    }
+
+    /**
+     * Returns the used encoding.
+     * @return PdfFontEncoding instance or null if this font does not use an external encoding dictionary.
+     */
+    public PdfFontEncoding getEncoding() {
+        return this.encoding;
     }
 }

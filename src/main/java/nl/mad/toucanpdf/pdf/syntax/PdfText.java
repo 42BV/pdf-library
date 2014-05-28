@@ -22,12 +22,17 @@ public class PdfText extends AbstractPdfObject {
     private static final String WORD_SPACING = " Tw ";
     private static final String MATRIX = " Tm" + Constants.LINE_SEPARATOR_STRING;
     private static final String FONT = " Tf" + Constants.LINE_SEPARATOR_STRING;
+    private PdfFontDifferences differences = null;
 
     /**
      * Creates a new instance of PdfText.
+     * @param fontObj 
      */
-    public PdfText() {
+    public PdfText(PdfFont fontObj) {
         super(PdfObjectType.TEXT);
+        if (fontObj != null && fontObj.getEncoding() != null) {
+            differences = fontObj.getEncoding().getEncodingDifferences();
+        }
     }
 
     /**
@@ -95,7 +100,12 @@ public class PdfText extends AbstractPdfObject {
                         sb.append(justification.get(entry.getKey()) + WORD_SPACING);
                     }
                 }
-                String textToProcess = getEscapedString(entry.getValue());
+                String textToProcess = "";
+                if (differences != null) {
+                    textToProcess = differences.convertString(entry.getValue());
+                } else {
+                    textToProcess = getEscapedString(entry.getValue());
+                }
                 sb.append(createMatrix(text, entry.getKey()));
                 sb.append("[(");
                 sb.append(this.processKerning(textToProcess, text.getFont()));

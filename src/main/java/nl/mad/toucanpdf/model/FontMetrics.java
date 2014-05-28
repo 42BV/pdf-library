@@ -228,4 +228,10 @@ public interface FontMetrics {
      * @return int array containing the lenghts.
      */
     int[] getFontProgramLengths();
+
+    /**
+     * Returns the encoding used by this font.
+     * @return String containing the encoding.
+     */
+    String getEncodingScheme();
 }
