@@ -194,8 +194,8 @@ public class PdfStream extends PdfDictionary {
             }
         }
         if (!nameExists) {
-            //array.addValue(0, name);
-            //filterList.add(method);
+            array.addValue(0, name);
+            filterList.add(method);
         }
     }
 

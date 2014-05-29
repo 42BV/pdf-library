@@ -34,23 +34,24 @@ public class PdfPage extends PdfDictionary {
      * @param height Height of page.
      * @param leading the space between lines.
      */
-    public PdfPage(int width, int height, int leading) {
+    public PdfPage(int width, int height, int leading, int rotation) {
         super(PdfObjectType.PAGE);
         this.width = width;
         this.height = height;
         this.leading = leading;
         this.resourceCount = 0;
-        this.initPage();
+        this.initPage(rotation);
     }
 
     /**
      * Initializes the page by adding type, mediabox, resources and content.
      */
-    private void initPage() {
+    private void initPage(int rotation) {
         put(PdfNameValue.TYPE, PdfNameValue.PAGE);
         put(PdfNameValue.MEDIA_BOX, createMediabox());
         put(RESOURCES, new PdfDictionary(PdfObjectType.DICTIONARY));
         put(CONTENT, new PdfArray());
+        put(PdfNameValue.ROTATION, new PdfNumber(rotation));
     }
 
     /**

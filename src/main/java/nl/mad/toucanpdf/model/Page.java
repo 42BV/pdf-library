@@ -156,5 +156,18 @@ public interface Page extends DocumentPart {
      * @return the master page.
      */
     Page getMasterPage();
+    
+    /**
+     * Sets the rotation of the page.
+     * @param rotationDegrees The rotation to use in degrees. The value must be a multiple of 90. If not, the nearest valid value will be used. The default value is zero.
+     * @return the page.
+     */
+    Page rotate(int rotationDegrees);
+    
+    /**
+     * Returns the rotation of this page.
+     * @return int containing the page rotation degrees.
+     */
+    int getRotation();
 
 }

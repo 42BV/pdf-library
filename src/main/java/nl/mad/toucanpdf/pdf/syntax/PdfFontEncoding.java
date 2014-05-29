@@ -43,20 +43,21 @@ public class PdfFontEncoding extends PdfDictionary {
     @Override
     public void writeToFile(OutputStream os) throws IOException {
         if (differences != null) {
-            PdfArray differencesArray = new PdfArray();
-            Entry<String, Integer> previousEntry = null;
-            for (Entry<String, Integer> entry : this.differences.getDifferences().entrySet()) {
-                if (previousEntry == null || (previousEntry != null && (entry.getValue() - 1) != previousEntry.getValue())) {
-                    differencesArray.addValue(new PdfNumber(entry.getValue()));
-                }
-                differencesArray.addValue(new PdfName(entry.getKey()));
-                previousEntry = entry;
-            }
-            for (int i = this.differences.getDifferences().size(); i < 256; ++i) {
-                //differencesArray.addValue(new PdfName(".notdef"));
-            }
-            this.put(new PdfName(PdfNameValue.DIFFERENCES), differencesArray);
+            this.addDifferencesEntry();
         }
         super.writeToFile(os);
     }
+
+	private void addDifferencesEntry() {
+		PdfArray differencesArray = new PdfArray();
+        Entry<String, Integer> previousEntry = null;
+        for (Entry<String, Integer> entry : this.differences.getDifferences().entrySet()) {
+            if (previousEntry == null || (previousEntry != null && (entry.getValue() - 1) != previousEntry.getValue())) {
+                differencesArray.addValue(new PdfNumber(entry.getValue()));
+            }
+            differencesArray.addValue(new PdfName(entry.getKey()));
+            previousEntry = entry;
+        }
+        this.put(new PdfName(PdfNameValue.DIFFERENCES), differencesArray);
+	}
 }

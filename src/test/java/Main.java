@@ -34,11 +34,11 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        testUnicodeConverter();
+        //testUnicodeConverter();
         //tableMain();
         //        presentation1();
         //        presentationN();
-        //        presentationN2();
+                presentationN2();
         //        presentationN3();
         //presentation1();
         //newTest();
@@ -49,10 +49,13 @@ public class Main {
         System.out.println();
         System.out.println(UnicodeConverter.getPostscriptForUnicode((int) ' '));
         System.out.println(0x0020);
+        Font font = new BaseFont(FontFamilyType.HELVETICA, FontStyle.NORMAL);
+        System.out.println(font.getMetrics().getKerning((int) 'A', (int) 'C'));
 
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
-        builder.addText("abcdefghiijklmnopqrstuvwxyz12").font(new BaseFont(FontFamilyType.COURIER, FontStyle.NORMAL));
+        builder.title("testttt");
+        builder.addText("ACbcdefghijklmnopqrstuvwxyz12jantje\\").font(new BaseFont(FontFamilyType.HELVETICA, FontStyle.NORMAL));
         builder.finish();
 
     }
@@ -87,13 +90,13 @@ public class Main {
     private static void presentationN2() throws FileNotFoundException {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
-        builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
+        builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20).rotate(90);
         builder.setDefaultMarginBottom(0);
         builder.title("presMargins");
         builder.addText(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id diam nec sapien consequat placerat. Curabitur fermentum lectus sed neque ultricies lobortis. Morbi a metus ut lectus pretium malesuada. Duis et nisl vel nisi interdum auctor. Duis quis dui nec orci fermentum venenatis. Quisque et nibh tristique, ullamcorper risus vel, molestie erat. Nullam vestibulum, purus a congue mollis, elit neque egestas mauris, vitae blandit sapien turpis vitae velit. Aliquam erat volutpat. Curabitur at accumsan massa. Proin gravida, sem ut feugiat accumsan, est mi blandit orci, at posuere dolor nunc sit amet eros. Maecenas est arcu, pretium et urna a, volutpat lobortis purus. Nullam varius magna odio, vitae dictum ligula sollicitudin sed. ")
                 .marginBottom(10);
-        Table table = builder.addTable().columns(6).align(Alignment.CENTERED).marginBottom(15);
+        Table table = builder.addTable().columns(6).align(Alignment.CENTERED).marginBottom(15).drawFillerCells(false);
         table.addCell("Cell 1").columnSpan(3);
         table.addCell("Cell 2").columnSpan(2);
         table.addCell("Cell 3").columnSpan(1);
@@ -102,8 +105,8 @@ public class Main {
         table.addCell("Cell 6").columnSpan(1);
         table.addCell("Cell 7").columnSpan(1);
         table.addCell("Cell 8").columnSpan(1);
-        Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), "penguin.jpg").allowWrapping(true).align(Alignment.LEFT).width(200)
-                .height(200).marginRight(10);
+        Image i1 = new BaseImage(new FileInputStream("B:/quickie-jpeg-100.jpg"), "001.jpg").allowWrapping(false).align(Alignment.CENTERED).width(200)
+                .height(200).marginRight(10).marginBottom(10).invertColors(false);
         builder.addPart(i1);
         builder.addText("Donec lorem massa, fermentum volutpat tincidunt sed, euismod ac felis. Morbi sagittis lobortis porta. Suspendisse condimentum magna nisi, quis pulvinar metus varius vitae. Fusce ut fermentum eros. Sed blandit varius ultricies. Nam fringilla, sapien id pellentesque accumsan, urna orci vehicula lorem, hendrerit mattis odio magna id massa. Suspendisse placerat nulla at ornare consequat. Pellentesque posuere quis orci vel tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse auctor neque a lacus egestas imperdiet in eu tellus. Proin diam dolor, mollis vel varius in, mollis sed felis. Proin sit amet luctus quam. ");
         builder.finish();

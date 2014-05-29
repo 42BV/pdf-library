@@ -44,7 +44,7 @@ public class PdfStreamTest {
     @Test
     public void testWriteToFile() throws IOException {
         PdfName content1 = new PdfName("test");
-        PdfText content2 = new PdfText();
+        PdfText content2 = new PdfText(null);
         PdfString content3 = new PdfString("test3");
         PdfString content4 = new PdfString("test4");
         stream.add(content1);

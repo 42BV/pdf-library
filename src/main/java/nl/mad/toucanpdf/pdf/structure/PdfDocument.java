@@ -257,7 +257,7 @@ public class PdfDocument {
      * @param page Page to add.
      */
     public void addPage(Page page) {
-        PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight(), page.getLeading());
+        PdfPage pdfPage = new PdfPage(page.getWidth(), page.getHeight(), page.getLeading(), page.getRotation());
         pdfPage.setMargins(page.getMarginLeft(), page.getMarginRight(), page.getMarginBottom(), page.getMarginTop());
         currentPage = (PdfPage) body.addPage(pdfPage).getObject();
     }

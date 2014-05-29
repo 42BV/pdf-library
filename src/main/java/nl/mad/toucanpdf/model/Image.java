@@ -117,4 +117,17 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @return This image.
      */
     Image marginLeft(int marginLeft);
+    
+    /**
+     * Sets whether the image colors should be inverted.
+     * @param invert Boolean determining if the colors should be inverted.
+     * @return This image instance.
+     */
+    Image invertColors(boolean invert);
+    
+    /**
+     * Returns whether the image colors are to be inverted.
+     * @return true if the colors are to be inverted, false otherwise.
+     */
+    boolean getInvertColors();
 }

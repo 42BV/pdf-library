@@ -171,4 +171,20 @@ public class JPEG implements ImageParser {
     public int getHeight() {
         return this.height;
     }
+
+	@Override
+	public int getRequiredComponentsForColorSpace(ColorSpace colorSpace) {
+		switch(colorSpace) {
+		case DEVICE_GRAY:
+		case CAL_GRAY:
+			return GRAY_COMPONENT_AMOUNT;
+		case DEVICE_RGB:
+		case CAL_RGB:
+			return RGB_COMPONENT_AMOUNT;
+		case DEVICE_CMYK:
+			return CMYK_COMPONENT_AMOUNT;
+		default:
+			return 0;
+		}
+	}
 }

@@ -44,7 +44,7 @@ public class PdfPageTest {
     @Test
     public void testAdd() throws IOException {
         //test adding font resource
-        PdfIndirectObject indirectObject = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont()), true);
+        PdfIndirectObject indirectObject = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont(), null), true);
         page.add(indirectObject);
         PdfDictionary resources = (PdfDictionary) page.get(new PdfName(PdfNameValue.RESOURCES));
         PdfDictionary fontResource = (PdfDictionary) resources.get(new PdfName(PdfNameValue.FONT));
@@ -53,7 +53,7 @@ public class PdfPageTest {
         page.add(indirectObject);
         assertEquals(false, fontResource.containsKey(new PdfName("R2")));
         //add new font 
-        indirectObject = new PdfIndirectObject(2, 0, new PdfFont(new BaseFont()), true);
+        indirectObject = new PdfIndirectObject(2, 0, new PdfFont(new BaseFont(), null), true);
         page.add(indirectObject);
         assertEquals(true, fontResource.containsValue(indirectObject.getReference()));
         //Try adding XObject

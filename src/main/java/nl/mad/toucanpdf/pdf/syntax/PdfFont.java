@@ -1,11 +1,16 @@
 package nl.mad.toucanpdf.pdf.syntax;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontFamily;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.PdfNameValue;
+import nl.mad.toucanpdf.utility.RandomStringGenerator;
 
 /**
  * PdfDictionary representing a font.
@@ -13,6 +18,7 @@ import nl.mad.toucanpdf.model.PdfNameValue;
  */
 public class PdfFont extends PdfDictionary {
     private PdfFontEncoding encoding;
+    private Font font;
 
     /**
      * Creates a new PdfFont instance from the given font.
@@ -20,6 +26,7 @@ public class PdfFont extends PdfDictionary {
      */
     public PdfFont(Font font, PdfIndirectObject encoding) {
         super(PdfObjectType.FONT);
+    	this.font = font;
         this.processFont(font);
         this.setFontEncodingReference(encoding);
     }
@@ -36,8 +43,6 @@ public class PdfFont extends PdfDictionary {
         put(PdfNameValue.SUB_TYPE, base.getSubType().getPdfNameValue());
         put(PdfNameValue.FIRST_CHAR, new PdfNumber(metrics.getFirstCharCode()));
         put(PdfNameValue.LAST_CHAR, new PdfNumber(metrics.getLastCharCode()));
-        List<Integer> widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
-        put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));
     }
 
     /**
@@ -74,4 +79,25 @@ public class PdfFont extends PdfDictionary {
     public PdfFontEncoding getEncoding() {
         return this.encoding;
     }
+    
+    @Override
+    public void writeToFile(OutputStream os) throws IOException {
+    	this.addWidthsEntry();
+        super.writeToFile(os);
+    }
+
+	private void addWidthsEntry() {
+        FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
+        List<Integer> widths;
+        if(encoding != null && encoding.getEncodingDifferences() != null) {
+        	 //if we're using a custom encoding, make it a subset
+        	 widths = encoding.getEncodingDifferences().generateWidthList(font); 
+             put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
+             put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1)); 
+             put(PdfNameValue.BASE_FONT, new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, 6) + "+" + font.getFontFamily().getNameOfStyle(font.getStyle())));
+        } else {
+        	 widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
+        }
+        put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));		
+	}
 }

@@ -1,9 +1,13 @@
 package nl.mad.toucanpdf.pdf.syntax;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nl.mad.toucanpdf.model.Font;
+import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.utility.UnicodeConverter;
 
 public class Type1FontDifferences implements PdfFontDifferences {
@@ -23,6 +27,31 @@ public class Type1FontDifferences implements PdfFontDifferences {
             }
         }
     }
+    
+    @Override
+    public void insertDifference(String characterName, int characterCode) {
+    	if(!differences.containsKey(characterName)) {
+    		differences.put(characterName, characterCode);
+    	}
+    }
+    
+    @Override
+    public String getNameOf(String octalCode) {
+    	int code = Integer.parseInt(octalCode, 8);
+    	return getNameOf(code);
+    }
+    
+    @Override
+    public String getNameOf(int code) {
+    	if(differences.containsValue(code)) {
+    		for(Entry<String, Integer> entry : differences.entrySet()) {
+    			if(entry.getValue().equals(code)) {
+    				return entry.getKey();
+    			}
+    		}
+    	}
+    	return "";
+    }
 
     @Override
     public Map<String, Integer> getDifferences() {
@@ -31,40 +60,31 @@ public class Type1FontDifferences implements PdfFontDifferences {
 
     @Override
     public String convertString(String s) {
-        for (int i = 0; i < 256; ++i) {
-            if (!differences.containsValue(i)) {
-                //differences.put(".notdef", i);
-            }
-
-        }
         StringBuilder newString = new StringBuilder();
         for (int i = 0; i < s.length(); ++i) {
             int charCode = s.codePointAt(i);
-            System.out.println("Char at i = " + s.charAt(i) + ", charCode = " + s.codePointAt(i));
             String postscriptName = UnicodeConverter.getPostscriptForUnicode(charCode);
-            System.out.println("Postscriptname = " + postscriptName);
             if (differences.containsKey(postscriptName)) {
                 int code = differences.get(postscriptName);
-                StringBuilder sCode = new StringBuilder(String.valueOf(code));
-                System.out.println("Scode length: " + sCode.toString().length());
-                int sCodeLength = sCode.length();
-                for (int b = 3; b > sCodeLength; --b) {
-                    //sCode.insert(0, 0);
-                }
-                // String bab = sCode.toString();
-                //char[] chars = bab.toCharArray();
-                //for (char c : chars) {
+                StringBuilder sCode = new StringBuilder(Integer.toString(code, 8));
+                int codeLength = sCode.length();
+                for(int b = 3; b > codeLength; --b) {
+                	sCode.insert(0, 0);
+                }               
                 newString.append("\\");
-                newString.append(code);
-                //}
-            } else {
-                //newString.append(s.charAt(i));
+                newString.append(sCode.toString());
             }
         }
-        for (Entry<String, Integer> entry : differences.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
-        }
-        System.out.println(newString.toString());
         return newString.toString();
     }
+
+	@Override
+	public List<Integer> generateWidthList(Font font) {
+		FontMetrics metrics = font.getMetrics();
+		List<Integer> widths = new LinkedList<Integer>();
+		for(Entry<String, Integer> entry : differences.entrySet()) {
+    		widths.add(metrics.getWidth(entry.getKey()));
+    	}
+		return widths;
+	}
 }

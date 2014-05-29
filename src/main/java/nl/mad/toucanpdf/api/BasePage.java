@@ -15,7 +15,8 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
  *
  */
 public class BasePage extends AbstractDocumentPart implements Page {
-    private int width;
+    private static final int ROTATION_LIMIT = 90;
+	private int width;
     private int height;
     private int marginTop = 0;
     private int marginBottom = 0;
@@ -24,6 +25,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
     private Page masterPage;
     private List<DocumentPart> content;
     private int leading = DEFAULT_NEW_LINE_SIZE;
+	private int rotation;
 
     /**
      * Creates a new instance of BasePage with the given width and height.
@@ -52,6 +54,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
         this.marginRight = page.getMarginRight();
         this.leading = page.getLeading();
         this.masterPage = page.getMasterPage();
+        this.rotation = page.getRotation();
     }
 
     @Override
@@ -190,6 +193,8 @@ public class BasePage extends AbstractDocumentPart implements Page {
         this.marginTop = master.getMarginTop();
         this.width = master.getWidth();
         this.height = master.getHeight();
+        this.leading = master.getLeading();
+        this.rotation = master.getRotation();
         return this;
     }
 
@@ -197,4 +202,23 @@ public class BasePage extends AbstractDocumentPart implements Page {
     public Page getMasterPage() {
         return this.masterPage;
     }
+
+	@Override
+	public Page rotate(int rotationDegrees) {
+		rotationDegrees = Math.max(0, rotationDegrees);
+		int remainder = rotationDegrees % ROTATION_LIMIT;
+		if(remainder < 45) {
+			rotationDegrees -= remainder;
+		} else {
+			rotationDegrees += (90 - remainder);
+		}
+		this.rotation = rotationDegrees;
+		System.out.println("ROT: " + rotation);
+		return this;
+	}
+
+	@Override
+	public int getRotation() {
+		return this.rotation;
+	}
 }

@@ -25,6 +25,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     private Compression compressionMethod = Compression.FLATE;
     private boolean wrappable;
     private double scale = 1;
+    private boolean invertColors = false;
 
     /**
      * Creates a new BaseImage instance.
@@ -124,6 +125,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.marginLeft = image.getMarginLeft();
         this.marginTop = image.getMarginTop();
         this.marginRight = image.getMarginRight();
+        this.invertColors = image.getInvertColors();
     }
 
     @Override
@@ -245,4 +247,15 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         }
         return null;
     }
+
+	@Override
+	public Image invertColors(boolean invert) {
+		this.invertColors = invert;
+		return this;
+	}
+
+	@Override
+	public boolean getInvertColors() {
+		return this.invertColors;
+	}
 }

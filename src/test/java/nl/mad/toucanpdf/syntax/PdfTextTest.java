@@ -36,7 +36,7 @@ public class PdfTextTest {
 
     @BeforeClass
     public static void setUpTestObjects() throws Exception {
-        fontReference = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont()), true);
+        fontReference = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont(), null), true);
         fontReference.getReference().setResourceReference("R1");
         page = new PdfPage(300, 300, Page.DEFAULT_NEW_LINE_SIZE);
         page.setMargins(10, 0, 0, 11);
@@ -44,7 +44,7 @@ public class PdfTextTest {
 
     @Before
     public void setUp() throws Exception {
-        pdfText = new PdfText();
+        pdfText = new PdfText(null);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PdfTextTest {
 
     @Test
     public void testParagraphTextAdding() throws UnsupportedEncodingException {
-        pdfText = new PdfText();
+        pdfText = new PdfText(null);
         StateParagraph p = new BaseStateParagraph();
         p.addText(new BaseText("Test Test Test")).addText(new BaseText("Test2"));
         for (int i = 0; i < p.getTextCollection().size(); ++i) {
