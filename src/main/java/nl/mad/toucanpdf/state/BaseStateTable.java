@@ -32,7 +32,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         super(table);
     }
 
-    @Override
+	@Override
     public double getRequiredSpaceAbove() {
         return marginTop;
     }

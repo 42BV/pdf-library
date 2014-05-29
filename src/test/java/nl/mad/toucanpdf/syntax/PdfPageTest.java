@@ -29,7 +29,7 @@ public class PdfPageTest {
 
     @Before
     public void setUp() throws Exception {
-        page = new PdfPage(200, 201, Page.DEFAULT_NEW_LINE_SIZE);
+        page = new PdfPage(200, 201, Page.DEFAULT_NEW_LINE_SIZE, 0);
     }
 
     @Test

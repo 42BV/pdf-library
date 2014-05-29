@@ -38,7 +38,7 @@ public class PdfTextTest {
     public static void setUpTestObjects() throws Exception {
         fontReference = new PdfIndirectObject(1, 0, new PdfFont(new BaseFont(), null), true);
         fontReference.getReference().setResourceReference("R1");
-        page = new PdfPage(300, 300, Page.DEFAULT_NEW_LINE_SIZE);
+        page = new PdfPage(300, 300, Page.DEFAULT_NEW_LINE_SIZE, 0);
         page.setMargins(10, 0, 0, 11);
     }
 

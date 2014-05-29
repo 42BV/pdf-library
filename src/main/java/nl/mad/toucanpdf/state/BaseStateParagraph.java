@@ -16,6 +16,7 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateParagraph;
 import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
@@ -70,6 +71,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         switch (part.getType()) {
         case IMAGE:
             return new BaseStateImage((Image) part);
+        case TABLE:
+        	return new BaseStateTable((Table) part);
         default:
             return null;
         }

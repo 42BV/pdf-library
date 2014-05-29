@@ -23,7 +23,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
  * 
  * @author Dylan de Wolff
  */
-public class BaseStateText extends AbstractStateSplittableText implements StateText {
+public class BaseStateText extends AbstractStateText implements StateText {
     private DocumentPart originalObject;
 
     /**
@@ -156,35 +156,6 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
             ++lastAdditionIndex;
         }
         return lastAdditionIndex + cutOffAdditions;
-    }
-
-    /**
-     * Processes the alignment of a single given line.
-     * @param line Line to process.
-     * @param position Position the line is on.
-     * @param width Width of the given line.
-     * @param openSpaceSize Size of the open space the line is filling.
-     * @return a new position object that has been adjusted for the alignment.
-     */
-    private Position processAlignment(String line, Position position, double width, int openSpaceSize) {
-        Position newPos = new Position(position);
-        double remainingWidth = openSpaceSize - width;
-        switch (getAlignment()) {
-        case RIGHT:
-            newPos.setX(position.getX() + remainingWidth);
-            break;
-        case CENTERED:
-            newPos.setX(position.getX() + (remainingWidth / 2));
-            break;
-        case JUSTIFIED:
-            int wordAmount = Math.max((line.split(" ").length - 1), 0);
-            double offset = remainingWidth / wordAmount;
-            justificationOffset.put(newPos, offset);
-            break;
-        default:
-            break;
-        }
-        return newPos;
     }
 
     /**
@@ -381,10 +352,6 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
         for (int i = 0; i < entries.size(); ++i) {
             Entry<Position, String> entry = entries.get(i);
             double stringWidth = metrics.getWidthPointOfString(entry.getValue(), getTextSize(), true);
-            System.out.println("First check: " + (entry.equals(getFirstTextSplitEntry())));
-            System.out.println("Second check: " + (this.marginTop > 0));
-            System.out.println("Third check: " + (entry.equals(getLastTextSplitEntry())));
-            System.out.println("Four check: " + (this.getMarginBottom() > 0));
             if ((entry.equals(getFirstTextSplitEntry()) && this.marginTop > 0) || (entry.equals(getLastTextSplitEntry()) && this.getMarginBottom() > 0)) {
                 spaces.add(new int[] { (int) 0, pageWidth });
             } else {
@@ -408,16 +375,6 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
     }
 
     @Override
-    public double getRequiredSpaceAbove() {
-        return this.getRequiredSpaceAboveLine() + marginTop;
-    }
-
-    @Override
-    public double getRequiredSpaceBelow() {
-        return this.getRequiredSpaceBelowLine() + marginBottom;
-    }
-
-    @Override
     public void setOriginalObject(DocumentPart originalObject) {
         if (this.originalObject == null) {
             this.originalObject = originalObject;
@@ -427,15 +384,5 @@ public class BaseStateText extends AbstractStateSplittableText implements StateT
     @Override
     public DocumentPart getOriginalObject() {
         return this.originalObject;
-    }
-
-    @Override
-    public double getRequiredSpaceLeft() {
-        return marginLeft;
-    }
-
-    @Override
-    public double getRequiredSpaceRight() {
-        return marginRight;
     }
 }

@@ -1,6 +1,10 @@
 package nl.mad.toucanpdf.syntax;
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontFamily;
@@ -27,15 +31,15 @@ public class PdfFontTest {
     }
 
     @Test
-    public void testFontExtraction() {
+    public void testFontExtraction() throws IOException {
         assertEquals(pdfFont.get(PdfNameValue.TYPE), new PdfName(PdfNameValue.FONT));
-
         FontFamily base = font.getFontFamily();
         FontMetrics metrics = base.getMetricsForStyle(font.getStyle());
         assertEquals(pdfFont.get(PdfNameValue.BASE_FONT), new PdfName(base.getNameOfStyle(font.getStyle())));
         assertEquals(pdfFont.get(PdfNameValue.SUB_TYPE), new PdfName(base.getSubType().getPdfNameValue()));
         assertEquals(((PdfNumber) (pdfFont.get(PdfNameValue.FIRST_CHAR))).getNumber(), metrics.getFirstCharCode(), FloatEqualityTester.EPSILON);
         assertEquals(((PdfNumber) (pdfFont.get(PdfNameValue.LAST_CHAR))).getNumber(), metrics.getLastCharCode(), FloatEqualityTester.EPSILON);
+        pdfFont.writeToFile(new ByteArrayOutputStream());
         assertEquals(((PdfArray) (pdfFont.get(PdfNameValue.WIDTHS))).getSize(), metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode()).size());
     }
 

@@ -36,11 +36,11 @@ public class PdfPageTreeTest {
         assertEquals(1, pageTree.getSize());
         //test retrieval on tree with tree node
         PdfPageTree pageTree2 = new PdfPageTree();
-        pageTree2.add(new PdfIndirectObject(1, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE), true));
+        pageTree2.add(new PdfIndirectObject(1, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         pageTree.add(new PdfIndirectObject(2, 0, pageTree2, true));
         assertEquals(3, pageTree.getSize());
         //test retrieval on tree with both tree node and leaf node
-        pageTree.add(new PdfIndirectObject(3, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE), true));
+        pageTree.add(new PdfIndirectObject(3, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         assertEquals(4, pageTree.getSize());
     }
 
@@ -50,18 +50,18 @@ public class PdfPageTreeTest {
         assertEquals(0, pageTree.getPageTreeObjects().size());
         //test retrieval on tree with tree node
         PdfPageTree pageTree2 = new PdfPageTree();
-        pageTree2.add(new PdfIndirectObject(1, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE), true));
+        pageTree2.add(new PdfIndirectObject(1, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         pageTree.add(new PdfIndirectObject(2, 0, pageTree2, true));
         assertEquals(2, pageTree.getPageTreeObjects().size());
         //test retrieval on tree with both tree node and leaf node
-        pageTree.add(new PdfIndirectObject(3, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE), true));
+        pageTree.add(new PdfIndirectObject(3, 0, new PdfPage(10, 10, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         assertEquals(3, pageTree.getPageTreeObjects().size());
     }
 
     @Test
     public void testWriteToFile() throws IOException {
         String expectedResult = "<<\n /Type /Pages\n /Count 1\n /Kids [ 1 0 R ]\n>>";
-        pageTree.add(new PdfIndirectObject(1, 0, new PdfPage(200, 200, Page.DEFAULT_NEW_LINE_SIZE), true));
+        pageTree.add(new PdfIndirectObject(1, 0, new PdfPage(200, 200, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pageTree.writeToFile(baos);
         assertEquals(expectedResult, baos.toString());

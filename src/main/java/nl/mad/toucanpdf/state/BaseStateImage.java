@@ -118,7 +118,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
                     if (processAlignment) {
                         this.processAlignment(pos, openSpaceWidth);
                     }
-                    this.setPosition(pos);
+                    this.setPosition(new Position(pos));
                 }
                 ++i;
             }
@@ -126,7 +126,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
             pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
             openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
         }
-        if (pos != null) {
+        if (this.getPosition() != null) {
             if (!wrapping) {
                 adjustFilledHeight(page);
             }

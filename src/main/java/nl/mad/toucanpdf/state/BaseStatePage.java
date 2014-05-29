@@ -118,15 +118,11 @@ public class BaseStatePage extends BasePage implements StatePage {
             double potentialWidth = positionWidth + getMarginLeft();
             Position position = new Position(potentialWidth, potentialHeight);
             while (!openPositionFound) {
-            	System.out.println(getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth));
-                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth)) {
-                    return position;
-                }
-                System.out.println("potential height: " + potentialHeight);
-                System.out.println("Required space below: " + requiredSpaceBelow);
-                System.out.println(potentialHeight - requiredSpaceBelow <= marginBottom);
                 if (potentialHeight - requiredSpaceBelow <= marginBottom) {
                     return null;
+                }
+                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth)) {
+                    return position;
                 }
                 potentialHeight -= getLeading();
                 position = new Position(potentialWidth, potentialHeight);
@@ -154,27 +150,14 @@ public class BaseStatePage extends BasePage implements StatePage {
     public int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
         int availableWidth = 0;
         for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow, spacing)) {
+        	System.out.println("Open spaces: " + openSpace[0] + " : " + openSpace[1]);
             availableWidth += openSpace[1] - openSpace[0];
+        	System.out.println("available Width: " + availableWidth);
         }
         return availableWidth;
     }
 
-    @Override
-    public int getAvailableHeight(Position position, double requiredSpaceAbove, double requiredSpaceBelow) {
-        int availableHeight = -1;
-        for (DocumentPart p : getContent()) {
-            if (p instanceof PlaceableDocumentPart) {
-                Position pos = ((PlaceableDocumentPart) p).getPosition();
-                if (pos.getY() < position.getY()) {
-                    availableHeight = (int) Math.max(availableHeight, position.getY() - pos.getY());
-                }
-            }
-        }
-        if (availableHeight == -1) {
-            availableHeight = (int) (position.getY() - this.getMarginBottom());
-        }
-        return availableHeight;
-    }
+    
 
     /**
      * Returns all document parts that overlap with the given position.

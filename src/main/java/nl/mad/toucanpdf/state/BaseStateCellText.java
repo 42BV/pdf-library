@@ -12,7 +12,7 @@ import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StateCellText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
-public class BaseStateCellText extends AbstractStateSplittableText implements StateCellText {
+public class BaseStateCellText extends AbstractStateText implements StateCellText {
     private final static int REQUIRED_WIDTH = 50;
 
     public BaseStateCellText(String text) {
@@ -104,45 +104,6 @@ public class BaseStateCellText extends AbstractStateSplittableText implements St
         return currentLine.toString();
     }
 
-    /**
-     * Processes the alignment of a single given line.
-     * @param line Line to process.
-     * @param position Position the line is on.
-     * @param width Width of the given line.
-     * @param openSpaceSize Size of the open space the line is filling.
-     * @return a new position object that has been adjusted for the alignment.
-     */
-    private Position processAlignment(String line, Position position, double width, double openSpaceSize) {
-        Position newPos = new Position(position);
-        double remainingWidth = openSpaceSize - width;
-        switch (getAlignment()) {
-        case RIGHT:
-            newPos.setX(position.getX() + remainingWidth);
-            break;
-        case CENTERED:
-            newPos.setX(position.getX() + (remainingWidth / 2));
-            break;
-        case JUSTIFIED:
-            int wordAmount = Math.max((line.split(" ").length - 1), 0);
-            double offset = remainingWidth / wordAmount;
-            justificationOffset.put(newPos, offset);
-            break;
-        default:
-            break;
-        }
-        return newPos;
-    }
-
-    @Override
-    public double getRequiredSpaceAbove() {
-        return getRequiredSpaceAboveLine() + marginTop;
-    }
-
-    @Override
-    public double getRequiredSpaceBelow() {
-        return getRequiredSpaceBelowLine() + marginBottom;
-    }
-
     @Override
     public void setOriginalObject(DocumentPart originalObject) {
         if (this.originalObject == null) {
@@ -158,15 +119,5 @@ public class BaseStateCellText extends AbstractStateSplittableText implements St
     @Override
     public double getRequiredWidth() {
         return this.marginLeft + marginRight + REQUIRED_WIDTH;
-    }
-
-    @Override
-    public double getRequiredSpaceLeft() {
-        return marginLeft;
-    }
-
-    @Override
-    public double getRequiredSpaceRight() {
-        return marginRight;
     }
 }

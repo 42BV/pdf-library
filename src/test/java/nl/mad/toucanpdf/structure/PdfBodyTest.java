@@ -41,7 +41,7 @@ public class PdfBodyTest {
 
     @Test
     public void testAddPage() {
-        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE);
+        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE, 0);
         body.addPage(page);
         int expectedObjectPos = 2;
         assertEquals("Page has not been correctly added to the body.", page, body.getAllIndirectObjects().get(expectedObjectPos).getObject());
@@ -63,7 +63,7 @@ public class PdfBodyTest {
     public void testGetIndirectObjects() {
         PdfName test = new PdfName("test");
         body.addObject(test);
-        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE);
+        PdfPage page = new PdfPage(pageSize, pageSize, Page.DEFAULT_NEW_LINE_SIZE, 0);
         body.addPage(page);
 
         int expectedTotalSize = 4;
