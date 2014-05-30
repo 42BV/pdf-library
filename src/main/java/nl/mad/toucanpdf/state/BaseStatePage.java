@@ -28,6 +28,7 @@ public class BaseStatePage extends BasePage implements StatePage {
     private double filledWidth = 0;
     private double filledHeight = 0;
     private DocumentPart originalObject;
+    private static final int OPEN_SPACE_INCL_HEIGHT_SIZE = 3;
 
     /**
      * Creates a new instance of BaseStatePage with the given width and height.
@@ -44,12 +45,12 @@ public class BaseStatePage extends BasePage implements StatePage {
      */
     public BaseStatePage(Page page) {
         super(page);
-        marginTop(page.getMarginTop());
+        marginTop(this.getMarginTop());
     }
 
     @Override
     public Page marginTop(int marginTop) {
-        if (filledHeight == this.getMarginTop() || filledHeight == 0) {
+        if (FloatEqualityTester.equals(filledHeight, this.getMarginTop()) || FloatEqualityTester.equals(filledHeight, 0)) {
             filledHeight = marginTop;
         }
         super.marginTop(marginTop);
@@ -102,6 +103,7 @@ public class BaseStatePage extends BasePage implements StatePage {
 	@Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth) {
         double posHeight = getHeight() - filledHeight - requiredSpaceAbove;
+        System.out.println("POS HEIGHTL: " + posHeight);
         return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, spacing, requiredWidth);
     }
 
@@ -195,7 +197,7 @@ public class BaseStatePage extends BasePage implements StatePage {
      * @return true if the given position overlaps with the given part, false otherwise.
      */
     private boolean onSameLine(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing ignoreObj, StatePlaceableDocumentPart part) {
-        if (part.getPosition().hasCustomPosition()) {
+        if (part.getPosition().hasCustomPosition() && !part.equals(ignoreObj)) {
             double topLimit = part.getPosition().getY() + part.getRequiredSpaceAbove();
             double bottomLimit = part.getPosition().getY() - part.getContentHeight(this) - part.getMarginBottom();// + part.getRequiredSpaceAbove();
             double y = position.getY();
@@ -268,7 +270,7 @@ public class BaseStatePage extends BasePage implements StatePage {
             for (int i = 0; i < openSpaces.size(); ++i) {
                 int[] openSpace = openSpaces.get(i);
                 //if the open spaces does not include height of the open space
-                if (openSpace.length != 3) {
+                if (openSpace.length != OPEN_SPACE_INCL_HEIGHT_SIZE) {
                     int[] newOpenSpace = new int[] { openSpace[0], openSpace[1], (int) (pos.getY() - this.getMarginBottom()) };
                     openSpaces.set(i, newOpenSpace);
                 }

@@ -29,7 +29,6 @@ public final class UnicodeConverter {
         InputStream in = null;
         try {
             in = UnicodeConverter.class.getResourceAsStream(Constants.RESOURCES + FILENAME);
-            //TODO: Remove this as soon as it's no longer necessary to run the library on its own
             if (in == null) {
                 in = UnicodeConverter.class.getClassLoader().getResourceAsStream(FILENAME);
             }

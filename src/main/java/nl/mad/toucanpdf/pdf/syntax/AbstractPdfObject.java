@@ -36,11 +36,11 @@ public abstract class AbstractPdfObject {
     }
 
     public byte[] getByteRepresentation() {
-        return byteRepresentation;
+        return byteRepresentation.clone();
     }
 
     public final void setByteRepresentation(byte[] byteRepresentation) {
-        this.byteRepresentation = byteRepresentation;
+        this.byteRepresentation = byteRepresentation.clone();
     }
 
     /**

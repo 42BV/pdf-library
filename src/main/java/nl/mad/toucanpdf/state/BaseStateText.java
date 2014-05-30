@@ -102,7 +102,6 @@ public class BaseStateText extends AbstractStateText implements StateText {
      * @return index determining how many strings have been processed.
      */
     private int splitText(List<int[]> openSpaces, List<String> strings, Position pos, Page page) {
-        //TODO: This can probably be refactored into two seperate methods (open space determination/looping and filling a single open space)
         List<String> stringsCopy = new LinkedList<String>(strings);
         stringsCopy.add("");
         StringBuilder currentLine = new StringBuilder();
@@ -124,7 +123,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
                 width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             }
             if ((width > openSpace[1] - openSpace[0] || i == (stringsCopy.size() - 1)) && oldWidth < openSpace[1] - openSpace[0]) {
-                String cutOffLine = processCutOff(openSpace[0] + oldWidth, openSpace[1], width - oldWidth, currentLine.toString(), stringsCopy, i, page);
+                String cutOffLine = processCutOff(openSpace[0] + oldWidth, openSpace[1], currentLine.toString(), stringsCopy, i, page);
                 if (!cutOffLine.equals(currentLine.toString())) {
                     strings.add(i + 1, stringsCopy.get(i + 1));
                     ++cutOffAdditions;
@@ -174,16 +173,14 @@ public class BaseStateText extends AbstractStateText implements StateText {
      * Processes text cutoff. Determines whether or not cutting off text is required and does so if it is.
      * @param width Width of the current line.
      * @param widthLimit Width of the open space being filled.
-     * @param widthOfCurrentString Width of the string that might require cutting.
      * @param currentLine The current line being processed.
      * @param text The text list being processed.
      * @param currentTextIndex The current index being processed of the text list.
      * @param page The page the text will be added to.
      * @return
      */
-    private String processCutOff(double width, int widthLimit, double widthOfCurrentString, String currentLine, List<String> text, int currentTextIndex,
+    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex,
             Page page) {
-        System.out.println("Check = " + (widthLimit - width) + " > " + ((page.getWidth() - page.getMarginRight()) * (1.0 - Page.CUT_OFF_POINT_PERCENTAGE)));
         if (FloatEqualityTester.greaterThan((widthLimit - width), ((page.getWidth() - page.getMarginRight()) * (1.0 - Page.CUT_OFF_POINT_PERCENTAGE)))) {
             int textSize = getTextSize();
             double currentWidth = width;

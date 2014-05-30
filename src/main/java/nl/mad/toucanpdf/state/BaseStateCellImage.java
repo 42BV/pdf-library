@@ -15,7 +15,7 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
 
     @Override
     public void setOriginalObject(DocumentPart originalObject) {
-        if (originalObject == null) {
+        if (this.originalObject == null) {
             this.originalObject = originalObject;
         }
     }
@@ -40,7 +40,6 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         double requiredHeight = requiredSpaceAbove + requiredSpaceBelow;
-        availableWidth -= marginRight + marginLeft;
         if (processPositioning) {
             Position pos = new Position(position);
             pos.adjustX(marginLeft);

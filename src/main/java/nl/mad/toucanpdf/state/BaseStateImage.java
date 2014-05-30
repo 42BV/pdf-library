@@ -94,46 +94,52 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public boolean processContentSize(StatePage page) {
-        return this.processContentSize(page, this.wrappingAllowed(), true);
+        return this.processContentSize(page, this.wrappingAllowed(), true, false);
     }
 
     @Override
-    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment) {
-        double requiredSpaceAbove = this.getRequiredSpaceAbove();
-        double requiredSpaceBelow = this.getRequiredSpaceBelow();
-        Position pos = new Position(this.getPosition());
-        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-        boolean imagePositioned = false;
-        while (pos != null && !imagePositioned) {
-            int i = 0;
-            System.out.println(openSpaces.size());
-            while (!imagePositioned && i < openSpaces.size()) {
-                int[] openSpace = openSpaces.get(i);
-                if (pos.getX() < openSpace[0]) {
-                    pos.setX(openSpace[0]);
-                }
-                int openSpaceWidth = (openSpace[1] - openSpace[0]);
-                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
-                    imagePositioned = true;
-                    if (processAlignment) {
-                        this.processAlignment(pos, openSpaceWidth);
-                    }
-                    this.setPosition(new Position(pos));
-                }
-                ++i;
-            }
-            requiredSpaceAbove += page.getLeading();
-            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
-            openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-        }
-        if (this.getPosition() != null) {
-            if (!wrapping) {
-                adjustFilledHeight(page);
-            }
-        } else {
-            return true;
-        }
-        return false;
+    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
+    	if(!fixed) {
+        	System.out.println("Not fixed");
+	        double requiredSpaceAbove = this.getRequiredSpaceAbove();
+	        double requiredSpaceBelow = this.getRequiredSpaceBelow();
+	        Position originalPos = this.getPosition();
+	        Position pos = new Position(this.getPosition());
+	        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+	        boolean imagePositioned = false;
+	        while (pos != null && !imagePositioned) {
+	            int i = 0;
+	            while (!imagePositioned && i < openSpaces.size()) {
+	                int[] openSpace = openSpaces.get(i);
+	            	System.out.println("Image open space:" + openSpace[0] + " : " + openSpace[1] + " - " + openSpace[2]);
+	                if (pos.getX() < openSpace[0]) {
+	                    pos.setX(openSpace[0]);
+	                }
+	                int openSpaceWidth = (openSpace[1] - openSpace[0]);
+	                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
+	                    imagePositioned = true;
+	                    if (processAlignment) {
+	                        this.processAlignment(pos, openSpaceWidth);
+	                    }
+	                    this.setPosition(new Position(pos));
+	                }
+	                ++i;
+	            }
+		        if(!imagePositioned) {
+		            requiredSpaceAbove += page.getLeading();
+		            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
+		            openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+	            }
+	        }
+	        if (pos != null) {
+	            if (!wrapping) {
+	                adjustFilledHeight(page);
+	            }
+	        } else {
+	            return true;
+	        }
+    	}
+    	return false;
     }
 
     private void adjustFilledHeight(StatePage page) {

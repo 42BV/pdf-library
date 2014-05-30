@@ -101,7 +101,6 @@ public class PdfPage extends PdfDictionary {
      * @param indirectObject Resource to be added.
      */
     public void addResource(PdfIndirectObject indirectObject) {
-        //TODO: Optimize for not allowing double resource (with different indirectObjects representing them)
         PdfDictionary currentResources = (PdfDictionary) this.get(RESOURCES);
         PdfName key = getKeyForType(indirectObject.getObject().getType());
 

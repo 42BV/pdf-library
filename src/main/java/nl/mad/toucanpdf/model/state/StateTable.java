@@ -8,6 +8,4 @@ public interface StateTable extends Table, StatePlaceableFixedSizeDocumentPart {
     List<StateCell> getStateCellCollection();
 
     boolean updateHeight(StatePage page);
-
-    void removeContent();
 }

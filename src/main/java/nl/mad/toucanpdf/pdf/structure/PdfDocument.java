@@ -33,6 +33,7 @@ import nl.mad.toucanpdf.pdf.syntax.PdfFontProgram;
 import nl.mad.toucanpdf.pdf.syntax.PdfImage;
 import nl.mad.toucanpdf.pdf.syntax.PdfImageDictionary;
 import nl.mad.toucanpdf.pdf.syntax.PdfIndirectObject;
+import nl.mad.toucanpdf.pdf.syntax.PdfName;
 import nl.mad.toucanpdf.pdf.syntax.PdfObjectType;
 import nl.mad.toucanpdf.pdf.syntax.PdfPage;
 import nl.mad.toucanpdf.pdf.syntax.PdfStream;
@@ -161,7 +162,6 @@ public class PdfDocument {
         List<StateText> textCollection = paragraph.getStateTextCollection();
         for (int i = 0; i < textCollection.size(); ++i) {
             boolean ignoreMatrix = true;
-            //TODO: Check if this is still actually used
             if (i == 0) {
                 ignoreMatrix = false;
             }
@@ -179,7 +179,9 @@ public class PdfDocument {
     private void addText(StateSplittableText text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
         PdfFont fontObj = (PdfFont) font.getObject();
-        fontObj.getEncoding().updateDifferences(text.getText());
+        if(fontObj.getEncoding() != null) {
+        	fontObj.getEncoding().updateDifferences(text.getText());
+        }
         currentPage.add(font);
         PdfText pdfText = new PdfText(fontObj);
         PdfStream ts = getCurrentPageStream();

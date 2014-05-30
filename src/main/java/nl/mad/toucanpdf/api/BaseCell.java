@@ -24,5 +24,11 @@ public class BaseCell extends AbstractCell implements Cell {
     public PlaceableDocumentPart getContent() {
         return content;
     }
+    
+    @Override
+    public Cell content(PlaceableDocumentPart part) {
+    	this.content = part;
+    	return this;
+    }
 
 }

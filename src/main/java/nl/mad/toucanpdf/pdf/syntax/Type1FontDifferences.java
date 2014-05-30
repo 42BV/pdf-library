@@ -12,6 +12,8 @@ import nl.mad.toucanpdf.utility.UnicodeConverter;
 
 public class Type1FontDifferences implements PdfFontDifferences {
     private Map<String, Integer> differences;
+    private static final int OCTAL_CODE_CONVERSION = 8;
+    private static final int OCTAL_CODE_LENGTH = 3;
 
     public Type1FontDifferences() {
         differences = new LinkedHashMap<String, Integer>();
@@ -37,7 +39,7 @@ public class Type1FontDifferences implements PdfFontDifferences {
     
     @Override
     public String getNameOf(String octalCode) {
-    	int code = Integer.parseInt(octalCode, 8);
+    	int code = Integer.parseInt(octalCode, OCTAL_CODE_CONVERSION);
     	return getNameOf(code);
     }
     
@@ -66,9 +68,9 @@ public class Type1FontDifferences implements PdfFontDifferences {
             String postscriptName = UnicodeConverter.getPostscriptForUnicode(charCode);
             if (differences.containsKey(postscriptName)) {
                 int code = differences.get(postscriptName);
-                StringBuilder sCode = new StringBuilder(Integer.toString(code, 8));
+                StringBuilder sCode = new StringBuilder(Integer.toString(code, OCTAL_CODE_CONVERSION));
                 int codeLength = sCode.length();
-                for(int b = 3; b > codeLength; --b) {
+                for(int b = OCTAL_CODE_LENGTH; b > codeLength; --b) {
                 	sCode.insert(0, 0);
                 }               
                 newString.append("\\");

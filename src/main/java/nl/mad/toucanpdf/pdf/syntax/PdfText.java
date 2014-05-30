@@ -23,6 +23,7 @@ public class PdfText extends AbstractPdfObject {
     private static final String MATRIX = " Tm" + Constants.LINE_SEPARATOR_STRING;
     private static final String FONT = " Tf" + Constants.LINE_SEPARATOR_STRING;
     private PdfFontDifferences differences = null;
+    private static final int OCTAL_CODE_LENGTH = 4;
 
     /**
      * Creates a new instance of PdfText.
@@ -95,10 +96,8 @@ public class PdfText extends AbstractPdfObject {
         int i = 0;
         for (Entry<Position, String> entry : entrySet) {
             if (!Constants.LINE_SEPARATOR_STRING.equals(entry.getValue())) {
-                if (Alignment.JUSTIFIED.equals(text.getAlignment())) {
-                    if (i != entrySet.size() - 1) {
-                        sb.append(justification.get(entry.getKey()) + WORD_SPACING);
-                    }
+                if (Alignment.JUSTIFIED.equals(text.getAlignment()) && (i != entrySet.size() - 1)) {
+                    sb.append(justification.get(entry.getKey()) + WORD_SPACING);
                 }
                 String textToProcess = "";
                 if (differences != null) {
@@ -111,7 +110,7 @@ public class PdfText extends AbstractPdfObject {
                 sb.append(this.processKerning(textToProcess, text.getFont()));
                 sb.append(")] TJ");
             } else {
-                sb.append(getNewLineStringForText(text, leading));
+                sb.append(getNewLineStringForText(leading));
             }
             ++i;
             sb.append(Constants.LINE_SEPARATOR_STRING);
@@ -126,7 +125,7 @@ public class PdfText extends AbstractPdfObject {
         return newValue;
     }
 
-    private String getNewLineStringForText(Text text, int leading) {
+    private String getNewLineStringForText(int leading) {
         return " 0 " + -leading + " TD";
     }
 
@@ -164,11 +163,11 @@ public class PdfText extends AbstractPdfObject {
 	private String processOctalKerning(String text, Font font) {
         FontMetrics metrics = font.getMetrics();
         StringBuilder sb = new StringBuilder("");
-        for(int i = 0; i < text.length(); i += 4) {
-        	String octalCode = text.substring(i+1, i + 4);
+        for(int i = 0; i < text.length(); i += OCTAL_CODE_LENGTH) {
+        	String octalCode = text.substring(i+1, i + OCTAL_CODE_LENGTH);
         	sb.append("\\" + octalCode);
-            if (text.length() != i + 4) {
-	        	String octalCode2 = text.substring(i + 5, i + 8);
+            if (text.length() != i + OCTAL_CODE_LENGTH) {
+	        	String octalCode2 = text.substring(i + OCTAL_CODE_LENGTH + 1, i + (2 * OCTAL_CODE_LENGTH));
 	        	String charName = differences.getNameOf(octalCode);
 	        	String charName2 = differences.getNameOf(octalCode2);
 	        	int kernWidth = metrics.getKerning(charName, charName2);

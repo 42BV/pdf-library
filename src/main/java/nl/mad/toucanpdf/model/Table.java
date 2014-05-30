@@ -80,16 +80,44 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      */
     Table marginLeft(int marginLeft);
 
+    /**
+     * Adds a cell to the table with the given part as it's content.
+     * @param part Part to use as content.
+     * @return the Cell that was added.
+     */
     Cell addCell(PlaceableDocumentPart part);
 
+    /**
+     * Adds a cell with the given text as it's content.
+     * @param s String to use as content.
+     * @return the Cell that was added.
+     */
     Cell addCell(String s);
 
+    /**
+     * Adds the given cell to the table.
+     * @param c Cell to add.
+     * @return the Cell that was added.
+     */
     Table addCell(Cell c);
 
+    /**
+     * Sets the amount of columns the table has.
+     * @param amountOfColumns Amount of columns.
+     * @return The table instance.
+     */
     Table columns(int amountOfColumns);
 
+    /**
+     * Returns the amount of columns.
+     * @return int containing the amount of columns.
+     */
     int getColumnAmount();
 
+    /**
+     * Returns the list of cells.
+     * @return List of cells.
+     */
     List<Cell> getContent();
 
     /**
@@ -99,9 +127,28 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      */
     Table border(double borderWidth);
 
+    /**
+     * Returns the border width.
+     * @return Double containing border width.
+     */
     double getBorderWidth();
 
+    /**
+     * Sets whether generated cells should be drawn.
+     * @param draw True if filler cells should be drawn, false otherwise.
+     * @return This table instance.
+     */
     Table drawFillerCells(boolean draw);
 
+    /**
+     * Returns whether generated cells will be drawn.
+     * @return true if filler cells are drawn, false otherwise.
+     */
     boolean getDrawFiller();
+
+	/**
+	 * Removes all content from the table.
+	 * @return The table instance.
+	 */
+	Table removeContent();
 }

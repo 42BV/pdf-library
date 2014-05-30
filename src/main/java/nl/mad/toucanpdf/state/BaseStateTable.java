@@ -6,8 +6,12 @@ import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.mad.toucanpdf.api.AbstractTable;
 import nl.mad.toucanpdf.api.BaseCell;
+import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Page;
@@ -23,6 +27,8 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 public class BaseStateTable extends AbstractTable implements StateTable {
     private DocumentPart originalObject;
     private List<StateCell> content = new LinkedList<StateCell>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);    
+    private static final int BIG_DECIMAL_PRECISION = 20;
 
     public BaseStateTable(int pageWidth) {
         super(pageWidth);
@@ -44,35 +50,36 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public boolean processContentSize(StatePage page) {
-        return this.processContentSize(page, this.wrappingAllowed(), true);
+        return this.processContentSize(page, this.wrappingAllowed(), true, false);
     }
 
     @Override
-    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment) {
-        return this.processContentSize(page, wrapping, processAlignment, true);
+    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
+        return this.processContentSize(page, wrapping, processAlignment, true, fixed);
     }
 
-    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning) {
+    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed) {
         int totalCellAmount = this.getContent().size();
-        MathContext mc = new MathContext(20, RoundingMode.HALF_UP);
+        MathContext mc = new MathContext(BIG_DECIMAL_PRECISION, RoundingMode.HALF_UP);
         int columnAmount = this.getColumnAmount();
-        BigDecimal cellWidth = new BigDecimal(this.getWidth() / columnAmount);
+        BigDecimal cellWidth = null;//new BigDecimal();//new BigDecimal(this.getWidth() / columnAmount);
         BigDecimal availableWidth = new BigDecimal(this.width);
         List<StateCell> currentRowCells = new LinkedList<StateCell>();
         int currentFilledColumns = 0;
         double rowHeight = 0;
-        Position p = calculatePosition(page);
-        if (p == null) {
-            return true;
+        if(!fixed) {
+	        Position p = calculatePosition(page);
+	        if (p == null) {
+	            return true;
+	        }
+	        if (processAlignment && processPositioning) {
+	            p.adjustX(calculateAlignment(page));
+	        }
+	        this.setPosition(p);
         }
-        if (processAlignment && processPositioning) {
-            p.adjustX(calculateAlignment(page));
-        }
-        this.setPosition(p);
         this.height = 0;
         Position cellPos = new Position(this.getPosition());
 
-        // TODO: Support custom widths
         for (int i = 0; i < totalCellAmount; ++i) {
             StateCell c = content.get(i);
             c.columnSpan(Math.min(columnAmount, c.getColumnSpan()));
@@ -119,7 +126,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 }
                 processRow(currentRowCells, rowHeight);
                 this.height += rowHeight;
-                if (!wrapping && processPositioning) {
+                if (!wrapping && processPositioning) {                	
                     this.adjustFilledHeight(page);
                 }
                 return false;
@@ -155,8 +162,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             double requiredHeight = c.getRequiredHeight(page.getLeading(), this.borderWidth);
             if (requiredHeight + currentTableHeight > page.getHeightWithoutMargins()) {
                 c.setContent(null);
+                LOGGER.warn("The content of the cell was too high and has been removed.");
                 return rowHeight;
-                //TODO: LOG content too large
             }
             return Math.max(rowHeight, requiredHeight + (this.borderWidth * 2));
         } else {
@@ -184,10 +191,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 }
                 ++i;
             }
-            requiredSpaceAbove += page.getLeading();
-            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
-            if (pos != null) {
-                openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+            if(!tablePositioned) {
+	            requiredSpaceAbove += page.getLeading();
+	            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
+	            if (pos != null) {
+	                openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+	            }
             }
         }
         return pos;
@@ -207,7 +216,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         if (requiredWidth != 0) {
             BigDecimal reqWidth = new BigDecimal(requiredWidth);
             if (reqWidth.compareTo(availableWidth) == 1) {
-                // TODO: LOG & handle the overflow, just returning default will likely cause issues when actually placing the content
+            	LOGGER.warn("The content was too wide and has been removed");
                 c.setContent(null);
                 return defaultWidth;
             }
@@ -237,7 +246,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     private void adjustFilledHeight(StatePage page) {
-        page.setFilledHeight(page.getFilledHeight() + this.getHeight() + Page.DEFAULT_NEW_LINE_SIZE * 2);
+        page.setFilledHeight(page.getFilledHeight() + this.getHeight() + this.getMarginBottom() + this.getMarginTop() + Page.DEFAULT_NEW_LINE_SIZE * 2);
     }
 
     @Override
@@ -252,7 +261,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public boolean updateHeight(StatePage page) {
-        return this.processContentSize(page, false, false, false);
+        return this.processContentSize(page, false, false, false, false);
     }
 
     @Override
@@ -342,8 +351,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     @Override
-    public void removeContent() {
+    public Table removeContent() {
         this.content = new LinkedList<StateCell>();
+        return this;
     }
 
 }

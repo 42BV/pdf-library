@@ -67,6 +67,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.marginLeft = copyFrom.getMarginLeft();
         this.marginTop = copyFrom.getMarginTop();
         this.marginRight = copyFrom.getMarginRight();
+        this.compressionMethod = copyFrom.getCompressionMethod();
     }
 
     @Override

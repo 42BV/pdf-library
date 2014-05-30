@@ -24,14 +24,14 @@ public class PdfImageDictionary extends PdfXObject {
             this.put(PdfNameValue.HEIGHT, new PdfNumber(parser.getHeight()));
             this.put(PdfNameValue.COLOR_SPACE, parser.getColorSpace().getPdfName());
             this.put(PdfNameValue.BITS_PER_COMPONENT, new PdfNumber(parser.getBitsPerComponent()));
-            this.addDecodeArray(image);
+            this.addDecodeArray();
             this.addFilter(parser.getFilter());
             this.addFilter(image.getCompressionMethod());
             this.add(new PdfFile(parser.getData()));
         }
     }
 
-	private void addDecodeArray(Image image) {
+	private void addDecodeArray() {
 		if (image.getInvertColors()) {
 			  PdfArray decodeArray = new PdfArray();
 			  int componentAmount = image.getImageParser().getRequiredComponentsForColorSpace(image.getImageParser().getColorSpace());

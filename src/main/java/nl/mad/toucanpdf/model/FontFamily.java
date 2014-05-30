@@ -10,11 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * BaseFontFamily contains the subtype of the font and the different names of the font for each style the font has.
- * BaseFontFamily also has a map containing the default fonts that PDF viewers should support. See FontFamily and FontStyle to see which are the default fonts.
+ * ontFamily contains the subtype of the font and the different names of the font for each style the font has.
+ * FontFamily also has a map containing the default fonts that PDF viewers should support.
  * @author Dylan de Wolff
  * @see nl.mad.toucanpdf.model.FontFamilyType
- * @see nl.mad.toucanpdf.model.FontStyle
  * @see nl.mad.toucanpdf.api.BaseFont
  *
  */

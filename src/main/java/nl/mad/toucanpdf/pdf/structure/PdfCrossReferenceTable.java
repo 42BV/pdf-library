@@ -125,7 +125,7 @@ public class PdfCrossReferenceTable {
     }
 
     public byte[] getStartByte() {
-        return this.startByte;
+        return this.startByte.clone();
     }
 
     private String getObjectAmountLine() {

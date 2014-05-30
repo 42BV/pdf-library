@@ -34,7 +34,8 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        //testUnicodeConverter();
+    	//testFootersHeaders();
+        testUnicodeConverter();
         //tableMain();
         //        presentation1();
         //        presentationN();
@@ -43,6 +44,19 @@ public class Main {
         //presentation1();
         //newTest();
         //documentStateTest();
+    }
+    
+    private static void testFootersHeaders() {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.title("hf");
+        Page masterPage = builder.createPage().marginTop(50);
+        masterPage.addHeader().addAttribute("pageNumber", "1").add(new BaseText("Page %pageNumber of %totalPages").on(0, 810));
+        Page page = builder.addPage().master(masterPage);
+        DocumentState state = builder.getPreview();
+        System.out.println(state.getPages().get(0).getHeader().getHeight());
+        System.out.println(state.getPages().get(0).getHeader().getContent().get(0).getType());
+        builder.finish();
     }
 
     private static void testUnicodeConverter() {
@@ -90,13 +104,15 @@ public class Main {
     private static void presentationN2() throws FileNotFoundException {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
-        builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
+        Page page = builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
+        page.addHeader().addAttribute("title", "Header text").height(20).add(new BaseText("This is %title").on(20, 830));
+        page.addFooter().height(100).add(new BaseText("Page %pageNumber of %totalPages").on(page.getWidth() - page.getMarginRight() - 100, 10)).add(new BaseTable(page.getWidthWithoutMargins()).addCell(new BaseCell(new BaseText("Cell text %pageNumber")).columnSpan(3)).on(0, 30));
         builder.setDefaultMarginBottom(0);
         builder.title("presMargins");
         builder.addText(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id diam nec sapien consequat placerat. Curabitur fermentum lectus sed neque ultricies lobortis. Morbi a metus ut lectus pretium malesuada. Duis et nisl vel nisi interdum auctor. Duis quis dui nec orci fermentum venenatis. Quisque et nibh tristique, ullamcorper risus vel, molestie erat. Nullam vestibulum, purus a congue mollis, elit neque egestas mauris, vitae blandit sapien turpis vitae velit. Aliquam erat volutpat. Curabitur at accumsan massa. Proin gravida, sem ut feugiat accumsan, est mi blandit orci, at posuere dolor nunc sit amet eros. Maecenas est arcu, pretium et urna a, volutpat lobortis purus. Nullam varius magna odio, vitae dictum ligula sollicitudin sed. ")
-                .marginBottom(10);
-        Table table = builder.addTable().columns(6).align(Alignment.CENTERED).marginBottom(15).drawFillerCells(false);
+                .marginBottom(0);
+        Table table = builder.addTable().columns(6).align(Alignment.CENTERED).marginBottom(10).drawFillerCells(true);
         table.addCell("Cell 1").columnSpan(3);
         table.addCell("Cell 2").columnSpan(2);
         table.addCell("Cell 3").columnSpan(1);
@@ -173,29 +189,15 @@ public class Main {
         Text cont3 = new BaseText("Test Test Test Test Tese");
         Text cont4 = new BaseText("Test Test Test Test Teses");
         Text cont5 = new BaseText("Test Test Test Test Te");
-        //TODO: It is actually just fine, no clue why there were issues on the PC when adding a huge amount of images.
         //DO ALIGNMENT FOR CONTENT IN TABLES (seems to be something wrong with right alignment on text)
-        //ALLOW INVERT COLOR OPTION ON IMAGES (this is better than just forcing CMYK to inverted)
-        //cell width slightly too large
-        //Image i1 = new BaseImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
 
-        //builder.addPart(i1);
-        //builder.addPart(i1);
-        //builder.addPart(i1);
 
         table.addCell(new BaseCell(cont2).columnSpan(1));
         table.addCell(new BaseCell(cont).columnSpan(3));
-        //cont3 not showing up?
         table.addCell(new BaseCell(cont3).columnSpan(1));
-        //table.addCell(new BaseCell(new BaseImage(i1)));
-        //System.out.println("CEll height: " + table.getContent().get(3).getHeight());
         table.addCell(new BaseCell(cont5).columnSpan(2));
-        //builder.addPart(table);
 
         Table table2 = builder.addTable().columns(7).align(Alignment.CENTERED);
-        for (int i = 0; i < 6; ++i) {
-            //table2.addCell(new BaseCell().height(100).width(20));
-        }
         table2.addCell(builder.createText("Eric Meijer").font(DEFAULT_FONT).size(11)).width(100);
         table2.addCell(builder.createText("Robert Bor").font(DEFAULT_FONT).size(11));
         table2.addCell(builder.createText("Lucas Bos").font(DEFAULT_FONT).size(11));
@@ -209,8 +211,6 @@ public class Main {
         }
 
         builder.addText("Heloooooooooooooooooooooooooooo");
-        //builder.addText("Hello this is fixed").on(30, 795).marginTop(190).marginBottom(100);
-        //System.out.println(builder.getPreview().getPages().get(0).getContent());
         builder.finish();
     }
 
@@ -220,9 +220,6 @@ public class Main {
         builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         builder.addImage(new FileInputStream("/home/dylan/Documents/mario.jpg"), ImageType.JPEG).allowWrapping(true).height(230).width(170);
         builder.addImage(new FileInputStream("/home/dylan/Documents/penguin.jpg"), ImageType.JPEG).align(Alignment.RIGHT).height(230).width(170);
-        //PlaceableDocumentPart part = new BaseTable();
-        //part.setPosition(new Position(400, 50));
-        //builder.addPart(part);
         System.out.println(builder.getPreview().getPages().get(0).getContent());
         builder.finish();
     }
@@ -243,7 +240,7 @@ public class Main {
         Page page = builder.addPage().marginTop(20).marginBottom(20).marginLeft(20).marginRight(20);
         System.out.println("DeveloperPage: " + page.toString());
         Text firstParagraphSection = builder
-                .createText("First paragraph section. ëëëë (Lorem). (Zowel intern als extern) ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida.");
+                .createText("First paragraph section. Ã«Ã«Ã«Ã« (Lorem). (Zowel intern als extern) ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam lorem mauris, vitae vestibulum sapien bibendum sit amet. Mauris quis est et magna lobortis viverra. Quisque vitae elementum magna. Phasellus sagittis quis mauris eu consequat. Vivamus rutrum nisi eros, eu sagittis ipsum euismod a. Fusce nec nibh eget nulla egestas egestas. Praesent pellentesque nisl sed mollis ullamcorper. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse gravida, est eget auctor dignissim, lacus enim hendrerit lorem, porttitor lacinia quam turpis a tortor. Ut porta convallis sem, a congue eros convallis quis. Praesent sed nisl eget lacus congue gravida.");
         InputStream img = null;
         InputStream img2 = null;
         try {
@@ -254,7 +251,6 @@ public class Main {
         }
         Image imageLeft = new BaseImage(200, 200, img, ImageType.JPEG);
         Image image = new BaseImage(100, 100, img2, ImageType.JPEG);
-        //TODO: Update builder for images
         Image image3 = new BaseImage(image).allowWrapping(true);
         builder.addPart(image3);
         builder.addPart(new BaseImage(image3).align(Alignment.RIGHT));

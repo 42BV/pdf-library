@@ -1,6 +1,10 @@
 package nl.mad.toucanpdf.state;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.mad.toucanpdf.api.AbstractCell;
+import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
@@ -11,6 +15,7 @@ import nl.mad.toucanpdf.model.state.StateCellContent;
 
 public class BaseStateCell extends AbstractCell implements StateCell {
     private StateCellContent content;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateCell.class);
 
     public BaseStateCell(Cell c) {
         super(c);
@@ -29,7 +34,7 @@ public class BaseStateCell extends AbstractCell implements StateCell {
             case IMAGE:
                 return new BaseStateCellImage((Image) part);
             default:
-                //TODO: Log unsupported object
+                LOGGER.warn("The given object type: " + part.getType() + " is not supported within cells.");
                 break;
             }
         }
@@ -82,4 +87,12 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     public void setContent(StateCellContent content) {
         this.content = content;
     }
+
+	@Override
+	public Cell content(PlaceableDocumentPart part) {
+		if(part instanceof StateCellContent) {
+			this.setContent((StateCellContent) part);
+		}
+		return this;
+	}
 }

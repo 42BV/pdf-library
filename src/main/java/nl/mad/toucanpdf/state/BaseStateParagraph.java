@@ -139,7 +139,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             }
             Position position = page.getOpenPosition(requiredSpaceAbove, requiredHeight, text, requiredWidth);
             if (position == null) {
-                Paragraph overflow = handleAnchorOverflow(anchorList, requiredWidth, requiredHeight, page, text);
+                Paragraph overflow = handleAnchorOverflow(requiredWidth, requiredHeight, page, text);
                 if (overflow == null) {
                     return this.processAnchors(text, page, fixedPosition);
                 } else {
@@ -151,7 +151,6 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             position = this.processAnchorPositions(position, page, this.getAnchorOn(text, AnchorLocation.LEFT), AnchorLocation.LEFT);
             Position startingPositionForText = new Position(position);
             startingPositionForText.adjustY(-text.getRequiredSpaceAboveLine());
-            //TODO:Margins?
             position = getMinimalStartingPositionForRightAnchor(position,
                     page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight, text));
             position = getStartingPositionRightAnchor(this.getAnchorOn(text, AnchorLocation.RIGHT), position,
@@ -259,8 +258,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         if (anchor != null) {
             //This method takes care of the actual positioning of the anchors.
             Position newPos = new Position(position);
-            PlaceableFixedSizeDocumentPart anchorPart = null;
-            anchorPart = anchor.getPart();
+            PlaceableFixedSizeDocumentPart anchorPart = anchor.getPart();
             newPos.adjustX(anchorPart.getMarginLeft());
             newPos.adjustY(-anchorPart.getMarginTop());
             anchorPart.setPosition(newPos);
@@ -271,15 +269,14 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 wrapping = false;
                 alignment = true;
             }
-            ((StatePlaceableFixedSizeDocumentPart) anchorPart).processContentSize(page, wrapping, alignment);
+            ((StatePlaceableFixedSizeDocumentPart) anchorPart).processContentSize(page, wrapping, alignment, false);
             page.add(anchorPart);
             newPos = new Position(anchorPart.getWidth() + anchorPart.getMarginRight() + anchorPart.getPosition().getX(), newPos.getY());
             double newPosX = newPos.getX();
             double newPosY = newPos.getY();
 
             //To ensure that text will not wrap around the images we have to increase the position values.
-            if ((AnchorLocation.ABOVE.equals(location) || AnchorLocation.BELOW.equals(location)) && anchorPart != null) {
-                //TODO: Fix this magic number (perhaps there is something wrong in the calculation somewhere?)
+            if ((AnchorLocation.ABOVE.equals(location) || AnchorLocation.BELOW.equals(location))) {
                 newPosY = newPos.getY() - anchorPart.getHeight() - anchorPart.getMarginBottom() - (Page.DEFAULT_NEW_LINE_SIZE * 3);
                 newPosX = page.getMarginLeft();
             }
@@ -288,7 +285,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         return position;
     }
 
-    private Paragraph handleAnchorOverflow(List<Anchor> anchorList, double requiredWidth, double requiredHeight, StatePage page, StateText text) {
+    private Paragraph handleAnchorOverflow(double requiredWidth, double requiredHeight, StatePage page, StateText text) {
         Paragraph overflow = null;
         //if the anchors and text can fit on the page, it simply means there is not enough space on this page and we should move on to the next one.
         if (requiredWidth < page.getWidthWithoutMargins() && requiredHeight < page.getHeightWithoutMargins()) {
@@ -345,6 +342,11 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         BaseStateParagraph overflowParagraph = new BaseStateParagraph(this, false);
         overflowParagraph.addText(newTextList);
         //TODO: add anchors on overflow! Including beneath anchor from the object causing the overflow
+        for(Text t : overflowParagraph.getTextCollection()) {
+        	for(Anchor a : this.getAnchorsOn(t)) {
+        		overflowParagraph.addAnchor(a);
+        	}
+        }
         overflowParagraph.setOriginalObject(this.getOriginalObject());
         return overflowParagraph;
     }

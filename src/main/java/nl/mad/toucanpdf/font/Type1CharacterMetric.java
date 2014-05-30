@@ -30,7 +30,7 @@ public class Type1CharacterMetric {
         this.c = c;
         this.wx = wx;
         this.name = name;
-        this.boundingBox = boundingBox;
+        this.boundingBox = boundingBox.clone();
     }
 
     public int getC() {
@@ -46,6 +46,6 @@ public class Type1CharacterMetric {
     }
 
     public int[] getBoundingBox() {
-        return boundingBox;
+        return boundingBox.clone();
     }
 }

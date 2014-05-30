@@ -169,5 +169,43 @@ public interface Page extends DocumentPart {
      * @return int containing the page rotation degrees.
      */
     int getRotation();
+    
+    /**
+     * Sets the header for this page. You can use the addHeader method to create and set a new header..
+     * @param header PageArea to use as header.
+     * @return the page.
+     */
+    Page header(PageArea header);
+    
+    /**
+     * Sets the footer for this page. You can use the addFooter method to create and set a new footer.
+     * @param footer PageArea to use as footer.
+     * @return the page.
+     */
+    Page footer(PageArea footer);
+    
+    /**
+     * Returns the header this page is currently using.
+     * @return PageArea instance, null if no header is specified.
+     */
+    PageArea getHeader();
+    
+    /**
+     * Returns the footer this page is currently using.
+     * @return PageArea instance, null if no footer is specified.
+     */
+    PageArea getFooter();
+
+	/**
+	 * Creates a new header and adds it to this page. It will use the top margin of the page as the header height.
+	 * @return The newly generated PageArea instance.
+	 */
+	PageArea addHeader();
+	
+	/**
+	 * Creates a new footer and adds it to this page. It will use the bottom margin of the page as the footer height.
+	 * @return The newly generated PageArea instance.
+	 */
+	PageArea addFooter();
 
 }

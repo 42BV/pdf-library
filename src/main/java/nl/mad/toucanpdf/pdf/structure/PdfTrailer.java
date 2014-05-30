@@ -43,7 +43,7 @@ public class PdfTrailer extends PdfDictionary {
     public PdfTrailer(int objectAmount, byte[] crossReferenceStartByte, PdfIndirectObjectReference catalogReference, PdfIndirectObject info) {
         super(PdfObjectType.TRAILER);
         this.objectAmount = objectAmount + 1;
-        this.crossReferenceStartByte = crossReferenceStartByte;
+        this.crossReferenceStartByte = crossReferenceStartByte.clone();
         this.info = info;
         this.fillObjectSpecification(catalogReference);
     }
@@ -60,7 +60,7 @@ public class PdfTrailer extends PdfDictionary {
     }
 
     public void setCrossReferenceStartByte(byte[] crossReferenceStartByte) {
-        this.crossReferenceStartByte = crossReferenceStartByte;
+        this.crossReferenceStartByte = crossReferenceStartByte.clone();
     }
 
     /**

@@ -5,6 +5,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import nl.mad.toucanpdf.state.BaseStateTable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The byte encoder is responsible for returning the byte value of a given string.
  * This should be used instead of the default getBytes() method.
@@ -13,6 +18,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class ByteEncoder {
     private static final Charset DEFAULT_BYTE_ENCODING = StandardCharsets.UTF_8;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ByteEncoder.class);    
 
     private ByteEncoder() {
     }
@@ -35,8 +41,7 @@ public final class ByteEncoder {
         try {
             return baos.toString(DEFAULT_BYTE_ENCODING.name());
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	LOGGER.error("UTF-8 is unsupported on this platform, cannot execute conversion");
         }
         return "";
     }

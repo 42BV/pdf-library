@@ -9,6 +9,10 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.ColorSpace;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.ImageParser;
@@ -29,6 +33,7 @@ public class JPEG implements ImageParser {
     private static final int GRAY_COMPONENT_AMOUNT = 1;
     private static final int RGB_COMPONENT_AMOUNT = 3;
     private static final int CMYK_COMPONENT_AMOUNT = 4;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JPEG.class);
 
     /**
      * Creates a new instance of the JPEG parser.
@@ -44,7 +49,6 @@ public class JPEG implements ImageParser {
      */
     private void parseStream(InputStream stream) {
         try {
-            //TODO: Handle adobe jpg's
             BufferedImage image = ImageIO.read(stream);
             image = convertImage(image);
             if(image != null) {
@@ -56,7 +60,7 @@ public class JPEG implements ImageParser {
             filter = Compression.DCT;
             stream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("Exception occurred during parsing of image stream");
         }
     }
 
@@ -144,7 +148,7 @@ public class JPEG implements ImageParser {
 
     @Override
     public byte[] getData() {
-        return this.data;
+        return this.data.clone();
     }
 
     @Override
@@ -173,8 +177,8 @@ public class JPEG implements ImageParser {
     }
 
 	@Override
-	public int getRequiredComponentsForColorSpace(ColorSpace colorSpace) {
-		switch(colorSpace) {
+	public int getRequiredComponentsForColorSpace(ColorSpace color) {
+		switch(color) {
 		case DEVICE_GRAY:
 		case CAL_GRAY:
 			return GRAY_COMPONENT_AMOUNT;

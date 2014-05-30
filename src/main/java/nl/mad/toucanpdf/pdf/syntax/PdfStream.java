@@ -187,10 +187,8 @@ public class PdfStream extends PdfDictionary {
         PdfArray array = getFilterArray();
         boolean nameExists = false;
         for (AbstractPdfObject object : array.getValues()) {
-            if (object instanceof PdfName) {
-                if (((PdfName) object).equals(name)) {
-                    nameExists = true;
-                }
+            if (object instanceof PdfName && ((PdfName) object).equals(name)) {
+                nameExists = true;
             }
         }
         if (!nameExists) {

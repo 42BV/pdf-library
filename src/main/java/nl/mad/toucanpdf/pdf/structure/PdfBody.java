@@ -133,7 +133,6 @@ public class PdfBody {
      * 
      * @return The newly made page tree object inside of an IndirectObject.
      */
-    //TODO: Add new pagetrees to the existing page tree
     private PdfIndirectObject createPageTree() {
         PdfPageTree pageTreeObj = new PdfPageTree();
         return this.createIndirectObject(pageTreeObj);

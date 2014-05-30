@@ -3,6 +3,9 @@ package nl.mad.toucanpdf.api;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.mad.toucanpdf.image.JPEG;
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Compression;
@@ -21,6 +24,7 @@ import nl.mad.toucanpdf.utility.PointsConverter;
  *
  */
 public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements Image {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseImage.class);
     private ImageParser image;
     private Compression compressionMethod = Compression.FLATE;
     private boolean wrappable;
@@ -103,7 +107,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
             	image = new JPEG(imageStream);
                 break;
             default:
-                //TODO: Log unsupported image type
+                LOGGER.warn("The given image format: " + type + " is currently not supported.");
                 break;
             }
         } 

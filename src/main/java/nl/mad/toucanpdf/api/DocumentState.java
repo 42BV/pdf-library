@@ -1,14 +1,18 @@
 package nl.mad.toucanpdf.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
+import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.PageArea;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
@@ -58,6 +62,7 @@ public class DocumentState {
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
             StatePage newPage = new BaseStatePage(page);
+            System.out.println("MT: " + newPage.getMarginTop());
             newPage.setOriginalObject(page);
             Page masterPage = page.getMasterPage();
             if (masterPage != null) {
@@ -73,28 +78,103 @@ public class DocumentState {
                 builderStateCopy.add(i + 1, overflowPage);
             }
         }
+        processPageAreas();
     }
 
-    private Page processPageContent(Page oldPage, StatePage newPage) {
+    private void processPageAreas() {
+    	String totalPageNumbers = String.valueOf(state.size());
+		for(int i = 0; i < state.size(); ++i) {
+			StatePage sp = (StatePage) state.get(i);
+			PageArea header = sp.getHeader();
+			PageArea footer = sp.getFooter();
+			if(header != null) {
+				header.addAttribute("pageNumber", String.valueOf(i + 1));
+				header.addAttribute("totalPages", totalPageNumbers);
+				processPageAreaContent(header, sp);
+			} 
+			if(footer != null) {
+				footer.addAttribute("pageNumber", String.valueOf(i + 1));
+				footer.addAttribute("totalPages", totalPageNumbers);
+				processPageAreaContent(footer, sp);
+			}
+		}
+	}
+
+	private void processPageAreaContent(PageArea area, StatePage sp) {
+		List<DocumentPart> content = new ArrayList<DocumentPart>();
+		for(DocumentPart part : area.getContent()) {
+			content.add(createCopyOf(part));
+		}		
+		
+		Map<String, String> attributes = area.getAttributes();
+		for(int i = 0; i < content.size(); ++i) {
+			DocumentPart part = content.get(i);
+			if(part.getType().equals(DocumentPartType.TEXT)) {
+				part = processAttributes((Text) part, attributes);
+				System.out.println("Text changed to " + ((Text) part).getText());
+			} else if(part.getType().equals(DocumentPartType.TABLE)) {
+				Table table = (Table) part;
+				List<Cell> cells = table.getContent();
+				for(int b = 0; b < cells.size(); ++b) {
+					Cell c = cells.get(b);
+					if(c.getContent().getType().equals(DocumentPartType.TEXT)) {
+						c.content(processAttributes((Text) c.getContent(), attributes));
+					}
+				}
+			}			
+		}		
+		processFixedPositionContent(content, sp);
+		
+	}
+	
+	private DocumentPart createCopyOf(DocumentPart part) {
+		if(part != null) {
+			switch(part.getType()) {
+			case PARAGRAPH:				
+				return new BaseParagraph((Paragraph) part, true);
+			case TABLE:
+				Table table = (Table) part;
+				Table newTable = new BaseTable(table);
+				newTable.removeContent();
+				for(int i = 0; i < table.getContent().size(); ++i) {
+					Cell c = table.getContent().get(i);
+					newTable.addCell(new BaseCell(c).content((PlaceableDocumentPart) this.createCopyOf(c.getContent())));
+				}
+				return newTable;
+			default:
+				if(part instanceof PlaceableDocumentPart) {
+					System.out.println("FASDSA");
+					return ((PlaceableDocumentPart) part).copy();
+				}
+			}			
+		}
+		return null;
+	}
+	
+	private Text processAttributes(Text text, Map<String, String> attributes) {
+		String textString = text.getText();
+		for(Entry<String, String> entry : attributes.entrySet()) {
+				System.out.println(entry.getKey() + ", " + entry.getValue());
+				textString = textString.replace('%' + entry.getKey(), entry.getValue());
+		}
+		return text.text(textString);
+	}
+
+	private Page processPageContent(Page oldPage, StatePage newPage) {
         processFixedPositionContent(oldPage.getFixedPositionContent(), newPage);
         return processPositioning(oldPage.getPositionlessContent(), newPage);
     }
 
     private void addToStateLink(DocumentPart old, DocumentPart newPart) {
         DocumentPart oldObject = old;
-        //if we're dealing with an object that resulted from overflow
-        if (old instanceof StateDocumentPart) {
-            oldObject = ((StateDocumentPart) old).getOriginalObject();
+        List<DocumentPart> results = this.stateLink.get(oldObject);
+        if (results != null) {
+            results.add(newPart);
         } else {
-            List<DocumentPart> results = this.stateLink.get(oldObject);
-            if (results != null) {
-                results.add(newPart);
-            } else {
-                List<DocumentPart> newList = new LinkedList<DocumentPart>();
-                newList.add(newPart);
-                stateLink.put(oldObject, newList);
-            }
-        }
+            List<DocumentPart> newList = new LinkedList<DocumentPart>();
+            newList.add(newPart);
+            stateLink.put(oldObject, newList);
+        }        
     }
 
     /**
@@ -122,22 +202,22 @@ public class DocumentState {
             case IMAGE:
                 StateImage image = new BaseStateImage((Image) part);
                 image.setOriginalObject(part);
-                image.processContentSize(page);
+                image.processContentSize(page, true, false, true);
                 page.add(image);
                 addToStateLink(part, image);
                 break;
             case TABLE:
-                //TODO: Table fix stuff!
                 StateTable table = new BaseStateTable((Table) part);
                 for (Cell c : ((Table) part).getContent()) {
                     table.addCell(c);
                 }
                 table.setOriginalObject(part);
-                table.processContentSize(page);
+                table.processContentSize(page, true, false, true);
                 page.add(table);
+                addToStateLink(part, table);
                 break;
             default:
-            	//TODO: Log unsupported document part type
+            	LOGGER.warn("The given document type: " + part.getType() + " is unsupported.");
                 break;
             }
         }
@@ -181,7 +261,7 @@ public class DocumentState {
     }
 
     private Page addPositionlessTable(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
-        //TODO: These 4 methods can probably be simplified
+        //These 4 methods can probably be simplified
         Position position;
         StateTable table = new BaseStateTable((Table) p);
         if (checkContentSize(table, page)) {
@@ -192,10 +272,7 @@ public class DocumentState {
             if (table.updateHeight(page)) {
                 return handleOverflow(page, i, null, content);
             }
-            System.out.println("TABLE REQUIRED SPACE: " + table.getRequiredSpaceBelow());
-            System.out.println("TAble height: " + table.getHeight());
             position = getPositionForPart(page, table);
-            System.out.println("found position: " + position);
             if (position == null) {
                 return handleOverflow(page, i, null, content);
             }
@@ -204,7 +281,6 @@ public class DocumentState {
             for (Cell c : ((Table) p).getContent()) {
                 table.addCell(c);
             }
-            System.out.println("Total content size before processing cont: " + table.getContent().size());
             if (!table.processContentSize(page)) {
                 page.add(table);
                 addToStateLink(p, table);
@@ -303,7 +379,9 @@ public class DocumentState {
      */
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
         Position position = null;
+        System.out.println("PARE: " + part.getRequiredSpaceAbove());
         position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow(), part);
+        System.out.println("Pos found: " + position);
         return position;
     }
 
@@ -379,8 +457,14 @@ public class DocumentState {
         }
         return true;
     }
-
-    //TODO: add preview for tables
+    /**
+     * Returns the preview objects corresponding to the given table object.
+     * @param table Table object to get the corresponding preview objects for.
+     * @return List of table objects. The list will be empty if the given table object is not represented in the preview.
+     */
+    public List<Table> getPreviewFor(Table table) {
+        return getLinkedObjects(table);
+    }
 
     /**
      * Returns the preview objects corresponding to the given text object.

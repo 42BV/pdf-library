@@ -19,6 +19,7 @@ import nl.mad.toucanpdf.utility.RandomStringGenerator;
 public class PdfFont extends PdfDictionary {
     private PdfFontEncoding encoding;
     private Font font;
+    private static final int SUBSET_INDICATOR_LENGTH = 6;
 
     /**
      * Creates a new PdfFont instance from the given font.
@@ -27,15 +28,14 @@ public class PdfFont extends PdfDictionary {
     public PdfFont(Font font, PdfIndirectObject encoding) {
         super(PdfObjectType.FONT);
     	this.font = font;
-        this.processFont(font);
+        this.processFont();
         this.setFontEncodingReference(encoding);
     }
 
     /**
-     * Fills the dictionary based on the attributes of the given font.
-     * @param font Font that will be processed.
+     * Fills the dictionary based on the attributes of the font.
      */
-    private void processFont(Font font) {
+    private void processFont() {
         put(PdfNameValue.TYPE, PdfNameValue.FONT);
         FontFamily base = font.getFontFamily();
         FontMetrics metrics = base.getMetricsForStyle(font.getStyle());
@@ -94,7 +94,7 @@ public class PdfFont extends PdfDictionary {
         	 widths = encoding.getEncodingDifferences().generateWidthList(font); 
              put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
              put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1)); 
-             put(PdfNameValue.BASE_FONT, new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, 6) + "+" + font.getFontFamily().getNameOfStyle(font.getStyle())));
+             put(PdfNameValue.BASE_FONT, new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, SUBSET_INDICATOR_LENGTH) + "+" + font.getFontFamily().getNameOfStyle(font.getStyle())));
         } else {
         	 widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
         }

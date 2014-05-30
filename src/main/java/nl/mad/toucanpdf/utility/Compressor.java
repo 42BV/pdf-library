@@ -4,6 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.Deflater;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Compression;
 
 /**
@@ -13,6 +17,7 @@ import nl.mad.toucanpdf.model.Compression;
  */
 public final class Compressor {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Compressor.class);
 
     private Compressor() {
     }
@@ -37,8 +42,7 @@ public final class Compressor {
             baos.close();
             output = baos.toByteArray();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("IOException occurred on flate compression");
         }
         return output;
     }
@@ -62,7 +66,7 @@ public final class Compressor {
         case LZW:
         case RUN_LENGTH:
         default:
-        	//TODO: Log unsupported compression
+        	LOGGER.warn("The given compression: " + compressionMethod + " is unsupported. The compression should be removed from the object to prevent problems.");
             return data;
         }
     }

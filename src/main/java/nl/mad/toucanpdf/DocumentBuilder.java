@@ -66,7 +66,7 @@ public class DocumentBuilder {
     private int defaultMarginTop = 0;
     private int defaultMarginLeft = 0;
     private int defaultMarginRight = 0;
-    private int defaultMarginBottom = 10;
+    private int defaultMarginBottom = 0;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -93,14 +93,12 @@ public class DocumentBuilder {
      * @return the builder object.
      */
     public DocumentBuilder addPart(DocumentPart part) {
-        if (part != null) {
-            if (part.getType() != DocumentPartType.PAGE) {
-                if (pages.size() == 0) {
-                    this.addPage();
-                }
-                Page currentPage = pages.get(currentPageNumber - 1);
-                currentPage.add(part);
-            }
+        if (part != null && part.getType() != DocumentPartType.PAGE) {
+	        if (pages.size() == 0) {
+	              this.addPage();
+	        }
+	        Page currentPage = pages.get(currentPageNumber - 1);
+	        currentPage.add(part);
         }
         return this;
     }
@@ -513,12 +511,12 @@ public class DocumentBuilder {
     * Creates a new image instance. Use the returned instance to adjust attributes of the image. 
     * You can use this method to create images and add them to anchors without directly adding the image to the document as well.
     * @param imageFile InputStream containing the image file to parse.
-    * @param format The format of the image.
+    * @param imageFilename The name of the image file.
     * @return image object
     * @see Anchor
     */
-    public Image createImage(InputStream imageFile, String filename) {
-        Image image = new BaseImage(imageFile, filename);
+    public Image createImage(InputStream imageFile, String imageFilename) {
+        Image image = new BaseImage(imageFile, imageFilename);
         setDefaultMargins(image);
         return image;
     }
