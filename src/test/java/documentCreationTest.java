@@ -83,8 +83,6 @@ public class documentCreationTest {
 		table2.addCell("Text 1").height(80);
 		table2.marginTop(30);
 		
-		//
-		
 		//retrieving the preview to check for positioning
 		DocumentState state = builder.getPreview();
 		assertEquals(2, state.getPages().size());

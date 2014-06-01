@@ -14,6 +14,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 public class BaseStateCellText extends AbstractStateText implements StateCellText {
     private final static int REQUIRED_WIDTH = 50;
+    private DocumentPart originalObject;
 
     public BaseStateCellText(String text) {
         super(text);
@@ -22,8 +23,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     public BaseStateCellText(Text text) {
         super(text);
     }
-
-    private DocumentPart originalObject;
 
     @Override
     public double calculateContentHeight(double availableWidth, double leading, Position position, boolean processPositioning) {
