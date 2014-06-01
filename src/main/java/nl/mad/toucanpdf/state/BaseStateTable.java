@@ -30,10 +30,19 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);    
     private static final int BIG_DECIMAL_PRECISION = 20;
 
+    /**
+     * Creates a new instance of BaseStateTable.
+     * @param pageWidth Width of the page.
+     */
     public BaseStateTable(int pageWidth) {
         super(pageWidth);
     }
 
+    /**
+     * Creates a new instance of BaseStateTable and copies the given table. 
+     * The content of the given table is not copied.
+     * @param table Table to copy from.
+     */
     public BaseStateTable(Table table) {
         super(table);
     }
@@ -58,6 +67,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         return this.processContentSize(page, wrapping, processAlignment, true, fixed);
     }
 
+    /**
+     * Processes the size of the table/cells and the positioning of said objects.
+     * @param page Page the table will be on.
+     * @param wrapping Whether wrapping should be allowed.
+     * @param processAlignment Whether alignment should be processed.
+     * @param processPositioning Whether positioning should be processed.
+     * @param fixed Whether the table has a fixed position.
+     * @return true if there was overflow, false otherwise.
+     */
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed) {
         int totalCellAmount = this.getContent().size();
         MathContext mc = new MathContext(BIG_DECIMAL_PRECISION, RoundingMode.HALF_UP);
@@ -87,10 +105,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             int remainder = (columnAmount - currentFilledColumns);
             if (remainder == 0) ++remainder;
             BigDecimal remainingColumns = new BigDecimal(remainder);
-            System.out.println(remainingColumns);
-            System.out.println(availableWidth);
             cellWidth = availableWidth.divide(remainingColumns, mc);
-            System.out.println(cellWidth);
             
             if (currentFilledColumns + columns <= columnAmount) {
                 BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, cellWidth, c);
@@ -205,7 +220,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     private void processCellAddition(StateCell c, Position cellPos, List<StateCell> currentRowCells, BigDecimal reqWidth, boolean processPositioning) {
         c.width(reqWidth.doubleValue());
-        System.out.println(cellPos);
         c.setPosition(new Position(cellPos));
         if (processPositioning) {
             currentRowCells.add(c);
@@ -283,7 +297,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
         	if(wrappingAllowed) {
-            space.add(new int[] { (int) this.getPosition().getX(), (int) (this.getPosition().getX() + getWidth()) });
+            space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
         	} else {
         		space.add(new int[] { 0, pageWidth });
         	}

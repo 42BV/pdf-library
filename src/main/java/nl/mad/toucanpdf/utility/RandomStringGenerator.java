@@ -2,7 +2,7 @@ package nl.mad.toucanpdf.utility;
 
 import java.util.Random;
 
-public class RandomStringGenerator {
+public final class RandomStringGenerator {
 	public static final String DEFAULT_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
 	public static final String DEFAULT_CAPS_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

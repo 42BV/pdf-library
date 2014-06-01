@@ -62,7 +62,6 @@ public class DocumentState {
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
             StatePage newPage = new BaseStatePage(page);
-            System.out.println("MT: " + newPage.getMarginTop());
             newPage.setOriginalObject(page);
             Page masterPage = page.getMasterPage();
             if (masterPage != null) {
@@ -111,7 +110,6 @@ public class DocumentState {
 			DocumentPart part = content.get(i);
 			if(part.getType().equals(DocumentPartType.TEXT)) {
 				part = processAttributes((Text) part, attributes);
-				System.out.println("Text changed to " + ((Text) part).getText());
 			} else if(part.getType().equals(DocumentPartType.TABLE)) {
 				Table table = (Table) part;
 				List<Cell> cells = table.getContent();
@@ -143,7 +141,6 @@ public class DocumentState {
 				return newTable;
 			default:
 				if(part instanceof PlaceableDocumentPart) {
-					System.out.println("FASDSA");
 					return ((PlaceableDocumentPart) part).copy();
 				}
 			}			
@@ -154,7 +151,6 @@ public class DocumentState {
 	private Text processAttributes(Text text, Map<String, String> attributes) {
 		String textString = text.getText();
 		for(Entry<String, String> entry : attributes.entrySet()) {
-				System.out.println(entry.getKey() + ", " + entry.getValue());
 				textString = textString.replace('%' + entry.getKey(), entry.getValue());
 		}
 		return text.text(textString);
@@ -335,7 +331,6 @@ public class DocumentState {
             return handleOverflow(page, i, null, content);
         }
         paragraph.on(position);
-        System.out.println("Paragraph blabla: " + paragraph.getPosition());
         page.add(paragraph);
         addToStateLink(p, paragraph);
         Paragraph overflowParagraph = paragraph.processContentSize(page, false);
@@ -356,7 +351,6 @@ public class DocumentState {
         Position position;
         StateText text = new BaseStateText((Text) p);
         text.setOriginalObject(p);
-        System.out.println("processing text: " + text.getText());
         position = getPositionForPart(page, text);
         if (position == null) {
             return handleOverflow(page, i, null, content);
@@ -379,9 +373,7 @@ public class DocumentState {
      */
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
         Position position = null;
-        System.out.println("PARE: " + part.getRequiredSpaceAbove());
         position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow(), part);
-        System.out.println("Pos found: " + position);
         return position;
     }
 

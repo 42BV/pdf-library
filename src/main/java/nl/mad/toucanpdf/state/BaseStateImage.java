@@ -100,10 +100,8 @@ public class BaseStateImage extends BaseImage implements StateImage {
     @Override
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
     	if(!fixed) {
-        	System.out.println("Not fixed");
 	        double requiredSpaceAbove = this.getRequiredSpaceAbove();
 	        double requiredSpaceBelow = this.getRequiredSpaceBelow();
-	        Position originalPos = this.getPosition();
 	        Position pos = new Position(this.getPosition());
 	        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
 	        boolean imagePositioned = false;
@@ -111,12 +109,10 @@ public class BaseStateImage extends BaseImage implements StateImage {
 	            int i = 0;
 	            while (!imagePositioned && i < openSpaces.size()) {
 	                int[] openSpace = openSpaces.get(i);
-	            	System.out.println("Image open space:" + openSpace[0] + " : " + openSpace[1] + " - " + openSpace[2]);
 	                if (pos.getX() < openSpace[0]) {
 	                    pos.setX(openSpace[0]);
 	                }
 	                int openSpaceWidth = (openSpace[1] - openSpace[0]);
-	                System.out.println("OpenSpace width: " + openSpaceWidth);
 	                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
 	                    imagePositioned = true;
 	                    if (processAlignment) {

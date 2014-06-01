@@ -89,7 +89,6 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     public Paragraph processContentSize(StatePage page, boolean fixedPosition) {
         Paragraph overflowParagraph = null;
         for (int i = 0; i < textCollection.size(); ++i) {
-            System.out.println("handling text: " + textCollection.get(i).getText());
             StateText t = (StateText) textCollection.get(i);
             t.marginLeft(t.getMarginLeft() + this.marginLeft);
             t.marginRight(t.getMarginRight() + this.marginRight);
@@ -109,15 +108,11 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
 
             Text overflow = t.processContentSize(page, posX, fixedPosition);
             if (overflow != null) {
-            	System.out.println("its null");
                 overflowParagraph = this.handleOverflow(i + 1, overflow);
             } else {
                 Position pos = new Position(t.getPosition());
-                System.out.println(t.getPosition());
-                System.out.println(t.getContentHeight(page));
                 pos.adjustY(-t.getContentHeight(page));
                 pos.setX(page.getMarginLeft());
-                System.out.println("BE: " + pos);
                 this.processAnchorPositions(new Position(pos), page, this.getAnchorOn(t, AnchorLocation.BELOW), AnchorLocation.BELOW);
                 
             }
@@ -158,10 +153,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             startingPositionForText.adjustY(-text.getRequiredSpaceAboveLine());
             position = getMinimalStartingPositionForRightAnchor(position,
                     page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight, text));
-            System.out.println("MSRA: " + position);
             position = getStartingPositionRightAnchor(this.getAnchorOn(text, AnchorLocation.RIGHT), position,
                     page.getOpenSpacesOn(position, true, text.getRequiredSpaceAbove(), requiredHeight, text), page);
-            System.out.println("SRA: " + position);
             text.on(startingPositionForText);
             this.processAnchorPositions(position, page, this.getAnchorOn(text, AnchorLocation.RIGHT), AnchorLocation.RIGHT);
         }
@@ -277,11 +270,9 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 alignment = true;
             }
             StatePlaceableFixedSizeDocumentPart stateAnchorPart = (StatePlaceableFixedSizeDocumentPart) anchorPart;
-            System.out.println("Position before process: " + newPos);
             stateAnchorPart.setWrappingAllowed(wrapping);
             stateAnchorPart.processContentSize(page, wrapping, alignment, false);
             page.add(anchorPart);
-            System.out.println("Part after process: " + ((StatePlaceableFixedSizeDocumentPart) anchorPart).getPosition());
             newPos = new Position(anchorPart.getWidth() + anchorPart.getMarginRight() + anchorPart.getPosition().getX(), newPos.getY());
             double newPosX = newPos.getX();
             double newPosY = newPos.getY();
@@ -413,7 +404,6 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         if (!textCollection.isEmpty()) {
             Text t = textCollection.get(0);
             Anchor a = this.getAnchorOn(t, AnchorLocation.ABOVE);
-            System.out.println("ASDAS"  + a);
             if (a != null) {
                 PlaceableFixedSizeDocumentPart part = a.getPart();
                 if (part instanceof StatePlaceableDocumentPart) {
@@ -442,7 +432,6 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     @Override
     public Paragraph addText(Text text) {
         this.textCollection.add(new BaseStateText(text));
-        System.out.println("TxtCol: " + textCollection.size());
         return this;
     }
 

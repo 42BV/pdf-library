@@ -76,7 +76,6 @@ public class Type1FontMetricsTest {
     
     @Test
     public void testRemainingGetters() {
-    	System.out.println("NSa");
     	assertEquals("Helvetica", metrics.getFontName());
     	assertEquals(0.278, metrics.getWidthPoint(32), FloatEqualityTester.EPSILON);
     	assertEquals(10.175, metrics.getLineHeightForSize(11), FloatEqualityTester.EPSILON);

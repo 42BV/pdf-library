@@ -14,8 +14,8 @@ public class BasePageArea implements PageArea{
 	private Map<String, String> attributes = new HashMap<String, String>();
 	private List<DocumentPart> content = new ArrayList<DocumentPart>();
 	
-	public BasePageArea(int height) {
-		this.height = height;
+	public BasePageArea(int newHeight) {
+		this.height = newHeight;
 	}
 	
 	public int getHeight() {

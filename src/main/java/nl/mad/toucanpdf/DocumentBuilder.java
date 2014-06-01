@@ -129,8 +129,7 @@ public class DocumentBuilder {
      * @see Font
      */
     public Font createFont() {
-        Font font = new BaseFont();
-        return font;
+        return new BaseFont();
     }
 
     /**

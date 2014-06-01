@@ -59,8 +59,7 @@ public class PdfBody {
     }
 
     private PdfIndirectObject createIndirectObject(int number, AbstractPdfObject object) {
-        PdfIndirectObject indirectObject = new PdfIndirectObject(number, 0, object, true);
-        return indirectObject;
+        return new PdfIndirectObject(number, 0, object, true);
     }
 
     private PdfIndirectObject createIndirectObject(AbstractPdfObject object) {

@@ -103,7 +103,6 @@ public class BaseStatePage extends BasePage implements StatePage {
 	@Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth) {
         double posHeight = getHeight() - filledHeight - requiredSpaceAbove;
-        System.out.println("POS HEIGHTL: " + posHeight);
         return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, spacing, requiredWidth);
     }
 
@@ -152,9 +151,7 @@ public class BaseStatePage extends BasePage implements StatePage {
     public int getTotalAvailableWidth(Position position, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
         int availableWidth = 0;
         for (int[] openSpace : this.getOpenSpacesOn(position, true, requiredSpaceAbove, requiredSpaceBelow, spacing)) {
-        	System.out.println("Open spaces: " + openSpace[0] + " : " + openSpace[1]);
             availableWidth += openSpace[1] - openSpace[0];
-        	System.out.println("available Width: " + availableWidth);
         }
         return availableWidth;
     }
@@ -203,11 +200,6 @@ public class BaseStatePage extends BasePage implements StatePage {
             double y = position.getY();
             double positionTopLimit = y + requiredSpaceAbove;
             double positionBottomLimit = y - requiredSpaceBelow;
-            System.out.println("    Top Limit: " + topLimit);
-            System.out.println("    Bottom Limit: " + bottomLimit);
-            System.out.println("    Y: " + y);
-            System.out.println("    positionTopLimit: " + positionTopLimit);
-            System.out.println("    positionBottomLimit: " + positionBottomLimit);
 
             if ((FloatEqualityTester.lessThanOrEqualTo(y, topLimit) && FloatEqualityTester.greaterThanOrEqualTo(y, bottomLimit))
                     || (FloatEqualityTester.greaterThanOrEqualTo(positionTopLimit, bottomLimit) && FloatEqualityTester.lessThanOrEqualTo(positionTopLimit,

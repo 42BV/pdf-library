@@ -239,10 +239,10 @@ public class BasePage extends AbstractDocumentPart implements Page {
 	}
 
 	@Override
-	public Page header(PageArea header) {
-		this.header = header;
-		if(this.marginTop < header.getHeight()) {
-			this.marginTop(header.getHeight());
+	public Page header(PageArea newHeader) {
+		this.header = newHeader;
+		if(this.marginTop < newHeader.getHeight()) {
+			this.marginTop(newHeader.getHeight());
 		}
 		return this;
 	}
@@ -262,10 +262,10 @@ public class BasePage extends AbstractDocumentPart implements Page {
 	}
 
 	@Override
-	public Page footer(PageArea footer) {
-		this.footer = footer;
-		if(this.marginBottom < footer.getHeight()) {
-			this.marginTop(footer.getHeight());
+	public Page footer(PageArea newFooter) {
+		this.footer = newFooter;
+		if(this.marginBottom < newFooter.getHeight()) {
+			this.marginTop(newFooter.getHeight());
 		}
 		return this;
 	}

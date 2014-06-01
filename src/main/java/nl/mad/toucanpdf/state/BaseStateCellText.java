@@ -43,19 +43,16 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
 
         for (int i = 0; i < strings.size(); ++i) {
             String s = strings.get(i);
-            System.out.println("Handling string: " + s);
             double oldWidth = width;
             width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             if (FloatEqualityTester.greaterThan(width, availableWidth)) {
                 String line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
-                System.out.println("What is s: " + s);
                 processLineAddition(processPositioning, pos, leading, line, metrics.getWidthPointOfString(line, textSize, true), availableWidth);
                 lineAdditions += 1;
                 width = 0;
                 currentLine = new StringBuilder();
             } else if (i == (strings.size() - 1)) {
                 currentLine.append(s);
-                System.out.println(currentLine.toString());
                 processLineAddition(processPositioning, pos, leading, currentLine.toString(),
                         metrics.getWidthPointOfString(currentLine.toString(), textSize, true), availableWidth);
                 lineAdditions += 1;
@@ -70,7 +67,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         if (processPositioning) {
             pos.adjustY(-(getRequiredSpaceAboveLine() + leading));
             pos = processAlignment(line, pos, width, availableSpace);
-            System.out.println("Putting in textsplit " + line);
             textSplit.put(new Position(pos), line);
             pos.adjustY(-getRequiredSpaceBelowLine());
         }

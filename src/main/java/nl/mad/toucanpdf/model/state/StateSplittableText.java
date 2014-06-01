@@ -18,7 +18,15 @@ public interface StateSplittableText extends Text {
      */
     Map<Position, Double> getJustificationOffset();
 
+    /**
+     * Returns the space required above each line.
+     * @return double containing the required space.
+     */
     double getRequiredSpaceAboveLine();
 
+    /**
+     * Returns the space required below each line.
+     * @return double containing the required space.
+     */
     double getRequiredSpaceBelowLine();
 }

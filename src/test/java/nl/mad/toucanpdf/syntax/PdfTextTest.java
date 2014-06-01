@@ -84,7 +84,6 @@ public class PdfTextTest {
         //expected result for font adding, matrix adding and text adding
         String expectedTotalResult = "/R1 11 Tf\n" + "2.0 Tw 0.0 0.0 0.0 0.0 100.0 100.0 Tm\n" + "[(T) 70 (est)] TJ\n" + "0.0 Tw 0.0 0.0 0.0 0.0 200.0 200.0 Tm\n" + "[(T) 70 (est2)] TJ\n" + " 0 -3 TD\n";
         pdfText.addText(text, fontReference, Page.DEFAULT_NEW_LINE_SIZE);
-        System.out.println("Helo: " + ByteEncoder.getString(pdfText.getByteRepresentation()));
         assertEquals(expectedTotalResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
 

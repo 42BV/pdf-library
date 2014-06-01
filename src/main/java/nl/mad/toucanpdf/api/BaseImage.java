@@ -120,9 +120,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this();
         this.height = image.getHeight();
         this.width = image.getWidth();
-        this.image = image.getImageParser();
-        
-        System.out.println("Image = : " + image);
+        this.image = image.getImageParser();        
         this.setWrappingAllowed(image.isWrappingAllowed());
         this.setAlignment(image.getAlignment());
         this.setPosition(image.getPosition());

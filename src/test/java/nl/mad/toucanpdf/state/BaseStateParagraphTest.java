@@ -86,7 +86,6 @@ public class BaseStateParagraphTest {
  			@Mock
  			public StateText processContentSize(Invocation inv, StatePage page, double posX, boolean fixedPosition)
  			{
- 				System.out.println(inv.getInvocationIndex());
  				if(inv.getInvocationIndex() != 2) {
  					return null;
  				} else {

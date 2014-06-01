@@ -58,13 +58,11 @@ public class BaseStateText extends AbstractStateText implements StateText {
         boolean stringsProcessed = false;
         Position pos = new Position(this.getPosition());
         StateText overflowText = null;
-        System.out.println("New Text object");
         if(positionX == 0) {
         	positionX = this.getRequiredSpaceLeft();
         }
 
         while (!stringsProcessed && i < strings.size()) {
-        	System.out.println("Pos: " + pos);
             List<int[]> openSpaces = getOpenSpaces(pos, page, fixedPosition);
             if(openSpaces.size() != 0) {
 	            i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
@@ -91,7 +89,6 @@ public class BaseStateText extends AbstractStateText implements StateText {
     private List<int[]> getOpenSpaces(Position pos, StatePage page, boolean fixedPosition) {
         List<int[]> openSpaces;
         if (!fixedPosition) {
-            System.out.println(pos);
             openSpaces = page.getOpenSpacesOn(pos, true, getRequiredSpaceAboveLine(), getRequiredSpaceBelowLine(), this);
         } else {
             openSpaces = new ArrayList<int[]>();

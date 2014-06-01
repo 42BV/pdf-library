@@ -1,6 +1,6 @@
 package nl.mad.toucanpdf.utility;
 
-public class PointsConverter {
+public final class PointsConverter {
     private static final double PIXELS_TO_POINTS = 0.75;
     private static final double POINTS_TO_PIXELS = 3;
 

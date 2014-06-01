@@ -49,11 +49,8 @@ public class JPEG implements ImageParser {
      */
     private void parseStream(InputStream stream) {
         try {
-        	System.out.println("Stream = " + stream);
             BufferedImage image = ImageIO.read(stream);
-            System.out.println("Before convert: " + image);
             image = convertImage(image);
-            System.out.println("Parse image: " + image);
             if(image != null) {
 	            retrieveData(image);
 	            determineColorSpace(image);

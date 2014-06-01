@@ -72,7 +72,6 @@ public class BaseStateTextTest {
 		  Position position = new Position(pos);
 		  String expectedString = "test ";
 		  for(Entry<Position, String> entry : textSplit.entrySet()) {
-			  System.out.println(position + ", " + entry.getKey());
 			  assertTrue(position.equals(entry.getKey()));
 			  assertEquals(expectedString, entry.getValue());			  
 			  if(i == 0) {

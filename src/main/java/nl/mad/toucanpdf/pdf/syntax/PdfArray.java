@@ -26,7 +26,6 @@ public class PdfArray extends AbstractPdfObject {
      */
     public PdfArray(List<AbstractPdfObject> values) {
         this();
-        System.out.println(values.size());
         this.values = new LinkedList<AbstractPdfObject>(values);
     }
 
