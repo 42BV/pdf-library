@@ -18,6 +18,7 @@ public abstract class AbstractPlaceableFixedSizeDocumentPart extends AbstractPla
      * Width of the object.
      */
     protected double width;
+    protected boolean wrappingAllowed = false;
 
     /**
      * Creates a new instance with the given type.
@@ -36,5 +37,14 @@ public abstract class AbstractPlaceableFixedSizeDocumentPart extends AbstractPla
     public double getHeight() {
         return this.height;
     }
-
+    
+    @Override
+    public void setWrappingAllowed(boolean wrapping) {
+    	this.wrappingAllowed = wrapping;
+    }
+    
+    @Override
+    public boolean isWrappingAllowed() {
+    	return this.wrappingAllowed;
+    }
 }

@@ -7,8 +7,10 @@ import java.io.InputStream;
 
 
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.ColorSpace;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.Image;
+import nl.mad.toucanpdf.model.ImageParser;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
@@ -75,7 +77,7 @@ public class ImageTest {
 	public void testSettersGetters() {
 		Image i = new BaseImage(new byte[0], ImageType.JPEG);
 		i.allowWrapping(true);
-		assertEquals(true, i.wrappingAllowed());
+		assertEquals(true, i.isWrappingAllowed());
 		i.compress(Compression.FLATE);
 		assertEquals(Compression.FLATE, i.getCompressionMethod());
 		i.on(100, 100);
@@ -96,6 +98,14 @@ public class ImageTest {
 		assertEquals(b.getCompressionMethod(), i.getCompressionMethod());
 	}
 	
-	
-	
+	@Test 
+	public void testRequiredComponents() {
+		ImageParser ip = i.getImageParser();
+		assertEquals(1, ip.getRequiredComponentsForColorSpace(ColorSpace.DEVICE_GRAY));
+		assertEquals(1, ip.getRequiredComponentsForColorSpace(ColorSpace.CAL_GRAY));
+		assertEquals(3, ip.getRequiredComponentsForColorSpace(ColorSpace.DEVICE_RGB));
+		assertEquals(3, ip.getRequiredComponentsForColorSpace(ColorSpace.CAL_RGB));
+		assertEquals(4, ip.getRequiredComponentsForColorSpace(ColorSpace.DEVICE_CMYK));
+		assertEquals(0, ip.getRequiredComponentsForColorSpace(ColorSpace.ICC_BASED));
+	}
 }

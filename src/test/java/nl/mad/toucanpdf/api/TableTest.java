@@ -30,12 +30,13 @@ public class TableTest {
 		table.width(100).on(100, 110).compress(Compression.ASCII_85);
 		table.marginBottom(1).marginLeft(2).marginRight(3).marginTop(4);
 		
+		
 		Table t2 = (Table) table.copy();
 		assertEquals(Alignment.RIGHT, t2.getAlignment());
 		assertEquals(3.0, t2.getBorderWidth(), FloatEqualityTester.EPSILON);
 		assertEquals(9, t2.getColumnAmount());
 		assertEquals(false, t2.getDrawFiller());
-		assertEquals(true, t2.wrappingAllowed());
+		assertEquals(true, t2.isWrappingAllowed());
 		assertEquals(100, t2.getWidth(), FloatEqualityTester.EPSILON);
 		assertEquals(new Position(100, 110), t2.getPosition());
 		assertEquals(Compression.ASCII_85, t2.getCompressionMethod());
@@ -51,6 +52,13 @@ public class TableTest {
 		assertEquals(1, table.getContent().size());
 		table.addCell(new BaseCell());
 		assertEquals(2, table.getContent().size());		
+	}
+	
+	@Test
+	public void testContentRemoval() {
+		table.addCell("Test");
+		table.removeContent();
+		assertEquals(0, table.getContent().size());
 	}
 
 }

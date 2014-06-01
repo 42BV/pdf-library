@@ -11,7 +11,6 @@ import nl.mad.toucanpdf.model.Table;
 public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPart implements Table {
     protected int columnAmount = 1;
     protected static final double WIDTH_PERCENTAGE = 0.9;
-    protected boolean wrappingAllowed = false;
     protected Compression compression;
     protected double borderWidth = 1.0;
     private boolean drawFillerCells = true;
@@ -28,7 +27,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.height = table.getHeight();
         this.columnAmount = table.getColumnAmount();
         this.compression = table.getCompressionMethod();
-        this.wrappingAllowed = table.wrappingAllowed();
+        this.wrappingAllowed = table.isWrappingAllowed();
         this.borderWidth = table.getBorderWidth();
         this.align(table.getAlignment());
         this.setPosition(table.getPosition());
@@ -43,11 +42,6 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     public Table columns(int amountOfColumns) {
         this.columnAmount = amountOfColumns;
         return this;
-    }
-
-    @Override
-    public boolean wrappingAllowed() {
-        return wrappingAllowed;
     }
 
     @Override
@@ -86,7 +80,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table allowWrapping(boolean isWrappable) {
-        this.wrappingAllowed = isWrappable;
+        this.setWrappingAllowed(isWrappable);
         return this;
     }
 

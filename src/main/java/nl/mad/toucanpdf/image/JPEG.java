@@ -49,8 +49,11 @@ public class JPEG implements ImageParser {
      */
     private void parseStream(InputStream stream) {
         try {
+        	System.out.println("Stream = " + stream);
             BufferedImage image = ImageIO.read(stream);
+            System.out.println("Before convert: " + image);
             image = convertImage(image);
+            System.out.println("Parse image: " + image);
             if(image != null) {
 	            retrieveData(image);
 	            determineColorSpace(image);
@@ -60,6 +63,13 @@ public class JPEG implements ImageParser {
             filter = Compression.DCT;
             stream.close();
         } catch (IOException e) {
+        	if(stream != null) {
+        		try {
+					stream.close();
+				} catch (IOException e1) {
+		            LOGGER.warn("Exception occurred on closing the image stream");
+				}
+        	}
             LOGGER.warn("Exception occurred during parsing of image stream");
         }
     }

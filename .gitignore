@@ -2,6 +2,7 @@
 *.iml
 .settings
 .checkstyle
+.clover
 .classpath
 .pmd
 .project

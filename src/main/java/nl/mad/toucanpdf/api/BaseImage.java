@@ -27,7 +27,6 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseImage.class);
     private ImageParser image;
     private Compression compressionMethod = Compression.FLATE;
-    private boolean wrappable;
     private double scale = 1;
     private boolean invertColors = false;
 
@@ -122,7 +121,9 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.height = image.getHeight();
         this.width = image.getWidth();
         this.image = image.getImageParser();
-        this.wrappable = image.wrappingAllowed();
+        
+        System.out.println("Image = : " + image);
+        this.setWrappingAllowed(image.isWrappingAllowed());
         this.setAlignment(image.getAlignment());
         this.setPosition(image.getPosition());
         this.marginBottom = image.getMarginBottom();
@@ -130,6 +131,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.marginTop = image.getMarginTop();
         this.marginRight = image.getMarginRight();
         this.invertColors = image.getInvertColors();
+        this.compressionMethod = image.getCompressionMethod();
     }
 
     @Override
@@ -199,13 +201,8 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     }
 
     @Override
-    public boolean wrappingAllowed() {
-        return this.wrappable;
-    }
-
-    @Override
     public Image allowWrapping(boolean isWrappable) {
-        this.wrappable = isWrappable;
+        this.setWrappingAllowed(isWrappable);
         return this;
     }
 

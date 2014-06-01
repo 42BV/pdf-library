@@ -59,17 +59,24 @@ public class BaseStateText extends AbstractStateText implements StateText {
         Position pos = new Position(this.getPosition());
         StateText overflowText = null;
         System.out.println("New Text object");
+        if(positionX == 0) {
+        	positionX = this.getRequiredSpaceLeft();
+        }
 
         while (!stringsProcessed && i < strings.size()) {
+        	System.out.println("Pos: " + pos);
             List<int[]> openSpaces = getOpenSpaces(pos, page, fixedPosition);
-            i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
-            boolean isLast = (i == (strings.size() - 1));
-            pos = handleTextAddition(page, leading, pos, positionX, fixedPosition, isLast);
-            if (pos == null) {
-                overflowText = handleOverflow(i, strings);
-                stringsProcessed = true;
+            if(openSpaces.size() != 0) {
+	            i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
+	            boolean isLast = (i == (strings.size() - 1));
+	            pos = handleTextAddition(page, leading, pos, positionX, fixedPosition, isLast);
+	            if (pos == null) {
+	                overflowText = handleOverflow(i, strings);
+	                stringsProcessed = true;
+	            }
+            } else {
+            	pos.adjustY(-leading);
             }
-            System.out.println("at end: " + !stringsProcessed + ", " + (i < strings.size()));
         }
         return overflowText;
     }
@@ -232,7 +239,6 @@ public class BaseStateText extends AbstractStateText implements StateText {
         if (!fixedPosition) {
             newPos = page.getOpenPosition(positionX, pos.getY() - leading - this.getRequiredSpaceAboveLine(), this.getRequiredSpaceAboveLine(),
                     this.getRequiredSpaceBelowLine(), this, 0);
-            System.out.println("New pos: " + newPos);
             double heightDifference = (page.getHeight() - page.getFilledHeight()) - pos.getY();
             double spaceBelow = this.getRequiredSpaceBelowLine();
             if (isLast) {

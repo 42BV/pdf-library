@@ -110,6 +110,14 @@ public class TextTest {
     	assertEquals(1, text.getMarginLeft());
     	assertEquals(15, text.getMarginRight());
     	assertEquals(30, text.getMarginTop());
+    	text.marginBottom(-1);
+    	text.marginLeft(-1);
+    	text.marginRight(-15);
+    	text.marginTop(-30);
+    	assertEquals(10, text.getMarginBottom());
+    	assertEquals(1, text.getMarginLeft());
+    	assertEquals(15, text.getMarginRight());
+    	assertEquals(30, text.getMarginTop());
     }
     
     @Test

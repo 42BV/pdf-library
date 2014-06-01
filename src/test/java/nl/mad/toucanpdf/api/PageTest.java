@@ -10,6 +10,7 @@ import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Page;
+import nl.mad.toucanpdf.model.PageArea;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,5 +88,31 @@ public class PageTest {
     	assertEquals(50, page.getWidth());
     	assertEquals(50, page.getHeight());
     	assertEquals(master, page.getMasterPage());
+    }
+    
+    @Test
+    public void testCopy() {
+    	page.header(new BasePageArea(100));
+    	page.footer(new BasePageArea(50));
+    	Page page2 = new BasePage(page);
+    	assertEquals(100, page2.getMarginTop());
+    	assertEquals(50, page2.getMarginBottom());
+    }
+    
+    @Test
+    public void testHeaderFooter() {
+    	page.addHeader().height(100);
+    	page.addFooter().height(150);
+    	assertEquals(100, page.getHeader().getHeight());
+    	assertEquals(150, page.getFooter().getHeight());
+    }
+    
+    @Test
+    public void testRotation() {
+    	page.rotate(4);
+    	assertEquals(0, page.getRotation());
+    	page.rotate(45);
+    	assertEquals(90, page.getRotation());
+    	
     }
 }

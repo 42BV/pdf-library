@@ -1,11 +1,13 @@
 package nl.mad.toucanpdf.model.state;
 
+import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
+
 /**
  * This interface specifies the methods all fixed size document parts in the preview state should implement.
  * @author Dylan de Wolff
  *
  */
-public interface StatePlaceableFixedSizeDocumentPart extends StatePlaceableDocumentPart {
+public interface StatePlaceableFixedSizeDocumentPart extends StatePlaceableDocumentPart, PlaceableFixedSizeDocumentPart {
 
     /**
      * Processes the size of the part and positions it accordingly.

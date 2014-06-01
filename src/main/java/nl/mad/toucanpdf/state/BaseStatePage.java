@@ -226,7 +226,6 @@ public class BaseStatePage extends BasePage implements StatePage {
         List<StatePlaceableDocumentPart> parts = this.getPartsOnLine(pos, requiredSpaceAbove, requiredSpaceBelow, spacing);
         List<int[]> openSpaces = new ArrayList<int[]>();
 
-        //this might cause trouble with fixed position stuff beyond the margins
         int startingPoint = getMarginLeft();
         if (ignoreSpacesBeforePositionWidth) {
             startingPoint = (int) (pos.getX() + spacing.getRequiredSpaceLeft());

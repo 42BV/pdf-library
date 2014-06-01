@@ -53,14 +53,15 @@ public class BaseStatePageTest {
 
     @Test
     public void testOpenPositionRetrieval() {
-        page = new BaseStatePage(20, 20);
+        page = new BaseStatePage(30, 30);
+        page.marginBottom(0).marginTop(0);
         Position pos = page.getOpenPosition(10.0, 5.0, text, 0);
-        assertEquals(new Position(0, 10), pos);
+        assertEquals(new Position(20, 20), pos);
         
         page = new BaseStatePage(110, 110);
         page.add(text2);
         pos = page.getOpenPosition(0.0, 5.0, text);
-        assertEquals(new Position(0, 107), pos);
+        assertEquals(new Position(20, 110), pos);
         
         page = new BaseStatePage(10, 10);
         page.marginBottom(10);
@@ -75,9 +76,9 @@ public class BaseStatePageTest {
     
     @Test
     public void testAvailableWidth() {
-    	assertEquals(105, page.getTotalAvailableWidth(new Position(0, 110), 0.0, 0.0, text));
+    	assertEquals(85, page.getTotalAvailableWidth(new Position(0, 110), 0.0, 0.0, text));
         page.add(text2);
-    	assertEquals(87, page.getTotalAvailableWidth(new Position(0, 110), 0.0, 0.0, text));
+    	assertEquals(67, page.getTotalAvailableWidth(new Position(0, 110), 0.0, 0.0, text));
     }
     
     @Test
@@ -95,13 +96,13 @@ public class BaseStatePageTest {
     	List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(new Position(0, 110), true, 0.0, 0.0, text);
     	assertEquals(20, openSpaces.get(0)[0]);
     	assertEquals(30, openSpaces.get(0)[1]);
-    	assertEquals(110, openSpaces.get(0)[2]);
+    	assertEquals(90, openSpaces.get(0)[2]);
     	assertEquals(30, openSpaces.get(1)[0]);
     	assertEquals(60, openSpaces.get(1)[1]);
     	assertEquals(60, openSpaces.get(1)[2]);
     	assertEquals(60, openSpaces.get(2)[0]);
-    	assertEquals(107, openSpaces.get(2)[1]);
-    	assertEquals(110, openSpaces.get(2)[2]);
+    	assertEquals(87, openSpaces.get(2)[1]);
+    	assertEquals(90, openSpaces.get(2)[2]);
     	
     	assertEquals(0, page.getOpenSpacesIncludingHeight(null, true, 0.0, 0.0, text).size());    	
     }
@@ -114,9 +115,9 @@ public class BaseStatePageTest {
     	
     	page.setFilledHeight(15);
     	assertEquals(15, page.getFilledHeight(), FloatEqualityTester.EPSILON);
-    	assertEquals(95, page.getRemainingHeight(), FloatEqualityTester.EPSILON);
+    	assertEquals(55, page.getRemainingHeight(), FloatEqualityTester.EPSILON);
     	page.setFilledWidth(10);
     	assertEquals(10, page.getFilledWidth(), FloatEqualityTester.EPSILON);
-    	assertEquals(100, page.getRemainingWidth(), FloatEqualityTester.EPSILON);
+    	assertEquals(60, page.getRemainingWidth(), FloatEqualityTester.EPSILON);
     }
 }

@@ -5,7 +5,6 @@ public class PointsConverter {
     private static final double POINTS_TO_PIXELS = 3;
 
     private PointsConverter() {
-
     }
 
     public static double getPointsForPixels(double pixels) {
@@ -18,5 +17,4 @@ public class PointsConverter {
         }
         return 0;
     }
-
 }

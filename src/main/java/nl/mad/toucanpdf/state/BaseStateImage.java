@@ -73,7 +73,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
         List<int[]> space = new LinkedList<int[]>();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
-        	if(wrappingAllowed()) {
+        	if(isWrappingAllowed()) {
         		space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
         	} else {
         		space.add(new int[] {0, pageWidth});
@@ -94,7 +94,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public boolean processContentSize(StatePage page) {
-        return this.processContentSize(page, this.wrappingAllowed(), true, false);
+        return this.processContentSize(page, this.isWrappingAllowed(), true, false);
     }
 
     @Override
@@ -116,6 +116,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
 	                    pos.setX(openSpace[0]);
 	                }
 	                int openSpaceWidth = (openSpace[1] - openSpace[0]);
+	                System.out.println("OpenSpace width: " + openSpaceWidth);
 	                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
 	                    imagePositioned = true;
 	                    if (processAlignment) {

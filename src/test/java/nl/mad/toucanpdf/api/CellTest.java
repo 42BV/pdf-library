@@ -1,7 +1,9 @@
 package nl.mad.toucanpdf.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import nl.mad.toucanpdf.model.Cell;
+import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 import org.junit.Before;
@@ -22,5 +24,12 @@ public class CellTest {
 		c.height(30);
 		Cell b = new BaseCell(c);
 		assertTrue(b.getColumnSpan() == 5 && FloatEqualityTester.equals(b.getWidth(), 20.0)&& FloatEqualityTester.equals(b.getHeight(), 30.0));	
-		}
+	}
+	
+	@Test
+	public void testContentSetter() {
+		Image i = new BaseImage();
+		c.content(i);
+		assertEquals(i, c.getContent());
+	}
 }

@@ -35,7 +35,7 @@ public class BaseStateCell extends AbstractCell implements StateCell {
                 return new BaseStateCellImage((Image) part);
             default:
                 LOGGER.warn("The given object type: " + part.getType() + " is not supported within cells.");
-                break;
+                return null;
             }
         }
         return null;

@@ -79,20 +79,4 @@ public class DocumentStateTest {
 		assertEquals(1, state.getPreviewFor(i).size());	
 		
 	}	
-	
-	@Test
-	public void testPreviewOverflow(@Injectable final BaseStateText stateText) {
-//		new NonStrictExpectations() {
-//			{
-//				stateText.processContentSize(null, anyDouble, anyBoolean);
-//				returns(new BaseStateText("Test")); maxTimes = 1;
-//			}
-//		};
-//		
-//		Page page = new BasePage(10, 10);
-//		Text t = new BaseText("Test");
-//		page.add(t);
-//		state.updateState(Arrays.asList(page));
-//		assertEquals(3, state.getPreviewFor(page).size());
-	}
 }

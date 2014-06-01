@@ -50,7 +50,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public boolean processContentSize(StatePage page) {
-        return this.processContentSize(page, this.wrappingAllowed(), true, false);
+        return this.processContentSize(page, this.isWrappingAllowed(), true, false);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         int totalCellAmount = this.getContent().size();
         MathContext mc = new MathContext(BIG_DECIMAL_PRECISION, RoundingMode.HALF_UP);
         int columnAmount = this.getColumnAmount();
-        BigDecimal cellWidth = null;//new BigDecimal();//new BigDecimal(this.getWidth() / columnAmount);
+        BigDecimal cellWidth = null;
         BigDecimal availableWidth = new BigDecimal(this.width);
         List<StateCell> currentRowCells = new LinkedList<StateCell>();
         int currentFilledColumns = 0;
@@ -87,10 +87,11 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             int remainder = (columnAmount - currentFilledColumns);
             if (remainder == 0) ++remainder;
             BigDecimal remainingColumns = new BigDecimal(remainder);
+            System.out.println(remainingColumns);
+            System.out.println(availableWidth);
             cellWidth = availableWidth.divide(remainingColumns, mc);
-            if (c.getContent() instanceof Text) {
-                System.out.println(((Text) c.getContent()).getText());
-            }
+            System.out.println(cellWidth);
+            
             if (currentFilledColumns + columns <= columnAmount) {
                 BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, cellWidth, c);
                 availableWidth = availableWidth.subtract(reqWidth);
@@ -204,6 +205,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     private void processCellAddition(StateCell c, Position cellPos, List<StateCell> currentRowCells, BigDecimal reqWidth, boolean processPositioning) {
         c.width(reqWidth.doubleValue());
+        System.out.println(cellPos);
         c.setPosition(new Position(cellPos));
         if (processPositioning) {
             currentRowCells.add(c);

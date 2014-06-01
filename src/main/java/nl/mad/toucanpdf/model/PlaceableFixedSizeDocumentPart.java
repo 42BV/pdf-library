@@ -23,5 +23,11 @@ public interface PlaceableFixedSizeDocumentPart extends PlaceableDocumentPart {
      * Returns whether or not other parts are allowed to wrap around this part.
      * @return boolean containing true if wrapping is allowed, false otherwise.
      */
-    boolean wrappingAllowed();
+    boolean isWrappingAllowed();
+
+	/**
+	 * Sets whether other objects are allowed to wrap around this object.
+	 * @param wrapping True if you want to allow other objects to wrap, false otherwise.
+	 */
+	void setWrappingAllowed(boolean wrapping);
 }
