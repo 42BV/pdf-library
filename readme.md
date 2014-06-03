@@ -150,7 +150,7 @@ So, we've now added a new header and footer to a page. As you can see we've manu
 
 This is not all we can do with headers. Let's take a look at this example.
 
-    Text headerText = builder.createText("Title: %documentTitle").size(14);
+    Text headerText = builder.createText("Title: %documentTitle").size(14).on(20, 800);
     builder.addPage().addHeader().addAttribute("documentTitle", "Toucan-PDF").addText(headerText);
 
 This is an example of the attribute system that is in place. You can add attributes to headers and refer to them in your text. The attributes are stored with a key, in our example the key is "documentTitle" with the value "Toucan-PDF". Now we can refer to this  attribute in our text by simply prepending a % to the key value. These attributes are not global, you'll have to specify them for each header/footer separately. There are also a few attributes that are provided by the library itself. These are the "pageNumber" and "totalPages" attributes. All headers and footers will get these automatically, so no need to add these yourself. You could create a nice page number indicator by using the following text in a footer. 
