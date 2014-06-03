@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class FontFamilyTest {
-    FontFamily fam = FontFamily.getDefaultFontFamily(FontFamilyType.HELVETICA);
+    FontFamily fam = new FontFamily(FontType.TRUETYPE, "Times");
 
     @Test
     public void testNames() {
