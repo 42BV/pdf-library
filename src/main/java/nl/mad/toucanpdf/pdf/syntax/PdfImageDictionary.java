@@ -31,15 +31,15 @@ public class PdfImageDictionary extends PdfXObject {
         }
     }
 
-	private void addDecodeArray() {
-		if (image.getInvertColors()) {
-			  PdfArray decodeArray = new PdfArray();
-			  int componentAmount = image.getImageParser().getRequiredComponentsForColorSpace(image.getImageParser().getColorSpace());
-			  for(int i = 0; i < componentAmount; ++i) {
-				  decodeArray.addValue(new PdfNumber(1));
-				  decodeArray.addValue(new PdfNumber(0));
-			  }
-			  this.put(PdfNameValue.DECODE, decodeArray);
-		}		
-	}
+    private void addDecodeArray() {
+        if (image.getInvertColors()) {
+            PdfArray decodeArray = new PdfArray();
+            int componentAmount = image.getImageParser().getRequiredComponentsForColorSpace(image.getImageParser().getColorSpace());
+            for (int i = 0; i < componentAmount; ++i) {
+                decodeArray.addValue(new PdfNumber(1));
+                decodeArray.addValue(new PdfNumber(0));
+            }
+            this.put(PdfNameValue.DECODE, decodeArray);
+        }
+    }
 }

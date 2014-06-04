@@ -179,8 +179,8 @@ public class PdfDocument {
     private void addText(StateSplittableText text, boolean overrideMatrix) {
         PdfIndirectObject font = this.addFont(text.getFont());
         PdfFont fontObj = (PdfFont) font.getObject();
-        if(fontObj.getEncoding() != null) {
-        	fontObj.getEncoding().updateDifferences(text.getText());
+        if (fontObj.getEncoding() != null) {
+            fontObj.getEncoding().updateDifferences(text.getText());
         }
         currentPage.add(font);
         PdfText pdfText = new PdfText(fontObj);

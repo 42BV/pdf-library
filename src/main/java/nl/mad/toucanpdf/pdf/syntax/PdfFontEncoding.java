@@ -53,8 +53,8 @@ public class PdfFontEncoding extends PdfDictionary {
         super.writeToFile(os);
     }
 
-	private void addDifferencesEntry() {
-		PdfArray differencesArray = new PdfArray();
+    private void addDifferencesEntry() {
+        PdfArray differencesArray = new PdfArray();
         Entry<String, Integer> previousEntry = null;
         for (Entry<String, Integer> entry : this.differences.getDifferences().entrySet()) {
             if (previousEntry == null || (entry.getValue() - 1) != previousEntry.getValue()) {
@@ -64,5 +64,5 @@ public class PdfFontEncoding extends PdfDictionary {
             previousEntry = entry;
         }
         this.put(new PdfName(PdfNameValue.DIFFERENCES), differencesArray);
-	}
+    }
 }

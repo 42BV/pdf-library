@@ -61,10 +61,10 @@ public interface Cell {
      */
     Position getPosition();
 
-	/**
-	 * Sets the content of this cell.
-	 * @param part Part to use as content.
-	 * @return The cell instance.
-	 */
-	Cell content(PlaceableDocumentPart part);
+    /**
+     * Sets the content of this cell.
+     * @param part Part to use as content.
+     * @return The cell instance.
+     */
+    Cell content(PlaceableDocumentPart part);
 }

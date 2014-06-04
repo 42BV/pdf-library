@@ -58,22 +58,22 @@ public class BaseStateText extends AbstractStateText implements StateText {
         boolean stringsProcessed = false;
         Position pos = new Position(this.getPosition());
         StateText overflowText = null;
-        if(positionX == 0) {
-        	positionX = this.getRequiredSpaceLeft();
+        if (positionX == 0) {
+            positionX = this.getRequiredSpaceLeft();
         }
 
         while (!stringsProcessed && i < strings.size()) {
             List<int[]> openSpaces = getOpenSpaces(pos, page, fixedPosition);
-            if(openSpaces.size() != 0) {
-	            i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
-	            boolean isLast = (i == (strings.size() - 1));
-	            pos = handleTextAddition(page, leading, pos, positionX, fixedPosition, isLast);
-	            if (pos == null) {
-	                overflowText = handleOverflow(i, strings);
-	                stringsProcessed = true;
-	            }
+            if (openSpaces.size() != 0) {
+                i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
+                boolean isLast = (i == (strings.size() - 1));
+                pos = handleTextAddition(page, leading, pos, positionX, fixedPosition, isLast);
+                if (pos == null) {
+                    overflowText = handleOverflow(i, strings);
+                    stringsProcessed = true;
+                }
             } else {
-            	pos.adjustY(-leading);
+                pos.adjustY(-leading);
             }
         }
         return overflowText;
@@ -183,8 +183,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
      * @param page The page the text will be added to.
      * @return
      */
-    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex,
-            Page page) {
+    private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex, Page page) {
         if (FloatEqualityTester.greaterThan((widthLimit - width), ((page.getWidth() - page.getMarginRight()) * (1.0 - Page.CUT_OFF_POINT_PERCENTAGE)))) {
             int textSize = getTextSize();
             double currentWidth = width;

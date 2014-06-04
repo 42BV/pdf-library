@@ -54,35 +54,36 @@ public class PdfTextTest {
 
     @Test
     public void testTextAdding(@Mocked final StateText text) throws UnsupportedEncodingException {
-    	 new NonStrictExpectations() {
-			  {
-				  text.getTextSize();
-				  returns(11);		
-				  
-				  Map<Position, String> textSplit = new LinkedHashMap<Position, String>();
-				  textSplit.put(new Position(100, 100), "Test");
-				  textSplit.put(new Position(200, 200), "Test2");
-				  textSplit.put(new Position(300, 300), "\n");
-				  text.getTextSplit();
-				  returns(textSplit);
-				  
-				  Map<Position, Double> justificationOffset = new LinkedHashMap<Position, Double>();
-				  justificationOffset.put(new Position(100, 100), new Double(2)); 
-				  justificationOffset.put(new Position(200, 200), new Double(0));
-				  justificationOffset.put(new Position(300, 300), new Double(0));   
-				  text.getJustificationOffset();
-				  returns(justificationOffset);
-				  
-				  text.getFont();        
-				  returns(new BaseFont());
-				  
-				  text.getAlignment();
-				  returns(Alignment.JUSTIFIED);
-				  }
-			  };
+        new NonStrictExpectations() {
+            {
+                text.getTextSize();
+                returns(11);
+
+                Map<Position, String> textSplit = new LinkedHashMap<Position, String>();
+                textSplit.put(new Position(100, 100), "Test");
+                textSplit.put(new Position(200, 200), "Test2");
+                textSplit.put(new Position(300, 300), "\n");
+                text.getTextSplit();
+                returns(textSplit);
+
+                Map<Position, Double> justificationOffset = new LinkedHashMap<Position, Double>();
+                justificationOffset.put(new Position(100, 100), new Double(2));
+                justificationOffset.put(new Position(200, 200), new Double(0));
+                justificationOffset.put(new Position(300, 300), new Double(0));
+                text.getJustificationOffset();
+                returns(justificationOffset);
+
+                text.getFont();
+                returns(new BaseFont());
+
+                text.getAlignment();
+                returns(Alignment.JUSTIFIED);
+            }
+        };
 
         //expected result for font adding, matrix adding and text adding
-        String expectedTotalResult = "/R1 11 Tf\n" + "2.0 Tw 0.0 0.0 0.0 0.0 100.0 100.0 Tm\n" + "[(T) 70 (est)] TJ\n" + "0.0 Tw 0.0 0.0 0.0 0.0 200.0 200.0 Tm\n" + "[(T) 70 (est2)] TJ\n" + " 0 -3 TD\n";
+        String expectedTotalResult = "/R1 11 Tf\n" + "2.0 Tw 0.0 0.0 0.0 0.0 100.0 100.0 Tm\n" + "[(T) 70 (est)] TJ\n"
+                + "0.0 Tw 0.0 0.0 0.0 0.0 200.0 200.0 Tm\n" + "[(T) 70 (est2)] TJ\n" + " 0 -3 TD\n";
         pdfText.addText(text, fontReference, Page.DEFAULT_NEW_LINE_SIZE);
         assertEquals(expectedTotalResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
@@ -99,11 +100,11 @@ public class PdfTextTest {
                 + "[(T) 70 (est)] TJ\n/R1 12 Tf\n1.0 0.0 0.0 1.0 -1 -1 Tm\n[(T) 70 (est2)] TJ\n";
         //assertEquals(expectedResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }
-    
+
     @Test
     public void testMatrixAdding() throws UnsupportedEncodingException {
-    	StateText text = new BaseStateText("Test");
-    	pdfText.addMatrix(text);
-    	assertEquals("1.0 0.0 0.0 1.0 -1.0 -1.0 Tm\n", ByteEncoder.getString(pdfText.getByteRepresentation()));
+        StateText text = new BaseStateText("Test");
+        pdfText.addMatrix(text);
+        assertEquals("1.0 0.0 0.0 1.0 -1.0 -1.0 Tm\n", ByteEncoder.getString(pdfText.getByteRepresentation()));
     }
 }

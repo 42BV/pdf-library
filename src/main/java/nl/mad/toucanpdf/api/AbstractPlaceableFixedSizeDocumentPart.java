@@ -37,14 +37,14 @@ public abstract class AbstractPlaceableFixedSizeDocumentPart extends AbstractPla
     public double getHeight() {
         return this.height;
     }
-    
+
     @Override
     public void setWrappingAllowed(boolean wrapping) {
-    	this.wrappingAllowed = wrapping;
+        this.wrappingAllowed = wrapping;
     }
-    
+
     @Override
     public boolean isWrappingAllowed() {
-    	return this.wrappingAllowed;
+        return this.wrappingAllowed;
     }
 }

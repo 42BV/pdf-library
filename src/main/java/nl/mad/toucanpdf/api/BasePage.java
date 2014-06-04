@@ -17,7 +17,7 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
  */
 public class BasePage extends AbstractDocumentPart implements Page {
     private static final int ROTATION_LIMIT = 90;
-	private int width;
+    private int width;
     private int height;
     private int marginTop = 20;
     private int marginBottom = 20;
@@ -26,9 +26,9 @@ public class BasePage extends AbstractDocumentPart implements Page {
     private Page masterPage;
     private List<DocumentPart> content;
     private int leading = DEFAULT_NEW_LINE_SIZE;
-	private int rotation;
-	private PageArea header = null;
-	private PageArea footer = null;
+    private int rotation;
+    private PageArea header = null;
+    private PageArea footer = null;
 
     /**
      * Creates a new instance of BasePage with the given width and height.
@@ -54,17 +54,17 @@ public class BasePage extends AbstractDocumentPart implements Page {
         this.marginBottom = page.getMarginBottom();
         this.marginLeft = page.getMarginLeft();
         this.marginTop = page.getMarginTop();
-        this.marginRight = page.getMarginRight();        
+        this.marginRight = page.getMarginRight();
         this.leading = page.getLeading();
         this.masterPage = page.getMasterPage();
         this.rotation = page.getRotation();
         this.header = page.getHeader();
         this.footer = page.getFooter();
-        if(this.header != null) {
-        	this.marginTop(header.getHeight());
+        if (this.header != null) {
+            this.marginTop(header.getHeight());
         }
-        if(this.footer != null) {
-        	this.marginBottom(footer.getHeight());
+        if (this.footer != null) {
+            this.marginBottom(footer.getHeight());
         }
     }
 
@@ -113,11 +113,11 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Page marginTop(int margin) {
-    	if(header != null) {
-    		this.marginTop = Math.max(margin, header.getHeight());
-    	} else {
-    	    this.marginTop = Math.max(0, margin);  
-    	}
+        if (header != null) {
+            this.marginTop = Math.max(margin, header.getHeight());
+        } else {
+            this.marginTop = Math.max(0, margin);
+        }
         return this;
     }
 
@@ -128,11 +128,11 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Page marginBottom(int margin) {
-    	if(footer != null) {
-    		this.marginBottom = Math.max(margin, footer.getHeight());
-    	} else {
-    	    this.marginBottom = Math.max(0, margin);   
-    	}
+        if (footer != null) {
+            this.marginBottom = Math.max(margin, footer.getHeight());
+        } else {
+            this.marginBottom = Math.max(0, margin);
+        }
         return this;
     }
 
@@ -163,7 +163,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
         List<DocumentPart> fixedPositionList = new ArrayList<DocumentPart>();
         for (DocumentPart p : content) {
             if (p instanceof PlaceableDocumentPart && ((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
-                    fixedPositionList.add((PlaceableDocumentPart) p);
+                fixedPositionList.add((PlaceableDocumentPart) p);
             }
         }
         return fixedPositionList;
@@ -174,7 +174,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
         List<DocumentPart> positionlessContent = new ArrayList<DocumentPart>();
         for (DocumentPart p : content) {
             if (p instanceof PlaceableDocumentPart && !((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
-                    positionlessContent.add((PlaceableDocumentPart) p);
+                positionlessContent.add((PlaceableDocumentPart) p);
             }
         }
         return positionlessContent;
@@ -220,63 +220,63 @@ public class BasePage extends AbstractDocumentPart implements Page {
         return this.masterPage;
     }
 
-	@Override
-	public Page rotate(int rotationDegrees) {
-		rotationDegrees = Math.max(0, rotationDegrees);
-		int remainder = rotationDegrees % ROTATION_LIMIT;
-		if(remainder < ROTATION_LIMIT / 2) {
-			rotationDegrees -= remainder;
-		} else {
-			rotationDegrees += (ROTATION_LIMIT - remainder);
-		}
-		this.rotation = rotationDegrees;
-		return this;
-	}
+    @Override
+    public Page rotate(int rotationDegrees) {
+        rotationDegrees = Math.max(0, rotationDegrees);
+        int remainder = rotationDegrees % ROTATION_LIMIT;
+        if (remainder < ROTATION_LIMIT / 2) {
+            rotationDegrees -= remainder;
+        } else {
+            rotationDegrees += (ROTATION_LIMIT - remainder);
+        }
+        this.rotation = rotationDegrees;
+        return this;
+    }
 
-	@Override
-	public int getRotation() {
-		return this.rotation;
-	}
+    @Override
+    public int getRotation() {
+        return this.rotation;
+    }
 
-	@Override
-	public Page header(PageArea newHeader) {
-		this.header = newHeader;
-		if(this.marginTop < newHeader.getHeight()) {
-			this.marginTop(newHeader.getHeight());
-		}
-		return this;
-	}
-	
-	@Override
-	public PageArea addHeader() {
-		PageArea h = new BasePageArea(this.marginTop);
-		header(h);
-		return h;
-	}
-	
-	@Override
-	public PageArea addFooter() {
-		PageArea f = new BasePageArea(this.marginBottom);
-		footer(f);
-		return f;
-	}
+    @Override
+    public Page header(PageArea newHeader) {
+        this.header = newHeader;
+        if (this.marginTop < newHeader.getHeight()) {
+            this.marginTop(newHeader.getHeight());
+        }
+        return this;
+    }
 
-	@Override
-	public Page footer(PageArea newFooter) {
-		this.footer = newFooter;
-		if(this.marginBottom < newFooter.getHeight()) {
-			this.marginTop(newFooter.getHeight());
-		}
-		return this;
-	}
+    @Override
+    public PageArea addHeader() {
+        PageArea h = new BasePageArea(this.marginTop);
+        header(h);
+        return h;
+    }
 
-	@Override
-	public PageArea getHeader() {
-		return this.header;
-	}
+    @Override
+    public PageArea addFooter() {
+        PageArea f = new BasePageArea(this.marginBottom);
+        footer(f);
+        return f;
+    }
 
-	@Override
-	public PageArea getFooter() {
-		return this.footer;
-	}
+    @Override
+    public Page footer(PageArea newFooter) {
+        this.footer = newFooter;
+        if (this.marginBottom < newFooter.getHeight()) {
+            this.marginTop(newFooter.getHeight());
+        }
+        return this;
+    }
+
+    @Override
+    public PageArea getHeader() {
+        return this.header;
+    }
+
+    @Override
+    public PageArea getFooter() {
+        return this.footer;
+    }
 }

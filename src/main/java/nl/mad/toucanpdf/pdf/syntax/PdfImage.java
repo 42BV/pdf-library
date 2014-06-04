@@ -29,10 +29,10 @@ public class PdfImage extends PdfGraphicsState {
      * @param image Image to draw.
      */
     private void addTranslation(Image image) {
-    	if(image != null) {
-        Position pos = image.getPosition();
-        this.addToByteRepresentation(image.getWidth() + " 0 0 " + image.getHeight() + " " + pos.getX() + " " + (pos.getY() - image.getHeight()) + TRANSLATE);
-    	}
+        if (image != null) {
+            Position pos = image.getPosition();
+            this.addToByteRepresentation(image.getWidth() + " 0 0 " + image.getHeight() + " " + pos.getX() + " " + (pos.getY() - image.getHeight()) + TRANSLATE);
+        }
     }
 
     /**

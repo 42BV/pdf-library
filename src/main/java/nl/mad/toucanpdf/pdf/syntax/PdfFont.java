@@ -27,7 +27,7 @@ public class PdfFont extends PdfDictionary {
      */
     public PdfFont(Font font, PdfIndirectObject encoding) {
         super(PdfObjectType.FONT);
-    	this.font = font;
+        this.font = font;
         this.processFont();
         this.setFontEncodingReference(encoding);
     }
@@ -79,25 +79,27 @@ public class PdfFont extends PdfDictionary {
     public PdfFontEncoding getEncoding() {
         return this.encoding;
     }
-    
+
     @Override
     public void writeToFile(OutputStream os) throws IOException {
-    	this.addWidthsEntry();
+        this.addWidthsEntry();
         super.writeToFile(os);
     }
 
-	private void addWidthsEntry() {
+    private void addWidthsEntry() {
         FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
         List<Integer> widths;
-        if(encoding != null && encoding.getEncodingDifferences() != null) {
-        	 //if we're using a custom encoding, make it a subset
-        	 widths = encoding.getEncodingDifferences().generateWidthList(font); 
-             put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
-             put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1)); 
-             put(PdfNameValue.BASE_FONT, new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, SUBSET_INDICATOR_LENGTH) + "+" + font.getFontFamily().getNameOfStyle(font.getStyle())));
+        if (encoding != null && encoding.getEncodingDifferences() != null) {
+            //if we're using a custom encoding, make it a subset
+            widths = encoding.getEncodingDifferences().generateWidthList(font);
+            put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
+            put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1));
+            put(PdfNameValue.BASE_FONT,
+                    new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, SUBSET_INDICATOR_LENGTH) + "+"
+                            + font.getFontFamily().getNameOfStyle(font.getStyle())));
         } else {
-        	 widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
+            widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
         }
-        put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));		
-	}
+        put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));
+    }
 }

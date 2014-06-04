@@ -64,11 +64,11 @@ public class FontTest {
         assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());
         font = new BaseFont(font);
         assertEquals("The font family was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getFamily(), font.getFamily());
-        assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());        
+        assertEquals("The font style was incorrectly copied from the default font. ", Constants.DEFAULT_FONT.getStyle(), font.getStyle());
     }
-    
+
     @Test
     public void testLineHeightCalculation() {
-    	assertEquals(11.1, font.getLineHeight(12), FloatEqualityTester.EPSILON);
+        assertEquals(11.1, font.getLineHeight(12), FloatEqualityTester.EPSILON);
     }
 }

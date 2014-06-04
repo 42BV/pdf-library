@@ -88,11 +88,11 @@ public class BaseStateCell extends AbstractCell implements StateCell {
         this.content = content;
     }
 
-	@Override
-	public Cell content(PlaceableDocumentPart part) {
-		if(part instanceof StateCellContent) {
-			this.setContent((StateCellContent) part);
-		}
-		return this;
-	}
+    @Override
+    public Cell content(PlaceableDocumentPart part) {
+        if (part instanceof StateCellContent) {
+            this.setContent((StateCellContent) part);
+        }
+        return this;
+    }
 }

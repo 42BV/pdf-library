@@ -45,7 +45,7 @@ public interface ImageParser {
      * @return The original height.
      */
     int getHeight();
-    
+
     /**
      * Returns the amount of components required for the given color space.
      * @param colorSpace ColorSpace to check.

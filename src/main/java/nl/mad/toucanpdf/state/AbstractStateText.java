@@ -40,8 +40,8 @@ public abstract class AbstractStateText extends BaseText implements StateSplitta
     @Override
     public double getRequiredSpaceBelowLine() {
         return Math.abs(getFont().getMetrics().getDescentPoint() * getTextSize());
-    }  
-    
+    }
+
     @Override
     public double getRequiredSpaceLeft() {
         return marginLeft;
@@ -51,7 +51,7 @@ public abstract class AbstractStateText extends BaseText implements StateSplitta
     public double getRequiredSpaceRight() {
         return marginRight;
     }
-    
+
     @Override
     public double getRequiredSpaceAbove() {
         return this.getRequiredSpaceAboveLine() + marginTop;
@@ -61,7 +61,7 @@ public abstract class AbstractStateText extends BaseText implements StateSplitta
     public double getRequiredSpaceBelow() {
         return this.getRequiredSpaceBelowLine() + marginBottom;
     }
-    
+
     /**
      * Processes the alignment of a single given line.
      * @param line Line to process.

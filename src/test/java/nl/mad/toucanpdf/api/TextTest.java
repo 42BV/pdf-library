@@ -99,30 +99,30 @@ public class TextTest {
         actualResult = text.getText().equals(t.getText()) && text.getScaleX() == t.getScaleX();
         assertEquals("The text object was not copied correctly. ", true, actualResult);
     }
-    
+
     @Test
     public void testMargins() {
-    	text.marginBottom(10);
-    	text.marginLeft(1);
-    	text.marginRight(15);
-    	text.marginTop(30);
-    	assertEquals(10, text.getMarginBottom());
-    	assertEquals(1, text.getMarginLeft());
-    	assertEquals(15, text.getMarginRight());
-    	assertEquals(30, text.getMarginTop());
-    	text.marginBottom(-1);
-    	text.marginLeft(-1);
-    	text.marginRight(-15);
-    	text.marginTop(-30);
-    	assertEquals(10, text.getMarginBottom());
-    	assertEquals(1, text.getMarginLeft());
-    	assertEquals(15, text.getMarginRight());
-    	assertEquals(30, text.getMarginTop());
+        text.marginBottom(10);
+        text.marginLeft(1);
+        text.marginRight(15);
+        text.marginTop(30);
+        assertEquals(10, text.getMarginBottom());
+        assertEquals(1, text.getMarginLeft());
+        assertEquals(15, text.getMarginRight());
+        assertEquals(30, text.getMarginTop());
+        text.marginBottom(-1);
+        text.marginLeft(-1);
+        text.marginRight(-15);
+        text.marginTop(-30);
+        assertEquals(10, text.getMarginBottom());
+        assertEquals(1, text.getMarginLeft());
+        assertEquals(15, text.getMarginRight());
+        assertEquals(30, text.getMarginTop());
     }
-    
+
     @Test
     public void testCompress() {
-    	text.compress(Compression.ASCII_85);
-    	assertEquals(Compression.ASCII_85, text.getCompressionMethod());
+        text.compress(Compression.ASCII_85);
+        assertEquals(Compression.ASCII_85, text.getCompressionMethod());
     }
 }

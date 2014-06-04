@@ -69,15 +69,15 @@ public class DocumentBuilderTest {
     @Test
     public void testImage() {
         //TODO: this
-    	byte[] imageData = new byte[0];
-    	ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
-    	
-            	Image i = builder.addImage(bais, ImageType.JPEG);
-            	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(0).getType());
-            	i = builder.createImage(null, "test.jpg");
-            	assertTrue(i != null);
-            	i = builder.addImage(imageData, ImageType.JPEG);
-            	assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(1).getType());
+        byte[] imageData = new byte[0];
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+
+        Image i = builder.addImage(bais, ImageType.JPEG);
+        assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(0).getType());
+        i = builder.createImage(null, "test.jpg");
+        assertTrue(i != null);
+        i = builder.addImage(imageData, ImageType.JPEG);
+        assertEquals(DocumentPartType.IMAGE, builder.getPage(1).getContent().get(1).getType());
     }
 
     @Test

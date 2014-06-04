@@ -6,7 +6,11 @@ package nl.mad.toucanpdf.model;
  * @see PdfNameValue
  */
 public enum FontType {
-    TYPE0(PdfNameValue.TYPE0), TYPE1(PdfNameValue.TYPE1), MMTYPE1(PdfNameValue.MMTYPE1), TYPE3(PdfNameValue.TYPE3), TRUETYPE(PdfNameValue.TRUE_TYPE);
+    TYPE0(PdfNameValue.TYPE0),
+    TYPE1(PdfNameValue.TYPE1),
+    MMTYPE1(PdfNameValue.MMTYPE1),
+    TYPE3(PdfNameValue.TYPE3),
+    TRUETYPE(PdfNameValue.TRUE_TYPE);
 
     private PdfNameValue value;
 

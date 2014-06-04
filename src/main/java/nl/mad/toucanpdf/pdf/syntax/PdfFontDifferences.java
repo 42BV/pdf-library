@@ -32,31 +32,31 @@ public interface PdfFontDifferences {
      */
     String convertString(String s);
 
-	/**
-	 * Inserts a difference into the map.
-	 * @param characterName The character name.
-	 * @param characterCode The new character code.
-	 */
-	void insertDifference(String characterName, int characterCode);
+    /**
+     * Inserts a difference into the map.
+     * @param characterName The character name.
+     * @param characterCode The new character code.
+     */
+    void insertDifference(String characterName, int characterCode);
 
-	/**
-	 * Generates a list of widths based on the new encoding.
-	 * @param font Font to retrieve the widths from.
-	 * @return List of widths that corresponds to the new encoding.
-	 */
-	List<Integer> generateWidthList(Font font);
+    /**
+     * Generates a list of widths based on the new encoding.
+     * @param font Font to retrieve the widths from.
+     * @return List of widths that corresponds to the new encoding.
+     */
+    List<Integer> generateWidthList(Font font);
 
-	/**
-	 * Returns the character name corresponding to the given character code.
-	 * @param code Code to check.
-	 * @return String containing the character name.
-	 */
-	String getNameOf(int code);
+    /**
+     * Returns the character name corresponding to the given character code.
+     * @param code Code to check.
+     * @return String containing the character name.
+     */
+    String getNameOf(int code);
 
-	/**
-	 * Returns the character name corresponding to the given octal code.
-	 * @param octalCode Octal code to check.
-	 * @return String containing the character name.
-	 */
-	String getNameOf(String octalCode);
+    /**
+     * Returns the character name corresponding to the given octal code.
+     * @param octalCode Octal code to check.
+     * @return String containing the character name.
+     */
+    String getNameOf(String octalCode);
 }

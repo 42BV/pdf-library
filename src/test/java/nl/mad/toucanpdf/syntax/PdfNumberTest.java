@@ -62,22 +62,22 @@ public class PdfNumberTest {
         number.writeToFile(baos);
         assertEquals(expectedResult, baos.toString());
     }
-    
+
     @Test
     public void testEquals() {
-    	PdfNumber test1 = new PdfNumber(1);
-    	PdfNumber test2 = new PdfNumber(2);
-    	PdfName test3 = new PdfName("1");
-    	
-    	assertEquals(number.hashCode(), test1.hashCode());
-    	assertEquals(true, number.equals(test1));
+        PdfNumber test1 = new PdfNumber(1);
+        PdfNumber test2 = new PdfNumber(2);
+        PdfName test3 = new PdfName("1");
 
-    	assertTrue(number.hashCode() != test2.hashCode());
-    	assertEquals(false, number.equals(test2));   
-    	
-    	assertTrue(number.hashCode() != test3.hashCode());
-    	assertEquals(false, number.equals(test3));    
-    	
-    	assertEquals(false, number.equals(null));
+        assertEquals(number.hashCode(), test1.hashCode());
+        assertEquals(true, number.equals(test1));
+
+        assertTrue(number.hashCode() != test2.hashCode());
+        assertEquals(false, number.equals(test2));
+
+        assertTrue(number.hashCode() != test3.hashCode());
+        assertEquals(false, number.equals(test3));
+
+        assertEquals(false, number.equals(null));
     }
 }

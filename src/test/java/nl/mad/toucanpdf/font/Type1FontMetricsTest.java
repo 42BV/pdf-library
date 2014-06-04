@@ -73,18 +73,18 @@ public class Type1FontMetricsTest {
         assertEquals("Width of string with kerning in points is incorrect. ", expectedWidth * metrics.getConversionToPointsValue(),
                 metrics.getWidthPointOfString("AC", textSize, true), FloatEqualityTester.EPSILON);
     }
-    
+
     @Test
     public void testRemainingGetters() {
-    	assertEquals("Helvetica", metrics.getFontName());
-    	assertEquals(0.278, metrics.getWidthPoint(32), FloatEqualityTester.EPSILON);
-    	assertEquals(10.175, metrics.getLineHeightForSize(11), FloatEqualityTester.EPSILON);
-    	assertEquals("Helvetica", metrics.getFullName());
-    	assertEquals("Medium", metrics.getWeight());
-    	assertEquals(false, metrics.isFixedPitch());
-    	assertEquals("ExtendedRoman", metrics.getCharacterSet());
-    	assertEquals(-100, metrics.getUnderlinePosition());
-    	assertEquals(50, metrics.getUnderlineThickness());
-    	assertEquals("AdobeStandardEncoding", metrics.getEncodingScheme());
+        assertEquals("Helvetica", metrics.getFontName());
+        assertEquals(0.278, metrics.getWidthPoint(32), FloatEqualityTester.EPSILON);
+        assertEquals(10.175, metrics.getLineHeightForSize(11), FloatEqualityTester.EPSILON);
+        assertEquals("Helvetica", metrics.getFullName());
+        assertEquals("Medium", metrics.getWeight());
+        assertEquals(false, metrics.isFixedPitch());
+        assertEquals("ExtendedRoman", metrics.getCharacterSet());
+        assertEquals(-100, metrics.getUnderlinePosition());
+        assertEquals(50, metrics.getUnderlineThickness());
+        assertEquals("AdobeStandardEncoding", metrics.getEncodingScheme());
     }
 }

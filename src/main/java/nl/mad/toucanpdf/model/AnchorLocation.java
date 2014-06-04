@@ -6,5 +6,8 @@ package nl.mad.toucanpdf.model;
  *
  */
 public enum AnchorLocation {
-    ABOVE, BELOW, RIGHT, LEFT
+    ABOVE,
+    BELOW,
+    RIGHT,
+    LEFT
 }

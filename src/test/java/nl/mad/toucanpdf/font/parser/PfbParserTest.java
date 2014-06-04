@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 
 public class PfbParserTest {
     private Logger log = Logger.getRootLogger();
-    private TestAppender appender = new TestAppender();    
-	
-	@Before	
+    private TestAppender appender = new TestAppender();
+
+    @Before
     public void setUp() {
-	    log.addAppender(appender);
+        log.addAppender(appender);
     }
 
     @Test
@@ -33,19 +33,18 @@ public class PfbParserTest {
         assertEquals(3, parser.getLengths().length);
         assertEquals(0, parser.getPfbData().length);
     }
-    
+
     @Test
     public void testStreamParsing() {
-    	InputStream stream = PfbParserTest.class.getClassLoader()
-                .getResourceAsStream("Courier.pfb");
-    	PfbParser parser = new PfbParser(stream);
+        InputStream stream = PfbParserTest.class.getClassLoader().getResourceAsStream("Courier.pfb");
+        PfbParser parser = new PfbParser(stream);
         assertEquals(1279, parser.getLengths()[0]);
         assertEquals(94768, parser.getPfbData().length);
     }
-    
+
     @After
     public void tearDown() {
-    	log.removeAppender(appender);
+        log.removeAppender(appender);
     }
 
 }

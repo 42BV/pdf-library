@@ -146,9 +146,9 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      */
     boolean getDrawFiller();
 
-	/**
-	 * Removes all content from the table.
-	 * @return The table instance.
-	 */
-	Table removeContent();
+    /**
+     * Removes all content from the table.
+     * @return The table instance.
+     */
+    Table removeContent();
 }

@@ -89,18 +89,18 @@ public class BaseStatePage extends BasePage implements StatePage {
 
     @Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing) {
-    	        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, spacing, this.getMinimalWidthForWrapping(spacing));
+        return this.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, spacing, this.getMinimalWidthForWrapping(spacing));
     }
 
     private double getMinimalWidthForWrapping(StateSpacing spacing) {
-		if(this.getWidthWithoutMargins() > this.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
-			return MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
-		} else {
-			return this.getWidthWithoutMargins() - spacing.getRequiredSpaceLeft() - spacing.getRequiredSpaceRight();
-		}
-	}
+        if (this.getWidthWithoutMargins() > this.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
+            return MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
+        } else {
+            return this.getWidthWithoutMargins() - spacing.getRequiredSpaceLeft() - spacing.getRequiredSpaceRight();
+        }
+    }
 
-	@Override
+    @Override
     public Position getOpenPosition(double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing, double requiredWidth) {
         double posHeight = getHeight() - filledHeight - requiredSpaceAbove;
         return this.getOpenPosition(0, posHeight, requiredSpaceAbove, requiredSpaceBelow, spacing, requiredWidth);
@@ -155,8 +155,6 @@ public class BaseStatePage extends BasePage implements StatePage {
         }
         return availableWidth;
     }
-
-    
 
     /**
      * Returns all document parts that overlap with the given position.

@@ -72,7 +72,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         case IMAGE:
             return new BaseStateImage((Image) part);
         case TABLE:
-        	return new BaseStateTable((Table) part);
+            return new BaseStateTable((Table) part);
         default:
             return null;
         }
@@ -114,7 +114,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
                 pos.adjustY(-t.getContentHeight(page));
                 pos.setX(page.getMarginLeft());
                 this.processAnchorPositions(new Position(pos), page, this.getAnchorOn(t, AnchorLocation.BELOW), AnchorLocation.BELOW);
-                
+
             }
         }
         return overflowParagraph;
@@ -344,10 +344,10 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         BaseStateParagraph overflowParagraph = new BaseStateParagraph(this, false);
         overflowParagraph.addText(newTextList);
         //TODO: add anchors on overflow! Including beneath anchor from the object causing the overflow
-        for(Text t : overflowParagraph.getTextCollection()) {
-        	for(Anchor a : this.getAnchorsOn(t)) {
-        		overflowParagraph.addAnchor(a);
-        	}
+        for (Text t : overflowParagraph.getTextCollection()) {
+            for (Anchor a : this.getAnchorsOn(t)) {
+                overflowParagraph.addAnchor(a);
+            }
         }
         overflowParagraph.setOriginalObject(this.getOriginalObject());
         return overflowParagraph;
@@ -438,8 +438,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     @Override
     public List<Text> getTextCollection() {
         List<Text> text = new LinkedList<Text>();
-        for(Text t : textCollection) {
-        	text.add(t);
+        for (Text t : textCollection) {
+            text.add(t);
         }
         return text;
     }

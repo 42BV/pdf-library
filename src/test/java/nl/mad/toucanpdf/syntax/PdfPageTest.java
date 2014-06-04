@@ -85,18 +85,18 @@ public class PdfPageTest {
         stream.add(new PdfName("test"));
         assertEquals(false, page.streamEmpty());
     }
-    
+
     @Test
     public void testMarginsAndLeading() {
-    	page.setLeading(1);
-    	page.setMarginBottom(2);
-    	page.setMarginLeft(3);
-    	page.setMarginTop(4);
-    	page.setMarginRight(5);
-    	assertEquals(1, page.getLeading());
-    	assertEquals(2, page.getMarginBottom());
-    	assertEquals(3, page.getMarginLeft());
-    	assertEquals(4, page.getMarginTop());
-    	assertEquals(5, page.getMarginRight());
+        page.setLeading(1);
+        page.setMarginBottom(2);
+        page.setMarginLeft(3);
+        page.setMarginTop(4);
+        page.setMarginRight(5);
+        assertEquals(1, page.getLeading());
+        assertEquals(2, page.getMarginBottom());
+        assertEquals(3, page.getMarginLeft());
+        assertEquals(4, page.getMarginTop());
+        assertEquals(5, page.getMarginRight());
     }
 }

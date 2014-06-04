@@ -27,7 +27,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 public class BaseStateTable extends AbstractTable implements StateTable {
     private DocumentPart originalObject;
     private List<StateCell> content = new LinkedList<StateCell>();
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);    
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);
     private static final int BIG_DECIMAL_PRECISION = 20;
 
     /**
@@ -47,7 +47,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         super(table);
     }
 
-	@Override
+    @Override
     public double getRequiredSpaceAbove() {
         return marginTop;
     }
@@ -85,15 +85,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         List<StateCell> currentRowCells = new LinkedList<StateCell>();
         int currentFilledColumns = 0;
         double rowHeight = 0;
-        if(!fixed) {
-	        Position p = calculatePosition(page);
-	        if (p == null) {
-	            return true;
-	        }
-	        if (processAlignment && processPositioning) {
-	            p.adjustX(calculateAlignment(page));
-	        }
-	        this.setPosition(p);
+        if (!fixed) {
+            Position p = calculatePosition(page);
+            if (p == null) {
+                return true;
+            }
+            if (processAlignment && processPositioning) {
+                p.adjustX(calculateAlignment(page));
+            }
+            this.setPosition(p);
         }
         this.height = 0;
         Position cellPos = new Position(this.getPosition());
@@ -106,7 +106,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             if (remainder == 0) ++remainder;
             BigDecimal remainingColumns = new BigDecimal(remainder);
             cellWidth = availableWidth.divide(remainingColumns, mc);
-            
+
             if (currentFilledColumns + columns <= columnAmount) {
                 BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, cellWidth, c);
                 availableWidth = availableWidth.subtract(reqWidth);
@@ -142,7 +142,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 }
                 processRow(currentRowCells, rowHeight);
                 this.height += rowHeight;
-                if (!wrapping && processPositioning) {                	
+                if (!wrapping && processPositioning) {
                     this.adjustFilledHeight(page);
                 }
                 return false;
@@ -207,12 +207,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 }
                 ++i;
             }
-            if(!tablePositioned) {
-	            requiredSpaceAbove += page.getLeading();
-	            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
-	            if (pos != null) {
-	                openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-	            }
+            if (!tablePositioned) {
+                requiredSpaceAbove += page.getLeading();
+                pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
+                if (pos != null) {
+                    openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+                }
             }
         }
         return pos;
@@ -232,7 +232,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         if (requiredWidth != 0) {
             BigDecimal reqWidth = new BigDecimal(requiredWidth);
             if (reqWidth.compareTo(availableWidth) == 1) {
-            	LOGGER.warn("The content was too wide and has been removed");
+                LOGGER.warn("The content was too wide and has been removed");
                 c.setContent(null);
                 return defaultWidth;
             }
@@ -296,11 +296,11 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         List<int[]> space = new LinkedList<int[]>();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
-        	if(wrappingAllowed) {
-            space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
-        	} else {
-        		space.add(new int[] { 0, pageWidth });
-        	}
+            if (wrappingAllowed) {
+                space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
+            } else {
+                space.add(new int[] { 0, pageWidth });
+            }
         }
         return space;
     }

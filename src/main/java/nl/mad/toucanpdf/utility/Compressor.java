@@ -66,7 +66,8 @@ public final class Compressor {
         case LZW:
         case RUN_LENGTH:
         default:
-        	LOGGER.warn("The given compression: " + compressionMethod + " is unsupported. The compression should be removed from the object to prevent problems.");
+            LOGGER.warn("The given compression: " + compressionMethod
+                    + " is unsupported. The compression should be removed from the object to prevent problems.");
             return data;
         }
     }

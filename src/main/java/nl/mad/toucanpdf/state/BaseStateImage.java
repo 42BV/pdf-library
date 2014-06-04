@@ -73,11 +73,11 @@ public class BaseStateImage extends BaseImage implements StateImage {
         List<int[]> space = new LinkedList<int[]>();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
-        	if(isWrappingAllowed()) {
-        		space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
-        	} else {
-        		space.add(new int[] {0, pageWidth});
-        	}
+            if (isWrappingAllowed()) {
+                space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
+            } else {
+                space.add(new int[] { 0, pageWidth });
+            }
         }
         return space;
     }
@@ -99,48 +99,48 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
-    	if(!fixed) {
-	        double requiredSpaceAbove = this.getRequiredSpaceAbove();
-	        double requiredSpaceBelow = this.getRequiredSpaceBelow();
-	        Position pos = new Position(this.getPosition());
-	        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-	        boolean imagePositioned = false;
-	        while (pos != null && !imagePositioned) {
-	            int i = 0;
-	            while (!imagePositioned && i < openSpaces.size()) {
-	                int[] openSpace = openSpaces.get(i);
-	                if (pos.getX() < openSpace[0]) {
-	                    pos.setX(openSpace[0]);
-	                }
-	                int openSpaceWidth = (openSpace[1] - openSpace[0]);
-	                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
-	                    imagePositioned = true;
-	                    if (processAlignment) {
-	                        this.processAlignment(pos, openSpaceWidth);
-	                    }
-	                    this.setPosition(new Position(pos));
-	                }
-	                ++i;
-	            }
-		        if(!imagePositioned) {
-		            requiredSpaceAbove += page.getLeading();
-		            pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
-		            openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-	            }
-	        }
-	        if (pos != null) {
-	            if (!wrapping) {
-	                adjustFilledHeight(page);
-	            }
-	        } else {
-	            return true;
-	        }
-    	}
-    	return false;
+        if (!fixed) {
+            double requiredSpaceAbove = this.getRequiredSpaceAbove();
+            double requiredSpaceBelow = this.getRequiredSpaceBelow();
+            Position pos = new Position(this.getPosition());
+            List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+            boolean imagePositioned = false;
+            while (pos != null && !imagePositioned) {
+                int i = 0;
+                while (!imagePositioned && i < openSpaces.size()) {
+                    int[] openSpace = openSpaces.get(i);
+                    if (pos.getX() < openSpace[0]) {
+                        pos.setX(openSpace[0]);
+                    }
+                    int openSpaceWidth = (openSpace[1] - openSpace[0]);
+                    if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
+                        imagePositioned = true;
+                        if (processAlignment) {
+                            this.processAlignment(pos, openSpaceWidth);
+                        }
+                        this.setPosition(new Position(pos));
+                    }
+                    ++i;
+                }
+                if (!imagePositioned) {
+                    requiredSpaceAbove += page.getLeading();
+                    pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
+                    openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+                }
+            }
+            if (pos != null) {
+                if (!wrapping) {
+                    adjustFilledHeight(page);
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void adjustFilledHeight(StatePage page) {
-        page.setFilledHeight(page.getFilledHeight() + this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow() +  Page.DEFAULT_NEW_LINE_SIZE * 2);
+        page.setFilledHeight(page.getFilledHeight() + this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow() + Page.DEFAULT_NEW_LINE_SIZE * 2);
     }
 
     @Override

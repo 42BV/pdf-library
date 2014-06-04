@@ -29,30 +29,30 @@ public class Type1FontDifferences implements PdfFontDifferences {
             }
         }
     }
-    
+
     @Override
     public void insertDifference(String characterName, int characterCode) {
-    	if(!differences.containsKey(characterName)) {
-    		differences.put(characterName, characterCode);
-    	}
+        if (!differences.containsKey(characterName)) {
+            differences.put(characterName, characterCode);
+        }
     }
-    
+
     @Override
     public String getNameOf(String octalCode) {
-    	int code = Integer.parseInt(octalCode, OCTAL_CODE_CONVERSION);
-    	return getNameOf(code);
+        int code = Integer.parseInt(octalCode, OCTAL_CODE_CONVERSION);
+        return getNameOf(code);
     }
-    
+
     @Override
     public String getNameOf(int code) {
-    	if(differences.containsValue(code)) {
-    		for(Entry<String, Integer> entry : differences.entrySet()) {
-    			if(entry.getValue().equals(code)) {
-    				return entry.getKey();
-    			}
-    		}
-    	}
-    	return "";
+        if (differences.containsValue(code)) {
+            for (Entry<String, Integer> entry : differences.entrySet()) {
+                if (entry.getValue().equals(code)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return "";
     }
 
     @Override
@@ -70,9 +70,9 @@ public class Type1FontDifferences implements PdfFontDifferences {
                 int code = differences.get(postscriptName);
                 StringBuilder sCode = new StringBuilder(Integer.toString(code, OCTAL_CODE_CONVERSION));
                 int codeLength = sCode.length();
-                for(int b = OCTAL_CODE_LENGTH; b > codeLength; --b) {
-                	sCode.insert(0, 0);
-                }               
+                for (int b = OCTAL_CODE_LENGTH; b > codeLength; --b) {
+                    sCode.insert(0, 0);
+                }
                 newString.append("\\");
                 newString.append(sCode.toString());
             }
@@ -80,13 +80,13 @@ public class Type1FontDifferences implements PdfFontDifferences {
         return newString.toString();
     }
 
-	@Override
-	public List<Integer> generateWidthList(Font font) {
-		FontMetrics metrics = font.getMetrics();
-		List<Integer> widths = new LinkedList<Integer>();
-		for(Entry<String, Integer> entry : differences.entrySet()) {
-    		widths.add(metrics.getWidth(entry.getKey()));
-    	}
-		return widths;
-	}
+    @Override
+    public List<Integer> generateWidthList(Font font) {
+        FontMetrics metrics = font.getMetrics();
+        List<Integer> widths = new LinkedList<Integer>();
+        for (Entry<String, Integer> entry : differences.entrySet()) {
+            widths.add(metrics.getWidth(entry.getKey()));
+        }
+        return widths;
+    }
 }

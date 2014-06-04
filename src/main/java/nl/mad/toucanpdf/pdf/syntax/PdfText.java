@@ -136,14 +136,14 @@ public class PdfText extends AbstractPdfObject {
      * @return String with kerning.
      */
     private String processKerning(String text, Font font) {
-        if(differences != null) {
-        	return processOctalKerning(text, font);
+        if (differences != null) {
+            return processOctalKerning(text, font);
         } else {
-        	return processCharacterKerning(text, font);
+            return processCharacterKerning(text, font);
         }
     }
 
-	private String processCharacterKerning(String text, Font font) {
+    private String processCharacterKerning(String text, Font font) {
         FontMetrics metrics = font.getMetrics();
         StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < text.length(); ++i) {
@@ -158,26 +158,26 @@ public class PdfText extends AbstractPdfObject {
             }
         }
         return sb.toString();
-	}
+    }
 
-	private String processOctalKerning(String text, Font font) {
+    private String processOctalKerning(String text, Font font) {
         FontMetrics metrics = font.getMetrics();
         StringBuilder sb = new StringBuilder("");
-        for(int i = 0; i < text.length(); i += OCTAL_CODE_LENGTH) {
-        	String octalCode = text.substring(i+1, i + OCTAL_CODE_LENGTH);
-        	sb.append("\\" + octalCode);
+        for (int i = 0; i < text.length(); i += OCTAL_CODE_LENGTH) {
+            String octalCode = text.substring(i + 1, i + OCTAL_CODE_LENGTH);
+            sb.append("\\" + octalCode);
             if (text.length() != i + OCTAL_CODE_LENGTH) {
-	        	String octalCode2 = text.substring(i + OCTAL_CODE_LENGTH + 1, i + (2 * OCTAL_CODE_LENGTH));
-	        	String charName = differences.getNameOf(octalCode);
-	        	String charName2 = differences.getNameOf(octalCode2);
-	        	int kernWidth = metrics.getKerning(charName, charName2);
-	        	if(kernWidth != 0) {
-	        		sb.append(") ");
-	        		sb.append(kernWidth);
-	        		sb.append(" (");
-	        	}	        	
+                String octalCode2 = text.substring(i + OCTAL_CODE_LENGTH + 1, i + (2 * OCTAL_CODE_LENGTH));
+                String charName = differences.getNameOf(octalCode);
+                String charName2 = differences.getNameOf(octalCode2);
+                int kernWidth = metrics.getKerning(charName, charName2);
+                if (kernWidth != 0) {
+                    sb.append(") ");
+                    sb.append(kernWidth);
+                    sb.append(" (");
+                }
             }
         }
         return sb.toString();
-	}
+    }
 }

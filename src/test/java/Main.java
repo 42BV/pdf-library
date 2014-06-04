@@ -34,18 +34,18 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-    	//testFootersHeaders();
+        //testFootersHeaders();
         testUnicodeConverter();
         //tableMain();
         //        presentation1();
         //        presentationN();
-                presentationN2();
+        presentationN2();
         //        presentationN3();
         //presentation1();
         //newTest();
         //documentStateTest();
     }
-    
+
     private static void testFootersHeaders() {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
@@ -106,7 +106,8 @@ public class Main {
         DocumentBuilder builder = new DocumentBuilder();
         Page page = builder.addPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
         page.addHeader().addAttribute("title", "Header text").height(20).add(new BaseText("This is %title").on(20, 830));
-        page.addFooter().height(100).add(new BaseText("Page %pageNumber of %totalPages").on(page.getWidth() - page.getMarginRight() - 100, 10)).add(new BaseTable(page.getWidthWithoutMargins()).addCell(new BaseCell(new BaseText("Cell text %pageNumber")).columnSpan(3)).on(0, 30));
+        page.addFooter().height(100).add(new BaseText("Page %pageNumber of %totalPages").on(page.getWidth() - page.getMarginRight() - 100, 10))
+                .add(new BaseTable(page.getWidthWithoutMargins()).addCell(new BaseCell(new BaseText("Cell text %pageNumber")).columnSpan(3)).on(0, 30));
         builder.setDefaultMarginBottom(0);
         builder.title("presMargins");
         builder.addText(
@@ -190,7 +191,6 @@ public class Main {
         Text cont4 = new BaseText("Test Test Test Test Teses");
         Text cont5 = new BaseText("Test Test Test Test Te");
         //DO ALIGNMENT FOR CONTENT IN TABLES (seems to be something wrong with right alignment on text)
-
 
         table.addCell(new BaseCell(cont2).columnSpan(1));
         table.addCell(new BaseCell(cont).columnSpan(3));

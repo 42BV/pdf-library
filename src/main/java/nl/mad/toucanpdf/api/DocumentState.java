@@ -81,82 +81,82 @@ public class DocumentState {
     }
 
     private void processPageAreas() {
-    	String totalPageNumbers = String.valueOf(state.size());
-		for(int i = 0; i < state.size(); ++i) {
-			StatePage sp = (StatePage) state.get(i);
-			PageArea header = sp.getHeader();
-			PageArea footer = sp.getFooter();
-			if(header != null) {
-				header.addAttribute("pageNumber", String.valueOf(i + 1));
-				header.addAttribute("totalPages", totalPageNumbers);
-				processPageAreaContent(header, sp);
-			} 
-			if(footer != null) {
-				footer.addAttribute("pageNumber", String.valueOf(i + 1));
-				footer.addAttribute("totalPages", totalPageNumbers);
-				processPageAreaContent(footer, sp);
-			}
-		}
-	}
+        String totalPageNumbers = String.valueOf(state.size());
+        for (int i = 0; i < state.size(); ++i) {
+            StatePage sp = (StatePage) state.get(i);
+            PageArea header = sp.getHeader();
+            PageArea footer = sp.getFooter();
+            if (header != null) {
+                header.addAttribute("pageNumber", String.valueOf(i + 1));
+                header.addAttribute("totalPages", totalPageNumbers);
+                processPageAreaContent(header, sp);
+            }
+            if (footer != null) {
+                footer.addAttribute("pageNumber", String.valueOf(i + 1));
+                footer.addAttribute("totalPages", totalPageNumbers);
+                processPageAreaContent(footer, sp);
+            }
+        }
+    }
 
-	private void processPageAreaContent(PageArea area, StatePage sp) {
-		List<DocumentPart> content = new ArrayList<DocumentPart>();
-		for(DocumentPart part : area.getContent()) {
-			content.add(createCopyOf(part));
-		}		
-		
-		Map<String, String> attributes = area.getAttributes();
-		for(int i = 0; i < content.size(); ++i) {
-			DocumentPart part = content.get(i);
-			if(part.getType().equals(DocumentPartType.TEXT)) {
-				part = processAttributes((Text) part, attributes);
-			} else if(part.getType().equals(DocumentPartType.TABLE)) {
-				Table table = (Table) part;
-				List<Cell> cells = table.getContent();
-				for(int b = 0; b < cells.size(); ++b) {
-					Cell c = cells.get(b);
-					if(c.getContent().getType().equals(DocumentPartType.TEXT)) {
-						c.content(processAttributes((Text) c.getContent(), attributes));
-					}
-				}
-			}			
-		}		
-		processFixedPositionContent(content, sp);
-		
-	}
-	
-	private DocumentPart createCopyOf(DocumentPart part) {
-		if(part != null) {
-			switch(part.getType()) {
-			case PARAGRAPH:				
-				return new BaseParagraph((Paragraph) part, true);
-			case TABLE:
-				Table table = (Table) part;
-				Table newTable = new BaseTable(table);
-				newTable.removeContent();
-				for(int i = 0; i < table.getContent().size(); ++i) {
-					Cell c = table.getContent().get(i);
-					newTable.addCell(new BaseCell(c).content((PlaceableDocumentPart) this.createCopyOf(c.getContent())));
-				}
-				return newTable;
-			default:
-				if(part instanceof PlaceableDocumentPart) {
-					return ((PlaceableDocumentPart) part).copy();
-				}
-			}			
-		}
-		return null;
-	}
-	
-	private Text processAttributes(Text text, Map<String, String> attributes) {
-		String textString = text.getText();
-		for(Entry<String, String> entry : attributes.entrySet()) {
-				textString = textString.replace('%' + entry.getKey(), entry.getValue());
-		}
-		return text.text(textString);
-	}
+    private void processPageAreaContent(PageArea area, StatePage sp) {
+        List<DocumentPart> content = new ArrayList<DocumentPart>();
+        for (DocumentPart part : area.getContent()) {
+            content.add(createCopyOf(part));
+        }
 
-	private Page processPageContent(Page oldPage, StatePage newPage) {
+        Map<String, String> attributes = area.getAttributes();
+        for (int i = 0; i < content.size(); ++i) {
+            DocumentPart part = content.get(i);
+            if (part.getType().equals(DocumentPartType.TEXT)) {
+                part = processAttributes((Text) part, attributes);
+            } else if (part.getType().equals(DocumentPartType.TABLE)) {
+                Table table = (Table) part;
+                List<Cell> cells = table.getContent();
+                for (int b = 0; b < cells.size(); ++b) {
+                    Cell c = cells.get(b);
+                    if (c.getContent().getType().equals(DocumentPartType.TEXT)) {
+                        c.content(processAttributes((Text) c.getContent(), attributes));
+                    }
+                }
+            }
+        }
+        processFixedPositionContent(content, sp);
+
+    }
+
+    private DocumentPart createCopyOf(DocumentPart part) {
+        if (part != null) {
+            switch (part.getType()) {
+            case PARAGRAPH:
+                return new BaseParagraph((Paragraph) part, true);
+            case TABLE:
+                Table table = (Table) part;
+                Table newTable = new BaseTable(table);
+                newTable.removeContent();
+                for (int i = 0; i < table.getContent().size(); ++i) {
+                    Cell c = table.getContent().get(i);
+                    newTable.addCell(new BaseCell(c).content((PlaceableDocumentPart) this.createCopyOf(c.getContent())));
+                }
+                return newTable;
+            default:
+                if (part instanceof PlaceableDocumentPart) {
+                    return ((PlaceableDocumentPart) part).copy();
+                }
+            }
+        }
+        return null;
+    }
+
+    private Text processAttributes(Text text, Map<String, String> attributes) {
+        String textString = text.getText();
+        for (Entry<String, String> entry : attributes.entrySet()) {
+            textString = textString.replace('%' + entry.getKey(), entry.getValue());
+        }
+        return text.text(textString);
+    }
+
+    private Page processPageContent(Page oldPage, StatePage newPage) {
         processFixedPositionContent(oldPage.getFixedPositionContent(), newPage);
         return processPositioning(oldPage.getPositionlessContent(), newPage);
     }
@@ -170,7 +170,7 @@ public class DocumentState {
             List<DocumentPart> newList = new LinkedList<DocumentPart>();
             newList.add(newPart);
             stateLink.put(oldObject, newList);
-        }        
+        }
     }
 
     /**
@@ -213,7 +213,7 @@ public class DocumentState {
                 addToStateLink(part, table);
                 break;
             default:
-            	LOGGER.warn("The given document type: " + part.getType() + " is unsupported.");
+                LOGGER.warn("The given document type: " + part.getType() + " is unsupported.");
                 break;
             }
         }
@@ -449,6 +449,7 @@ public class DocumentState {
         }
         return true;
     }
+
     /**
      * Returns the preview objects corresponding to the given table object.
      * @param table Table object to get the corresponding preview objects for.

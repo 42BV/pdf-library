@@ -51,22 +51,22 @@ public class JPEG implements ImageParser {
         try {
             BufferedImage image = ImageIO.read(stream);
             image = convertImage(image);
-            if(image != null) {
-	            retrieveData(image);
-	            determineColorSpace(image);
-	            retrieveBitsPerComponent(image);
-	            retrieveImageSize(image);
+            if (image != null) {
+                retrieveData(image);
+                determineColorSpace(image);
+                retrieveBitsPerComponent(image);
+                retrieveImageSize(image);
             }
             filter = Compression.DCT;
             stream.close();
         } catch (IOException e) {
-        	if(stream != null) {
-        		try {
-					stream.close();
-				} catch (IOException e1) {
-		            LOGGER.warn("Exception occurred on closing the image stream");
-				}
-        	}
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e1) {
+                    LOGGER.warn("Exception occurred on closing the image stream");
+                }
+            }
             LOGGER.warn("Exception occurred during parsing of image stream");
         }
     }
@@ -93,15 +93,15 @@ public class JPEG implements ImageParser {
      * @return The same image if no conversion was necessary, a converted image otherwise. 
      */
     private BufferedImage convertImage(BufferedImage image) {
-    	if(image != null) {
-	        if (image.getColorModel().getNumComponents() == RGB_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_INT_RGB) {
-	            image = convertImageToType(image, BufferedImage.TYPE_INT_RGB);
-	        } else if (image.getColorModel().getNumComponents() == GRAY_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
-	            image = convertImageToType(image, BufferedImage.TYPE_BYTE_GRAY);
-	        }
-	        return image;
-    	}
-    	return null;
+        if (image != null) {
+            if (image.getColorModel().getNumComponents() == RGB_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_INT_RGB) {
+                image = convertImageToType(image, BufferedImage.TYPE_INT_RGB);
+            } else if (image.getColorModel().getNumComponents() == GRAY_COMPONENT_AMOUNT && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+                image = convertImageToType(image, BufferedImage.TYPE_BYTE_GRAY);
+            }
+            return image;
+        }
+        return null;
     }
 
     /**
@@ -183,19 +183,19 @@ public class JPEG implements ImageParser {
         return this.height;
     }
 
-	@Override
-	public int getRequiredComponentsForColorSpace(ColorSpace color) {
-		switch(color) {
-		case DEVICE_GRAY:
-		case CAL_GRAY:
-			return GRAY_COMPONENT_AMOUNT;
-		case DEVICE_RGB:
-		case CAL_RGB:
-			return RGB_COMPONENT_AMOUNT;
-		case DEVICE_CMYK:
-			return CMYK_COMPONENT_AMOUNT;
-		default:
-			return 0;
-		}
-	}
+    @Override
+    public int getRequiredComponentsForColorSpace(ColorSpace color) {
+        switch (color) {
+        case DEVICE_GRAY:
+        case CAL_GRAY:
+            return GRAY_COMPONENT_AMOUNT;
+        case DEVICE_RGB:
+        case CAL_RGB:
+            return RGB_COMPONENT_AMOUNT;
+        case DEVICE_CMYK:
+            return CMYK_COMPONENT_AMOUNT;
+        default:
+            return 0;
+        }
+    }
 }

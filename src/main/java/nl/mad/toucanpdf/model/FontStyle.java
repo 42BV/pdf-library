@@ -5,5 +5,8 @@ package nl.mad.toucanpdf.model;
  * @author Dylan de Wolff
  */
 public enum FontStyle {
-    NORMAL, BOLD, ITALIC, BOLDITALIC
+    NORMAL,
+    BOLD,
+    ITALIC,
+    BOLDITALIC
 }

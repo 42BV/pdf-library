@@ -103,13 +103,13 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         if (imageStream != null) {
             switch (type) {
             case JPEG:
-            	image = new JPEG(imageStream);
+                image = new JPEG(imageStream);
                 break;
             default:
                 LOGGER.warn("The given image format: " + type + " is currently not supported.");
                 break;
             }
-        } 
+        }
     }
 
     /**
@@ -120,7 +120,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this();
         this.height = image.getHeight();
         this.width = image.getWidth();
-        this.image = image.getImageParser();        
+        this.image = image.getImageParser();
         this.setWrappingAllowed(image.isWrappingAllowed());
         this.setAlignment(image.getAlignment());
         this.setPosition(image.getPosition());
@@ -234,7 +234,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
      * @return The type of the image, null if no corresponding image type could be discovered.
      */
     public static ImageType getTypeFromFilename(String filename) {
-    	String file = filename.toLowerCase();
+        String file = filename.toLowerCase();
         if (file.endsWith(".jpg") || file.endsWith(".jpeg")) {
             return ImageType.JPEG;
         } else if (file.endsWith(".png")) {
@@ -247,14 +247,14 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         return null;
     }
 
-	@Override
-	public Image invertColors(boolean invert) {
-		this.invertColors = invert;
-		return this;
-	}
+    @Override
+    public Image invertColors(boolean invert) {
+        this.invertColors = invert;
+        return this;
+    }
 
-	@Override
-	public boolean getInvertColors() {
-		return this.invertColors;
-	}
+    @Override
+    public boolean getInvertColors() {
+        return this.invertColors;
+    }
 }

@@ -46,10 +46,10 @@ public class BaseTable extends AbstractTable implements Table {
     public PlaceableDocumentPart copy() {
         return new BaseTable(this);
     }
-    
+
     @Override
     public Table removeContent() {
-    	this.content = new LinkedList<Cell>();
-    	return this;
+        this.content = new LinkedList<Cell>();
+        return this;
     }
 }

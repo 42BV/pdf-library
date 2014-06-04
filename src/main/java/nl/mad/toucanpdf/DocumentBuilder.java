@@ -94,11 +94,11 @@ public class DocumentBuilder {
      */
     public DocumentBuilder addPart(DocumentPart part) {
         if (part != null && part.getType() != DocumentPartType.PAGE) {
-	        if (pages.size() == 0) {
-	              this.addPage();
-	        }
-	        Page currentPage = pages.get(currentPageNumber - 1);
-	        currentPage.add(part);
+            if (pages.size() == 0) {
+                this.addPage();
+            }
+            Page currentPage = pages.get(currentPageNumber - 1);
+            currentPage.add(part);
         }
         return this;
     }
