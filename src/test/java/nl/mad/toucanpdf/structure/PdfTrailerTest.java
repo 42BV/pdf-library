@@ -1,6 +1,6 @@
 package nl.mad.toucanpdf.structure;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,8 +20,11 @@ public class PdfTrailerTest {
         PdfTrailer trailer = new PdfTrailer(3, new byte[0], test.getReference(), test);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         trailer.writeToFile(baos);
-        String expectedResult = "trailer\n" + "<<\n" + " /Root 1 0 R\n" + " /Info 1 0 R\n" + " /Size 4\n" + ">>\n" + "startxref\n\n" + "%%EOF";
-        assertEquals(expectedResult, ByteEncoder.getString(baos));
+        String result = ByteEncoder.getString(baos);
+        assertTrue(result.startsWith("trailer\n" + "<<\n"));
+        assertTrue(result.contains("/Info 1 0 R\n"));
+        assertTrue(result.contains("/Root 1 0 R\n"));
+        assertTrue(result.contains("/Size 4\n"));
+        assertTrue(result.endsWith(">>\n" + "startxref\n\n" + "%%EOF"));
     }
-
 }

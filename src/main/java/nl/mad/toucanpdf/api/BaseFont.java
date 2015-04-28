@@ -20,10 +20,9 @@ public class BaseFont extends AbstractDocumentPart implements Font {
 
     /**
      * Creates a new instance of BaseFont. Will copy the default font specified in Document.
-     * @see Document
      */
     public BaseFont() {
-        this(Constants.DEFAULT_FONT.getFamily(), Constants.DEFAULT_FONT.getStyle(), Constants.DEFAULT_FONT.getFontFamily());
+        this(Constants.DEFAULT_FONT);
     }
 
     /**

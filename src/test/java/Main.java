@@ -35,11 +35,11 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         //testFootersHeaders();
-        testUnicodeConverter();
-        //tableMain();
+        //testUnicodeConverter();
+        tableMain();
         //        presentation1();
         //        presentationN();
-        presentationN2();
+        //presentationN2();
         //        presentationN3();
         //presentation1();
         //newTest();
@@ -77,7 +77,7 @@ public class Main {
     private static void tableMain() {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder();
-        Table table = builder.addTable().columns(5).drawFillerCells(false);
+        Table table = builder.addTable().columns(2).drawFillerCells(false);
         table.addCell(new BaseCell().height(100).width(100).columnSpan(2));
         table.addCell(new BaseCell(new BaseText("Hellooooooooooooooooooooooooooo")).columnSpan(5));
         builder.finish();

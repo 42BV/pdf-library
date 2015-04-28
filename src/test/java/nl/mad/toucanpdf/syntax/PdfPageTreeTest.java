@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf.syntax;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -60,10 +61,15 @@ public class PdfPageTreeTest {
 
     @Test
     public void testWriteToFile() throws IOException {
-        String expectedResult = "<<\n /Type /Pages\n /Count 1\n /Kids [ 1 0 R ]\n>>";
+        String expectedResult = "<<\n /Kids [ 1 0 R ]\n /Type /Pages\n /Count 1\n>>";
         pageTree.add(new PdfIndirectObject(1, 0, new PdfPage(200, 200, Page.DEFAULT_NEW_LINE_SIZE, 0), true));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pageTree.writeToFile(baos);
-        assertEquals(expectedResult, baos.toString());
+        String result = baos.toString();
+        assertTrue(result.startsWith("<<\n"));
+        assertTrue(result.contains("/Kids [ 1 0 R ]\n"));
+        assertTrue(result.contains("/Type /Pages\n"));
+        assertTrue(result.contains("/Count 1\n"));
+        assertTrue(result.endsWith("\n>>"));
     }
 }

@@ -6,7 +6,7 @@ import nl.mad.toucanpdf.model.FontFamilyType;
 import nl.mad.toucanpdf.model.FontStyle;
 
 /**
- * Contains constants that are used by several PDF object classes.
+ * Contains constants that are used by several classes.
  * @author Dylan de Wolff
  *
  */
@@ -28,6 +28,10 @@ public final class Constants {
      * Default font. This is used when no font is specified.
      */
     public static final Font DEFAULT_FONT = new BaseFont(FontFamilyType.TIMES_ROMAN, FontStyle.NORMAL);
+    /**
+     * Default text size. This is used when no text size is specified.
+     */
+    public static final Integer DEFAULT_TEXT_SIZE = 12;
 
     private Constants() {
     }

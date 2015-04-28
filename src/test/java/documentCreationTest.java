@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import nl.mad.toucanpdf.DocumentBuilder;
 import nl.mad.toucanpdf.api.BaseCell;
+import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.DocumentPart;
@@ -31,7 +32,7 @@ public class documentCreationTest {
         builder.about("Test subject").title("Testing a document").writtenBy("Someone");
         //creating a masterpage and setting margins for it
         Page masterPage = builder.createPage().marginBottom(20).marginLeft(20).marginRight(20).marginTop(20);
-        //creating document parts for the header
+        //creating document parts for the headermaarj
         Text headerText = builder.createText("Document: %documentTitle").on(20, masterPage.getHeight() - 15);
         InputStream input = this.getClass().getClassLoader().getResourceAsStream("logo_placeholder.jpg");
         Image i = builder.createImage(input, ImageType.JPEG).height(40).on(masterPage.getWidth() - 50, masterPage.getHeight() - 5);
@@ -77,7 +78,7 @@ public class documentCreationTest {
 
         //adding another table, this time without filling empty remaining columns and with an empty second row
         //this table will not fit on the current page, so a second page will be added automatically
-        Table table2 = builder.addTable().columns(3).drawFillerCells(false);
+        Table table2 = builder.addTable().columns(3).drawFillerCells(false).border(0.0);
         table2.addCell("Row 1 - header");
         table2.addCell("Row 2&3 - header").columnSpan(2);
         table2.addCell(new BaseCell().columnSpan(3).height(10));

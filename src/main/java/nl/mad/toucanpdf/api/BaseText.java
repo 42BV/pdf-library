@@ -20,7 +20,6 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private String textString;
     private int textSize;
-    private static final int DEFAULT_TEXT_SIZE = 12;
     private double scaleX = 1;
     private double scaleY = 1;
     private double shearX = 0;
@@ -44,7 +43,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public BaseText(String text) {
         super(DocumentPartType.TEXT);
         textString = text;
-        textSize = DEFAULT_TEXT_SIZE;
+        textSize = Constants.DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
     }
 

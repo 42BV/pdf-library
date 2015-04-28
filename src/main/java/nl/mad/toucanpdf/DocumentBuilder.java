@@ -28,6 +28,7 @@ import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.pdf.structure.PdfDocument;
+import nl.mad.toucanpdf.utility.Constants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,8 @@ public class DocumentBuilder {
     private int defaultMarginLeft = 0;
     private int defaultMarginRight = 0;
     private int defaultMarginBottom = 0;
+    private Font defaultFont = Constants.DEFAULT_FONT;
+    private Integer defaultTextSize = Constants.DEFAULT_TEXT_SIZE;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -354,7 +357,7 @@ public class DocumentBuilder {
      * @see Text
      */
     public Text createText(String s) {
-        Text text = new BaseText(s);
+        Text text = new BaseText(s).font(defaultFont).size(defaultTextSize);
         setDefaultMargins(text);
         return text;
     }
@@ -612,5 +615,41 @@ public class DocumentBuilder {
     public DocumentBuilder setDefaultMarginBottom(int marginBottom) {
         this.defaultMarginBottom = marginBottom;
         return this;
+    }
+
+    /**
+     * Sets the default font to be used for each text object created through this builder.
+     * @param defaultFont font to be used by default
+     * @return this builder.
+     */
+    public DocumentBuilder setDefaultFont(Font defaultFont) {
+        this.defaultFont = defaultFont;
+        return this;
+    }
+
+    /**
+     * Returns the default font 
+     * @return default font
+     */
+    public Font getDefaultFont() {
+        return this.defaultFont;
+    }
+
+    /**
+     * Sets the default text size to be used for each text object created through this builder.
+     * @param defaultTextSize text size to use by default.
+     * @return this builder.
+     */
+    public DocumentBuilder setDefaultTextSize(Integer defaultTextSize) {
+        this.defaultTextSize = defaultTextSize;
+        return this;
+    }
+
+    /**
+     * Returns the default font size
+     * @return default font size
+     */
+    public Integer getDefaultTextSize() {
+        return this.defaultTextSize;
     }
 }
