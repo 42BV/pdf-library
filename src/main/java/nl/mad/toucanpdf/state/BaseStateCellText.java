@@ -78,7 +78,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         int i = 0;
         int charsAdded = 0;
         int textSize = getTextSize();
-
         while (currentWidth < availableWidth && i < chars.length) {
             char c = chars[i];
             double characterSize = 0.0;
@@ -114,5 +113,10 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     @Override
     public double getRequiredWidth() {
         return this.marginLeft + marginRight + REQUIRED_WIDTH;
+    }
+
+    @Override
+    public double getSpecifiedWidth() {
+        return 0;
     }
 }

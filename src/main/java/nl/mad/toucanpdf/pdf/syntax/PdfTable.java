@@ -25,7 +25,7 @@ public class PdfTable extends PdfPath {
     }
 
     private void drawCells() {
-        if (FloatEqualityTester.greaterThanOrEqualTo(table.getBorderWidth(), 0)) {
+        if (FloatEqualityTester.greaterThan(table.getBorderWidth(), 0)) {
             this.setLineWidth(table.getBorderWidth());
             for (StateCell c : table.getStateCellCollection()) {
                 Position pos = c.getPosition();

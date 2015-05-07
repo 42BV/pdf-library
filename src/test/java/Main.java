@@ -34,9 +34,10 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
+        newTable();
         //testFootersHeaders();
         //testUnicodeConverter();
-        tableMain();
+        //tableMain();
         //        presentation1();
         //        presentationN();
         //presentationN2();
@@ -44,6 +45,23 @@ public class Main {
         //presentation1();
         //newTest();
         //documentStateTest();
+    }
+
+    private static void newTable() {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().marginTop(200);
+        Table table = builder.addTable().columns(4).drawFillerCells(false);
+        Text t = builder.createText("jantje");
+        table.addCell(new BaseCell(t).rowSpan(2));
+        table.addCell(new BaseCell(t));
+        table.addCell(new BaseCell(t));
+        table.addCell(new BaseCell(t));
+        table.addCell(new BaseCell(t));
+        table.addCell(new BaseCell(t).rowSpan(2).columnSpan(2));
+        table.addCell(new BaseCell(t));
+        table.addCell(new BaseCell(t));
+        builder.finish();
     }
 
     private static void testFootersHeaders() {

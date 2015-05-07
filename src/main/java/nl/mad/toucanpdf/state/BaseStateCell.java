@@ -1,10 +1,6 @@
 package nl.mad.toucanpdf.state;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nl.mad.toucanpdf.api.AbstractCell;
-import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
@@ -12,6 +8,9 @@ import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateCellContent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BaseStateCell extends AbstractCell implements StateCell {
     private StateCellContent content;
@@ -54,6 +53,7 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     private double calculateContentHeight(double leading, double borderWidth, boolean processPositioning) {
         if (this.content != null) {
             Position positionInclBorder = new Position(this.getPosition().getX() + borderWidth, this.getPosition().getY() - borderWidth);
+            System.out.println("width: " + this.getWidth());
             return this.content.calculateContentHeight(this.getWidth() - (borderWidth * 2), leading, positionInclBorder, processPositioning);
         }
         return 0;

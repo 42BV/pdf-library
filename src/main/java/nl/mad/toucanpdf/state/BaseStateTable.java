@@ -1,34 +1,31 @@
 package nl.mad.toucanpdf.state;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nl.mad.toucanpdf.api.AbstractTable;
 import nl.mad.toucanpdf.api.BaseCell;
-import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
-import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StateCell;
+import nl.mad.toucanpdf.model.state.StateCellContent;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BaseStateTable extends AbstractTable implements StateTable {
-    private DocumentPart originalObject;
-    private List<StateCell> content = new LinkedList<StateCell>();
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);
     private static final int BIG_DECIMAL_PRECISION = 20;
+    private DocumentPart originalObject;
+    private List<StateCell> content = new LinkedList<StateCell>();
 
     /**
      * Creates a new instance of BaseStateTable.
@@ -77,14 +74,18 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      * @return true if there was overflow, false otherwise.
      */
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed) {
-        int totalCellAmount = this.getContent().size();
-        MathContext mc = new MathContext(BIG_DECIMAL_PRECISION, RoundingMode.HALF_UP);
-        int columnAmount = this.getColumnAmount();
-        BigDecimal cellWidth = null;
-        BigDecimal availableWidth = new BigDecimal(this.width);
-        List<StateCell> currentRowCells = new LinkedList<StateCell>();
-        int currentFilledColumns = 0;
-        double rowHeight = 0;
+        System.out.println("hallotjes");
+        List<StateCell> tableContent = copyContent();
+        List<TableRow> rows = new LinkedList<>();
+        addRowTo(rows);
+        int currentRow = 0;
+        int currentColumn = 0;
+        this.height = 0;
+        double widthUsedInRow = 0;
+        double maxHeightInRow = 0;
+        List<Cell> noContentWidthCells = new ArrayList<>();
+
+        //if not fixed, calculate a position for this table and process alignment if needed
         if (!fixed) {
             Position p = calculatePosition(page);
             if (p == null) {
@@ -95,60 +96,176 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             }
             this.setPosition(p);
         }
-        this.height = 0;
-        Position cellPos = new Position(this.getPosition());
 
-        for (int i = 0; i < totalCellAmount; ++i) {
-            StateCell c = content.get(i);
-            c.columnSpan(Math.min(columnAmount, c.getColumnSpan()));
-            int columns = c.getColumnSpan();
-            int remainder = (columnAmount - currentFilledColumns);
-            if (remainder == 0) ++remainder;
-            BigDecimal remainingColumns = new BigDecimal(remainder);
-            cellWidth = availableWidth.divide(remainingColumns, mc);
+        for (StateCell c : tableContent) {
+            //make sure the column span on each cell does not exceed the max column amount
+            c.columnSpan(Math.min(c.getColumnSpan(), this.columnAmount));
 
-            if (currentFilledColumns + columns <= columnAmount) {
-                BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, cellWidth, c);
-                availableWidth = availableWidth.subtract(reqWidth);
-                processCellAddition(c, cellPos, currentRowCells, reqWidth, processPositioning);
-                rowHeight = calculateHeight(rowHeight, c, page, height);
-                currentFilledColumns += columns;
-            } else {
-                if (processPositioning && this.getDrawFiller()) {
-                    fillRemainderOfRow(rowHeight, cellWidth, columnAmount - currentFilledColumns, cellPos);
-                }
-                processRow(currentRowCells, rowHeight);
-                this.height += rowHeight;
-                currentFilledColumns = columns;
-                currentRowCells = new LinkedList<StateCell>();
-                cellPos.setX(this.getPosition().getX());
-                cellPos.setY(cellPos.getY() - rowHeight);
-                availableWidth = new BigDecimal(this.width);
-                BigDecimal reqWidth = calculateWidth(c.getRequiredWidth(), availableWidth, availableWidth.divide(new BigDecimal(columnAmount), mc), c);
-                availableWidth = availableWidth.subtract(reqWidth);
-                processCellAddition(c, cellPos, currentRowCells, reqWidth, processPositioning);
-                rowHeight = calculateHeight(0, c, page, height);
-            }
-            if (processPositioning) {
-                c.processContentSize(page.getLeading(), this.borderWidth);
-            }
+            //check if current cell columns fit on this row
+            boolean validSpaceFound = false;
+            while (!validSpaceFound) {
+                //if the current column + the column span of the cell will actually still fit on this row
+                boolean validColumn = currentColumn + c.getColumnSpan() <= this.columnAmount;
+                if (validColumn && !columnsInUse(currentColumn, c.getColumnSpan(), rows, currentRow)) {
+                    //place the cell if a valid space has been found
+                    validSpaceFound = true;
+                    rows.get(currentRow).getContent()[currentColumn] = c;
+                    widthUsedInRow += c.getRequiredWidth();
+                    currentColumn += c.getColumnSpan();
 
-            if (i == (totalCellAmount - 1)) {
-                if (processPositioning && this.getDrawFiller()) {
-                    remainder = columnAmount - currentFilledColumns;
-                    if (remainder == 0) ++remainder;
-                    cellWidth = availableWidth.divide(new BigDecimal(remainder), mc);
-                    fillRemainderOfRow(rowHeight, cellWidth, columnAmount - currentFilledColumns, cellPos);
+                    //if the cell in question has no custom width specified
+                    if (((StateCellContent) c.getContent()).getSpecifiedWidth() == 0) {
+                        rows.get(currentRow).addNoWidthSpecifiedCell(c);
+                    }
+                } else if (validColumn) {
+                    //if the column is valid but the space was in use, increase the current column and try again
+                    currentColumn += 1;
+                } else {
+                    //if the column is not valid, we've reached the end of the row and need to continue with the next one, sometimes this row might already exist
+                    if (currentRow + 2 > rows.size()) {
+                        addRowTo(rows);
+                    }
+                    rows.get(currentRow).setWidthUsed(widthUsedInRow);
+                    currentRow++;
+                    currentColumn = 0;
                 }
-                processRow(currentRowCells, rowHeight);
-                this.height += rowHeight;
-                if (!wrapping && processPositioning) {
-                    this.adjustFilledHeight(page);
-                }
-                return false;
             }
         }
+
+        //finalize the cell widths, heights and execute positioning
+        Position cellPos = new Position(this.getPosition());
+        for (TableRow row : rows) {
+            //TODO: ADD EMPTY CELLS
+            double remainingWidth = this.getWidth() - row.getWidthUsed();
+            List<StateCell> cellsWithNoSpecifiedWidth = row.getCellsWithNoSpecifiedWidth();
+            double extraWidth = remainingWidth / cellsWithNoSpecifiedWidth.size();
+
+            double[] widths = processColumnWidthDetermination(rows);
+
+            //for height determination we first need to position each cell
+            for(int i = 0; i < row.getContent().length; ++i) {
+                StateCell cell = (StateCell) row.getContent()[i];
+                if(cell != null) {
+                    cell.setPosition(new Position(cellPos));
+                    cellPos.adjustX(cell.getRequiredWidth());
+                } else {
+                    cellPos.adjustX(widths[i]);
+                }
+            }
+            
+            double rowHeight = determineRowHeight(row, page.getLeading());
+                for(Cell c : row.getContent()) {
+                    if(c != null) {
+                        StateCell cell = (StateCell) c;
+                    c.height(rowHeight * c.getRowSpan());
+                        cell.processContentSize(page.getLeading(), this.borderWidth);
+                     }
+                 }
+            cellPos.adjustY(-rowHeight);
+            cellPos.setX(this.getPosition().getX());
+        }
+
+        if(processPositioning) {
+            this.content = tableContent;
+        }
         return false;
+    }
+
+    private double[] processColumnWidthDetermination(List<TableRow> rows) {
+        double[] columnWidths = new double[this.columnAmount];
+        for (int i = 0; i < this.columnAmount; ++i) {
+            columnWidths[i] = 0;
+        }
+
+        for (TableRow row : rows) {
+            Cell[] content = row.getContent();
+            for (int i = 0; i < content.length; ++i) {
+                if (content[i] != null) {
+                    StateCell cell = (StateCell) content[i];
+                    columnWidths[i] = Math.max(cell.getRequiredWidth() / cell.getColumnSpan(), columnWidths[i]);
+                }
+            }
+        }
+
+        for (TableRow row : rows) {
+            Cell[] content = row.getContent();
+            for (int i = 0; i < content.length; ++i) {
+                if (content[i] != null) {
+                    StateCell cell = (StateCell) content[i];
+                    cell.width(columnWidths[i] * cell.getColumnSpan());
+                }
+            }
+        }
+        return columnWidths;
+    }
+
+    private List<StateCell> copyContent() {
+        List<StateCell> newContent = new ArrayList<>();
+        for (StateCell stateCell : content) {
+            newContent.add(new BaseStateCell(stateCell));
+        }
+        return newContent;
+    }
+
+    private double determineRowHeight(TableRow row, int leading) {
+        double maxHeight = 0;
+        System.out.println("startRowHeightDetermination");
+        for (Cell c : row.getContent()) {
+            if (c != null) {
+                StateCell cell = (StateCell) c;
+                double height = cell.getRequiredHeight(leading, this.borderWidth);
+                maxHeight = Math.max(maxHeight, height / cell.getRowSpan());
+            }
+        }
+        System.out.println("endRowHeightDetermination");
+        return maxHeight;
+    }
+
+    /**
+     * Determines if the given columns are occupied or available
+     * @param currentColumn
+     * @param columnSpan
+     * @param rows
+     * @param currentRow
+     * @return
+     */
+    private boolean columnsInUse(int currentColumn, int columnSpan, List<TableRow> rows, int currentRow) {
+        //we need to go through all rows and columns to make sure the requested columns are not occupied due to rowspawn/columnspan of other cells
+        for (int rowNumber = 0; rowNumber <= currentRow; ++rowNumber) {
+            Cell[] row = rows.get(rowNumber).getContent();
+            for (int column = 0; column < this.columnAmount; ++column) {
+                Cell c = row[column];
+                //if on the same row as the columns being checked and another column occupies the column being checked due to columnspan
+                //or
+                //if not on the current row, but on the same columns for a different row, check if the rowspan of the column occupies the columns being checked
+                //rowspan is 1 by default (which is already accounted for by using the rownumber) and therefore requires the minus 1
+                if (c != null &&
+                        ((rowNumber == currentRow && (column + c.getColumnSpan() - 1) >= currentColumn) ||
+                        (column >= currentColumn && column <= (currentColumn + columnSpan - 1) &&
+                        (rowNumber + c.getRowSpan() - 1) >= currentRow))) {
+                    System.out.println("NOT VALID!");
+                    System.out.println("Checked... col: " + currentColumn + ", cs: " + columnSpan + ", r: " + currentRow);
+                    System.out.println("Not valid due to... col: " + column + ", cs: " + c.getColumnSpan() + ", r: " + rowNumber);
+                    System.out.println("");
+                    return true;
+                }
+            }
+        }
+        System.out.println("VALID!");
+        System.out.println("Checked... col: " + currentColumn + ", cs: " + columnSpan + ", r: " + currentRow);
+        System.out.println("");
+        return false;
+    }
+
+    private TableRow addRowTo(List<TableRow> rows) {
+        this.addRowsTo(rows, 1);
+        return rows.get(rows.size() - 1);
+    }
+
+    private void addRowsTo(List<TableRow> rows, int count) {
+        for (int i = 0; i < count; ++i) {
+            rows.add(new TableRow(this.columnAmount));
+        }
     }
 
     private double calculateAlignment(StatePage page) {
@@ -171,20 +288,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             }
         }
         return adjustment;
-    }
-
-    private double calculateHeight(double rowHeight, StateCell c, StatePage page, double currentTableHeight) {
-        if (c.getContent() != null) {
-            double requiredHeight = c.getRequiredHeight(page.getLeading(), this.borderWidth);
-            if (requiredHeight + currentTableHeight > page.getHeightWithoutMargins()) {
-                c.setContent(null);
-                LOGGER.warn("The content of the cell was too high and has been removed.");
-                return rowHeight;
-            }
-            return Math.max(rowHeight, requiredHeight + (this.borderWidth * 2));
-        } else {
-            return Math.max(rowHeight, c.getHeight());
-        }
     }
 
     private Position calculatePosition(StatePage page) {
@@ -216,49 +319,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             }
         }
         return pos;
-    }
-
-    private void processCellAddition(StateCell c, Position cellPos, List<StateCell> currentRowCells, BigDecimal reqWidth, boolean processPositioning) {
-        c.width(reqWidth.doubleValue());
-        c.setPosition(new Position(cellPos));
-        if (processPositioning) {
-            currentRowCells.add(c);
-            cellPos.adjustX(reqWidth.doubleValue());
-        }
-    }
-
-    private BigDecimal calculateWidth(double requiredWidth, BigDecimal availableWidth, BigDecimal cellWidth, StateCell c) {
-        BigDecimal defaultWidth = cellWidth.multiply(new BigDecimal(c.getColumnSpan()));
-        if (requiredWidth != 0) {
-            BigDecimal reqWidth = new BigDecimal(requiredWidth);
-            if (reqWidth.compareTo(availableWidth) == 1) {
-                LOGGER.warn("The content was too wide and has been removed");
-                c.setContent(null);
-                return defaultWidth;
-            }
-            if (reqWidth.compareTo(defaultWidth) != 0) {
-                reqWidth = reqWidth.add(new BigDecimal(borderWidth));
-            }
-            return defaultWidth.max(reqWidth);
-        } else {
-            return defaultWidth;
-        }
-    }
-
-    private List<Cell> fillRemainderOfRow(double rowHeight, BigDecimal cellWidth, int remainingColumns, Position pos) {
-        for (int i = 0; i < remainingColumns; ++i) {
-            StateCell c = new BaseStateCell();
-            c.setPosition(new Position(pos));
-            this.addCell((c.width(cellWidth.doubleValue()).height(rowHeight)));
-            pos.adjustX(cellWidth.doubleValue());
-        }
-        return this.getContent();
-    }
-
-    private void processRow(List<StateCell> currentRowCells, double cellHeight) {
-        for (Cell c : currentRowCells) {
-            c.height(cellHeight);
-        }
     }
 
     private void adjustFilledHeight(StatePage page) {
@@ -306,15 +366,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     @Override
+    public DocumentPart getOriginalObject() {
+        return this.originalObject;
+    }
+
+    @Override
     public void setOriginalObject(DocumentPart originalObject) {
         if (this.originalObject == null) {
             this.originalObject = originalObject;
         }
-    }
-
-    @Override
-    public DocumentPart getOriginalObject() {
-        return this.originalObject;
     }
 
     @Override
@@ -370,6 +430,50 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     public Table removeContent() {
         this.content = new LinkedList<StateCell>();
         return this;
+    }
+
+    private class TableRow {
+        private Cell[] content;
+        private double maxHeight = 0;
+        private double widthUsed = 0;
+        private List<StateCell> noWidthSpecified;
+
+        private TableRow(int columns) {
+            content = new Cell[columns];
+            noWidthSpecified = new ArrayList<>();
+        }
+
+        public Cell[] getContent() {
+            return content;
+        }
+
+        public void setContent(Cell[] content) {
+            this.content = content;
+        }
+
+        public double getMaxHeight() {
+            return maxHeight;
+        }
+
+        public void setMaxHeight(double maxHeight) {
+            this.maxHeight = maxHeight;
+        }
+
+        public double getWidthUsed() {
+            return widthUsed;
+        }
+
+        public void setWidthUsed(double widthUsed) {
+            this.widthUsed = widthUsed;
+        }
+
+        public void addNoWidthSpecifiedCell(StateCell cell) {
+            noWidthSpecified.add(cell);
+        }
+
+        public List<StateCell> getCellsWithNoSpecifiedWidth() {
+            return noWidthSpecified;
+        }
     }
 
 }

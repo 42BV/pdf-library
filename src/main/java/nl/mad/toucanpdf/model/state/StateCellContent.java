@@ -8,4 +8,6 @@ public interface StateCellContent extends StateDocumentPart, PlaceableDocumentPa
 
     double getRequiredWidth();
 
+    double getSpecifiedWidth();
+
 }

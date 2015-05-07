@@ -55,6 +55,11 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     }
 
     @Override
+    public double getSpecifiedWidth() {
+        return this.width;
+    }
+
+    @Override
     public double getRequiredSpaceLeft() {
         return this.marginLeft;
     }

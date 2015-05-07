@@ -273,10 +273,10 @@ public class DocumentState {
                 return handleOverflow(page, i, null, content);
             }
             table.on(position);
-            table.removeContent();
-            for (Cell c : ((Table) p).getContent()) {
-                table.addCell(c);
-            }
+            // table.removeContent();
+            // for (Cell c : ((Table) p).getContent()) {
+            //     table.addCell(c);
+            //  }
             if (!table.processContentSize(page)) {
                 page.add(table);
                 addToStateLink(p, table);

@@ -29,19 +29,31 @@ public interface Cell {
     Cell height(double newHeight);
 
     /**
-     * Sets the amount of columns that this cells uses. The column span will eventually be automatically reduced
-     * to the amount of columns in the table. If the appended cell has a larger column span than the amount of available
-     * columns on the current row, the row will be filled up with empty columns.
+     * Sets the amount of columns that this cells uses. If the given column span exceeds the total column count it will be reduced automatically.
+     * If this cell has a larger column span than the amount of columns available in the current row, the remainder of that row will be filled with empty cells.
      * @param newColumnSpan The column span to use.
      * @return the cell instance.
      */
     Cell columnSpan(int newColumnSpan);
 
     /**
+     * Sets the amount of rows that this cell uses. 
+     * @param newRowSpan The row span to use.
+     * @return the cell instance.
+     */
+    Cell rowSpan(int newRowSpan);
+
+    /**
      * Returns the column span of this cell.
      * @return column span value.
      */
     int getColumnSpan();
+
+    /**
+     * Returns the row span of this cell.
+     * @return row span value.
+     */
+    int getRowSpan();
 
     /**
      * Returns the width of this cell.
