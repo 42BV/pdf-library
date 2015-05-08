@@ -35,6 +35,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         newTable();
+        testExampleTable();
         //testFootersHeaders();
         //testUnicodeConverter();
         //tableMain();
@@ -62,6 +63,31 @@ public class Main {
         table.addCell(new BaseCell(t));
         table.addCell(new BaseCell(t));
         builder.finish();
+    }
+
+    private static void testExampleTable() {
+        BasicConfigurator.configure();
+        DocumentBuilder builder = new DocumentBuilder().filename("jantje");
+        builder.addPage().marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
+        Table table = builder.addTable().columns(3).drawFillerCells(false);
+        Font bold = new BaseFont(builder.getDefaultFont()).bold();
+        table.addCell(builder.createText("Teamlid").font(bold));
+        table.addCell(builder.createText("Ambitie").font(bold));
+        table.addCell(builder.createText("Score").font(bold));
+        table.addCell(builder.createText("Erwin"));
+        table.addCell(builder.createText("Alle medewerkers blijven in 2014 in dienst. er wordt een passende functie geboden"));
+        table.addCell(builder.createText("6"));
+        table.addCell(builder.createText("Erwin"));
+        table.addCell(builder.createText("Ambitionplanner omzet € 50.000"));
+        table.addCell(builder.createText("8"));
+        table.addCell(builder.createText("Erwin"));
+        table.addCell(builder.createText("Website wordt vernieuwd en ondersteunt daarmee doelstellingen"));
+        table.addCell(builder.createText("8"));
+        table.addCell(builder.createText("Hans-Peter"));
+        table.addCell(builder.createText("tussen nu en 3 jaar omzetgroei naar 3 mio, ofwel per jaar 150.000"));
+        table.addCell(builder.createText("10"));
+        builder.finish();
+
     }
 
     private static void testFootersHeaders() {

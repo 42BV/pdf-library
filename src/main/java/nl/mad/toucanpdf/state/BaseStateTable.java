@@ -74,7 +74,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      * @return true if there was overflow, false otherwise.
      */
     public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed) {
-        System.out.println("hallotjes");
         List<StateCell> tableContent = copyContent();
         List<TableRow> rows = new LinkedList<>();
         addRowTo(rows);
@@ -82,8 +81,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         int currentColumn = 0;
         this.height = 0;
         double widthUsedInRow = 0;
-        double maxHeightInRow = 0;
-        List<Cell> noContentWidthCells = new ArrayList<>();
 
         //if not fixed, calculate a position for this table and process alignment if needed
         if (!fixed) {
@@ -152,21 +149,31 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                     cellPos.adjustX(widths[i]);
                 }
             }
-            
-            double rowHeight = determineRowHeight(row, page.getLeading());
+
+            //TODO
+            //how to add the extra width to the cells?
+            //Well, we'll probably need to check which column has the highest height (that is NOT required) and
+            // spread the width over the highest columns (probably also need to determine how the width is spread over
+            // those, considering you don't want to add all the extra width to a single column in a lot of cases.
+            // Could just check the difference in height and try to equalize the highest with the second highest,
+            // after that if there is any width left to divide, try to equalize second highest with third heighest and so forth)
+
+            determineRowHeight(row, page.getLeading());
                 for(Cell c : row.getContent()) {
                     if(c != null) {
                         StateCell cell = (StateCell) c;
-                    c.height(rowHeight * c.getRowSpan());
+                    c.height(row.getMaxHeight() * c.getRowSpan());
                         cell.processContentSize(page.getLeading(), this.borderWidth);
                      }
                  }
-            cellPos.adjustY(-rowHeight);
+            this.height += row.getMaxHeight();
+            cellPos.adjustY(-row.getMaxHeight());
             cellPos.setX(this.getPosition().getX());
         }
 
         if(processPositioning) {
             this.content = tableContent;
+            this.adjustFilledHeight(page);
         }
         return false;
     }
@@ -207,18 +214,28 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         return newContent;
     }
 
-    private double determineRowHeight(TableRow row, int leading) {
+    private void determineRowHeight(TableRow row, int leading) {
         double maxHeight = 0;
+        boolean required = false;
         System.out.println("startRowHeightDetermination");
         for (Cell c : row.getContent()) {
             if (c != null) {
                 StateCell cell = (StateCell) c;
-                double height = cell.getRequiredHeight(leading, this.borderWidth);
-                maxHeight = Math.max(maxHeight, height / cell.getRowSpan());
+                double height = cell.getRequiredHeight(leading, this.borderWidth * 2) / cell.getRowSpan();
+
+
+                //TODO remove content if table too large  (what to do with tables that are simply more than one page long?
+
+                if (height > maxHeight) {
+                    maxHeight = height;
+                    required = cell.getStateCellContent().getSpecifiedWidth() == 0;
+                }
+
             }
         }
         System.out.println("endRowHeightDetermination");
-        return maxHeight;
+        row.setMaxHeight(maxHeight);
+        row.setMaxHeightRequired(required);
     }
 
     /**
@@ -432,11 +449,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         return this;
     }
 
+    private class columnSize {
+    }
+
     private class TableRow {
         private Cell[] content;
         private double maxHeight = 0;
         private double widthUsed = 0;
         private List<StateCell> noWidthSpecified;
+        private boolean maxHeightRequired;
 
         private TableRow(int columns) {
             content = new Cell[columns];
@@ -473,6 +494,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         public List<StateCell> getCellsWithNoSpecifiedWidth() {
             return noWidthSpecified;
+        }
+
+        public void setMaxHeightRequired(boolean maxHeightRequired) {
+            this.maxHeightRequired = maxHeightRequired;
+        }
+
+        public boolean isMaxHeightRequired() {
+            return maxHeightRequired;
         }
     }
 
