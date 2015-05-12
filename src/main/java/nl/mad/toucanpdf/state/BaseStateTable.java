@@ -3,6 +3,7 @@ package nl.mad.toucanpdf.state;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.api.AbstractTable;
 import nl.mad.toucanpdf.api.BaseCell;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 public class BaseStateTable extends AbstractTable implements StateTable {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);
-    private static final int BIG_DECIMAL_PRECISION = 20;
     private DocumentPart originalObject;
     private List<StateCell> content = new LinkedList<StateCell>();
 
@@ -131,109 +131,145 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         //finalize the cell widths, heights and execute positioning
         Position cellPos = new Position(this.getPosition());
+        double[] widths = calculateColumnWidths(rows, page.getLeading());
         for (TableRow row : rows) {
-            //TODO: ADD EMPTY CELLS
-            double remainingWidth = this.getWidth() - row.getWidthUsed();
-            List<StateCell> cellsWithNoSpecifiedWidth = row.getCellsWithNoSpecifiedWidth();
-            double extraWidth = remainingWidth / cellsWithNoSpecifiedWidth.size();
-
-            double[] widths = processColumnWidthDetermination(rows);
+            //fillEmptyCells(row.getContent());
+            applyColumnWidths(widths, row.getContent());
 
             //for height determination we first need to position each cell
-            for(int i = 0; i < row.getContent().length; ++i) {
-                StateCell cell = (StateCell) row.getContent()[i];
-                if(cell != null) {
-                    cell.setPosition(new Position(cellPos));
-                    cellPos.adjustX(cell.getRequiredWidth());
-                } else {
-                    cellPos.adjustX(widths[i]);
-                }
-            }
-
-            //TODO
-            //how to add the extra width to the cells?
-            //Well, we'll probably need to check which column has the highest height (that is NOT required) and
-            // spread the width over the highest columns (probably also need to determine how the width is spread over
-            // those, considering you don't want to add all the extra width to a single column in a lot of cases.
-            // Could just check the difference in height and try to equalize the highest with the second highest,
-            // after that if there is any width left to divide, try to equalize second highest with third heighest and so forth)
+            positionCellsForRow(row.getContent(), cellPos, widths);
 
             determineRowHeight(row, page.getLeading());
-                for(Cell c : row.getContent()) {
-                    if(c != null) {
-                        StateCell cell = (StateCell) c;
+            for (Cell c : row.getContent()) {
+                if (c != null) {
+                    StateCell cell = (StateCell) c;
                     c.height(row.getMaxHeight() * c.getRowSpan());
-                        cell.processContentSize(page.getLeading(), this.borderWidth);
-                     }
-                 }
+                    cell.processContentSize(page.getLeading(), this.borderWidth);
+                }
+            }
             this.height += row.getMaxHeight();
             cellPos.adjustY(-row.getMaxHeight());
             cellPos.setX(this.getPosition().getX());
         }
 
-        if(processPositioning) {
+        if (processPositioning) {
             this.content = tableContent;
             this.adjustFilledHeight(page);
         }
         return false;
     }
 
-    private double[] processColumnWidthDetermination(List<TableRow> rows) {
+    private double[] calculateColumnWidths(List<TableRow> rows, double leading) {
         double[] columnWidths = new double[this.columnAmount];
+        ColumnHeight[] columnHeights = new ColumnHeight[this.columnAmount];
         for (int i = 0; i < this.columnAmount; ++i) {
             columnWidths[i] = 0;
         }
 
-        for (TableRow row : rows) {
-            Cell[] content = row.getContent();
-            for (int i = 0; i < content.length; ++i) {
-                if (content[i] != null) {
-                    StateCell cell = (StateCell) content[i];
-                    columnWidths[i] = Math.max(cell.getRequiredWidth() / cell.getColumnSpan(), columnWidths[i]);
-                }
+        //iterate through each cell and determine for each column what the largest width is
+        rows.stream().forEach(row -> determineMaxWidthsForRow(columnWidths, row.getContent()));
+
+        rows.stream().forEach(row -> applyColumnWidths(columnWidths, row.getContent()));
+
+        //determine highest cell for each column
+        rows.stream().forEach(row -> determineMaxHeightsForRow(columnHeights, row.getContent(), leading));
+
+        double remainingWidth = this.width;
+        //determine how much width is left over
+        for(double columnWidth : columnWidths) {
+            remainingWidth -= columnWidth;
+        }
+
+        double totalHeightOfLargestColumns = 0;
+
+        //determine how much height the largest columns use
+        for(ColumnHeight columnHeight : columnHeights) {
+            if(columnHeight != null) {
+                totalHeightOfLargestColumns += columnHeight.getHeight();
             }
         }
 
-        for (TableRow row : rows) {
-            Cell[] content = row.getContent();
-            for (int i = 0; i < content.length; ++i) {
-                if (content[i] != null) {
-                    StateCell cell = (StateCell) content[i];
-                    cell.width(columnWidths[i] * cell.getColumnSpan());
-                }
+        double extraWidthPerHeight = remainingWidth / totalHeightOfLargestColumns;
+
+        //increase the width per column to use up all the available width, the width increase is based on the height of the cell
+        
+        // TODO: Height increase appears to not actually be a very suitable indication of how much width a column requires, 
+        // given the fact that a large amount of height extra can be required simply because 2 letters don't fit on the previous line. 
+        // Instead, each cell content should calculate the amount of width it would require in total to fit on a single line 
+        // (can probably be done fairly easily in the processLineCutoff thingy), 
+        // for images this would of course simply be the width of the image in all situations
+        for(int i = 0; i < columnHeights.length; ++i) {
+            ColumnHeight columnHeight = columnHeights[i];
+            if(columnHeight != null) {
+                columnWidths[i] = columnWidths[i] + (extraWidthPerHeight * columnHeight.getHeight());
             }
         }
         return columnWidths;
     }
 
-    private List<StateCell> copyContent() {
-        List<StateCell> newContent = new ArrayList<>();
-        for (StateCell stateCell : content) {
-            newContent.add(new BaseStateCell(stateCell));
+    private void positionCellsForRow(Cell[] content, Position cellPos, double[] widths) {
+        for (int rowNumber = 0; rowNumber < content.length; ++rowNumber) {
+            StateCell cell = (StateCell) content[rowNumber];
+            if (cell != null) {
+                cell.setPosition(new Position(cellPos));
+                cellPos.adjustX(cell.getRequiredWidth());
+            } else {
+                cellPos.adjustX(widths[rowNumber]);
+            }
         }
-        return newContent;
+    }
+
+    private void applyColumnWidths(double[] columnWidths, Cell[] content) {
+        for (int i = 0; i < content.length; ++i) {
+            StateCell cell = (StateCell) content[i];
+            if (cell != null) {
+                cell.width(columnWidths[i] * cell.getColumnSpan());
+            }
+        }
+    }
+
+    private void determineMaxWidthsForRow(double[] columnWidths, Cell[] content) {
+        for (int i = 0; i < content.length; ++i) {
+            StateCell cell = (StateCell) content[i];
+            if (cell != null) {
+                columnWidths[i] = Math.max(cell.getRequiredWidth() / cell.getColumnSpan(), columnWidths[i]);
+            }
+        }
+    }
+
+    private void determineMaxHeightsForRow(ColumnHeight[] highestColumns, Cell[] content, double leading) {
+        for (int i = 0; i < content.length; ++i) {
+            StateCell cell = (StateCell) content[i];
+            if (cell != null) {
+                double reqHeight = cell.getRequiredHeight(leading, this.borderWidth);
+                if (cell.getStateCellContent().getExtraWidthRequired() && (highestColumns[i] == null || reqHeight > highestColumns[i].getHeight())) {
+                    highestColumns[i] = new ColumnHeight(cell, reqHeight);
+                }
+            }
+        }
+    }
+
+    private List<StateCell> copyContent() {
+        return content.stream().map(BaseStateCell::new).collect(Collectors.toList());
     }
 
     private void determineRowHeight(TableRow row, int leading) {
         double maxHeight = 0;
         boolean required = false;
-        System.out.println("startRowHeightDetermination");
         for (Cell c : row.getContent()) {
             if (c != null) {
                 StateCell cell = (StateCell) c;
                 double height = cell.getRequiredHeight(leading, this.borderWidth * 2) / cell.getRowSpan();
 
-
                 //TODO remove content if table too large  (what to do with tables that are simply more than one page long?
 
                 if (height > maxHeight) {
                     maxHeight = height;
-                    required = cell.getStateCellContent().getSpecifiedWidth() == 0;
+                    required = cell.getStateCellContent().getSpecifiedWidth() != 0;
                 }
 
             }
         }
-        System.out.println("endRowHeightDetermination");
         row.setMaxHeight(maxHeight);
         row.setMaxHeightRequired(required);
     }
@@ -449,7 +485,30 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         return this;
     }
 
-    private class columnSize {
+    private class ColumnHeight {
+        private Cell cell;
+        private double height;
+
+        public ColumnHeight(Cell cell, double height) {
+            this.cell = cell;
+            this.height = height;
+        }
+
+        public Cell getCell() {
+            return cell;
+        }
+
+        public void setCell(Cell cell) {
+            this.cell = cell;
+        }
+
+        public double getHeight() {
+            return height;
+        }
+
+        public void setHeight(double height) {
+            this.height = height;
+        }
     }
 
     private class TableRow {

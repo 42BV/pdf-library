@@ -52,8 +52,8 @@ public class BaseStateCell extends AbstractCell implements StateCell {
 
     private double calculateContentHeight(double leading, double borderWidth, boolean processPositioning) {
         if (this.content != null) {
-            Position positionInclBorder = new Position(this.getPosition().getX() + borderWidth, this.getPosition().getY() - borderWidth);
-            System.out.println("width: " + this.getWidth());
+            Position positionInclBorder = (this.getPosition() != null) ? new Position(this.getPosition().getX() + borderWidth, this.getPosition().getY()
+                    - borderWidth) : null;
             return this.content.calculateContentHeight(this.getWidth() - (borderWidth * 2), leading, positionInclBorder, processPositioning);
         }
         return 0;

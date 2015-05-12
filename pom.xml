@@ -18,7 +18,7 @@
     <properties>
         <jmockit.version>1.7</jmockit.version>
         <junit.version>4.11</junit.version>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <slf4j.version>1.7.6</slf4j.version>
     </properties>
 

@@ -15,6 +15,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 public class BaseStateCellText extends AbstractStateText implements StateCellText {
     private final static int REQUIRED_WIDTH = 50;
     private DocumentPart originalObject;
+    private boolean extraWidthRequired = false;
 
     public BaseStateCellText(String text) {
         super(text);
@@ -39,6 +40,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         pos.adjustX(marginLeft);
         availableWidth -= marginRight + marginLeft;
         int lineAdditions = 0;
+        extraWidthRequired = false;
 
         for (int i = 0; i < strings.size(); ++i) {
             String s = strings.get(i);
@@ -46,15 +48,15 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             if (FloatEqualityTester.greaterThan(width, availableWidth)) {
                 String line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
-                processLineAddition(processPositioning, pos, leading, line, metrics.getWidthPointOfString(line, textSize, true), availableWidth);
                 lineAdditions += 1;
+                processLineAddition(processPositioning, pos, leading, line, metrics.getWidthPointOfString(line, textSize, true), availableWidth, lineAdditions);
                 width = 0;
                 currentLine = new StringBuilder();
             } else if (i == (strings.size() - 1)) {
                 currentLine.append(s);
-                processLineAddition(processPositioning, pos, leading, currentLine.toString(),
-                        metrics.getWidthPointOfString(currentLine.toString(), textSize, true), availableWidth);
                 lineAdditions += 1;
+                processLineAddition(processPositioning, pos, leading, currentLine.toString(),
+                        metrics.getWidthPointOfString(currentLine.toString(), textSize, true), availableWidth, lineAdditions);
             } else {
                 currentLine.append(s + " ");
             }
@@ -62,7 +64,12 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         return (lineAdditions * (leading + this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom;
     }
 
-    private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace) {
+    private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace,
+            int lineAdditions) {
+        if (lineAdditions > 1) {
+            extraWidthRequired = true;
+        }
+
         if (processPositioning) {
             pos.adjustY(-(getRequiredSpaceAboveLine() + leading));
             pos = processAlignment(line, pos, width, availableSpace);
@@ -80,7 +87,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         int textSize = getTextSize();
         while (currentWidth < availableWidth && i < chars.length) {
             char c = chars[i];
-            double characterSize = 0.0;
+            double characterSize = 0;
             if (i + 1 != chars.length) {
                 characterSize = (((metrics.getWidth(c) - metrics.getKerning(c, chars[i + 1])) * textSize) * metrics.getConversionToPointsValue());
             } else {
@@ -118,5 +125,10 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     @Override
     public double getSpecifiedWidth() {
         return 0;
+    }
+
+    @Override
+    public boolean getExtraWidthRequired() {
+        return this.extraWidthRequired;
     }
 }

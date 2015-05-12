@@ -87,7 +87,6 @@ public class Main {
         table.addCell(builder.createText("tussen nu en 3 jaar omzetgroei naar 3 mio, ofwel per jaar 150.000"));
         table.addCell(builder.createText("10"));
         builder.finish();
-
     }
 
     private static void testFootersHeaders() {
