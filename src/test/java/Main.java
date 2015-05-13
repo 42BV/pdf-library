@@ -34,7 +34,7 @@ public class Main {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
-        newTable();
+        //newTable();
         testExampleTable();
         //testFootersHeaders();
         //testUnicodeConverter();
@@ -69,8 +69,9 @@ public class Main {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder().filename("jantje");
         builder.addPage().marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
-        Table table = builder.addTable().columns(3).drawFillerCells(false);
+        Table table = builder.addTable().columns(3).drawFillerCells(false).border(5);
         Font bold = new BaseFont(builder.getDefaultFont()).bold();
+        builder.setDefaultMarginLeft(2);
         table.addCell(builder.createText("Teamlid").font(bold));
         table.addCell(builder.createText("Ambitie").font(bold));
         table.addCell(builder.createText("Score").font(bold));
