@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf.state;
 
 import static org.junit.Assert.assertEquals;
+
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BaseCell;

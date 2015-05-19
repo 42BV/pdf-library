@@ -138,7 +138,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             Character next = (i + 1 != characters.length) ? characters[i + 1] : null;
             totalWidthRequired += getCharacterSize(characters[i], next);
         }
-
         return totalWidthRequired;
     }
 }

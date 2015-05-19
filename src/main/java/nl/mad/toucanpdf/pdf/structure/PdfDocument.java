@@ -94,14 +94,17 @@ public class PdfDocument {
             if (part instanceof StatePage) {
                 this.addPage((StatePage) part);
             }
+            break;
         case IMAGE:
             if (part instanceof StateImage) {
                 this.addImage((StateImage) part);
             }
+            break;
         case TABLE:
             if (part instanceof StateTable) {
                 this.addTable((StateTable) part);
             }
+            break;
         default:
             break;
         }
