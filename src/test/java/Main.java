@@ -71,7 +71,7 @@ public class Main {
         builder.addPage().marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
         Font bold = new BaseFont(builder.getDefaultFont()).bold();
 
-        Table table = builder.addTable().columns(3).drawFillerCells(false).border(1);
+        Table table = builder.addTable().columns(3).drawFillerCells(true).border(1);
         builder.setDefaultMarginLeft(2);
         builder.setDefaultMarginRight(2);
 
@@ -81,19 +81,19 @@ public class Main {
         table.addCell(builder.createText("Erwin")).rowSpan(2);
         table.addCell(builder.createText("Alle medewerkers blijven in 2014 in dienst. er wordt een passende functie geboden"));
         table.addCell(builder.createText("6"));
-        //TODO: de tweede columnspan 2 cell zorgt ervoor dat column 1 veel groter word dan nodig is, want column 2 is van zichzelf al erg groot
         table.addCell(builder.createText("Ambitionplanner omzet € 50.000")).columnSpan(2);
-        //TODO: met deze rowspan 3 word de layout weer verziekt, dit is probably van groter belang dan het bovenstaande probleem
-        //table.addCell(builder.createText("Ambitionplanner omzet € 50.000")).columnSpan(2).rowSpan(3);
-        table.addCell(builder.createText("Ambitionplanner omzet € 50.000")).columnSpan(2);
-        table.addCell(builder.createText("8")).columnSpan(4);
-        table.addCell(builder.createText("8"));
-        table.addCell(builder.createText("8"));
-        table.addCell(builder.createText("Erwin"));
-        table.addCell(builder.createText("Erwin"));
+
+        //TODO: width is incorrect for the cell below, test filler cells implementation
+        table.addCell(builder.createText("wubwubwub")).columnSpan(2).rowSpan(3);
+        table.addCell(builder.createText("Ambitionplanner omzet € 50.000"));
+//        table.addCell(builder.createText("8")).columnSpan(4);
+//        table.addCell(builder.createText("8"));
+//        table.addCell(builder.createText("8"));
+//        table.addCell(builder.createText("Erwin"));
+//        table.addCell(builder.createText("Erwin"));
         table.addCell(builder.createText("Website wordt vernieuwd en ondersteunt daarmee doelstellingen"));
         table.addCell(builder.createText("8"));
-        table.addCell(builder.createText("Erwin")).rowSpan(2);
+        table.addCell(builder.createText("Erwin")).rowSpan(1);
         table.addCell(builder.createText("8"));
         table.addCell(builder.createText("Hans-Peter"));
         table.addCell(builder.createText("tussen nu en 3 jaar omzetgroei naar 3 mio, ofwel per jaar 150.000"));

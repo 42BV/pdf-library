@@ -96,10 +96,13 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         //finalize the cell widths, heights and execute positioning
         Position cellPos = new Position(this.getPosition());
         double[] widths = calculateColumnWidths(rows);
-        for (TableRow row : rows) {
-            //add cells to fill up empty columns in the table
-            //fillEmptyCells(row.getContent());
 
+        //add cells to fill up empty columns in the table
+        if(getDrawFiller()) {
+            fillEmptyCells(rows, tableContent);
+        }
+
+        for (TableRow row : rows) {
             //apply the calculated widths to the columns
             applyColumnWidths(widths, row.getContent());
 
@@ -107,8 +110,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             positionCellsForRow(row.getContent(), cellPos, widths);
 
             //determine height for row and apply it to each column in this row
-            determineRowHeight(row, page.getLeading());
-            applyColumnHeights(page, row);
+            determineRowHeight(rows, rows.indexOf(row), page.getLeading());
+            applyColumnHeights(row);
             
             //adjust the cell position for the next row, meaning going down on the y axis and resetting the x axis
             double heightIncrease = row.getMaxHeight();
@@ -119,11 +122,30 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         //after all individual rows have been processed, increase the height of cells that occupy more than one row
         applyRowSpanHeights(rows);
 
+        for(StateCell cell : tableContent) {
+            cell.processContentSize(page.getLeading(), this.borderWidth);
+        }
+
         if (processPositioning) {
             this.content = tableContent;
             this.adjustFilledHeight(page);
         }
         return false;
+    }
+
+    private void fillEmptyCells(List<TableRow> rows, List<StateCell> tableContent) {
+        for(int currentRow = 0; currentRow < rows.size(); ++currentRow) {
+            TableRow row = rows.get(currentRow);
+            Cell[] content = row.getContent();
+
+            for(int i = 0; i < this.columnAmount; ++i) {
+                if(content[i] == null && !columnsInUse(i, 1, rows, currentRow)) {
+                    StateCell c = new BaseStateCell();
+                    tableContent.add(c);
+                    content[i] = c;
+                }
+            }
+        }
     }
 
     private void applyRowSpanHeights(List<TableRow> rows) {
@@ -146,12 +168,11 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         }
     }
 
-    private void applyColumnHeights(StatePage page, TableRow row) {
+    private void applyColumnHeights(TableRow row) {
         for (Cell c : row.getContent()) {
             if (c != null) {
                 StateCell cell = (StateCell) c;
                 cell.height(row.getMaxHeight());
-                cell.processContentSize(page.getLeading(), this.borderWidth);
             }
         }
     }
@@ -264,11 +285,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             StateCell cell = (StateCell) content[rowNumber];
             if (cell != null) {
                 cell.setPosition(new Position(cellPos));
-                double jantje = cell.getRequiredWidth();
-            } else {
-                // cellPos.adjustX(widths[rowNumber]);
             }
-            //cellPos.adjustX(cell.getRequiredWidth());
             cellPos.adjustX(widths[rowNumber]);
         }
     }
@@ -311,23 +328,42 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         return content.stream().map(BaseStateCell::new).collect(Collectors.toList());
     }
 
-    private void determineRowHeight(TableRow row, int leading) {
+    private void determineRowHeight(List<TableRow> rows, int currentRow, int leading) {
         double maxHeight = 0;
         boolean required = false;
-        for (Cell c : row.getContent()) {
-            if (c != null) {
+        TableRow row = rows.get(currentRow);
+        for (int cellCount = 0; cellCount < columnAmount; ++cellCount) {
+            Cell c = row.getContent()[cellCount];
+
+            //if the cell is null it might be because there is a cell above this row with a rowspan of more than one
+            if (c == null) {
+                for (int rowCount = currentRow - 1; rowCount >= 0; --rowCount) {
+                    TableRow aboveRow = rows.get(rowCount);
+                    c = aboveRow.getContent()[cellCount];
+                    if (c != null && (c.getRowSpan() - 1 + rowCount) >= currentRow) {
+                       break;
+                    } else if (c != null) {
+                        c = null;
+                        break;
+                    }
+                }
+            }
+
+            if(c != null) {
                 StateCell cell = (StateCell) c;
                 double height = cell.getRequiredHeight(leading, this.borderWidth) / cell.getRowSpan();
 
-                //TODO remove content if table too    (what to do with tables that are simply more than one page long?
+                //TODO remove content if table too large (what to do with tables that are simply more than one page long?
 
                 if (height > maxHeight) {
                     maxHeight = height;
-                    required = cell.getStateCellContent().getSpecifiedWidth() != 0;
+                    if(cell.getStateCellContent() != null) {
+                        required = cell.getStateCellContent().getSpecifiedWidth() != 0;
+                    }
                 }
-
             }
         }
+
         row.setMaxHeight(maxHeight);
         row.setMaxHeightRequired(required);
     }

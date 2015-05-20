@@ -132,7 +132,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     @Override
     public double getTotalRequiredWidth() {
         char[] characters = this.getText().toCharArray();
-        double totalWidthRequired = 0;
+        double totalWidthRequired = marginLeft + marginRight;
 
         for (int i = 0; i < characters.length; ++i) {
             Character next = (i + 1 != characters.length) ? characters[i + 1] : null;
