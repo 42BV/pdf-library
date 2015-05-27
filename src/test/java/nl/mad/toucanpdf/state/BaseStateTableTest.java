@@ -12,6 +12,7 @@ import nl.mad.toucanpdf.api.BaseCell;
 import nl.mad.toucanpdf.api.BaseTable;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StatePage;
@@ -53,27 +54,30 @@ public class BaseStateTableTest {
             }
         };
         table.columns(2);
+        table.drawFillerCells(false);
         BaseStateCellText text = new BaseStateCellText("Test");
         BaseStateCellText text2 = new BaseStateCellText("Test2");
         table.addCell(text);
-        BaseStateCell c1 = (BaseStateCell) table.getStateCellCollection().get(0);
-        BaseStateCell c2 = new BaseStateCell(new BaseCell(text2).columnSpan(2));
-        BaseStateCell c3 = new BaseStateCell(new BaseCell().columnSpan(1).height(20));
-        table.addCell(c2);
-        table.addCell(c3);
+        table.addCell(text2).columnSpan(2);
+        table.addCell(new BaseCell().height(20));
         table.processContentSize(page);
+        List<Cell> cells = table.getContent();
+
+        Cell c1 = cells.get(0);
+        Cell c2 = cells.get(1);
+        Cell c3 = cells.get(2);
+
         assertEquals(new Position(100, 100), table.getPosition());
-        assertEquals(45.4039999, table.getContentHeight(page), FloatEqualityTester.EPSILON);
+        assertEquals(45.40399, table.getContentHeight(page), FloatEqualityTester.EPSILON);
         assertEquals(90, table.getContentWidth(page, table.getPosition()), FloatEqualityTester.EPSILON);
         assertEquals(new Position(100, 100), c1.getPosition());
-        assertEquals(51, c1.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(50, c1.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(25.404, c1.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(100, 74.596), c2.getPosition());
-        assertEquals(0, c2.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(90, c2.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(null, c2.getContent());
+        assertEquals(new Position(150, 100), c2.getPosition());
+        assertEquals(25.404, c2.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(50, c2.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(20, c3.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(45, c3.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(50, c3.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(), text.getPosition());
         assertEquals(new Position(), text2.getPosition());
     }

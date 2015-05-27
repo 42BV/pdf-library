@@ -14,6 +14,7 @@ import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 public class BaseStateCellText extends AbstractStateText implements StateCellText {
     private final static int REQUIRED_WIDTH = 50;
+    private final static int DEFAULT_TOTAL_WIDTH = 2;
     private DocumentPart originalObject;
 
     public BaseStateCellText(String text) {
@@ -63,7 +64,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     }
 
     private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace) {
-
         if (processPositioning) {
             pos.adjustY(-(getRequiredSpaceAboveLine() + leading));
             pos = processAlignment(line, pos, width, availableSpace);
@@ -132,7 +132,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     @Override
     public double getTotalRequiredWidth() {
         char[] characters = this.getText().toCharArray();
-        double totalWidthRequired = marginLeft + marginRight;
+        double totalWidthRequired = DEFAULT_TOTAL_WIDTH + marginLeft + marginRight;
 
         for (int i = 0; i < characters.length; ++i) {
             Character next = (i + 1 != characters.length) ? characters[i + 1] : null;
