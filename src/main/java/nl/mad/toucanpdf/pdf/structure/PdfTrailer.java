@@ -68,9 +68,9 @@ public class PdfTrailer extends PdfDictionary {
      * @param root Catalog reference.
      */
     public final void fillObjectSpecification(PdfIndirectObjectReference root) {
-        this.put(PdfNameValue.SIZE, new PdfNumber(objectAmount));
         this.put(PdfNameValue.ROOT, root);
         this.put(PdfNameValue.INFO, info.getReference());
+        this.put(PdfNameValue.SIZE, new PdfNumber(objectAmount));
     }
 
     /** 

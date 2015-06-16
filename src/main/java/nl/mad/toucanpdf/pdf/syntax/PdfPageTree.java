@@ -81,8 +81,8 @@ public class PdfPageTree extends PdfDictionary {
         for (PdfIndirectObject kid : kids) {
             kidsReferenceArray.addValue(kid.getReference());
         }
-        this.put(PdfNameValue.KIDS, kidsReferenceArray);
         this.put(PdfNameValue.COUNT, new PdfNumber(kidsReferenceArray.getSize()));
+        this.put(PdfNameValue.KIDS, kidsReferenceArray);
     }
 
     @Override

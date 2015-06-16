@@ -2,7 +2,7 @@ package nl.mad.toucanpdf.pdf.syntax;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,7 +27,7 @@ public class PdfDictionary extends AbstractPdfObject {
      */
     public PdfDictionary(PdfObjectType type) {
         super(type);
-        content = new HashMap<PdfName, AbstractPdfObject>();
+        content = new LinkedHashMap<PdfName, AbstractPdfObject>();
     }
 
     @Override
