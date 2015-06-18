@@ -13,7 +13,7 @@ import nl.mad.toucanpdf.model.state.StateCellText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 public class BaseStateCellText extends AbstractStateText implements StateCellText {
-    private final static int REQUIRED_WIDTH = 50;
+    private final static int REQUIRED_WIDTH = 10;
     private final static int DEFAULT_TOTAL_WIDTH = 2;
     private DocumentPart originalObject;
 
@@ -60,12 +60,14 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
                 currentLine.append(s + " ");
             }
         }
-        return (lineAdditions * (leading + this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom;
+        //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
+        return (lineAdditions * (leading + this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom - leading;
     }
 
     private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace) {
         if (processPositioning) {
-            pos.adjustY(-(getRequiredSpaceAboveLine() + leading));
+            double yAdjustment = textSplit.size() > 0 ? -(getRequiredSpaceAboveLine() + leading) : -getRequiredSpaceAboveLine();
+            pos.adjustY(yAdjustment);
             pos = processAlignment(line, pos, width, availableSpace);
             textSplit.put(new Position(pos), line);
             pos.adjustY(-getRequiredSpaceBelowLine());

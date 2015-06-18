@@ -106,6 +106,7 @@ public class PdfText extends AbstractPdfObject {
                     textToProcess = getEscapedString(entry.getValue());
                 }
                 sb.append(createMatrix(text, entry.getKey()));
+                sb.append(text.getColor().toString() + " rg ");
                 sb.append("[(");
                 sb.append(this.processKerning(textToProcess, text.getFont()));
                 sb.append(")] TJ");

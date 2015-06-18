@@ -21,7 +21,7 @@ public class TableTest {
 
     @Test
     public void testWidth() {
-        assertEquals((int) 100 * 0.9, table.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(100, table.getWidth(), FloatEqualityTester.EPSILON);
     }
 
     @Test

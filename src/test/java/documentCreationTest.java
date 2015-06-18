@@ -1,4 +1,3 @@
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -6,15 +5,13 @@ import java.io.InputStream;
 
 import nl.mad.toucanpdf.DocumentBuilder;
 import nl.mad.toucanpdf.api.BaseCell;
-import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Alignment;
-import nl.mad.toucanpdf.model.DocumentPart;
+import nl.mad.toucanpdf.model.Color;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
-import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.Text;
@@ -28,6 +25,7 @@ public class documentCreationTest {
     public void testDocumentCreation() {
         //create new document
         DocumentBuilder builder = new DocumentBuilder();
+        builder.setDefaultColor(Color.RED);
         //setting general document data
         builder.about("Test subject").title("Testing a document").writtenBy("Someone");
         //creating a masterpage and setting margins for it

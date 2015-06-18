@@ -10,7 +10,6 @@ import nl.mad.toucanpdf.model.Table;
 
 public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPart implements Table {
     protected int columnAmount = 1;
-    protected static final double WIDTH_PERCENTAGE = 0.9;
     protected Compression compression;
     protected double borderWidth = 1.0;
     private boolean drawFillerCells = true;
@@ -18,7 +17,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     public AbstractTable(int pageWidth) {
         super(DocumentPartType.TABLE);
         height = 0;
-        width = (int) (WIDTH_PERCENTAGE * pageWidth);
+        width = pageWidth;
     }
 
     public AbstractTable(Table table) {

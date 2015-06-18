@@ -183,4 +183,17 @@ public interface Text extends PlaceableDocumentPart {
      * @return This text.
      */
     Text marginLeft(int marginLeft);
+
+    /**
+     * Sets the color of the text
+     * @param color Color to use
+     * @return This text.
+     */
+    Text color(Color color);
+
+    /**
+     * Returns the color of the text
+     * @return color used by this text
+     */
+    Color getColor();
 }

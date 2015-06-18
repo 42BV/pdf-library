@@ -23,9 +23,9 @@ public class BaseStateCellTextTest {
     @Test
     public void testContentHeightCalculation() {
         double height = text.calculateContentHeight(30, 10, new Position(50, 50), true);
-        assertEquals(93.616, height, FloatEqualityTester.EPSILON);
+        assertEquals(81.012, height, FloatEqualityTester.EPSILON);
         assertEquals(4, text.getTextSplit().size());
-        Position expected = new Position(50, 29.2);
+        Position expected = new Position(50, 41.804);
         for (Entry<Position, String> entry : text.getTextSplit().entrySet()) {
             assertEquals(expected, entry.getKey());
             expected.adjustY(-(10 + text.getRequiredSpaceAboveLine() + text.getRequiredSpaceBelowLine()));

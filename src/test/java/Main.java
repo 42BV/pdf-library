@@ -69,74 +69,25 @@ public class Main {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder().filename("jantje");
         builder.addPage().marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
-        Font bold = new BaseFont(builder.getDefaultFont()).bold();
 
-        //        Table table = builder.addTable().columns(3).drawFillerCells(true).border(1);
-        //        builder.setDefaultMarginLeft(2);
-        //        builder.setDefaultMarginRight(2);
-        //
-        //        //        table.addCell(builder.createText("Teamlid").font(bold));
-        //        //        table.addCell(builder.createText("Ambitie").font(bold));
-        //        //        table.addCell(builder.createText("Score").font(bold));
-        //        //        table.addCell(builder.createText("Erwin")).rowSpan(2);
-        //        //        table.addCell(builder.createText("Alle medewerkers blijven in 2014 in dienst. er wordt een passende functie geboden"));
-        //        //        table.addCell(builder.createText("6"));
-        //        //        table.addCell(builder.createText("Ambitionplanner omzet € 50.000")).columnSpan(2);
-        //        //
-        //        //        table.addCell(builder.createText("wubwubwub")).columnSpan(2).rowSpan(3);
-        //        //        table.addCell(builder.createText("Ambitionplanner omzet € 50.000"));
-        //        //        table.addCell(builder.createText("Website wordt vernieuwd en ondersteunt daarmee doelstellingen"));
-        //        //        table.addCell(builder.createText("8"));
-        //        //        table.addCell(builder.createText("Erwin")).rowSpan(1);
-        //        //        table.addCell(builder.createText("8"));
-        //        //        table.addCell(builder.createText("Hans-Peter"));
-        //        //        table.addCell(builder.createText("tussen nu en 3 jaar omzetgroei naar 3 mio, ofwel per jaar 150.000"));
-        //        //        table.addCell(builder.createText("10"));
-        //
-        //        table.addCell(builder.createText("Teamlid").font(bold));
-        //        table.addCell(builder.createText("Ambitie").font(bold));
-        //        table.addCell(builder.createText("Score").font(bold));
-        //        table.addCell(builder.createText("Erwin"));
-        //        table.addCell(builder
-        //                .createText("Alle medewerkers blijven in 2014 in dienst. er wordt een passende functie geboden. Alleen die Hans-Peter mag wel eens opzouten."));
-        //        table.addCell(builder.createText("6"));
-        //        table.addCell(builder.createText("Erwin")).rowSpan(2);
-        //        table.addCell(builder.createText("Ambitionplanner omzet € 50.000")).columnSpan(2);
-        //        table.addCell(builder.createText("8")).columnSpan(2);
-        //        table.addCell(builder.createText("Erwin")).columnSpan(2);
-        //        table.addCell(builder.createText("Website wordt vernieuwd en ondersteunt daarmee doelstellingen"));
-        //        table.addCell(builder.createText("8"));
-        //        //table.addCell(builder.createText("Erwin"));
-        //        table.addCell(builder.createText("Website wordt vernieuwd en ondersteunt daarmee doelstellingen"));
-        //        table.addCell(builder.createText("8"));
-        //        table.addCell(builder.createText("Hans-Peter")).columnSpan(2).rowSpan(17);
-        //        table.addCell(builder.createText("tussen nu en 3 jaar omzetgroei naar 3 mio, ofwel per jaar 150.000"));
-        //        table.addCell(builder.createText("10"));
+        Table table = builder.addTable().columns(2);
 
-        //Load in image and create new image for the paragraph anchors
-        InputStream input = Main.class.getClassLoader().getResourceAsStream("hammock.jpg");
-        Image i = builder.createImage(input, ImageType.JPEG).align(Alignment.CENTERED);
-        Table table = builder.addTable().columns(1);
-        table.addCell(new BaseCell().height(13));
-        builder.addText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sit amet eros non leo dapibus finibus. Praesent sapien diam, lobortis et augue vel, sodales commodo massa. Mauris euismod gravida pretium. Vivamus pharetra erat enim, sed aliquet nisi placerat sed. Vivamus semper non dui quis luctus. Donec in neque quam. Proin quis lectus sit amet nisi condimentum ornare. Nulla arcu tellus, fermentum elementum lacus eu, consectetur consectetur mi. Integer vel mi magna. Curabitur sagittis lobortis velit eget facilisis. Duis non nisl dui. Cras in mi dolor. Mauris auctor dapibus ex non efficitur.\n"
-                + "\n");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
 
-        //        //adding a table to the document
-        //        Table table = builder.addTable().columns(5);
-        //        table.addCell("Table header - row 1").columnSpan(5);
-        //        table.addCell("Text 1");
-        //        table.addCell("Text 2");
-        //        table.addCell(((Image) i.copy()).marginBottom(0));
-        //
-        //        //adding another table, this time without filling empty remaining columns and with an empty second row
-        //        //this table will not fit on the current page, so a second page will be added automatically
-        //        Table table2 = builder.addTable().width(100).columns(3).drawFillerCells(false).border(1.0);
-        //        table2.addCell("Row 1 - header");
-        //        table2.addCell("Row 2&3 - header").columnSpan(2);
-        //        table2.addCell(new BaseCell().columnSpan(3).height(10));
-        //        table2.addCell("Text 1").height(80);
-        //        table2.marginTop(30);
-
+        List<Table> previewTables = builder.getPreview().getPreviewFor(table);
+        Table previewTable = previewTables.get(0);
+        System.out.println(previewTable.getWidth());
         builder.finish();
     }
 
@@ -284,7 +235,6 @@ public class Main {
         Text cont3 = new BaseText("Test Test Test Test Tese");
         Text cont4 = new BaseText("Test Test Test Test Teses");
         Text cont5 = new BaseText("Test Test Test Test Te");
-        //DO ALIGNMENT FOR CONTENT IN TABLES (seems to be something wrong with right alignment on text)
 
         table.addCell(new BaseCell(cont2).columnSpan(1));
         table.addCell(new BaseCell(cont).columnSpan(3));

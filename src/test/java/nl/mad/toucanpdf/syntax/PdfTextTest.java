@@ -11,9 +11,9 @@ import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Color;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateParagraph;
 import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.pdf.syntax.PdfFont;
@@ -78,12 +78,15 @@ public class PdfTextTest {
 
                 text.getAlignment();
                 returns(Alignment.JUSTIFIED);
+
+                text.getColor();
+                returns(Color.BLACK);
             }
         };
 
         //expected result for font adding, matrix adding and text adding
-        String expectedTotalResult = "/R1 11 Tf\n" + "2.0 Tw 0.0 0.0 0.0 0.0 100.0 100.0 Tm\n" + "[(T) 70 (est)] TJ\n"
-                + "0.0 Tw 0.0 0.0 0.0 0.0 200.0 200.0 Tm\n" + "[(T) 70 (est2)] TJ\n" + " 0 -3 TD\n";
+        String expectedTotalResult = "/R1 11 Tf\n" + "2.0 Tw 0.0 0.0 0.0 0.0 100.0 100.0 Tm\n" + "0.0 0.0 0.0 rg [(T) 70 (est)] TJ\n"
+                + "0.0 Tw 0.0 0.0 0.0 0.0 200.0 200.0 Tm\n" + "0.0 0.0 0.0 rg [(T) 70 (est2)] TJ\n" + " 0 -3 TD\n";
         pdfText.addText(text, fontReference, Page.DEFAULT_NEW_LINE_SIZE);
         assertEquals(expectedTotalResult, new String(pdfText.getByteRepresentation(), "UTF-8"));
     }

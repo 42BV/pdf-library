@@ -232,6 +232,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         //iterate through each cell and determine for each column what the largest width is
         rows.stream().forEach(row -> determineMaxWidthsForRow(columnWidths, row.getContent()));
+
         //determine the max possible column width (how long would it need to be in order to get all text on one line, this will always return required weight in case of an image)
         rows.stream().forEach(row -> determineTotalRequiredWidthsForRow(maxColumnWidthsPossible, row.getContent()));
 
@@ -240,7 +241,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         for(double columnWidth : columnWidths) {
             remainingWidth -= columnWidth;
         }
-
+        
         List<ColumnMaxPossibleWidth> allMaxPossibleWidths = new ArrayList<>();
         Collections.addAll(allMaxPossibleWidths, maxColumnWidthsPossible);
         //for the first two steps we'll only want to add width to columns for which the width was not specified by the user
@@ -300,6 +301,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private void spreadRemainingWidth(double[] columnWidths, double remainingWidth, List<ColumnMaxPossibleWidth> maxPossibleWidths) {
         if (remainingWidth > 0) {
             double widthPerColumn = remainingWidth / maxPossibleWidths.size();
+
             for (ColumnMaxPossibleWidth expandableColumn : maxPossibleWidths) {
                 if (expandableColumn != null) {
                     columnWidths[expandableColumn.getColumn()] = columnWidths[expandableColumn.getColumn()] + widthPerColumn;

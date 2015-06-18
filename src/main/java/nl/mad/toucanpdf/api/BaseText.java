@@ -1,6 +1,7 @@
 package nl.mad.toucanpdf.api;
 
 import nl.mad.toucanpdf.model.Alignment;
+import nl.mad.toucanpdf.model.Color;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
@@ -26,6 +27,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     private double shearY = 0;
     private Font font;
     private Compression compressionMethod = Compression.FLATE;
+    private Color color = Color.BLACK;
 
     /**
      * Creates a new text instance with the given text. Will use default text size, default font and 
@@ -45,6 +47,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         textString = text;
         textSize = Constants.DEFAULT_TEXT_SIZE;
         font = Constants.DEFAULT_FONT;
+        color = Color.BLACK;
     }
 
     /**
@@ -67,6 +70,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.marginTop = copyFrom.getMarginTop();
         this.marginRight = copyFrom.getMarginRight();
         this.compressionMethod = copyFrom.getCompressionMethod();
+        this.color = copyFrom.getColor();
     }
 
     @Override
@@ -231,5 +235,15 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
     public Text marginLeft(int marginLeft) {
         this.setMarginLeft(marginLeft);
         return this;
+    }
+
+    @Override
+    public Text color(Color color) {
+        this.color = color;
+        return this;
+    }
+
+    public Color getColor() {
+        return this.color;
     }
 }

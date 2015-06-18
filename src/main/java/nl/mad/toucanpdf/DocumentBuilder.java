@@ -17,6 +17,7 @@ import nl.mad.toucanpdf.api.BaseTable;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Anchor;
+import nl.mad.toucanpdf.model.Color;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Font;
@@ -70,6 +71,7 @@ public class DocumentBuilder {
     private int defaultMarginBottom = 0;
     private Font defaultFont = Constants.DEFAULT_FONT;
     private Integer defaultTextSize = Constants.DEFAULT_TEXT_SIZE;
+    private Color defaultColor = Color.BLACK;
 
     /**
      * Creates a new instance of DocumentBuilder, this also creates a document.
@@ -357,7 +359,7 @@ public class DocumentBuilder {
      * @see Text
      */
     public Text createText(String s) {
-        Text text = new BaseText(s).font(defaultFont).size(defaultTextSize);
+        Text text = new BaseText(s).font(defaultFont).size(defaultTextSize).color(defaultColor);
         setDefaultMargins(text);
         return text;
     }
@@ -541,7 +543,7 @@ public class DocumentBuilder {
      */
     public Table createTable() {
         int width = defaultPageWidth;
-        if ((currentPageNumber - 1) > 0) {
+        if (currentPageNumber != 0 && pages.size() >= currentPageNumber) {
             width = pages.get(currentPageNumber - 1).getWidthWithoutMargins();
         }
         Table table = new BaseTable(width);
@@ -651,5 +653,23 @@ public class DocumentBuilder {
      */
     public Integer getDefaultTextSize() {
         return this.defaultTextSize;
+    }
+
+    /**
+     * Returns the default text color
+     * @return default color
+     */
+    public Color getDefaultColor() {
+        return defaultColor;
+    }
+
+    /**
+     * Sets the default color to be used for each text object created through this builder.
+     * @param defaultColor color to use by default.
+     * @return this builder
+     */
+    public DocumentBuilder setDefaultColor(Color defaultColor) {
+        this.defaultColor = defaultColor;
+        return this;
     }
 }
