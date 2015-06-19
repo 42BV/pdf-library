@@ -23,6 +23,9 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
 
     public BaseStateCellText(Text text) {
         super(text);
+        if(text instanceof BaseStateText) {
+            this.originalObject = ((BaseStateText) text).getOriginalObject();
+        }
     }
 
     @Override

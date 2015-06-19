@@ -124,6 +124,7 @@ public class PdfDocument {
         PdfTable table = new PdfTable(part);
         PdfStream stream = this.getCurrentPageStream();
         stream.add(table);
+        List<StateCell> coll = part.getStateCellCollection();
         for (StateCell c : part.getStateCellCollection()) {
             StateCellContent content = c.getStateCellContent();
             if (content != null) {
@@ -132,8 +133,7 @@ public class PdfDocument {
                     addImage((Image) content);
                     break;
                 case TEXT:
-                    StateSplittableText text = (StateSplittableText) content;
-                    this.addText(text, false);
+                    this.addText((StateSplittableText) content, false);
                     break;
                 default:
                     break;

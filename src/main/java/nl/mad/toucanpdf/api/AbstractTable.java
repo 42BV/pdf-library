@@ -13,6 +13,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     protected Compression compression;
     protected double borderWidth = 1.0;
     private boolean drawFillerCells = true;
+    private boolean repeatHeader = false;
 
     public AbstractTable(int pageWidth) {
         super(DocumentPartType.TABLE);
@@ -135,5 +136,16 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     @Override
     public boolean getDrawFiller() {
         return this.drawFillerCells;
+    }
+
+    @Override
+    public Table repeatHeader(boolean repeat) {
+        this.repeatHeader = repeat;
+        return this;
+    }
+
+    @Override
+    public boolean isRepeatingHeader() {
+        return this.repeatHeader;
     }
 }
