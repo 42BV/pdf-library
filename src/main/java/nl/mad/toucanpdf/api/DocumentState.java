@@ -257,31 +257,28 @@ public class DocumentState {
     }
 
     private Page addPositionlessTable(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
-        //These 4 methods can probably be simplified
         Position position;
         StateTable table = new BaseStateTable((Table) p);
+        StateTable overflow = null;
         if (checkContentSize(table, page)) {
             for (Cell c : ((Table) p).getContent()) {
                 table.addCell(c);
             }
             table.setOriginalObject(p);
-            if (table.updateHeight(page)) {
-                return handleOverflow(page, i, null, content);
-            }
+            table.updateHeight(page);
+
             position = getPositionForPart(page, table);
             if (position == null) {
                 return handleOverflow(page, i, null, content);
             }
+
             table.on(position);
-            // table.removeContent();
-            // for (Cell c : ((Table) p).getContent()) {
-            //     table.addCell(c);
-            //  }
-            if (!table.processContentSize(page)) {
-                page.add(table);
-                addToStateLink(p, table);
-            } else {
-                return handleOverflow(page, i, null, content);
+            overflow = table.processContentSize(page);
+            page.add(table);
+            addToStateLink(p, table);
+
+            if (overflow != null) {
+                return handleOverflow(page, i + 1, overflow, content);
             }
         }
         return null;

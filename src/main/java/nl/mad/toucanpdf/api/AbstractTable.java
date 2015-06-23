@@ -36,6 +36,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.marginTop = table.getMarginTop();
         this.marginRight = table.getMarginRight();
         this.drawFillerCells = table.getDrawFiller();
+        this.repeatHeader = table.isRepeatingHeader();
     }
 
     @Override

@@ -26,12 +26,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);
     //columns that require a width less than the table width * this percentage will be prioritized during the dividing of width
     private static final double PRIORITY_COLUMN_WIDTH_PERCENTAGE = 0.2;
+    private static final double MINIMUM_PAGE_HEIGHT_REQUIRED = 0.25;
     private DocumentPart originalObject;
     private List<StateCell> content = new LinkedList<StateCell>();
     private TableRow header = null;
+    private List<TableRow> rows;
 
     //TODO: use these values to determine whether or not to repeat headers
     private boolean original = true;
+    private double[] originalColumnWidths;
 
     /**
      * Creates a new instance of BaseStateTable.
@@ -50,6 +53,28 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      */
     public BaseStateTable(Table table) {
         super(table);
+        if (table instanceof StateTable) {
+            copyStateTable((StateTable) table);
+        }
+    }
+
+    private void copyStateTable(StateTable table) {
+        this.original = table.isOriginal();
+        this.originalColumnWidths = table.getOriginalWidths();
+        this.header = table.getHeader();
+    }
+
+    /**
+     * Creates a new instance of BaseStateTable and copies the given StateTable.
+     * The content of the given table is not copied.
+     *
+     * @param table Table to copy from.
+     * @param widths The widths of the columns of the table
+     */
+    public BaseStateTable(StateTable table, double[] widths) {
+        super(table);
+        this.originalColumnWidths = widths;
+        this.original = false;
     }
 
     @Override
@@ -63,13 +88,38 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     @Override
-    public boolean processContentSize(StatePage page) {
+    public void setOriginal(boolean original) {
+        this.original = original;
+    }
+
+    @Override
+    public boolean isOriginal() {
+        return this.original;
+    }
+
+    @Override
+    public double[] getOriginalWidths() {
+        return this.originalColumnWidths;
+    }
+
+    @Override
+    public TableRow getHeader() {
+        return header;
+    }
+
+    @Override
+    public void setHeader(TableRow header) {
+        this.header = header;
+    }
+
+    @Override
+    public StateTable processContentSize(StatePage page) {
         return this.processContentSize(page, this.isWrappingAllowed(), true, false);
     }
 
     @Override
-    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
-        return this.processContentSize(page, wrapping, processAlignment, true, fixed);
+    public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean fixed) {
+        return this.processContentSize(page, wrapping, processAlignment, true, fixed, false);
     }
 
     /**
@@ -80,35 +130,46 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      * @param processAlignment   Whether alignment should be processed.
      * @param processPositioning Whether positioning should be processed.
      * @param fixed              Whether the table has a fixed position.
-     * @return true if there was overflow, false otherwise.
+     * @param ignoreOverflow     Whether the table should process overflow.
+     * @return StateTable instance if there was overflow, null otherwise (always null if ignoreOverflow set to true).
      */
-    public boolean processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed) {
+    public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed, boolean ignoreOverflow) {
         List<StateCell> tableContent = copyContent();
-        List<TableRow> rows = new LinkedList<>();
+        rows = new LinkedList<>();
         addRowTo(rows);
+        int availableHeight = 0;
 
         //if not fixed, calculate a position for this table and process alignment if needed
         if (!fixed) {
             Position p = calculatePosition(page);
             if (p == null) {
-                return true;
+                return this;
             }
             if (processAlignment && processPositioning) {
                 p.adjustX(calculateAlignment(page));
             }
             this.setPosition(p);
+            List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(p, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+            availableHeight = openSpaces.get(0)[2];
+
         }
 
         divideColumnsOverRows(tableContent, rows);
 
         //finalize the cell widths, heights and execute positioning
         Position cellPos = new Position(this.getPosition());
-        double[] widths = calculateColumnWidths(rows);
-
+        
+        if(original) {            
+            this.originalColumnWidths = calculateColumnWidths(rows);    
+        }
+        double[] widths = this.originalColumnWidths;
+        
         //add cells to fill up empty columns in the table
         if (getDrawFiller()) {
             fillEmptyCells(rows, tableContent);
         }
+
+        StateTable overflow = null;
 
         for (TableRow row : rows) {
             //apply the calculated widths to the columns
@@ -118,7 +179,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             positionCellsForRow(row.getContent(), cellPos, widths);
 
             //determine height for row and apply it to each column in this row
-            determineRowHeight(rows, rows.indexOf(row), page.getLeading());
+            int index = rows.indexOf(row);
+            determineRowHeight(rows, index, page.getLeading());
+            if(!ignoreOverflow) {
+                overflow = processOverflow(rows, index, availableHeight);
+
+                if (overflow != null) {
+                    break;
+                }
+            }
             applyColumnHeights(row);
 
             //adjust the cell position for the next row, meaning going down on the y axis and resetting the x axis
@@ -131,18 +200,60 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         applyRowSpanHeights(rows);
 
         for (TableRow row : rows) {
-            for(Cell c : row.getContent()) {
-                if(c != null) {
+            for (Cell c : row.getContent()) {
+                if (c != null) {
                     ((StateCell) c).processContentSize(page.getLeading(), this.borderWidth);
                 }
             }
         }
 
+        List<StateCell> cells = combineCellsFromRows(rows);
         if (processPositioning) {
-            this.content = tableContent;
+            this.content = cells;
             this.adjustFilledHeight(page);
+        } else {
+            this.height = Math.min((int) MINIMUM_PAGE_HEIGHT_REQUIRED * page.getHeightWithoutMargins(), this.height);
         }
-        return false;
+        return overflow;
+    }
+
+    private List<StateCell> combineCellsFromRows(List<TableRow> rows) {
+        List<StateCell> cells = new LinkedList<>();
+        for (TableRow row : rows) {
+            Cell[] rowCells = row.getContent();
+            for(int i = 0; i < columnAmount; ++i) {
+                StateCell c = (StateCell) rowCells[i];
+                if(c != null) {
+                    cells.add(c);
+                }
+            }
+        }
+        return cells;
+    }
+
+    private StateTable processOverflow(List<TableRow> rows, int index, int availableHeight) {
+        TableRow current = rows.get(index);
+        StateTable overflow = null;
+        if (current.getMaxHeight() + this.height > availableHeight) {
+            overflow = new BaseStateTable(this, originalColumnWidths);
+            overflow.setOriginal(false);
+            overflow.setHeader(this.header);
+
+            int rowSize = rows.size();
+            for (int i = index; i < rowSize; ++i) {
+                for (Cell cell : rows.get(i).getContent()) {
+                    overflow.addCell(cell);
+                }
+            }
+
+            for (int i = rowSize - 1; i >= index; --i) {
+                for (Cell cell : rows.get(i).getContent()) {
+                    this.content.remove(cell);
+                }
+                rows.remove(i);
+            }
+        }
+        return overflow;
     }
 
     private void fillEmptyCells(List<TableRow> rows, List<StateCell> tableContent) {
@@ -195,7 +306,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         this.height = 0;
         double widthUsedInRow = 0;
 
-        if(header != null) {
+        if (header != null && (original || !original && this.isRepeatingHeader())) {
             rows.add(0, header);
             currentRow = 1;
         }
@@ -238,10 +349,10 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 }
             }
         }
-        if(this.header == null && rows.size() > 1) {
+        if (this.header == null && rows.size() > 1) {
             header = new TableRow(rows.get(0));
 
-            for(int i = 0; i < this.header.getContent().length; ++i) {
+            for (int i = 0; i < this.header.getContent().length; ++i) {
                 tableContent.remove(0);
                 this.content.remove(0);
             }
@@ -255,44 +366,52 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             columnWidths[i] = 0;
         }
 
-        //iterate through each cell and determine for each column what the largest width is
-        rows.stream().forEach(row -> determineMaxWidthsForRow(columnWidths, row.getContent()));
+        if(this.original) {
+            //iterate through each cell and determine for each column what the largest width is
+            rows.stream().forEach(row -> determineMaxWidthsForRow(columnWidths, row.getContent()));
 
-        //determine the max possible column width (how long would it need to be in order to get all text on one line, this will always return required weight in case of an image)
-        rows.stream().forEach(row -> determineTotalRequiredWidthsForRow(maxColumnWidthsPossible, row.getContent()));
+            //determine the max possible column width (how long would it need to be in order to get all text on one line, this will always return required weight in case of an image)
+            rows.stream().forEach(row -> determineTotalRequiredWidthsForRow(maxColumnWidthsPossible, row.getContent()));
 
-        double remainingWidth = this.width;
-        //determine how much width is left over to spread over the columns
-        for (double columnWidth : columnWidths) {
-            remainingWidth -= columnWidth;
-        }
+            double remainingWidth = this.width;
+            //determine how much width is left over to spread over the columns
+            for (double columnWidth : columnWidths) {
+                remainingWidth -= columnWidth;
+            }
 
-        List<ColumnMaxPossibleWidth> allMaxPossibleWidths = new ArrayList<>();
-        Collections.addAll(allMaxPossibleWidths, maxColumnWidthsPossible);
-        //for the first two steps we'll only want to add width to columns for which the width was not specified by the user
-        List<ColumnMaxPossibleWidth> nonFulfilledMaxPossibleWidths = allMaxPossibleWidths.stream()
-                .filter(maxWidth -> maxWidth != null && maxWidth.getWidth() != columnWidths[maxWidth.getColumn()])
-                .collect(Collectors.toList());
-
-        //filter the columns by length, we want to add the extra width to the small ones first to avoid singular words to be spread out over two lines and such
-        List<ColumnMaxPossibleWidth> smallMaxPossibleWidths = nonFulfilledMaxPossibleWidths.stream().filter(
-                maxWidth -> maxWidth.getWidth() <= this.width * PRIORITY_COLUMN_WIDTH_PERCENTAGE).collect(Collectors.toList());
-
-        remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, smallMaxPossibleWidths);
-
-        //if all the columns have reached the width they need to fit on a single line, 
-        //but we still have extra width to add we'll spread it over any columns that do not have a specified width
-        if (remainingWidth > 0) {
-            List<ColumnMaxPossibleWidth> largeMaxPossibleWidths = nonFulfilledMaxPossibleWidths.stream()
-                    .filter(maxWidth -> !smallMaxPossibleWidths.contains(maxWidth))
+            List<ColumnMaxPossibleWidth> allMaxPossibleWidths = new ArrayList<>();
+            Collections.addAll(allMaxPossibleWidths, maxColumnWidthsPossible);
+            //for the first two steps we'll only want to add width to columns for which the width was not specified by the user
+            List<ColumnMaxPossibleWidth> nonFulfilledMaxPossibleWidths = allMaxPossibleWidths.stream()
+                    .filter(maxWidth -> maxWidth != null && maxWidth.getWidth() != columnWidths[maxWidth.getColumn()])
                     .collect(Collectors.toList());
 
-            double totalExtraWidthRequired = largeMaxPossibleWidths.stream().mapToDouble(maxWidth -> (maxWidth.getWidth() - columnWidths[maxWidth.getColumn()])).sum();
-            if (totalExtraWidthRequired > remainingWidth) {
-                spreadRemainingWidthProcentually(columnWidths, remainingWidth, largeMaxPossibleWidths, totalExtraWidthRequired);
-            } else {
-                remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, largeMaxPossibleWidths);
-                spreadRemainingWidth(columnWidths, remainingWidth, nonFulfilledMaxPossibleWidths);
+            //filter the columns by length, we want to add the extra width to the small ones first to avoid singular words to be spread out over two lines and such
+            List<ColumnMaxPossibleWidth> smallMaxPossibleWidths = nonFulfilledMaxPossibleWidths.stream().filter(
+                    maxWidth -> maxWidth.getWidth() <= this.width * PRIORITY_COLUMN_WIDTH_PERCENTAGE).collect(Collectors.toList());
+
+            remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, smallMaxPossibleWidths);
+
+            //if all the columns have reached the width they need to fit on a single line,
+            //but we still have extra width to add we'll spread it over any columns that do not have a specified width
+            if (remainingWidth > 0) {
+                List<ColumnMaxPossibleWidth> largeMaxPossibleWidths = nonFulfilledMaxPossibleWidths.stream()
+                        .filter(maxWidth -> !smallMaxPossibleWidths.contains(maxWidth))
+                        .collect(Collectors.toList());
+
+                double totalExtraWidthRequired = largeMaxPossibleWidths.stream()
+                        .mapToDouble(maxWidth -> (maxWidth.getWidth() - columnWidths[maxWidth.getColumn()]))
+                        .sum();
+                if (totalExtraWidthRequired > remainingWidth) {
+                    spreadRemainingWidthProcentually(columnWidths, remainingWidth, largeMaxPossibleWidths, totalExtraWidthRequired);
+                } else {
+                    remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, largeMaxPossibleWidths);
+                    spreadRemainingWidth(columnWidths, remainingWidth, nonFulfilledMaxPossibleWidths);
+                }
+            }
+        } else {
+            for(int i = 0; i < this.columnAmount; ++i) {
+
             }
         }
 
@@ -314,7 +433,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     private void spreadRemainingWidthProcentually(double[] columnWidths, double remainingWidth, List<ColumnMaxPossibleWidth> maxPossibleWidths,
-                                                  double totalExtraWidthRequired) {
+            double totalExtraWidthRequired) {
         double increasePerWidthUnit = remainingWidth / totalExtraWidthRequired;
         for (ColumnMaxPossibleWidth maxPossibleWidth : maxPossibleWidths) {
             double columnWidth = columnWidths[maxPossibleWidth.getColumn()];
@@ -446,8 +565,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 //rowspan is 1 by default (which is already accounted for by using the rownumber) and therefore requires the minus 1
                 if (c != null &&
                         ((rowNumber == currentRow && (column + c.getColumnSpan() - 1) >= currentColumn) ||
-                                (column <= currentColumn && cellBetweenColumnAndSpan(column, c.getColumnSpan(), currentColumn, columnSpan) &&
-                                        (rowNumber + c.getRowSpan() - 1) >= currentRow))) {
+                        (column <= currentColumn && cellBetweenColumnAndSpan(column, c.getColumnSpan(), currentColumn, columnSpan) &&
+                        (rowNumber + c.getRowSpan() - 1) >= currentRow))) {
                     return true;
                 }
             }
@@ -484,14 +603,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         double adjustment = 0;
         if (remainder > 0) {
             switch (this.getAlignment()) {
-                case CENTERED:
-                    adjustment += remainder / 2;
-                    break;
-                case RIGHT:
-                    adjustment += remainder;
-                    break;
-                default:
-                    break;
+            case CENTERED:
+                adjustment += remainder / 2;
+                break;
+            case RIGHT:
+                adjustment += remainder;
+                break;
+            default:
+                break;
             }
         }
         return adjustment;
@@ -543,8 +662,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     @Override
-    public boolean updateHeight(StatePage page) {
-        return this.processContentSize(page, false, false, false, false);
+    public void updateHeight(StatePage page) {
+        this.processContentSize(page, false, false, false, false, true);
     }
 
     @Override
@@ -552,9 +671,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         Position pos = getPosition();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
-            return new int[]{(int) pos.getX()};
+            return new int[] { (int) pos.getX() };
         }
-        return new int[]{};
+        return new int[] {};
     }
 
     @Override
@@ -564,9 +683,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
             if (wrappingAllowed) {
-                space.add(new int[]{(int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight)});
+                space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
             } else {
-                space.add(new int[]{0, pageWidth});
+                space.add(new int[] { 0, pageWidth });
             }
         }
         return space;
@@ -621,17 +740,13 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     @Override
     public List<StateCell> getStateCellCollection() {
         LinkedList<StateCell> cells = new LinkedList<>();
-        if(this.isRepeatingHeader() || original) {
+        if (this.isRepeatingHeader() || original) {
             for (Cell cell : this.header.getContent()) {
                 cells.add((StateCell) cell);
             }
         }
         cells.addAll(this.content);
         return cells;
-    }
-
-    public TableRow getHeader() {
-        return this.header;
     }
 
     @Override
@@ -678,7 +793,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         }
     }
 
-    private class TableRow {
+    public class TableRow {
         private Cell[] content;
         private double maxHeight = 0;
         private double widthUsed = 0;
@@ -699,12 +814,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             Cell[] oldContent = tableRow.getContent();
             List<StateCell> oldNoWidthSpecified = tableRow.getCellsWithNoSpecifiedWidth();
 
-            for(int i = 0; i < oldContent.length; ++i) {
+            for (int i = 0; i < oldContent.length; ++i) {
                 Cell c = oldContent[i];
-                if(c != null) {
+                if (c != null) {
                     BaseStateCell newCell = new BaseStateCell(c);
                     content[i] = newCell;
-                    if(oldNoWidthSpecified.contains(c)) {
+                    if (oldNoWidthSpecified.contains(c)) {
                         noWidthSpecified.add(newCell);
                     }
                 }

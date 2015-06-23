@@ -16,8 +16,10 @@ import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -167,6 +169,51 @@ public class BaseStateTableTest {
     }
 
     @Test
+    public void testOverflow(@Mocked final StatePage page) {
+        new NonStrictExpectations() {
+            {
+                page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
+                returns(new ArrayList<int[]>(), new ArrayList<>(Arrays.asList(new int[] { 0, 110, 50 })));
+                page.getLeading();
+                returns(0);
+                page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
+                returns(new Position(0, 50));
+                page.getHeightWithoutMargins();
+                returns(50, 0);
+                page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
+                returns(new ArrayList<>(Arrays.asList(new int[] { 0, 110 })));
+            }
+        };
+        
+        StateTable table = new BaseStateTable(100);
+        table.columns(1);
+        table.addCell("jantje");   
+        table.addCell("jantje");   
+        table.addCell("jantje");   
+        table.addCell("jantje");   
+        table.addCell("jantje");   
+        table.addCell("jantje");   
+        table.addCell("jantje"); 
+        
+        StateTable overflow = table.processContentSize(page, false, true, false);
+        Assert.assertNotNull(overflow);
+        Assert.assertEquals(3, table.getContent().size());
+        Assert.assertEquals(4, overflow.getContent().size());
+
+        table.repeatHeader(true);
+        overflow = table.processContentSize(page, false, true, false);
+        Assert.assertNotNull(overflow);
+        List<Cell> content = table.getContent();
+        List<Cell> overflowContent = overflow.getContent();
+        Assert.assertEquals(3, content.size());
+        Assert.assertEquals(1, overflowContent.size());
+        Assert.assertEquals(content.get(0).getWidth(), overflowContent.get(0).getWidth(), 0.01);
+        
+        overflow.processContentSize(page, false, true, false);
+        Assert.assertEquals(2, overflow.getContent().size());
+    }
+
+    @Test
     public void testAlignment(@Mocked final StatePage page) {
         new NonStrictExpectations() {
             {
@@ -185,18 +232,18 @@ public class BaseStateTableTest {
         table.width(50);
         table.on(100, 100);
         table.align(Alignment.LEFT);
-        table.processContentSize(page, false, true, true, false);
+        table.processContentSize(page, false, true, true, false, true);
         assertEquals(100, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.align(Alignment.RIGHT);
-        table.processContentSize(page, false, true, true, false);
+        table.processContentSize(page, false, true, true, false, true);
         assertEquals(300, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.on(100, 100);
         table.align(Alignment.CENTERED);
-        table.processContentSize(page, false, true, true, false);
+        table.processContentSize(page, false, true, true, false, true);
         assertEquals(200, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.on(100, 100);
         table.align(Alignment.JUSTIFIED);
-        table.processContentSize(page, false, true, true, false);
+        table.processContentSize(page, false, true, true, false, true);
         assertEquals(100, table.getPosition().getX(), FloatEqualityTester.EPSILON);
     }
 }

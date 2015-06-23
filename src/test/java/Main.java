@@ -68,11 +68,11 @@ public class Main {
     private static void testExampleTable() {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder().filename("jantje");
-        builder.addPage().marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
+        builder.addPage().size(400, 150);//.marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
 
-        Table table = builder.addTable().columns(2);
+        Table table = builder.addTable().columns(2).repeatHeader(true);
 
-        table.addCell("Vink").width(20);
+        table.addCell("Vinkasdasdasdasdas");
         table.addCell("20202020");
         table.addCell("Vink").width(20);
         table.addCell("20202020");
@@ -84,10 +84,22 @@ public class Main {
         table.addCell("20202020");
         table.addCell("Vink").width(20);
         table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020");
+        table.addCell("Vink").width(20);
+        table.addCell("20202020000000000000000");
 
-        List<Table> previewTables = builder.getPreview().getPreviewFor(table);
-        Table previewTable = previewTables.get(0);
-        System.out.println(previewTable.getWidth());
+        //List<Table> previewTables = builder.getPreview().getPreviewFor(table);
+        //Table previewTable = previewTables.get(0);
+        //System.out.println(previewTable.getWidth());
         builder.finish();
     }
 
