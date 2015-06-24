@@ -41,22 +41,22 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     }
 
     @Override
-    public double getRequiredHeight(double leading, double borderWidth) {
-        return Math.max(height, calculateContentHeight(leading, borderWidth, false));
+    public double getRequiredHeight(double leading) {
+        return Math.max(height, calculateContentHeight(leading, false));
     }
 
     @Override
-    public void processContentSize(double leading, double borderWidth) {
-        this.calculateContentHeight(leading, borderWidth, true);
+    public void processContentSize(double leading) {
+        this.calculateContentHeight(leading, true);
     }
 
-    private double calculateContentHeight(double leading, double borderWidth, boolean processPositioning) {
+    private double calculateContentHeight(double leading, boolean processPositioning) {
         if (this.content != null) {
-            Position positionInclBorder = (this.getPosition() != null) ? new Position(this.getPosition().getX() + borderWidth, this.getPosition().getY()
-                    - borderWidth) : null;
-            return (this.content.calculateContentHeight(this.getWidth(), leading, positionInclBorder, processPositioning) + borderWidth * 2);
+            Position positionInclBorder = (this.getPosition() != null) ? new Position(this.getPosition().getX() + this.border, this.getPosition().getY()
+                    - this.border) : null;
+            return (this.content.calculateContentHeight(this.getWidth(), leading, positionInclBorder, processPositioning) + this.border * 2);
         }
-        return borderWidth * 2;
+        return this.border * 2;
     }
 
     @Override
@@ -78,9 +78,9 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     @Override
     public double getRequiredWidth() {
         if (this.content != null) {
-            return Math.max(width, this.content.getRequiredWidth());
+            return Math.max(width, this.content.getRequiredWidth()) + (border * 2);
         }
-        return width;
+        return width + (border);// * 2);
     }
 
     @Override

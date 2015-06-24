@@ -8,6 +8,7 @@ public abstract class AbstractCell implements Cell {
     protected double height = 0;
     protected int columnSpan = 1;
     protected int rowSpan = 1;
+    protected Double border;
     protected Position position;
 
     public AbstractCell() {
@@ -20,6 +21,7 @@ public abstract class AbstractCell implements Cell {
         this.columnSpan = c.getColumnSpan();
         this.rowSpan = c.getRowSpan();
         this.position = c.getPosition();
+        this.border = c.getBorderWidth();
     }
 
     @Override
@@ -48,6 +50,17 @@ public abstract class AbstractCell implements Cell {
     public Cell rowSpan(int newRowSpan) {
         this.rowSpan = newRowSpan;
         return this;
+    }
+
+    @Override
+    public Cell border(double borderSize) {
+        this.border = borderSize;
+        return this;
+    }
+
+    @Override
+    public Double getBorderWidth() {
+        return this.border;
     }
 
     @Override

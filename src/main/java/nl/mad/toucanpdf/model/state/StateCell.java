@@ -11,10 +11,9 @@ public interface StateCell extends Cell {
     /**
      * Returns the height required to fully draw this cell.
      * @param leading Leading of the page.
-     * @param borderWidth Width of the table borders.
      * @return the required height.
      */
-    double getRequiredHeight(double leading, double borderWidth);
+    double getRequiredHeight(double leading);
 
     /**
      * Returns the width required to fully draw this cell.
@@ -38,9 +37,8 @@ public interface StateCell extends Cell {
     /**
      * Processes the positioning and size of the cell.
      * @param leading Leading of the page.
-     * @param borderWidth Width of the table borders.
      */
-    void processContentSize(double leading, double borderWidth);
+    void processContentSize(double leading);
 
     /**
      * Sets the content of the cell.

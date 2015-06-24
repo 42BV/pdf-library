@@ -44,6 +44,13 @@ public interface Cell {
     Cell rowSpan(int newRowSpan);
 
     /**
+     * Sets the border size of the cell
+     * @param borderSize The border size to use.
+     * @return the cell instance.
+     */
+    Cell border(double borderSize);
+
+    /**
      * Returns the column span of this cell.
      * @return column span value.
      */
@@ -66,6 +73,12 @@ public interface Cell {
      * @return the height value.
      */
     double getHeight();
+
+    /**
+     * Returns the width of the border.
+     * @return the border width.
+     */
+    Double getBorderWidth();
 
     /**
      * Returns the position of this cell.
