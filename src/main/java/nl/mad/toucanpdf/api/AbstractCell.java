@@ -2,12 +2,14 @@ package nl.mad.toucanpdf.api;
 
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.utility.Constants;
 
 public abstract class AbstractCell implements Cell {
     protected double width = 0;
     protected double height = 0;
     protected int columnSpan = 1;
     protected int rowSpan = 1;
+    protected double padding = 5;
     protected Double border;
     protected Position position;
 
@@ -22,6 +24,7 @@ public abstract class AbstractCell implements Cell {
         this.rowSpan = c.getRowSpan();
         this.position = c.getPosition();
         this.border = c.getBorderWidth();
+        this.padding = c.getPadding();
     }
 
     @Override
@@ -54,6 +57,8 @@ public abstract class AbstractCell implements Cell {
 
     @Override
     public Cell border(double borderSize) {
+        borderSize = Math.min(borderSize, Constants.MAX_BORDER_SIZE);
+        borderSize = Math.max(borderSize, Constants.MIN_BORDER_SIZE);
         this.border = borderSize;
         return this;
     }
@@ -86,5 +91,16 @@ public abstract class AbstractCell implements Cell {
     @Override
     public Position getPosition() {
         return this.position;
+    }
+
+    @Override
+    public double getPadding() {
+        return padding;
+    }
+
+    @Override
+    public Cell padding(double padding) {
+        this.padding = padding;
+        return this;
     }
 }

@@ -29,7 +29,7 @@ public class PdfTable extends PdfPath {
             if (FloatEqualityTester.greaterThan(c.getBorderWidth(), 0)) {
                 this.setLineWidth(c.getBorderWidth());
                 Position pos = c.getPosition();
-                drawRectangle(pos.getX() + (c.getBorderWidth() / 2), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
+                drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());
                 this.strokePath();
             }
         }

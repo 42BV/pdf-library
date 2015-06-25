@@ -32,6 +32,8 @@ public final class Constants {
      * Default text size. This is used when no text size is specified.
      */
     public static final Integer DEFAULT_TEXT_SIZE = 12;
+    public static final Integer MIN_BORDER_SIZE = 0;
+    public static final Integer MAX_BORDER_SIZE = 6;
 
     private Constants() {
     }

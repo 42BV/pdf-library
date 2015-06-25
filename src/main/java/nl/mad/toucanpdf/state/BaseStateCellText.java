@@ -23,7 +23,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
 
     public BaseStateCellText(Text text) {
         super(text);
-        if(text instanceof BaseStateText) {
+        if (text instanceof BaseStateText) {
             this.originalObject = ((BaseStateText) text).getOriginalObject();
         }
     }
@@ -64,7 +64,8 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             }
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
-        return (lineAdditions * (leading + this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom - leading;
+        return (lineAdditions * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom
+                - this.getRequiredSpaceBelowLine();
     }
 
     private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace) {

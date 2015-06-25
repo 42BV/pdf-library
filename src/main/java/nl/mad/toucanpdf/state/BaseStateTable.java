@@ -455,7 +455,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private void spreadRemainingWidth(double[] columnWidths, double remainingWidth, List<ColumnMaxPossibleWidth> maxPossibleWidths) {
         if (remainingWidth > 0) {
             double widthPerColumn = remainingWidth / maxPossibleWidths.size();
-
             for (ColumnMaxPossibleWidth expandableColumn : maxPossibleWidths) {
                 if (expandableColumn != null) {
                     columnWidths[expandableColumn.getColumn()] = columnWidths[expandableColumn.getColumn()] + widthPerColumn;
@@ -467,10 +466,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private void positionCellsForRow(Cell[] content, Position cellPos, double[] widths) {
         for (int rowNumber = 0; rowNumber < content.length; ++rowNumber) {
             StateCell cell = (StateCell) content[rowNumber];
+            double adjustX = widths[rowNumber];
             if (cell != null) {
                 cell.setPosition(new Position(cellPos));
+                // adjustX += cell.getBorderWidth();
             }
-            cellPos.adjustX(widths[rowNumber]);
+            cellPos.adjustX(adjustX);
         }
     }
 
@@ -482,7 +483,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 for (int span = 1; span < cell.getColumnSpan(); ++span) {
                     width += columnWidths[i + span];
                 }
-                width -= cell.getBorderWidth();//* 2;
+                //width -= cell.getBorderWidth();//* 2;
                 cell.width(width);
             }
         }

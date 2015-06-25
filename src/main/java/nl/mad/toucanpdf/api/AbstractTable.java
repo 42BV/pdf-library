@@ -1,12 +1,11 @@
 package nl.mad.toucanpdf.api;
 
-import java.text.DecimalFormat;
-
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.DocumentPartType;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
+import nl.mad.toucanpdf.utility.Constants;
 
 public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPart implements Table {
     protected int columnAmount = 1;
@@ -92,10 +91,13 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table border(double border) {
-        DecimalFormat df = new DecimalFormat("0.0");
-        String newBorder = df.format(border);
-        newBorder = newBorder.replace(',', '.');
-        this.borderWidth = Math.max(0, Double.parseDouble(newBorder));
+        //        DecimalFormat df = new DecimalFormat("0.0");
+        //        String newBorder = df.format(border);
+        //        newBorder = newBorder.replace(',', '.');
+        //        this.borderWidth = Math.max(0, Double.parseDouble(newBorder));
+        border = Math.min(border, Constants.MAX_BORDER_SIZE);
+        border = Math.max(border, Constants.MIN_BORDER_SIZE);
+        this.borderWidth = border;
         return this;
     }
 

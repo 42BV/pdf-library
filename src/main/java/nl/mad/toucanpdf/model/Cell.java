@@ -92,4 +92,17 @@ public interface Cell {
      * @return The cell instance.
      */
     Cell content(PlaceableDocumentPart part);
+
+    /**
+     * Returns the padding used by this cell
+     * @return the padding value
+     */
+    double getPadding();
+
+    /**
+     * Sets the padding 
+     * @param padding padding value to use
+     * @return The cell instance.
+     */
+    Cell padding(double padding);
 }
