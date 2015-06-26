@@ -26,7 +26,8 @@ public class PdfTable extends PdfPath {
 
     private void drawCells() {
         for (StateCell c : table.getStateCellCollection()) {
-            if (FloatEqualityTester.greaterThan(c.getBorderWidth(), 0)) {
+            Double border = c.getBorderWidth();
+            if (border != null && FloatEqualityTester.greaterThan(c.getBorderWidth(), 0)) {
                 this.setLineWidth(c.getBorderWidth());
                 Position pos = c.getPosition();
                 drawRectangle(pos.getX(), pos.getY() - c.getHeight(), c.getWidth(), c.getHeight());

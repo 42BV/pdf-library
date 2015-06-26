@@ -164,4 +164,17 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @return boolean, true if repeating, false otherwise
      */
     boolean isRepeatingHeader();
+
+    /**
+     * Sets the padding used by the table
+     * @param padding The padding to use.
+     * @return the table instance.
+     */
+    Table padding(double padding);
+
+    /**
+     * Returns the padding used by the table
+     * @return padding value used by table
+     */
+    double getPadding();
 }

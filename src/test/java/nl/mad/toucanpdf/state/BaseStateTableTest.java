@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BaseCell;
@@ -15,7 +16,9 @@ import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
+import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StatePage;
+import nl.mad.toucanpdf.model.state.StateSpacing;
 import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -42,65 +45,58 @@ public class BaseStateTableTest {
     }
 
     @Test
-    public void testPositioning(@Mocked final StatePage page) {
-        new NonStrictExpectations() {
-            {
-                page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(), new ArrayList<int[]>(Arrays.asList(new int[] { 0, 10, 10 }, new int[] { 10, 300, 400 })));
-                page.getLeading();
-                returns(10);
-                page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
-                returns(new Position(100, 100));
-                page.getHeightWithoutMargins();
-                returns(400, 0);
-            }
-        };
+    public void testPositioning() {
+        StatePage page = new BaseStatePage(800, 800);
+
         table.columns(2);
         table.drawFillerCells(false);
         BaseStateCellText text = new BaseStateCellText("Test");
         BaseStateCellText text2 = new BaseStateCellText("Test2");
         table.addCell(text);
         table.addCell(text2).columnSpan(2);
+        table.addCell(text);
+        table.addCell(text);
         table.addCell(new BaseCell().height(20));
-        table.processContentSize(page);
-        List<Cell> cells = table.getContent();
+        StateTable overflow = table.processContentSize(page);
+        Assert.assertNull(overflow);
+        List<StateCell> cells = table.getStateCellCollection();
+        Assert.assertEquals(5, cells.size());
 
         Cell c1 = cells.get(0);
         Cell c2 = cells.get(1);
         Cell c3 = cells.get(2);
+        Cell c4 = cells.get(3);
+        Cell c5 = cells.get(4);
 
-        assertEquals(new Position(100, 100), table.getPosition());
-        assertEquals(32.8, table.getContentHeight(page), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 797), table.getPosition());
+        assertEquals(58.392, table.getContentHeight(page), FloatEqualityTester.EPSILON);
         assertEquals(100, table.getContentWidth(page, table.getPosition()), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(100, 100), c1.getPosition());
-        assertEquals(50, c1.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(12.8, c1.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(150, 100), c2.getPosition());
-        assertEquals(12.8, c2.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(50, c2.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(20, c3.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(50, c3.getWidth(), FloatEqualityTester.EPSILON);
+        //header position is always null, width and height are also undetermined
+        assertEquals(new Position(20, 797), c1.getPosition());
+        assertEquals(47, c1.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(19.196, c1.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(67, 797), c2.getPosition());
+        assertEquals(19.196, c2.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(53, c2.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 777.804), c3.getPosition());
+        assertEquals(19.196, c3.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(47, c3.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(67, 777.804), c4.getPosition());
+        assertEquals(19.196, c4.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(53, c4.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 758.608), c5.getPosition());
+        assertEquals(20, c5.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(47, c5.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(), text.getPosition());
         assertEquals(new Position(), text2.getPosition());
     }
 
     @Test
-    public void testHeightUpdating(@Mocked final StatePage page) {
-        new NonStrictExpectations() {
-            {
-                page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(), new ArrayList<int[]>(Arrays.asList(new int[] { 0, 10, 10 }, new int[] { 10, 300, 400 })));
-                page.getLeading();
-                returns(10);
-                page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
-                returns(new Position(100, 100));
-                page.getHeightWithoutMargins();
-                returns(400, 0);
-            }
-        };
+    public void testHeightUpdating() {
+        StatePage page = new BaseStatePage(800, 800);
         table.addCell("Test");
         table.updateHeight(page);
-        assertEquals(12.8, table.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(19.196, table.getHeight(), FloatEqualityTester.EPSILON);
     }
 
     @Test
@@ -197,15 +193,15 @@ public class BaseStateTableTest {
         
         StateTable overflow = table.processContentSize(page, false, true, false);
         Assert.assertNotNull(overflow);
-        Assert.assertEquals(3, table.getContent().size());
-        Assert.assertEquals(4, overflow.getContent().size());
+        Assert.assertEquals(2, table.getContent().size());
+        Assert.assertEquals(5, overflow.getContent().size());
 
         table.repeatHeader(true);
         overflow = table.processContentSize(page, false, true, false);
         Assert.assertNotNull(overflow);
         List<Cell> content = table.getContent();
         List<Cell> overflowContent = overflow.getContent();
-        Assert.assertEquals(3, content.size());
+        Assert.assertEquals(2, content.size());
         Assert.assertEquals(1, overflowContent.size());
         Assert.assertEquals(content.get(0).getWidth(), overflowContent.get(0).getWidth(), 0.01);
         

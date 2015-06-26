@@ -9,7 +9,7 @@ public abstract class AbstractCell implements Cell {
     protected double height = 0;
     protected int columnSpan = 1;
     protected int rowSpan = 1;
-    protected double padding = 5;
+    protected Double padding;
     protected Double border;
     protected Position position;
 
@@ -94,7 +94,7 @@ public abstract class AbstractCell implements Cell {
     }
 
     @Override
-    public double getPadding() {
+    public Double getPadding() {
         return padding;
     }
 

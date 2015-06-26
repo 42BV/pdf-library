@@ -44,17 +44,20 @@ public class BaseStateCellTest {
                 returns(50.0);
             }
         };
+        cell.border(1);
+        cell.padding(2);
         cell.processContentSize(0);
         cell.setPosition(new Position());
-        assertEquals(0, cell.getRequiredHeight(0), FloatEqualityTester.EPSILON);
+        //5 due to padding (times 2) and border
+        assertEquals(5, cell.getRequiredHeight(0), FloatEqualityTester.EPSILON);
         assertEquals(0, cell.getRequiredWidth(), FloatEqualityTester.EPSILON);
         cell.setContent(content);
-        assertEquals(100, cell.getRequiredHeight(0), FloatEqualityTester.EPSILON);
-        assertEquals(50, cell.getRequiredWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(105, cell.getRequiredHeight(0), FloatEqualityTester.EPSILON);
+        assertEquals(54, cell.getRequiredWidth(), FloatEqualityTester.EPSILON);
         cell.height(300);
         cell.width(200);
         assertEquals(300, cell.getRequiredHeight(0), FloatEqualityTester.EPSILON);
-        assertEquals(200, cell.getRequiredWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(204, cell.getRequiredWidth(), FloatEqualityTester.EPSILON);
     }
 
     @Test

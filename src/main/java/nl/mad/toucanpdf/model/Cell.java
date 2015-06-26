@@ -97,7 +97,7 @@ public interface Cell {
      * Returns the padding used by this cell
      * @return the padding value
      */
-    double getPadding();
+    Double getPadding();
 
     /**
      * Sets the padding 

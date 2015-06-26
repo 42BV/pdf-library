@@ -32,13 +32,16 @@ public class PdfTableTest {
         assertEquals("", ByteEncoder.getString(pTable.getByteRepresentation()));
 
         //border of 1
-        table.border(1);
-        String expectedResult = "1.0 w 110.0 100.0 11.0 10.0 re  S\n" + "120.0 109.0 12.0 11.0 re  S\n";
+        cell.border(1);
+        cell2.border(1);
+
+        String expectedResult = "1.0 w 110.0 100.0 11.0 10.0 re  S\n" + "1.0 w 120.0 109.0 12.0 11.0 re  S\n";
         pTable = new PdfTable(table);
         assertEquals(expectedResult, ByteEncoder.getString(pTable.getByteRepresentation()));
 
         //invalid border size
-        table.border(-1);
+        cell.border(-1);
+        cell2.border(-1);
         pTable = new PdfTable(table);
         assertEquals("", ByteEncoder.getString(pTable.getByteRepresentation()));
     }
