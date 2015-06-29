@@ -68,63 +68,16 @@ public class Main {
     private static void testExampleTable() {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder().filename("jantje");
-        builder.addPage().size(400, 250);//.marginTop(20).marginLeft(20).marginRight(20).marginBottom(20);
-//
-//        Table table = builder.addTable().border(5).columns(2).repeatHeader(true);
-//
-//        table.addCell("Vinkasdasdasdasdas");
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020");
-//        table.addCell("Vink").width(20);
-//        table.addCell("20202020000000000000000");
+        builder.addPage();
+        Table table = builder.addTable().border(1).columns(1).repeatHeader(true).drawFillerCells(true);
 
-        Table table2 = builder.addTable().width(200).border(1).columns(2).repeatHeader(true).drawFillerCells(true).padding(5);
-        InputStream input = Main.class.getClassLoader().getResourceAsStream("logo_placeholder.jpg");
-        Image i = builder.createImage(input, ImageType.JPEG).width(40);
-        table2.addCell(i).width(80);
-        table2.addCell("Vink").border(3).columnSpan(2);
-        table2.addCell("Vink").border(3).width(40).padding(10);
-        table2.addCell("20202020").rowSpan(2);
-        table2.addCell("Vink").width(40);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(40);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(40);
-        table2.addCell("20202020").border(2);
-        table2.addCell("Vink").width(20);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(20);
-        table2.addCell("20202020");
-        table2.addCell("Vink").border(7).width(20);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(20);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(20);
-        table2.addCell("20202020");
-        table2.addCell("Vink").width(20);
-        table2.addCell("20202020000000000000000");
+        InputStream input = Main.class.getClassLoader().getResourceAsStream("hammock.jpg");
+        Image i = builder.createImage(input, ImageType.JPEG).align(Alignment.CENTERED).width(20, true);
 
-        //List<Table> previewTables = builder.getPreview().getPreviewFor(table);
-        //Table previewTable = previewTables.get(0);
+        table.addCell(new BaseCell().height(13).width(table.getWidth()));
+
+        List<Table> previewTables = builder.getPreview().getPreviewFor(table);
+        Table previewTable = previewTables.get(0);
         //System.out.println(previewTable.getWidth());
         builder.finish();
     }

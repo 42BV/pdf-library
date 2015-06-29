@@ -62,7 +62,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         this.original = table.isOriginal();
         this.originalColumnWidths = table.getOriginalWidths();
         TableRow tableHeader = table.getHeader();
-        if(tableHeader != null && tableHeader.getContent() != null) {
+        if (tableHeader != null && tableHeader.getContent() != null) {
             this.header = new TableRow(table.getHeader());
         }
     }
@@ -334,6 +334,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         if (header != null && (original || !original && this.isRepeatingHeader())) {
             rows.add(0, header);
             currentRow = 1;
+            if (this.content.size() == 0) {
+                rows.remove(1);
+            }
         }
 
         for (StateCell c : tableContent) {
@@ -378,7 +381,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             header = new TableRow(rows.get(0));
             Cell[] headerContent = this.header.getContent();
             for (int i = 0; i < headerContent.length; ++i) {
-                if(headerContent[i] != null) {
+                if (headerContent[i] != null) {
                     tableContent.remove(0);
                     this.content.remove(0);
                 }
@@ -749,7 +752,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     @Override
     public Table addCell(Cell c) {
-        if(c != null) {
+        if (c != null) {
             if (c instanceof StateCell) {
                 this.content.add((StateCell) c);
             } else {
