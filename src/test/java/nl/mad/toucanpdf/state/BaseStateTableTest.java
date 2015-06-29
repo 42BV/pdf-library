@@ -69,22 +69,22 @@ public class BaseStateTableTest {
         Cell c5 = cells.get(4);
 
         assertEquals(new Position(20, 797), table.getPosition());
-        assertEquals(58.392, table.getContentHeight(page), FloatEqualityTester.EPSILON);
+        assertEquals(58.296, table.getContentHeight(page), FloatEqualityTester.EPSILON);
         assertEquals(100, table.getContentWidth(page, table.getPosition()), FloatEqualityTester.EPSILON);
         //header position is always null, width and height are also undetermined
         assertEquals(new Position(20, 797), c1.getPosition());
         assertEquals(47, c1.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(19.196, c1.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(19.232, c1.getHeight(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(67, 797), c2.getPosition());
-        assertEquals(19.196, c2.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(19.232, c2.getHeight(), FloatEqualityTester.EPSILON);
         assertEquals(53, c2.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 777.804), c3.getPosition());
-        assertEquals(19.196, c3.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 777.768), c3.getPosition());
+        assertEquals(19.064, c3.getHeight(), FloatEqualityTester.EPSILON);
         assertEquals(47, c3.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(67, 777.804), c4.getPosition());
-        assertEquals(19.196, c4.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(67, 777.768), c4.getPosition());
+        assertEquals(19.064, c4.getHeight(), FloatEqualityTester.EPSILON);
         assertEquals(53, c4.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 758.608), c5.getPosition());
+        assertEquals(new Position(20, 758.7040000000001), c5.getPosition());
         assertEquals(20, c5.getHeight(), FloatEqualityTester.EPSILON);
         assertEquals(47, c5.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(), text.getPosition());
@@ -96,7 +96,7 @@ public class BaseStateTableTest {
         StatePage page = new BaseStatePage(800, 800);
         table.addCell("Test");
         table.updateHeight(page);
-        assertEquals(19.196, table.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(19.064, table.getHeight(), FloatEqualityTester.EPSILON);
     }
 
     @Test

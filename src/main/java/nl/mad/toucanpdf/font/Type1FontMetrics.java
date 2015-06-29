@@ -52,7 +52,6 @@ public class Type1FontMetrics implements FontMetrics {
 
     /**
      * Finds the file by the given file name and returns it.
-     * @param filename Name of the file.
      * @param extension File extension to look for.
      * @return InputStream for the given filename. Null if the file could not be found.
      * @throws FileNotFoundException
@@ -154,8 +153,56 @@ public class Type1FontMetrics implements FontMetrics {
     }
 
     @Override
+    public int getAscentForString(String text) {
+        return getBoundingBoxValueForTextOnIndex(text, 3, true);
+    }
+
+    @Override
+    public double getAscentForStringPoint(String text) {
+        return getAscentForString(text) * CONVERSION_TO_POINTS;
+    }
+
+    @Override
     public int getDescent() {
         return afm.getDescender();
+    }
+
+    @Override
+    public int getDescentForString(String text) {
+        return getBoundingBoxValueForTextOnIndex(text, 1, false);
+    }
+
+    @Override
+    public double getDescentForStringPoint(String text) {
+        return getDescentForString(text) * CONVERSION_TO_POINTS;
+    }
+
+    private int[] getBoundingBoxForCharacter(String charName) {
+        Type1CharacterMetric metric = afm.getCharacterMetric(charName);
+        if (metric != null) {
+            return metric.getBoundingBox();
+        }
+        return null;
+    }
+
+    /**
+     * Returns either the lowest or highset bounding box value found within the text on the given bounding box index (e.g. the first bbox value is for descent so that means passing 1)
+     * @param text Text to check the highest value for
+     * @param bbIndex the index to check on
+     * @param highest if true the method will return the highest value, if false the method will return the lowest value found
+     * @return int containing the value
+     */
+    private int getBoundingBoxValueForTextOnIndex(String text, int bbIndex, boolean highest) {
+        int value = 0;
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; ++i) {
+            int[] boundingBox = this.getBoundingBoxForCharacter(UnicodeConverter.getPostscriptForUnicode((int) chars[i]));
+            if (boundingBox != null) {
+                int bBoxValue = boundingBox[bbIndex];
+                value = highest ? Math.max(value, bBoxValue) : Math.min(value, bBoxValue);
+            }
+        }
+        return value;
     }
 
     @Override

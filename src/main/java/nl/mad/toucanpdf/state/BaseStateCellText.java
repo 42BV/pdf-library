@@ -33,7 +33,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         textSplit = new LinkedHashMap<Position, String>();
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
         strings.add("");
-        leading += getRequiredSpaceBelowLine();
+        //leading += getRequiredSpaceBelowLine();
         int textSize = this.getTextSize();
         double width = 0;
         FontMetrics metrics = getFont().getMetrics();
@@ -43,6 +43,8 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         pos.adjustX(marginLeft);
         availableWidth -= marginRight + marginLeft;
         int lineAdditions = 0;
+        String firstLine = null;
+        String lastLine = null;
 
         for (int i = 0; i < strings.size(); ++i) {
             String s = strings.get(i);
@@ -50,6 +52,9 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             if (FloatEqualityTester.greaterThan(width, availableWidth)) {
                 String line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
+                if (lineAdditions == 0) {
+                    firstLine = line;
+                }
                 lineAdditions += 1;
                 processLineAddition(processPositioning, pos, leading, line, metrics.getWidthPointOfString(line, textSize, true), availableWidth);
                 width = 0;
@@ -57,15 +62,34 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             } else if (i == (strings.size() - 1)) {
                 currentLine.append(s);
                 lineAdditions += 1;
-                processLineAddition(processPositioning, pos, leading, currentLine.toString(),
+                lastLine = currentLine.toString();
+                processLineAddition(processPositioning, pos, leading, lastLine,
                         metrics.getWidthPointOfString(currentLine.toString(), textSize, true), availableWidth);
             } else {
                 currentLine.append(s + " ");
             }
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
-        return (lineAdditions * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine())) + marginTop + marginBottom
-                - this.getRequiredSpaceBelowLine();
+        return DetermineTotalContentHeight(lineAdditions, metrics, firstLine, lastLine);
+    }
+
+    private double DetermineTotalContentHeight(int lineAdditions, FontMetrics metrics, String first, String last) {
+        double contentHeight = marginTop + marginBottom;
+        if (lineAdditions > 0) {
+            if (last == null && first != null) {
+                last = first;
+            } else if (first == null && last != null) {
+                first = last;
+            }
+            double ascent = metrics.getAscentForStringPoint(first) * this.getTextSize();
+            double descent = Math.abs(metrics.getDescentForStringPoint(last) * this.getTextSize());
+            contentHeight += ascent + descent;
+
+            if (lineAdditions > 1) {
+                contentHeight += ((lineAdditions - 1) * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine()));
+            }
+        }
+        return contentHeight;
     }
 
     private void processLineAddition(boolean processPositioning, Position pos, double leading, String line, double width, double availableSpace) {

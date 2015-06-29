@@ -10,11 +10,6 @@ import java.util.List;
 public interface FontMetrics {
 
     /**
-     * This value is added by default to any leading calculations.
-     */
-    int DEFAULT_LEADING_ADDITION = 5;
-
-    /**
      * Returns width of the character corresponding to the given unicode character code.
      * @param characterCode Code of character.
      * @return Width of the character.
@@ -81,10 +76,38 @@ public interface FontMetrics {
     int getAscent();
 
     /**
+     * Returns the ascent for the given text.
+     * @param text Text to check ascent for
+     * @return int containing the ascent (minimum value of 0)
+     */
+    int getAscentForString(String text);
+
+    /**
+     * Returns the ascent for the given text in points.
+     * @param text Text to check ascent for
+     * @return double containing the ascent (min. value of 0) in points
+     */
+    double getAscentForStringPoint(String text);
+
+    /**
      * Returns the descent of the font.
      * @return int containing the descent.
      */
     int getDescent();
+
+    /**
+     * Returns the descent for the given text.
+     * @param text Text to check descent for
+     * @return int containing the descent (minimum value of 0)
+     */
+    int getDescentForString(String text);
+
+    /**
+     * Returns the descent for the given text in points.
+     * @param text Text to check descent for
+     * @return double containing the descent (min. value of 0) in points
+     */
+    double getDescentForStringPoint(String text);
 
     /**
      * Returns the descent of the font in points.
