@@ -70,28 +70,52 @@ public class Main {
     private static void testExampleTable() {
         BasicConfigurator.configure();
         DocumentBuilder builder = new DocumentBuilder().filename("jantje");
-        builder.addPage();
-        Table table = builder.addTable().border(1).padding(2).columns(2).repeatHeader(true).drawFillerCells(true);
+        Page masterHor = builder.createPage().size(DocumentBuilder.A4_HEIGHT, DocumentBuilder.A4_WIDTH).marginBottom(50).marginTop(50).marginLeft(50)
+                .marginRight(50);
+        //Page master = builder.createPage().size(DocumentBuilder.A4_WIDTH, DocumentBuilder.A4_HEIGHT);
+        //builder.addPage().master(master);
+        builder.addPage().master(masterHor);
+        Table table = builder.addTable().border(1).padding(2).columns(8).repeatHeader(true).drawFillerCells(true);
 
         InputStream input = Main.class.getClassLoader().getResourceAsStream("hammock.jpg");
         Image i = builder.createImage(input, ImageType.JPEG).align(Alignment.CENTERED).width(20, true);
 
-        table.addCell("Iets askdkasd ddd d d dd  d dd asodkoaskdaosd dasodkasodkasodkasodk asddjdajs dajsdjas djasdja sjdj asjfjoas odk oaskpdk xozkc l;kas dokf jasdjasnfzklxnc snadicjxz asidjxcjzl ahsduhuiashd uihjcxiz");
-        table.addCell(builder.createText("FTE's").align(RIGHT));
-        table.addCell("directie");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("directie");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("mt");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("staf");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("administratie");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("operations");
-        table.addCell(builder.createText("0").align(RIGHT));
-        table.addCell("verkoop");
-        table.addCell(builder.createText("0").align(RIGHT));
+        table.addCell("Aandachtsgebied");
+        table.addCell("Strategische hoofddoelstelling");
+        table.addCell("Strategische subdoelstelling");
+        table.addCell("Strategische actie");
+        table.addCell("Meetinstrument");
+        table.addCell("Weging");
+        table.addCell("Deadline");
+        table.addCell("Uitvoerend persoon");
+
+        for (int ind = 0; ind < 100; ++ind) {
+            table.addCell("P van Plaats");
+            table.addCell("asdasdasdasdasdasdasd asdasdas asdasdasdas asd zxczxc zxcasd qwerasd zxccvxb fger tergdfg sdfdsf eassdgdf bcvbv");
+            table.addCell("sdasdasdasd");
+            table.addCell("sdasdasdasd");
+            table.addCell("sdasdasdasd");
+            table.addCell("sdasdasdasd asdasd asd asdas das ddsdsadsdsdsdsasd dsad dasd ");
+            table.addCell("sdasdasdasd ddasd asdasdasd asdasdddd");
+            table.addCell("sdasdasdasd");
+        }
+
+        //        table.addCell("Iets askdkasd ddd d d dd  d dd asodkoaskdaosd dasodkasodkasodkasodk asddjdajs dajsdjas djasdja sjdj asjfjoas odk oaskpdk xozkc l;kas dokf jasdjasnfzklxnc snadicjxz asidjxcjzl ahsduhuiashd uihjcxiz");
+        //        table.addCell(builder.createText("FTE's").align(RIGHT));
+        //        table.addCell("directie");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("directie");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("mt");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("staf");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("administratie");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("operations");
+        //        table.addCell(builder.createText("0").align(RIGHT));
+        //        table.addCell("verkoop");
+        //        table.addCell(builder.createText("0").align(RIGHT));
 
         List<Table> previewTables = builder.getPreview().getPreviewFor(table);
         Table previewTable = previewTables.get(0);

@@ -136,12 +136,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      * @param ignoreOverflow     Whether the table should process overflow.
      * @return StateTable instance if there was overflow, null otherwise (always null if ignoreOverflow set to true).
      */
-    public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed, boolean ignoreOverflow) {
+    public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed,
+            boolean ignoreOverflow) {
         List<StateCell> tableContent = copyContent();
         rows = new LinkedList<>();
         addRowTo(rows);
         int availableHeight = 0;
-        
+        height = marginBottom + marginTop;
+
         this.determineCellBorders(tableContent);
         this.determineCellPadding(tableContent);
 
@@ -163,12 +165,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         //finalize the cell widths, heights and execute positioning
         Position cellPos = new Position(this.getPosition());
-        
-        if(original) {            
-            this.originalColumnWidths = calculateColumnWidths(rows);    
+
+        if (original) {
+            this.originalColumnWidths = calculateColumnWidths(rows);
         }
         double[] widths = this.originalColumnWidths;
-        
+
         //add cells to fill up empty columns in the table
         if (getDrawFiller()) {
             fillEmptyCells(rows, tableContent);
@@ -176,36 +178,47 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         StateTable overflow = null;
 
-        for (TableRow row : rows) {
+        boolean overflowDetected = false;
+        int index = 0;
+        int overflowRow = rows.size();
+        while (!overflowDetected && index < rows.size()) {
+            TableRow row = rows.get(index);
             //apply the calculated widths to the columns
             applyColumnWidths(widths, row.getContent());
 
             //for height determination we first need to position each cell
             positionCellsForRow(row.getContent(), cellPos, widths);
-
+            
             //determine height for row and apply it to each column in this row
-            int index = rows.indexOf(row);
-            determineRowHeight(rows, index, page.getLeading());
-            if(!ignoreOverflow && !fixed) {
-                overflow = processOverflow(rows, index, availableHeight);
-
-                if (overflow != null) {
-                    break;
+            determineRowHeight(rows, rows.indexOf(row), page.getLeading());
+            if (!fixed) {
+                if (!ignoreOverflow) {
+                    overflow = processOverflow(rows, index, availableHeight);
+                    overflowDetected = (overflow != null);
+                } else {
+                    overflowDetected = isHeightCausingOverflow(rows.get(index), availableHeight);
                 }
             }
-            applyColumnHeights(row);
 
-            //adjust the cell position for the next row, meaning going down on the y axis and resetting the x axis
-            double heightIncrease = row.getMaxHeight();
-            this.height += heightIncrease;
-            cellPos.adjustY(-heightIncrease);
-            cellPos.setX(this.getPosition().getX());
+            if (overflowDetected) {
+                overflowRow = Math.min(rows.size(), index + 1);
+            } else {
+                applyColumnHeights(row);
+
+                //adjust the cell position for the next row, meaning going down on the y axis and resetting the x axis
+                double heightIncrease = row.getMaxHeight();
+                this.height += heightIncrease;
+                cellPos.adjustY(-heightIncrease);
+                cellPos.setX(this.getPosition().getX());
+                index++;
+            }
         }
         //after all individual rows have been processed, increase the height of cells that occupy more than one row
         //TODO: Test that this is not going to cause issues in overflow detection (if second row of cell with rowspawn 2 causes the overflow)
         applyRowSpanHeights(rows);
 
-        for (TableRow row : rows) {
+        for (int i = 0; i < overflowRow; ++i) {
+            TableRow row = rows.get(i);
             for (Cell c : row.getContent()) {
                 if (c != null) {
                     ((StateCell) c).processContentSize(page.getLeading());
@@ -218,7 +231,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             this.content = cells;
             this.adjustFilledHeight(page);
         } else {
-            this.height = Math.min((int) (MINIMUM_PAGE_HEIGHT_REQUIRED * page.getHeightWithoutMargins()), this.height);
+            this.height = Math.min((int) (MINIMUM_PAGE_HEIGHT_REQUIRED * page.getHeight()), this.height);
         }
         return overflow;
     }
@@ -245,9 +258,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         List<StateCell> cells = new LinkedList<>();
         for (TableRow row : rows) {
             Cell[] rowCells = row.getContent();
-            for(int i = 0; i < columnAmount; ++i) {
+            for (int i = 0; i < columnAmount; ++i) {
                 StateCell c = (StateCell) rowCells[i];
-                if(c != null) {
+                if (c != null) {
                     cells.add(c);
                 }
             }
@@ -258,7 +271,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private StateTable processOverflow(List<TableRow> rows, int index, int availableHeight) {
         TableRow current = rows.get(index);
         StateTable overflow = null;
-        if (current.getMaxHeight() + this.height > availableHeight) {
+        if (isHeightCausingOverflow(current, availableHeight)) {
             overflow = new BaseStateTable(this, originalColumnWidths);
             overflow.setOriginal(false);
             overflow.setHeader(this.header);
@@ -278,6 +291,10 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             }
         }
         return overflow;
+    }
+
+    private boolean isHeightCausingOverflow(TableRow current, int availableHeight) {
+        return (current.getMaxHeight() + this.height > availableHeight);
     }
 
     private void fillEmptyCells(List<TableRow> rows, List<StateCell> tableContent) {
@@ -399,12 +416,12 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         List<Double> widths = new LinkedList<>();
         for (TableRow row : rows) {
             for (Cell cell : row.getContent()) {
-                if(cell != null) {
+                if (cell != null) {
                     widths.add(((StateCell) cell).getRequiredWidth());
                 }
             }
         }
-           
+
         //iterate through each cell and determine for each column what the largest width is
         rows.stream().forEach(row -> determineMaxWidthsForRow(columnWidths, row.getContent()));
 
@@ -446,7 +463,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, largeMaxPossibleWidths);
                 spreadRemainingWidth(columnWidths, remainingWidth, nonFulfilledMaxPossibleWidths);
             }
-        }       
+        }
         return columnWidths;
     }
 
@@ -779,8 +796,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         LinkedList<StateCell> cells = new LinkedList<>();
         if ((this.isRepeatingHeader() || original) && this.header != null) {
             for (Cell cell : this.header.getContent()) {
-                if(cell != null) {
-                   // cells.add((StateCell) cell);
+                if (cell != null) {
+                    // cells.add((StateCell) cell);
                 }
             }
         }

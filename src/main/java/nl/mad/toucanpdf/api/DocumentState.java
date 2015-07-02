@@ -81,18 +81,18 @@ public class DocumentState {
     }
 
     private void processPageAreas() {
-        String totalPageNumbers = String.valueOf(state.size());
-        for (int i = 0; i < state.size(); ++i) {
+        String totalPageNumbers = String.valueOf(state.size() - 1);
+        for (int i = 1; i < state.size(); ++i) {
             StatePage sp = (StatePage) state.get(i);
             PageArea header = sp.getHeader();
             PageArea footer = sp.getFooter();
             if (header != null) {
-                header.addAttribute("pageNumber", String.valueOf(i + 1));
+                header.addAttribute("pageNumber", String.valueOf(i));
                 header.addAttribute("totalPages", totalPageNumbers);
                 processPageAreaContent(header, sp);
             }
             if (footer != null) {
-                footer.addAttribute("pageNumber", String.valueOf(i + 1));
+                footer.addAttribute("pageNumber", String.valueOf(i));
                 footer.addAttribute("totalPages", totalPageNumbers);
                 processPageAreaContent(footer, sp);
             }
@@ -260,27 +260,26 @@ public class DocumentState {
         Position position;
         StateTable table = new BaseStateTable((Table) p);
         StateTable overflow = null;
-        if (checkContentSize(table, page)) {
-            for (Cell c : ((Table) p).getContent()) {
-                table.addCell(c);
-            }
-            table.setOriginalObject(p);
-            table.updateHeight(page);
-
-            position = getPositionForPart(page, table);
-            if (position == null) {
-                return handleOverflow(page, i, null, content);
-            }
-
-            table.on(position);
-            overflow = table.processContentSize(page);
-            page.add(table);
-            addToStateLink(p, table);
-
-            if (overflow != null) {
-                return handleOverflow(page, i + 1, overflow, content);
-            }
+        for (Cell c : ((Table) p).getContent()) {
+            table.addCell(c);
         }
+        table.setOriginalObject(p);
+        table.updateHeight(page);
+
+        position = getPositionForPart(page, table);
+        if (position == null) {
+            return handleOverflow(page, i, null, content);
+        }
+
+        table.on(position);
+        overflow = table.processContentSize(page);
+        page.add(table);
+        addToStateLink(p, table);
+
+        if (overflow != null) {
+            return handleOverflow(page, i + 1, overflow, content);
+        }
+
         return null;
     }
 

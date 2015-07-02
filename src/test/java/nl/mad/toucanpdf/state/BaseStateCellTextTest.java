@@ -28,7 +28,7 @@ public class BaseStateCellTextTest {
         Position expected = new Position(50, 41.804);
         for (Entry<Position, String> entry : text.getTextSplit().entrySet()) {
             assertEquals(expected, entry.getKey());
-            expected.adjustY(-(10 + text.getRequiredSpaceAboveLine() + text.getRequiredSpaceBelowLine()));
+            expected.adjustY(-(7.396 + text.getRequiredSpaceAboveLine() + text.getRequiredSpaceBelowLine()));
         }
     }
 
