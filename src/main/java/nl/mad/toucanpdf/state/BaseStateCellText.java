@@ -16,6 +16,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     private final static int REQUIRED_WIDTH = 10;
     private final static int DEFAULT_TOTAL_WIDTH = 2;
     private DocumentPart originalObject;
+    private double height = 0;
 
     public BaseStateCellText(String text) {
         super(text);
@@ -45,13 +46,25 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         int lineAdditions = 0;
         String firstLine = null;
         String lastLine = null;
+        double spaceSize = (metrics.getWidthPoint("space") * textSize);
 
         for (int i = 0; i < strings.size(); ++i) {
             String s = strings.get(i);
             double oldWidth = width;
-            width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
+            double stringWidth = metrics.getWidthPointOfString(s, textSize, true);
+            if (currentLine.length() != 0) {
+                width += spaceSize;
+            }
+            width += stringWidth;
             if (FloatEqualityTester.greaterThan(width, availableWidth)) {
-                String line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
+                String line = currentLine.toString();
+                //if the current word is actually larger than the total available width, cut it off
+                if (FloatEqualityTester.greaterThan(stringWidth, availableWidth)) {
+                    line = processCutOff(currentLine, s, oldWidth, availableWidth, strings, i);
+                } else {
+                    //else simply move this word to the next line
+                    strings.add(i + 1, s);
+                }
                 if (lineAdditions == 0) {
                     firstLine = line;
                 }
@@ -59,7 +72,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
                 processLineAddition(processPositioning, pos, leading, line, metrics.getWidthPointOfString(line, textSize, true), availableWidth);
                 width = 0;
                 currentLine = new StringBuilder();
-            } else if (i == (strings.size() - 1)) {
+            } else if (i == (strings.size() - 1) && (currentLine.length() != 0 || !s.isEmpty())) {
                 currentLine.append(s);
                 lineAdditions += 1;
                 lastLine = currentLine.toString();
@@ -71,6 +84,17 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
         return DetermineTotalContentHeight(lineAdditions, metrics, firstLine, lastLine);
+    }
+
+    @Override
+    public void processVerticalAlignment(double height) {
+        double diff = height - this.height;
+        double yAdjustment = diff / 2;
+        if (this.textSplit.size() > 0 && diff > 0) {
+            for (Position p : textSplit.keySet()) {
+                p.adjustY(-yAdjustment);
+            }
+        }
     }
 
     private double DetermineTotalContentHeight(int lineAdditions, FontMetrics metrics, String first, String last) {
@@ -86,9 +110,10 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             contentHeight += ascent + descent;
 
             if (lineAdditions > 1) {
-                contentHeight += ((lineAdditions - 1) * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine()));
+                contentHeight += (((lineAdditions - 1) * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine()))) + lineAdditions;
             }
         }
+        height = contentHeight;
         return contentHeight;
     }
 
@@ -106,6 +131,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             int currentTextIndex) {
         char[] chars = currentString.toCharArray();
         int i = 0;
+
         int charsAdded = 0;
         while (currentWidth < availableWidth && i < chars.length) {
             char c = chars[i];
@@ -169,5 +195,19 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             totalWidthRequired += getCharacterSize(characters[i], next);
         }
         return totalWidthRequired;
+    }
+
+    @Override
+    public double getMinimumWidth() {
+        FontMetrics metrics = getFont().getMetrics();
+        String[] words = this.getText().split(" ");
+        double largestWordLength = 0;
+        for (String word : words) {
+            double length = metrics.getWidthPointOfString(word, this.getTextSize(), true);
+            if (length > largestWordLength) {
+                largestWordLength = length;
+            }
+        }
+        return largestWordLength + marginLeft + marginRight;
     }
 }

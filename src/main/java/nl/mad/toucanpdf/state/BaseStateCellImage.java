@@ -38,8 +38,7 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     @Override
     public double calculateContentHeight(double availableWidth, double leading, Position position, boolean processPositioning) {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
-        double requiredSpaceBelow = this.getRequiredSpaceBelow();
-        double requiredHeight = requiredSpaceAbove + requiredSpaceBelow;
+        double requiredHeight = getRequiredHeight();
         if (processPositioning) {
             Position pos = new Position(position);
             pos.adjustX(marginLeft);
@@ -65,6 +64,19 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     }
 
     @Override
+    public double getMinimumWidth() {
+        return this.getRequiredWidth();
+    }
+
+    @Override
+    public void processVerticalAlignment(double height) {
+        double diff = height - getRequiredHeight();
+        if (diff > 0) {
+            this.setPosition(new Position(this.getPosition().getX(), this.getPosition().getY() - (diff / 2)));
+        }
+    }
+
+    @Override
     public double getRequiredSpaceLeft() {
         return this.marginLeft;
     }
@@ -72,5 +84,9 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     @Override
     public double getRequiredSpaceRight() {
         return this.marginRight;
+    }
+
+    private double getRequiredHeight() {
+        return this.getRequiredSpaceAbove() + this.getRequiredSpaceBelow();
     }
 }

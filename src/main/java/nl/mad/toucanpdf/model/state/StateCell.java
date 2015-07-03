@@ -45,4 +45,9 @@ public interface StateCell extends Cell {
      * @param content The content to use.
      */
     void setContent(StateCellContent content);
+
+    /**
+     * Adjusts the vertical alignment for the content of this cell.
+     */
+    void processVerticalAlignment();
 }

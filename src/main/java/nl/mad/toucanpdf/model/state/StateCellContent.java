@@ -12,4 +12,7 @@ public interface StateCellContent extends StateDocumentPart, PlaceableDocumentPa
 
     double getTotalRequiredWidth();
 
+    double getMinimumWidth();
+
+    void processVerticalAlignment(double height);
 }

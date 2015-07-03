@@ -51,20 +51,20 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     }
 
     private double calculateContentHeight(double leading, boolean processPositioning) {
+        double height = 0;
         if (this.content != null) {
             Position positionInclBorder = (this.getPosition() != null) ? new Position(this.getPosition().getX() + (this.border / 2) + padding,
                     this.getPosition().getY() - (this.border / 2) - padding) : null;
-            return (this.content.calculateContentHeight(this.getWidth() - (padding * 2), leading, positionInclBorder, processPositioning) + this.border + (padding * 2));
+            height = this.content.calculateContentHeight(this.getWidth() - (padding * 2), leading, positionInclBorder, processPositioning);
         }
 
-        double width = 0;
-        if(padding != null) {
-            width += padding * 2;
+        if (padding != null) {
+            height += padding * 2;
         }
-        if(border != null) {
-            width += border;
+        if (border != null) {
+            height += border;
         }
-        return width;
+        return height;
     }
 
     @Override
@@ -94,6 +94,13 @@ public class BaseStateCell extends AbstractCell implements StateCell {
     @Override
     public void setContent(StateCellContent content) {
         this.content = content;
+    }
+
+    @Override
+    public void processVerticalAlignment() {
+        if (content != null) {
+            content.processVerticalAlignment(this.height - (padding * 2) - border);
+        }
     }
 
     @Override
