@@ -79,43 +79,58 @@ public class Main {
 
         InputStream input = Main.class.getClassLoader().getResourceAsStream("hammock.jpg");
         Image i = builder.createImage(input, ImageType.JPEG).align(Alignment.CENTERED).width(20, true);
+        table.padding(2);
 
-        table.addCell("Aandachtsgebied");
-        table.addCell("Strategische hoofddoelstelling");
-        table.addCell("Strategische subdoelstelling");
-        table.addCell("Strategische actie");
-        table.addCell("Meetinstrument");
-        table.addCell("Weging");
-        table.addCell("Deadline");
-        table.addCell("Uitvoerend persoon");
+        table.addCell("Aandachtsgebied").getContent().setMarginRight(5);
+        table.addCell("Strategische hoofddoelstelling").getContent().setMarginRight(5);
+        table.addCell("Strategische subdoelstelling").getContent().setMarginRight(5);
+        table.addCell("Strategische actie").getContent().setMarginRight(5);
+        table.addCell("Meetinstrument").getContent().setMarginRight(5);
+        table.addCell("Weging").getContent().setMarginRight(5);
+        table.addCell("Deadline").getContent().setMarginRight(5);
+        table.addCell("Uitvoerend persoon").getContent().setMarginRight(5);
 
-        for (int ind = 0; ind < 100; ++ind) {
-            table.addCell("P van Plaats");
-            table.addCell("Loreeeeeeeeeeeeeeeeeeeeeeeeeeeem asdasdas asdasdasdas asd zxczxc zxcasd qwerasd zxccvxb fger tergdfg sdfdsf eassdgdf bcvbv");
-            table.addCell("sdasdasdasd");
-            table.addCell("sdasdasdasd");
-            table.addCell("sdasdasdasd");
-            table.addCell("sdasdasdasd asdasd asd asdas das ddsdsadsdsdsdsasd dsad dasd ");
-            table.addCell("sdasdasdasd ddasd asdasdasd asdasdddd");
-            table.addCell("sdasdasdasd");
-        }
+        table.addCell("P van Plaats").getContent().setMarginRight(5);
 
-        //        table.addCell("Iets askdkasd ddd d d dd  d dd asodkoaskdaosd dasodkasodkasodkasodk asddjdajs dajsdjas djasdja sjdj asjfjoas odk oaskpdk xozkc l;kas dokf jasdjasnfzklxnc snadicjxz asidjxcjzl ahsduhuiashd uihjcxiz");
-        //        table.addCell(builder.createText("FTE's").align(RIGHT));
-        //        table.addCell("directie");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("directie");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("mt");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("staf");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("administratie");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("operations");
-        //        table.addCell(builder.createText("0").align(RIGHT));
-        //        table.addCell("verkoop");
-        //        table.addCell(builder.createText("0").align(RIGHT));
+        table.addCell("-");
+        table.addCell("-");
+        table.addCell("-");
+        table.addCell("-");
+        table.addCell("-");
+        table.addCell("-");
+        table.addCell("-");
+
+        table.addCell("P van Personeel");
+        table.addCell("communicatie naar de werkvloer moet duidelijker en meer resultaatgericht zijn").getContent().setMarginRight(5);
+        table.addCell("-");
+        table.addCell(
+                "communicatiedddddddddddddddd ter voorbereiding start project: tekeningen duidelijk ingekleurd | leveringen materiaal + tijd aantallen specificatie | transport | montageprijzen")
+                .getContent().setMarginRight(
+                        5);
+        table.addCell("monitoren voorbereidingsprocedureddddddddd").getContent().setMarginRight(5);
+        table.addCell("-");
+        table.addCell("");
+        table.addCell("Martin");
+
+        table.addCell("P van Promotie");
+        table.addCell("online communicatie optimaliseren").getContent().setMarginRight(5);
+        table.addCell("-");
+        table.addCell("1.1.1 inhoud: tekeningen duidelijk ingekleurd | leveringen materiaal + tijd + aantallen + specificatie | transport | montageprijzen")
+                .getContent().setMarginRight(
+                        5);
+        table.addCell("website");
+        table.addCell("-");
+        table.addCell("29-12-2014");
+        table.addCell("Marco");
+
+        table.addCell("P van Promotie");
+        table.addCell("online communicatie optimaliseren");
+        table.addCell("-");
+        table.addCell("1.3 Onderaannemingsovereenkomst").getContent().setMarginRight(5);
+        table.addCell("website");
+        table.addCell("-");
+        table.addCell("29-12-2014");
+        table.addCell("Marco/Martin").getContent().setMarginRight(5);
 
         List<Table> previewTables = builder.getPreview().getPreviewFor(table);
         Table previewTable = previewTables.get(0);

@@ -83,12 +83,14 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
             }
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
-        return DetermineTotalContentHeight(lineAdditions, metrics, firstLine, lastLine);
+        return determineTotalContentHeight(lineAdditions, metrics, firstLine, lastLine);
     }
 
     @Override
     public void processVerticalAlignment(double height) {
-        double diff = height - this.height;
+        //we want to use general font values in this calculation to make sure single lines of text are placed on the same baseline. 
+        //If we're using the ascent/descent of individual lines to determine vertical alignment, the text will always be slightly off due to some lines being higher
+        double diff = (height - marginTop - marginBottom) - determineContentHeightWithGeneralFontValues(this.textSplit.size(), this.getFont().getMetrics());
         double yAdjustment = diff / 2;
         if (this.textSplit.size() > 0 && diff > 0) {
             for (Position p : textSplit.keySet()) {
@@ -97,7 +99,12 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         }
     }
 
-    private double DetermineTotalContentHeight(int lineAdditions, FontMetrics metrics, String first, String last) {
+    private double determineContentHeightWithGeneralFontValues(int lines, FontMetrics metrics) {
+        int size = this.getTextSize();
+        return lines * ((metrics.getAscentPoint() * size) + Math.abs(metrics.getDescentPoint() * size));
+    }
+
+    private double determineTotalContentHeight(int lineAdditions, FontMetrics metrics, String first, String last) {
         double contentHeight = marginTop + marginBottom;
         if (lineAdditions > 0) {
             if (last == null && first != null) {
