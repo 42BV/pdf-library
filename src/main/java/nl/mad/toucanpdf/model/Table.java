@@ -177,4 +177,18 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @return padding value used by table
      */
     double getPadding();
+
+    /**
+     * Returns whether the table content is vertically aligned or not
+     * @return true if the content is vertically aligned, false otherwise
+     */
+    boolean isVerticalAligned();
+
+    /**
+     * Sets whether the table content should be vertically aligned or not
+     * @param verticalAlign true if the content should be vertically aligned, false otherwise
+     * @return this table instance
+     */
+    Table verticalAlign(boolean verticalAlign);
+
 }

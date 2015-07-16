@@ -14,6 +14,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     private boolean drawFillerCells = true;
     private boolean repeatHeader = false;
     protected double padding = 5;
+    private boolean verticalAlignment = false;
 
     public AbstractTable(int pageWidth) {
         super(DocumentPartType.TABLE);
@@ -38,6 +39,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.drawFillerCells = table.getDrawFiller();
         this.repeatHeader = table.isRepeatingHeader();
         this.padding = table.getPadding();
+        this.verticalAlignment = table.isVerticalAligned();
     }
 
     @Override
@@ -160,7 +162,20 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         return this;
     }
 
+    @Override
     public double getPadding() {
         return this.padding;
     }
+
+    @Override
+    public boolean isVerticalAligned() {
+        return this.verticalAlignment;
+    }
+
+    @Override
+    public Table verticalAlign(boolean verticalAlignment) {
+        this.verticalAlignment = verticalAlignment;
+        return this;
+    }
+
 }

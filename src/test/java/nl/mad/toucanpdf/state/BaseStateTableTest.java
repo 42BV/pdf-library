@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BaseCell;
@@ -17,8 +16,8 @@ import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StateCell;
+import nl.mad.toucanpdf.model.state.StateCellText;
 import nl.mad.toucanpdf.model.state.StatePage;
-import nl.mad.toucanpdf.model.state.StateSpacing;
 import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -69,24 +68,24 @@ public class BaseStateTableTest {
         Cell c5 = cells.get(4);
 
         assertEquals(new Position(20, 797), table.getPosition());
-        assertEquals(58.296, table.getContentHeight(page), FloatEqualityTester.EPSILON);
+        assertEquals(83.728, table.getContentHeight(page), FloatEqualityTester.EPSILON);
         assertEquals(100, table.getContentWidth(page, table.getPosition()), FloatEqualityTester.EPSILON);
         //header position is always null, width and height are also undetermined
         assertEquals(new Position(20, 797), c1.getPosition());
-        assertEquals(47, c1.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(19.232, c1.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(67, 797), c2.getPosition());
-        assertEquals(19.232, c2.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(53, c2.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 777.768), c3.getPosition());
-        assertEquals(19.064, c3.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(47, c3.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(67, 777.768), c4.getPosition());
-        assertEquals(19.064, c4.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(53, c4.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 758.7040000000001), c5.getPosition());
+        assertEquals(29.60028, c1.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(31.864, c1.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(49.60028382213813, 797), c2.getPosition());
+        assertEquals(31.864, c2.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(34.92194, c2.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 765.136), c3.getPosition());
+        assertEquals(31.864, c3.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(29.60028, c3.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(49.60028382213813, 765.136), c4.getPosition());
+        assertEquals(31.864, c4.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(34.92194, c4.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 733.2719999999999), c5.getPosition());
         assertEquals(20, c5.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(47, c5.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(29.60028, c5.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(), text.getPosition());
         assertEquals(new Position(), text2.getPosition());
     }
@@ -97,6 +96,31 @@ public class BaseStateTableTest {
         table.addCell("Test");
         table.updateHeight(page);
         assertEquals(19.064, table.getHeight(), FloatEqualityTester.EPSILON);
+    }
+
+    @Test
+    public void testVerticalAlignment() {
+        StatePage page = new BaseStatePage(800, 800);
+        StatePage page2 = new BaseStatePage(800, 800);
+        table.columns(2);
+        table.width(200);
+        BaseStateTable table2 = new BaseStateTable(table);
+
+        //vertical alignment is only used when there is a height difference between columns
+        table.addCell("Test");
+        table.addCell("Test test test test test test test test");
+        table.processContentSize(page);
+        List<StateCell> cells = table.getStateCellCollection();
+        StateCellText textObj = (StateCellText) cells.get(0).getStateCellContent();
+        assertEquals(new Position(25.5, 783.304), textObj.getTextSplit().entrySet().iterator().next().getKey());
+
+        table2.addCell("Test");
+        table2.addCell("Test test test test test test test test");
+        table2.verticalAlign(true);
+        table2.processContentSize(page2);
+        cells = table2.getStateCellCollection();
+        textObj = (StateCellText) cells.get(0).getStateCellContent();
+        assertEquals(new Position(25.5, 778.2719999999999), textObj.getTextSplit().entrySet().iterator().next().getKey());
     }
 
     @Test

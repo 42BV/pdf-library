@@ -229,8 +229,10 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
         List<StateCell> cells = combineCellsFromRows(rows);
         if (processPositioning) {
-            for (StateCell c : cells) {
-                c.processVerticalAlignment();
+            if(this.isVerticalAligned()) {
+                for (StateCell c : cells) {
+                    c.processVerticalAlignment();
+                }
             }
             this.content = cells;
             this.adjustFilledHeight(page);
@@ -482,8 +484,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         //first we'll add width to each cell, that has no specified width, to make sure they reach the minimum value that they require
         List<ColumnPossibleWidth> allMinPossibleWidths = new ArrayList<>();
         Collections.addAll(allMinPossibleWidths, minColumnWidths);
-        double totalColumnWidthRequired = allMinPossibleWidths.stream().mapToDouble(ColumnPossibleWidth::getWidth).sum();
         Predicate<ColumnPossibleWidth> defaultFilter = (minWidth) -> minWidth != null && minWidth.getWidth() > columnWidths[minWidth.getColumn()];
+        double totalColumnWidthRequired = allMinPossibleWidths.stream().filter(defaultFilter).mapToDouble(ColumnPossibleWidth::getWidth).sum();
         Predicate<ColumnPossibleWidth> minFilter = defaultFilter;
         boolean notEnoughSpace = totalColumnWidthRequired > remainingWidth;
 

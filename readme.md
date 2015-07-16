@@ -117,7 +117,7 @@ Unique to tables and images is the option to allow or disallow wrapping. When wr
 
     builder.addTable().allowWrapping(false);
 
-This value will be overriden when the image or table is within an anchor. Right and left anchors automatically allow wrapping, while anchors above or beneath a text will automatically disallow wrapping. 
+This value will be overridden when the image or table is within an anchor. Right and left anchors automatically allow wrapping, while anchors above or beneath a text will automatically disallow wrapping.
 
 
 ###Pages
