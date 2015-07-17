@@ -8,16 +8,16 @@ The Toucan-PDF library is currently capable of the following features
 - Adding text and (automatic) positioning of text, in- or outside a paragraph.
 - Font selection (only the 14 default font types are available for now)
 - Adding images
-- Adding tables, with custom column spans
+- Adding tables, with custom column/row spans
 - Adding headers/footers
 - And more!
 
 ##Introduction
-Toucan-PDF offers an easy to use fluent API to start creating your documents with. To start creating documents simply create a new instance of DocumentBuilder.
+Toucan-PDF offers an easy to use fluent API to start creating your documents with. In order to begin you simply create a new instance of DocumentBuilder.
 
     DocumentBuilder builder = new DocumentBuilder();
 
-Congratulations, you've just created a document. Now, to start actually adding content we can just continue using this builder. The API offers method chaining allowing you to quickly create and fill new objects. Let's start with filling in some metadata of the document.
+Congratulations, you've just created a document. Now, to start actually adding content we can just continue using this builder. The API offers method chaining allowing you to quickly create and fill new objects. Let's go ahead and fill in some metadata of the document.
 
     builder.title("The Hitchhiker's Guide to the Galaxy").writtenBy("Douglas Adams");
 
@@ -27,7 +27,7 @@ All it requires is calling a few methods and passing along our data. Adding actu
 
 In this example we've added the text "Example text" on a fixed position. You can also add text without specifying a position which will cause the library to automatically position the text for you.
 
-You can also add multiple text objects to a paragraph to make sure they stay together. Note the use of builder.createText() instead of builder.addText() here, this makes sure the text object is only instantiated and not directly added to the document. Using addText and adding the text to a paragraph afterwards would result in showing the text twice!
+You can also add multiple text objects to a paragraph. This is mostly useful for anchors (see below) and for setting margins on the combined text instead of individual objects. Note the use of builder.createText() instead of builder.addText() here, this makes sure the text object is only instantiated and not directly added to the document. Using addText and adding the text to a paragraph afterwards would result in showing the text twice!
    
     builder.addParagraph().on(10, 10).addText(builder.createText().text("This stays")).addText(builder.createText("together"));
 
@@ -62,7 +62,7 @@ The complete code for creating a very simple document including a font would be:
 The state of the document is preserved after finishing up, so you can go back, make changes and create another PDF file if you wish. 
 
 ##Advanced Usage
-Now that we have discussed the basics of the library, let's introduce some of the more advanced features. We'll handle them one by one, starting with some general features that are applicable to more than one document part. The term 'document part' is used more often in the library and refers to content in the document such as text or an image.
+Now that we have discussed the basics of the library, let's introduce some of the more advanced features. We'll handle them one by one, starting with some general features that are applicable to more than one document part. The term 'document part' is used more often in the library and refers to content in the document such as text or an image. For brevity's sake, the following examples will often assume that you have already created a DocumentBuilder instance or a document part instance.
 
 ###General features
 Here we'll discuss a few of the options that are available on several, if not all, document parts.
@@ -93,19 +93,10 @@ You can also set the margins for pages, this works the same as in the example ab
 
 These default margins will not be applied to pages you create.
 
-##### - Preview retrieval
-As stated before you do not have to specify positions for document parts, the library can handle the positioning for you. This is not done immediately after adding the part through the DocumentBuilder though. The library maintains two states. The first one is the state that is built by adding pages and content through the DocumentBuilder as we've been doing throughout these examples. The second state is made when you call the finish method of the DocumentBuilder. The library executes the positioning and splitting of document parts in this second state. This ensures that the original state will always remain the same. However, there is an option to retrieve a preview allowing you to see what will happen to the document parts you've added so far. By requesting this preview the library will calculate and process this second state. You can then use the preview to see how many pages there actually are due to overflow processing and how your document parts have been split/positioned. Enough talking for now, let's see how this actually works. In this example we're making the assumption that the text is too large to fit on the page and needs to be split into two text objects. 
+##### - Builder defaults
+There are several other builder defaults you can set besides the margins mentioned above. You can also set a default font to use, a default text size to use and a default text color to use. Whenever you add or create text through the builder, these defaults will be applied to the resulting object.
 
-    Page page = builder.addPage();
-    Text text = builder.addText("This part of the text will fit. This part will not.");
-    DocumentState preview = builder.getPreview(); 
-    List<Text> actualTextObjects = preview.getPreviewFor(text);
-    actualTextObjects.get(0).getText(); //would return "This part of the text will fit."
-    actualTextObjects.get(1).getText(); //would return "This part will not."
-    actualTextObjects.get(0).getPosition(); //returns the exact position of the text object. 
-    preview.getPreviewFor(page).size() //would return two. Since the text object would not fit on the first page, the creation of a second page would be required.
-
-As you can see the preview state allows us to see exactly what the document will look like. There is a lot more information you can pull from the objects returned by the preview state. Making changes to the objects in the preview state will not do anything. The state is fully recalculated every time you request the preview and before an actual PDF file is created. Keep this in mind while working on very large documents since the calculations can become costly performance wise. The getPreviewFor method works for almost every document part. However, parts that are added to other parts can not be retrieved through the use of this method. So you can not, for example, retrieve the text within a paragraph through the original text object or retrieve an image that was added to a table. You can still retrieve these through other means by simply looking in the text collection of the paragraph or the content of a table. 
+    builder.setDefaultFont(myCoolFont).setDefaultTextSize(11).setDefaultColor(Color.RED);
 
 ##### - Compression
 The library also allows you to set the compression to use for your document parts. Right now only flate compression is supported and flate will always be used by default. Here is an example of how to change the compression.
@@ -119,9 +110,20 @@ Unique to tables and images is the option to allow or disallow wrapping. When wr
 
 This value will be overridden when the image or table is within an anchor. Right and left anchors automatically allow wrapping, while anchors above or beneath a text will automatically disallow wrapping.
 
+###Text
+We've already discussed the basics of text addition, but there are a few more things we can do with text. For example we can set the shear and scale of text. Changing the shear values of a text allows you to skew the text. Use small values to adjust this (0.1 is a slight skew for example). The scale adjusts the size of the text. Both the shear and scale can be set on the X or Y axis separately or at the same time. In the example below we use the method that allows us to set both values at once.
+
+    myTextObject.scale(10, 10).shear(0.1, 0.1);
+    
+Beware that the shear and scale are **not** taken into account by the library during automatic positioning. Therefore a text with a large scale can go out of the page bounds and is likely to overlap with other content on the page. If you want simple scaling on both axes or a slight skew simply adjust the text size and use an italic font instead of changing the scale and shearing values. If you do decide to use these options make sure to test the output to see if it is the result you wanted.
+
+Furthermore we can also change the color of text. You can either use one of the default available colors or determine one yourself by passing RGB values. Note that these RGB values must be between zero and one, not between zero and 255. This means the color red, which is one of the default available colors, would have the RGB values of 1, 0 and 0.
+
+    myFirstText.color(Color.GREEN);
+    mySecondText.color(new Color(0.3, 0.7, 0.2));
 
 ###Pages
-While you can let the library add pages automatically by simply adding content, you can also take matters into your own hands. The following example (and all other examples that are coming up) assumes you've already created a DocumentBuilder.
+While you can let the library add pages automatically by simply adding content, you can also take matters into your own hands. 
 
 	builder.addPage().size(400, 400).marginTop(20).marginLeft(30).marginRight(30).marginBottom(10);
 
@@ -131,7 +133,6 @@ However, what if we add so much content to the page that it will no longer fit? 
 
 #####- Master pages 
 The library also supports the use of master pages. This allows you to determine a layout for multiple pages at once. Master pages function exactly the same as normal pages. Things get interesting when you appoint a master page to one of your normal "content" pages. The normal page will take over all attributes from the given master page and will also copy the content of the master page. Here is an example.
-
 
     Page masterPage = builder.createPage().size(500, 500).marginTop(50);
     builder.addPage().master(masterPage);
@@ -156,7 +157,6 @@ This is not all we can do with headers. Let's take a look at this example.
 This is an example of the attribute system that is in place. You can add attributes to headers and refer to them in your text. The attributes are stored with a key, in our example the key is "documentTitle" with the value "Toucan-PDF". Now we can refer to this  attribute in our text by simply prepending a % to the key value. These attributes are not global, you'll have to specify them for each header/footer separately. There are also a few attributes that are provided by the library itself. These are the "pageNumber" and "totalPages" attributes. All headers and footers will get these automatically, so no need to add these yourself. You could create a nice page number indicator by using the following text in a footer. 
 > Page %pageNumber of %totalPages
 
-
 ###Images
 Next up are the images. Adding an image works much the same as adding other document parts.
 
@@ -177,16 +177,66 @@ You can also attach images to text within a paragraph by using anchors. The use 
 There is also the option to place an anchor beneath a text or left/right of a text. Anchors also support margins allowing you to put some space between the text and the anchor object. As said before wrapping is determined automatically. You can also set the alignment of the anchor object, but it will only be taken into account if the anchor is placed above or below the text.
 
 ####Tables
-The last document part is the table object. While creating tables works exactly the same as creating other document parts, filling them is fairly unique. Let's look at an example to demonstrate this.
+The last document part is the table object. While creating tables works exactly the same as creating other document parts, filling them is slightly different though. Let's look at an example to demonstrate this.
 
-    Table table = builder.addTable().columns(4);
+    Table table = builder.addTable().columns(2);
     table.addCell("Text 1");
-    //it is assumed you already created an image object stored as image
-    table.addCell(image).columnSpan(3);
+    table.addCell(myCoolImage);
     table.addCell("Text 2");
-    table.drawFillerCells(true);
+    table.addCell("Text 3");
 
-The above code would result in a table four columns wide with on the first row a single column containing the text "Text 1", followed by an image that takes up the remaining three columns. On the second row would be a single column containing the text "Text 2" followed by three empty columns. Everytime you do not fully fill a row, empty cells will be added. This also happens if you were to, for example, add a cell that takes up three of the four columns followed by a cell that takes up two columns. Since they cannot fit on the same row, an empty column will be added after the first cell. You can avoid drawing these by passing a boolean with the value false to the drawFillerCells method. Manually added empty cells are still drawn if you decide not to draw filler cells. Tables can also be added to anchors just like images. 
+The above code would result in a table two columns wide with on the first row a single column containing the text "Text 1", followed by an image in the second column. On the second row would be a column containing the text "Text 2" followed by a column with the text "Text 3". Keep in mind that you can only add text and images to tables. It's not possible to add paragraphs or other tables. Tables can also be added to anchors just like images. There is a lot more to learn about tables, but we'll discuss this separately in the sections below.
+
+##### - Borders
+You can determine the border size of a table yourself. This size can range from zero to six. On zero the table will simply have no visible borders. You can also set the border on a cell level instead of on a table level. The border set on the table level will automatically be applied to each cell you did not manually specify a border on. 
+
+    myAmazingTable.border(2);
+    myPerfectCell.border(0);
+
+##### - Padding
+You can also set a padding value on both a table and cell level. This works the same as for borders. If you do not specify padding on a cell, the table padding will be used by default. You can only set a single padding value that will be applied on each side.
+
+    myAmazingTable.padding(2);
+    myPerfectCell.padding(0);
+
+##### - Column & row spans
+Cells can take up multiple columns and rows if you want. It's fairly straightforward, simply adjust the value on a cell. The library will automatically limit the column span to the actual size of the table if the specified value exceeds it.
+
+    myPerfectCell.columnSpan(2).rowSpan(2);
+    
+##### - Headers
+If you want you can decide to repeat the header of the table in case the table has to be spread over multiple pages due to the table not fitting. The first row of a table will be automatically considered to be the header. 
+
+    myAmazingTable.repeatHeader(true);
+
+##### - Filler cells
+Sometimes the cells that you add will not be able to fully fill a table row, like in the example below. Let's assume that myAmazingTable has a column count of four per row.
+   
+    myAmazingTable.addCell("t1").columnSpan(3);
+    myAmazingTable.addCell("t2").columnSpan(2);
+
+In this example the second cell would not be able to fit on the same row as the first cell, however the first cell only takes up three columns. This means there is a single empty column at the end of the first row and two empty columns at the end of the second row. You can decide to draw those open spaces as empty cells or to simply not draw them at all. By default they are drawn.
+
+    myAmazingTable.drawFillerCells(false);
+    
+##### - Vertical alignment
+You can activate vertical alignment on a table level. Keep in mind that vertical alignment only applies if there is a column in the row that is larger than the rest.
+
+    myAmazingTable.verticalAlign(true);
+
+#### - Preview retrieval
+As stated before you do not have to specify positions for document parts, the library can handle the positioning for you. However the positioning is not processed immediately after adding the part through the DocumentBuilder. The library maintains two states. The first one is the state that is built by adding pages and content through the DocumentBuilder as we've been doing throughout these examples. The second state only comes into play when you decide to create the PDF file. The library executes the positioning and splitting of document parts when you call the finish method and the result is maintained in this second state. This ensures that the original state will always remain exactly as you made it allowing it to be reused or adjusted. However, there is an option that allows you to take a peek into this second state before finalizing the entire document. The DocumentBuilder offers a method that retrieves a preview allowing you to see what will happen to the document parts you've added so far. By requesting this preview the library will calculate and process the second state. This state will be exactly the same as the state created during the finish method. You can then use this preview to see how many pages there actually are due to overflow processing and how your document parts have been split/positioned. Enough talking for now, let's see how this actually works. In this example we're making the assumption that the text is too large to fit on the page and needs to be split into two text objects. 
+
+    Page page = builder.addPage();
+    Text text = builder.addText("This part of the text will fit. This part will not.");
+    DocumentState preview = builder.getPreview(); 
+    List<Text> actualTextObjects = preview.getPreviewFor(text);
+    actualTextObjects.get(0).getText(); //would return "This part of the text will fit."
+    actualTextObjects.get(1).getText(); //would return "This part will not."
+    actualTextObjects.get(0).getPosition(); //returns the exact position of the text object. 
+    preview.getPreviewFor(page).size() //would return two. Since the text object does not fit on the first page, the creation of a second page is required.
+
+As you can see the preview state allows us to see exactly what the document will look like. There is a lot more information you can pull from the objects returned by the preview state. Making changes to the objects in the preview state will not do anything. The state is fully recalculated every time you request the preview and before an actual PDF file is created. Keep this in mind while working on very large documents since the calculations can become costly performance wise if you retrieve the preview often. The getPreviewFor method works for almost every document part. However, parts that are added to other parts can not be retrieved through the use of this method. So you can not, for example, retrieve the text within a paragraph through the original text object or retrieve an image that was added to a table. You can still retrieve these through other means by simply looking in the text collection of the paragraph or the content of a table. 
 
 ##Example
 
