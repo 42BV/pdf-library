@@ -194,7 +194,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
             double dashWidth = metrics.getWidthPoint("endash") * textSize;
             while (currentWidth < (widthLimit - dashWidth) && i != charArray.length) {
                 char c = charArray[i];
-                double characterSize = 0.0;
+                double characterSize;
                 if (i + 1 != charArray.length) {
                     characterSize = (((metrics.getWidth(c) - metrics.getKerning(c, charArray[i + 1])) * textSize) * metrics.getConversionToPointsValue());
                 } else {
@@ -206,19 +206,23 @@ public class BaseStateText extends AbstractStateText implements StateText {
                 }
                 ++i;
             }
-            if (i != 0) {
-                currentString.append('-');
-                text.set(currentTextIndex, "");
-                String stringToAdd = String.valueOf(charArray).substring(i - 1);
-                if (text.size() > currentTextIndex + 1) {
-                    text.set(currentTextIndex + 1, stringToAdd);
-                } else {
-                    text.add(stringToAdd);
-                }
-            }
+            ApplyTextSplit(text, currentTextIndex, currentString, charArray, i);
             return currentString.toString();
         }
         return currentLine;
+    }
+
+    private void ApplyTextSplit(List<String> text, int currentTextIndex, StringBuilder currentString, char[] charArray, int lastCharOfCurrentLineIndex) {
+        if (lastCharOfCurrentLineIndex != 0) {
+            currentString.append('-');
+            text.set(currentTextIndex, "");
+            String stringToAdd = String.valueOf(charArray).substring(lastCharOfCurrentLineIndex - 1);
+            if (text.size() > currentTextIndex + 1) {
+                text.set(currentTextIndex + 1, stringToAdd);
+            } else {
+                text.add(stringToAdd);
+            }
+        }
     }
 
     /**

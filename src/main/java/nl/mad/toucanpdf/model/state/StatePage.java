@@ -2,6 +2,7 @@ package nl.mad.toucanpdf.model.state;
 
 import java.util.List;
 
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
 
@@ -83,9 +84,9 @@ public interface StatePage extends StateDocumentPart, Page {
      * @param requiredSpaceAbove Amount of empty space required above the given position.
      * @param requiredSpaceBelow Amount of empty space required below the given position.
      * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
-     * @return List of int arrays, each contains the start- and end point of the space.
+     * @return List of open spaces, each contains the start- and end point of the space.
      */
-    List<int[]> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
+    List<Space> getOpenSpacesOn(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
             StateSpacing spacing);
 
     /**
@@ -105,8 +106,8 @@ public interface StatePage extends StateDocumentPart, Page {
      * @param requiredSpaceAbove Amount of empty space required above the given position.
      * @param requiredSpaceBelow Amount of empty space required below the given position.
      * @param spacing Object that will be ignored during position conflict checks and contains left and right spacing.
-     * @return List of int arrays, each contains respectively the start, end and height of the open space..
+     * @return List of open spaces, each contains the start, end and height of the open space.
      */
-    List<int[]> getOpenSpacesIncludingHeight(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
+    List<Space> getOpenSpacesIncludingHeight(Position pos, boolean ignoreSpacesBeforePositionWidth, double requiredSpaceAbove, double requiredSpaceBelow,
             StateSpacing spacing);
 }

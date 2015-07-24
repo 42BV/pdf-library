@@ -34,14 +34,11 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         textSplit = new LinkedHashMap<Position, String>();
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
         strings.add("");
-        //leading += getRequiredSpaceBelowLine();
         int textSize = this.getTextSize();
         double width = 0;
         FontMetrics metrics = getFont().getMetrics();
         StringBuilder currentLine = new StringBuilder();
-        Position pos = new Position(position);
-        pos.adjustY(-marginTop);
-        pos.adjustX(marginLeft);
+        Position pos = SetupPosition(position);
         availableWidth -= marginRight + marginLeft;
         int lineAdditions = 0;
         String firstLine = null;
@@ -84,6 +81,13 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
         return determineTotalContentHeight(lineAdditions, metrics, firstLine, lastLine);
+    }
+
+    private Position SetupPosition(Position position) {
+        Position pos = new Position(position);
+        pos.adjustY(-marginTop);
+        pos.adjustX(marginLeft);
+        return pos;
     }
 
     @Override

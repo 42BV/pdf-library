@@ -5,6 +5,7 @@ import java.util.List;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 
 /**
  * This interface specifies the methods that should be implemented by all placeable document parts in the preview state.
@@ -41,7 +42,7 @@ public interface StatePlaceableDocumentPart extends StateDocumentPart, Placeable
      * Returns a list of int arrays containing the spaces used by the text. Each int array contains the starting x value of the text and the ending x value.
      * @param height the y value where the spaces should be retrieved for.
      * @param pageWidth the width of the page the content is on.
-     * @return List of int arrays containing the spaces used.
+     * @return List of spaces.
      */
-    List<int[]> getUsedSpaces(double height, int pageWidth);
+    List<Space> getUsedSpaces(double height, int pageWidth);
 }

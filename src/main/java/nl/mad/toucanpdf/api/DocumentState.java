@@ -61,15 +61,11 @@ public class DocumentState {
         stateLink = new HashMap<DocumentPart, List<DocumentPart>>();
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
+
             StatePage newPage = new BaseStatePage(page);
             newPage.setOriginalObject(page);
-            Page masterPage = page.getMasterPage();
-            if (masterPage != null) {
-                StatePage masterCopy = new BaseStatePage(page.getMasterPage());
-                processPageContent(masterPage, masterCopy);
-                newPage.master(masterCopy);
-                newPage.addAll(masterCopy.getContent());
-            }
+            AddMasterPageToNewStatePage(page, newPage);
+
             state.add(newPage);
             addToStateLink(page, newPage);
             Page overflowPage = processPageContent(page, newPage);
@@ -80,6 +76,16 @@ public class DocumentState {
         processPageAreas();
     }
 
+    private void AddMasterPageToNewStatePage(Page page, StatePage newPage) {
+        Page masterPage = page.getMasterPage();
+        if (masterPage != null) {
+            StatePage masterCopy = new BaseStatePage(page.getMasterPage());
+            processPageContent(masterPage, masterCopy);
+            newPage.master(masterCopy);
+            newPage.addAll(masterCopy.getContent());
+        }
+    }
+
     private void processPageAreas() {
         String totalPageNumbers = String.valueOf(state.size() - 1);
         for (int i = 1; i < state.size(); ++i) {
@@ -87,16 +93,19 @@ public class DocumentState {
             PageArea header = sp.getHeader();
             PageArea footer = sp.getFooter();
             if (header != null) {
-                header.addAttribute("pageNumber", String.valueOf(i));
-                header.addAttribute("totalPages", totalPageNumbers);
+                addPageNumbersToPageArea(totalPageNumbers, i, header);
                 processPageAreaContent(header, sp);
             }
             if (footer != null) {
-                footer.addAttribute("pageNumber", String.valueOf(i));
-                footer.addAttribute("totalPages", totalPageNumbers);
+                addPageNumbersToPageArea(totalPageNumbers, i, footer);
                 processPageAreaContent(footer, sp);
             }
         }
+    }
+
+    private void addPageNumbersToPageArea(String totalPageNumbers, int number, PageArea area) {
+        area.addAttribute("pageNumber", String.valueOf(number));
+        area.addAttribute("totalPages", totalPageNumbers);
     }
 
     private void processPageAreaContent(PageArea area, StatePage sp) {
@@ -109,7 +118,7 @@ public class DocumentState {
         for (int i = 0; i < content.size(); ++i) {
             DocumentPart part = content.get(i);
             if (part.getType().equals(DocumentPartType.TEXT)) {
-                part = processAttributes((Text) part, attributes);
+                processAttributes((Text) part, attributes);
             } else if (part.getType().equals(DocumentPartType.TABLE)) {
                 Table table = (Table) part;
                 List<Cell> cells = table.getContent();
@@ -185,22 +194,19 @@ public class DocumentState {
                 StateText text = new BaseStateText((Text) part);
                 text.setOriginalObject(part);
                 text.processContentSize(page, text.getPosition().getX(), true);
-                page.add(text);
-                addToStateLink(part, text);
+                AddPartToStatePage(page, part, text);
                 break;
             case PARAGRAPH:
                 StateParagraph paragraph = new BaseStateParagraph((Paragraph) part, true);
                 paragraph.setOriginalObject(part);
                 paragraph.processContentSize(page, true);
-                page.add(paragraph);
-                addToStateLink(part, paragraph);
+                AddPartToStatePage(page, part, paragraph);
                 break;
             case IMAGE:
                 StateImage image = new BaseStateImage((Image) part);
                 image.setOriginalObject(part);
                 image.processContentSize(page, true, false, true);
-                page.add(image);
-                addToStateLink(part, image);
+                AddPartToStatePage(page, part, image);
                 break;
             case TABLE:
                 StateTable table = new BaseStateTable((Table) part);
@@ -209,14 +215,18 @@ public class DocumentState {
                 }
                 table.setOriginalObject(part);
                 table.processContentSize(page, true, false, true);
-                page.add(table);
-                addToStateLink(part, table);
+                AddPartToStatePage(page, part, table);
                 break;
             default:
                 LOGGER.warn("The given document type: " + part.getType() + " is unsupported.");
                 break;
             }
         }
+    }
+
+    private void AddPartToStatePage(StatePage page, DocumentPart original, StateDocumentPart part) {
+        page.add(part);
+        addToStateLink(original, part);
     }
 
     /**
@@ -354,8 +364,7 @@ public class DocumentState {
         text.on(position);
 
         StateText overflowText = text.processContentSize(page, 0, false);
-        page.add(text);
-        addToStateLink(p, text);
+        AddPartToStatePage(page, p, text);
         if (overflowText != null) {
             return handleOverflow(page, i + 1, overflowText, content);
         }
