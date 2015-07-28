@@ -235,26 +235,7 @@ public class BaseStatePage extends BasePage implements StatePage {
         if (pos != null) {
             List<Space> openSpaces = this.getOpenSpacesOn(pos, ignoreSpacesBeforePositionWidth, requiredSpaceAbove, requiredSpaceBelow, spacing);
             for (DocumentPart p : getContent()) {
-                if (p instanceof StatePlaceableDocumentPart) {
-                    StatePlaceableDocumentPart part = ((StatePlaceableDocumentPart) p);
-                    Position position = part.getPosition();
-                    if (position.getY() < pos.getY()) {
-                        for (Space usedSpace : part.getUsedSpaces(position.getY(), this.getWidth())) {
-                            openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
-                            int i = 0;
-                            boolean usedSpaceAdded = false;
-                            while (!usedSpaceAdded && i < openSpaces.size()) {
-                                Space openSpace = openSpaces.get(i);
-                                if (openSpace.getEndPoint() == usedSpace.getStartPoint()) {
-                                    Space newOpenSpace = new Space(usedSpace.getStartPoint(), usedSpace.getEndPoint(), (int) (pos.getY() - position.getY());
-                                    openSpaces.add(openSpaces.indexOf(openSpace) + 1, newOpenSpace);
-                                    usedSpaceAdded = true;
-                                }
-                                ++i;
-                            }
-                        }
-                    }
-                }
+                openSpaces = getOpenSpacesIncludingHeightForDocumentPart(pos, openSpaces, p);
             }
             for (int i = 0; i < openSpaces.size(); ++i) {
                 Space openSpace = openSpaces.get(i);
@@ -267,6 +248,30 @@ public class BaseStatePage extends BasePage implements StatePage {
             return openSpaces;
         }
         return new LinkedList<Space>();
+    }
+
+    private List<Space> getOpenSpacesIncludingHeightForDocumentPart(Position pos, List<Space> openSpaces, DocumentPart p) {
+        if (p instanceof StatePlaceableDocumentPart) {
+            StatePlaceableDocumentPart part = ((StatePlaceableDocumentPart) p);
+            Position position = part.getPosition();
+            if (position.getY() < pos.getY()) {
+                for (Space usedSpace : part.getUsedSpaces(position.getY(), this.getWidth())) {
+                    openSpaces = adjustOpenSpaces(openSpaces, usedSpace);
+                    int i = 0;
+                    boolean usedSpaceAdded = false;
+                    while (!usedSpaceAdded && i < openSpaces.size()) {
+                        Space openSpace = openSpaces.get(i);
+                        if (openSpace.getEndPoint() == usedSpace.getStartPoint()) {
+                            Space newOpenSpace = new Space(usedSpace.getStartPoint(), usedSpace.getEndPoint(), (int) (pos.getY() - position.getY()));
+                            openSpaces.add(openSpaces.indexOf(openSpace) + 1, newOpenSpace);
+                            usedSpaceAdded = true;
+                        }
+                        ++i;
+                    }
+                }
+            }
+        }
+        return openSpaces;
     }
 
     /**
@@ -308,7 +313,7 @@ public class BaseStatePage extends BasePage implements StatePage {
                 addOpenSpaceToList(newOpenSpaces, new Space(usedSpace.getEndPoint(), openSpace.getEndPoint()));
             } else if (usedSpaceStartsWithinOpenSpaceAndEndsAfterOpenSpace(usedSpace, openSpace)) {
                 addOpenSpaceToList(newOpenSpaces, new Space(openSpace.getStartPoint(), usedSpace.getStartPoint()));
-            } else if (!(usedSpace.getStartPoint() < openSpace.getStartPoint() && usedSpace.getEndPoint() > openSpace.getEndPoint())) {
+            } else if (!usedSpaceStartsBeforeOpenSpaceAndEndsAfterOpenSpace(usedSpace, openSpace)) {
                 addOpenSpaceToList(newOpenSpaces, openSpace);
             }
         }
@@ -327,6 +332,10 @@ public class BaseStatePage extends BasePage implements StatePage {
     private boolean usedSpaceStartsBeforeOpenSpaceAndEndsWithinOpenSpace(Space usedSpace, Space openSpace) {
         return usedSpace.getStartPoint() < openSpace.getStartPoint() && usedSpace.getEndPoint() > openSpace.getStartPoint()
                 && !(usedSpace.getEndPoint() > openSpace.getEndPoint());
+    }
+
+    private boolean usedSpaceStartsBeforeOpenSpaceAndEndsAfterOpenSpace(Space usedSpace, Space openSpace) {
+        return (usedSpace.getStartPoint() < openSpace.getStartPoint() && usedSpace.getEndPoint() > openSpace.getEndPoint());
     }
 
     /**

@@ -14,6 +14,7 @@ import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateCellText;
@@ -130,13 +131,13 @@ public class BaseStateTableTest {
         table.marginBottom(20);
         table.marginTop(10);
         table.on(100, 100);
-        List<int[]> usedSpaces = table.getUsedSpaces(110, 600);
-        assertEquals(100, usedSpaces.get(0)[0]);
-        assertEquals(400, usedSpaces.get(0)[1]);
+        List<Space> usedSpaces = table.getUsedSpaces(110, 600);
+        assertEquals(100, usedSpaces.get(0).getStartPoint());
+        assertEquals(400, usedSpaces.get(0).getEndPoint());
         table.allowWrapping(false);
         usedSpaces = table.getUsedSpaces(110, 600);
-        assertEquals(0, usedSpaces.get(0)[0]);
-        assertEquals(600, usedSpaces.get(0)[1]);
+        assertEquals(0, usedSpaces.get(0).getStartPoint());
+        assertEquals(600, usedSpaces.get(0).getEndPoint());
         usedSpaces = table.getUsedSpaces(130, 600);
         assertEquals(0, usedSpaces.size());
         usedSpaces = table.getUsedSpaces(70, 600);
@@ -193,7 +194,7 @@ public class BaseStateTableTest {
         new NonStrictExpectations() {
             {
                 page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(), new ArrayList<>(Arrays.asList(new int[] { 0, 110, 50 })));
+                returns(new ArrayList<Space>(), new ArrayList<>(Arrays.asList(new Space(0, 110, 50))));
                 page.getLeading();
                 returns(0);
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
@@ -201,7 +202,7 @@ public class BaseStateTableTest {
                 page.getHeightWithoutMargins();
                 returns(50, 0);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<>(Arrays.asList(new int[] { 0, 110 })));
+                returns(new ArrayList<>(Arrays.asList(new Space(0, 110))));
             }
         };
         
@@ -238,7 +239,7 @@ public class BaseStateTableTest {
         new NonStrictExpectations() {
             {
                 page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(), new ArrayList<int[]>(Arrays.asList(new int[] { 0, 10, 10 }, new int[] { 10, 300, 400 })));
+                returns(new ArrayList<Space>(), Arrays.asList(new Space(0, 10, 10), new Space(10, 300, 400)));
                 page.getLeading();
                 returns(10);
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
@@ -246,7 +247,7 @@ public class BaseStateTableTest {
                 page.getHeightWithoutMargins();
                 returns(400, 0);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(Arrays.asList(new int[] { 0, 200 }, new int[] { 250, 500 })));
+                returns(new ArrayList<Space>(Arrays.asList(new Space(0, 200), new Space(250, 500))));
             }
         };
         table.width(50);

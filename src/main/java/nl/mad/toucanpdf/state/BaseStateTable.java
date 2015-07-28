@@ -14,6 +14,7 @@ import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Table;
 import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateCellContent;
@@ -159,8 +160,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 p.adjustX(calculateAlignment(page));
             }
             this.setPosition(p);
-            List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(p, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
-            availableHeight = openSpaces.get(0)[2];
+            List<Space> openSpaces = page.getOpenSpacesIncludingHeight(p, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+            availableHeight = openSpaces.get(0).getHeight();
         }
 
         divideColumnsOverRows(tableContent, rows);
@@ -737,8 +738,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
 
     private double calculateAlignment(StatePage page) {
         double largestWidth = 0;
-        for (int[] openSpace : page.getOpenSpacesOn(this.getPosition(), false, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this)) {
-            largestWidth = Math.max(largestWidth, openSpace[1] - openSpace[0]);
+        for (Space openSpace : page.getOpenSpacesOn(this.getPosition(), false, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this)) {
+            largestWidth = Math.max(largestWidth, openSpace.getEndPoint() - openSpace.getStartPoint());
         }
         double remainder = largestWidth - this.getWidth();
         double adjustment = 0;
@@ -761,17 +762,17 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         double requiredSpaceAbove = this.getRequiredSpaceAbove();
         double requiredSpaceBelow = this.getRequiredSpaceBelow();
         Position pos = new Position(this.getPosition());
-        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+        List<Space> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
         boolean tablePositioned = false;
         while (pos != null && !tablePositioned) {
             int i = 0;
             while (!tablePositioned && i < openSpaces.size()) {
-                int[] openSpace = openSpaces.get(i);
-                if (pos.getX() < openSpace[0]) {
-                    pos.setX(openSpace[0]);
+                Space openSpace = openSpaces.get(i);
+                if (pos.getX() < openSpace.getStartPoint()) {
+                    pos.setX(openSpace.getStartPoint());
                 }
-                int openSpaceWidth = (openSpace[1] - openSpace[0]);
-                if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
+                int openSpaceWidth = (openSpace.getEndPoint() - openSpace.getStartPoint());
+                if (openSpaceWidth >= this.getWidth() && openSpace.getHeight() >= this.getHeight()) {
                     tablePositioned = true;
                     this.setPosition(pos);
                 }
@@ -818,15 +819,15 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height, int pageWidth) {
+    public List<Space> getUsedSpaces(double height, int pageWidth) {
         Position pos = getPosition();
-        List<int[]> space = new LinkedList<int[]>();
+        List<Space> space = new LinkedList<>();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
             if (wrappingAllowed) {
-                space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
+                space.add(new Space((int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight)));
             } else {
-                space.add(new int[] { 0, pageWidth });
+                space.add(new Space(0, pageWidth));
             }
         }
         return space;

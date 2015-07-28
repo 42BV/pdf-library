@@ -3,6 +3,7 @@ package nl.mad.toucanpdf.state;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.api.AbstractParagraph;
 import nl.mad.toucanpdf.api.BaseAnchor;
@@ -15,8 +16,9 @@ import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.Text;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Table;
+import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateParagraph;
 import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
@@ -206,19 +208,19 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         this.getAnchors().remove(a);
     }
 
-    private Position getMinimalStartingPositionForRightAnchor(Position pos, List<int[]> openSpaces) {
+    private Position getMinimalStartingPositionForRightAnchor(Position pos, List<Space> openSpaces) {
         //this method calculates the minimal starting point for the anchor to the right of the text.
         Position position = new Position(pos);
-        for (int[] openSpace : openSpaces) {
-            if (openSpace[1] - openSpace[0] > Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
-                position.setX(openSpace[0] + Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
+        for (Space openSpace : openSpaces) {
+            if (openSpace.getEndPoint() - openSpace.getStartPoint() > Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
+                position.setX(openSpace.getStartPoint() + Page.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING);
                 return position;
             }
         }
         return position;
     }
 
-    private Position getStartingPositionRightAnchor(Anchor anchor, Position pos, List<int[]> openSpaces, StatePage page) {
+    private Position getStartingPositionRightAnchor(Anchor anchor, Position pos, List<Space> openSpaces, StatePage page) {
         Position position = new Position(pos);
         if (anchor != null) {
             /*this method determines the starting position of the anchor to the right of a text object.
@@ -229,13 +231,13 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             boolean anchorPlaced = false;
             //Go through the open spaces and anchors list from back to front
             while (a >= 0 && !anchorPlaced) {
-                int[] openSpace = openSpaces.get(a);
-                int availableWidth = openSpace[1] - openSpace[0];
+                Space openSpace = openSpaces.get(a);
+                int availableWidth = openSpace.getEndPoint() - openSpace.getStartPoint();
                 PlaceableFixedSizeDocumentPart part = anchor.getPart();
                 double partWidth = part.getWidth() + part.getMarginLeft() + part.getMarginRight();
                 //if the current anchor fits in this open space we'll add it to the processed anchors.
                 if (FloatEqualityTester.greaterThan(availableWidth, partWidth)) {
-                    position.setX(openSpace[1] - partWidth);
+                    position.setX(openSpace.getEndPoint() - partWidth);
                     anchorPlaced = true;
                 }
                 --a;
@@ -250,7 +252,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
      * Processes the positioning of the given anchors.
      * @param position Position to place the anchors.
      * @param page StatePage to add the anchors to.
-     * @param anchorList List of anchors to process.
+     * @param anchor anchor to process.
      * @param location location of the anchors to process.
      * @return an instance of Position that has been adjusted for the anchor additions.
      */
@@ -391,8 +393,8 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height, int pageWidth) {
-        List<int[]> spaces = new LinkedList<int[]>();
+    public List<Space> getUsedSpaces(double height, int pageWidth) {
+        List<Space> spaces = new LinkedList<>();
         for (StateText t : textCollection) {
             spaces.addAll(t.getUsedSpaces(height, pageWidth));
         }
@@ -437,10 +439,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
 
     @Override
     public List<Text> getTextCollection() {
-        List<Text> text = new LinkedList<Text>();
-        for (Text t : textCollection) {
-            text.add(t);
-        }
+        List<Text> text = textCollection.stream().collect(Collectors.toCollection(LinkedList::new));
         return text;
     }
 

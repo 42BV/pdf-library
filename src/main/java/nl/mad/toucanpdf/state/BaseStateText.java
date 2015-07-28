@@ -12,6 +12,7 @@ import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.FontMetrics;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateText;
@@ -63,7 +64,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
         }
 
         while (!stringsProcessed && i < strings.size()) {
-            List<int[]> openSpaces = getOpenSpaces(pos, page, fixedPosition);
+            List<Space> openSpaces = getOpenSpaces(pos, page, fixedPosition);
             if (openSpaces.size() != 0) {
                 i += splitText(openSpaces, strings.subList(i, strings.size()), pos, page);
                 boolean isLast = (i == (strings.size() - 1));
@@ -86,13 +87,13 @@ public class BaseStateText extends AbstractStateText implements StateText {
      * @param fixedPosition Whether the text has a fixed position.
      * @return List of int arrays. Each int array contains two values specifying the x-value of the start and end of a single open space.
      */
-    private List<int[]> getOpenSpaces(Position pos, StatePage page, boolean fixedPosition) {
-        List<int[]> openSpaces;
+    private List<Space> getOpenSpaces(Position pos, StatePage page, boolean fixedPosition) {
+        List<Space> openSpaces;
         if (!fixedPosition) {
             openSpaces = page.getOpenSpacesOn(pos, true, getRequiredSpaceAboveLine(), getRequiredSpaceBelowLine(), this);
         } else {
-            openSpaces = new ArrayList<int[]>();
-            openSpaces.add(new int[] { (int) pos.getX(), (int) (page.getWidth() - page.getMarginRight() - getRequiredSpaceRight()) });
+            openSpaces = new ArrayList<>();
+            openSpaces.add(new Space((int) pos.getX(), (int) (page.getWidth() - page.getMarginRight() - getRequiredSpaceRight())));
         }
         return openSpaces;
     }
@@ -105,11 +106,11 @@ public class BaseStateText extends AbstractStateText implements StateText {
      * @param page The page to add the text to.
      * @return index determining how many strings have been processed.
      */
-    private int splitText(List<int[]> openSpaces, List<String> strings, Position pos, Page page) {
+    private int splitText(List<Space> openSpaces, List<String> strings, Position pos, Page page) {
         List<String> stringsCopy = new LinkedList<String>(strings);
         stringsCopy.add("");
         StringBuilder currentLine = new StringBuilder();
-        int[] openSpace = openSpaces.get(0);
+        Space openSpace = openSpaces.get(0);
         int i = 0;
         int lastAdditionIndex = 0;
         int additions = 0;
@@ -126,8 +127,9 @@ public class BaseStateText extends AbstractStateText implements StateText {
             if (i != (stringsCopy.size() - 1)) {
                 width += metrics.getWidthPointOfString(s, textSize, true) + (metrics.getWidthPoint("space") * textSize);
             }
-            if ((width > openSpace[1] - openSpace[0] || i == (stringsCopy.size() - 1)) && oldWidth < openSpace[1] - openSpace[0]) {
-                String cutOffLine = processCutOff(openSpace[0] + oldWidth, openSpace[1], currentLine.toString(), stringsCopy, i, page);
+            if ((width > openSpace.getEndPoint() - openSpace.getStartPoint() || i == (stringsCopy.size() - 1))
+                    && oldWidth < openSpace.getEndPoint() - openSpace.getStartPoint()) {
+                String cutOffLine = processCutOff(openSpace.getStartPoint() + oldWidth, openSpace.getEndPoint(), currentLine.toString(), stringsCopy, i, page);
                 if (!cutOffLine.equals(currentLine.toString())) {
                     strings.add(i + 1, stringsCopy.get(i + 1));
                     ++cutOffAdditions;
@@ -136,9 +138,9 @@ public class BaseStateText extends AbstractStateText implements StateText {
                 if (!currentLine.toString().isEmpty()) {
                     lastAdditionIndex = i;
                     ++additions;
-                    Position position = new Position(openSpace[0], pos.getY());
+                    Position position = new Position(openSpace.getStartPoint(), pos.getY());
                     width = metrics.getWidthPointOfString(currentLine.toString(), textSize, true) + (metrics.getWidthPoint("space") * textSize);
-                    position = processAlignment(currentLine.toString(), position, width, openSpace[1] - openSpace[0]);
+                    position = processAlignment(currentLine.toString(), position, width, openSpace.getEndPoint() - openSpace.getStartPoint());
                     addTextSplitEntry(position, currentLine.toString());
                     currentLine = new StringBuilder();
                 }
@@ -348,17 +350,17 @@ public class BaseStateText extends AbstractStateText implements StateText {
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height, int pageWidth) {
-        List<int[]> spaces = new LinkedList<int[]>();
+    public List<Space> getUsedSpaces(double height, int pageWidth) {
+        List<Space> spaces = new LinkedList<>();
         List<Entry<Position, String>> entries = getEntriesAtHeight(height);
         FontMetrics metrics = getFont().getMetrics();
         for (int i = 0; i < entries.size(); ++i) {
             Entry<Position, String> entry = entries.get(i);
             double stringWidth = metrics.getWidthPointOfString(entry.getValue(), getTextSize(), true);
             if ((entry.equals(getFirstTextSplitEntry()) && this.marginTop > 0) || (entry.equals(getLastTextSplitEntry()) && this.getMarginBottom() > 0)) {
-                spaces.add(new int[] { (int) 0, pageWidth });
+                spaces.add(new Space(0, pageWidth));
             } else {
-                spaces.add(new int[] { (int) entry.getKey().getX(), (int) (entry.getKey().getX() + stringWidth) });
+                spaces.add(new Space((int) entry.getKey().getX(), (int) (entry.getKey().getX() + stringWidth)));
             }
         }
         return spaces;

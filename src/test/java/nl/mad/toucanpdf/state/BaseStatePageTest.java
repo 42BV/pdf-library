@@ -11,6 +11,7 @@ import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BasePage;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -35,7 +36,7 @@ public class BaseStatePageTest {
                 text.getRequiredSpaceBelow();
                 returns(5.0);
                 text2.getUsedSpaces(110, anyInt);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 20 })));
+                returns(new LinkedList<Space>(Arrays.asList(new Space(0, 20))));
                 text2.getPosition();
                 returns(new Position(0, 110));
                 text2.getPositionAt(110);
@@ -88,23 +89,23 @@ public class BaseStatePageTest {
         new NonStrictExpectations() {
             {
                 text3.getUsedSpaces(50, anyInt);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 30, 60 })));
+                returns(new LinkedList<Space>(Arrays.asList(new Space(30, 60))));
                 text3.getPosition();
                 returns(new Position(0, 50));
             }
         };
         page.add(text2);
         page.add(text3);
-        List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(new Position(0, 110), true, 0.0, 0.0, text);
-        assertEquals(20, openSpaces.get(0)[0]);
-        assertEquals(30, openSpaces.get(0)[1]);
-        assertEquals(90, openSpaces.get(0)[2]);
-        assertEquals(30, openSpaces.get(1)[0]);
-        assertEquals(60, openSpaces.get(1)[1]);
-        assertEquals(60, openSpaces.get(1)[2]);
-        assertEquals(60, openSpaces.get(2)[0]);
-        assertEquals(87, openSpaces.get(2)[1]);
-        assertEquals(90, openSpaces.get(2)[2]);
+        List<Space> openSpaces = page.getOpenSpacesIncludingHeight(new Position(0, 110), true, 0.0, 0.0, text);
+        assertEquals(20, openSpaces.get(0).getStartPoint());
+        assertEquals(30, openSpaces.get(0).getEndPoint());
+        assertEquals(90, openSpaces.get(0).getHeight().intValue());
+        assertEquals(30, openSpaces.get(1).getStartPoint());
+        assertEquals(60, openSpaces.get(1).getEndPoint());
+        assertEquals(60, openSpaces.get(1).getHeight().intValue());
+        assertEquals(60, openSpaces.get(2).getStartPoint());
+        assertEquals(87, openSpaces.get(2).getEndPoint());
+        assertEquals(90, openSpaces.get(2).getHeight().intValue());
 
         assertEquals(0, page.getOpenSpacesIncludingHeight(null, true, 0.0, 0.0, text).size());
     }

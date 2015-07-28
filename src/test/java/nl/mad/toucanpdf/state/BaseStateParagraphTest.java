@@ -22,10 +22,10 @@ import nl.mad.toucanpdf.model.Anchor;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Paragraph;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateParagraph;
-import nl.mad.toucanpdf.model.state.StatePlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -74,7 +74,7 @@ public class BaseStateParagraphTest {
                 page.getHeightWithoutMargins();
                 returns(500);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<int[]>(Arrays.asList(new int[] { 0, 400 })));
+                returns(new ArrayList<Space>(Arrays.asList(new Space(0, 400))));
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
                 returns(new Position(0, 500), new Position(0, 450), new Position(0, 500));
             }
@@ -146,18 +146,18 @@ public class BaseStateParagraphTest {
     public void testGetUsedSpaces() {
         new MockUp<BaseStateText>() {
             @Mock
-            public List<int[]> getUsedSpaces(double height, int pageWidth) {
-                return new ArrayList<int[]>(Arrays.asList(new int[] { 0, 100 }));
+            public List<Space> getUsedSpaces(double height, int pageWidth) {
+                return Arrays.asList(new Space(0, 100));
             }
         };
         paragraph.addText(new BaseStateText("Test"));
         paragraph.addText(new BaseStateText("Test2"));
-        List<int[]> usedSpaces = paragraph.getUsedSpaces(100, 900);
+        List<Space> usedSpaces = paragraph.getUsedSpaces(100, 900);
         assertEquals(2, usedSpaces.size());
-        assertEquals(0, usedSpaces.get(0)[0]);
-        assertEquals(0, usedSpaces.get(1)[0]);
-        assertEquals(100, usedSpaces.get(0)[1]);
-        assertEquals(100, usedSpaces.get(1)[1]);
+        assertEquals(0, usedSpaces.get(0).getStartPoint());
+        assertEquals(0, usedSpaces.get(1).getStartPoint());
+        assertEquals(100, usedSpaces.get(0).getEndPoint());
+        assertEquals(100, usedSpaces.get(1).getEndPoint());
     }
 
     @Test

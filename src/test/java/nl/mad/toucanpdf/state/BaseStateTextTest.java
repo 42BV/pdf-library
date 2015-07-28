@@ -1,6 +1,8 @@
 package nl.mad.toucanpdf.state;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,15 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Alignment;
-import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
@@ -45,8 +44,8 @@ public class BaseStateTextTest {
                 returns(new Position(0, 90));
 
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 30 }, new int[] { 79, 110 })),
-                        new LinkedList<int[]>(Arrays.asList(new int[] { 0, 110 })));
+                returns(new LinkedList<Space>(Arrays.asList(new Space(0, 30), new Space(79, 110))),
+                        new LinkedList<Space>(Arrays.asList(new Space(0, 110))));
 
                 page.getOpenPosition(anyDouble, anyDouble, anyDouble, anyDouble, null, anyDouble);
                 returns(new Position(0, 80.1), new Position(0, 70.19999999999999), null);
@@ -105,7 +104,7 @@ public class BaseStateTextTest {
                 returns(new Position(0, 90));
 
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 35 }, new int[] { 40, 110 })));
+                returns(new LinkedList<Space>(Arrays.asList(new Space(0, 35), new Space(40, 110))));
 
                 page.getWidth();
                 returns(110);
@@ -131,7 +130,7 @@ public class BaseStateTextTest {
                 returns(new Position(0, 30));
 
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 30 })));
+                returns(new LinkedList<>(Arrays.asList(new Space(0, 30))));
 
                 page.getWidth();
                 returns(30);
@@ -166,7 +165,7 @@ public class BaseStateTextTest {
                 returns(new Position(0, 90));
 
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 90 })));
+                returns(new LinkedList<>(Arrays.asList(new Space(0, 90))));
 
                 page.getWidth();
                 returns(90);
@@ -179,15 +178,15 @@ public class BaseStateTextTest {
             }
         };
         stateText.processContentSize(page, 0, false);
-        List<int[]> usedSpaces = stateText.getUsedSpaces(100, 90);
-        assertEquals(0, usedSpaces.get(0)[0]);
-        assertEquals(20, usedSpaces.get(0)[1]);
+        List<Space> usedSpaces = stateText.getUsedSpaces(100, 90);
+        assertEquals(0, usedSpaces.get(0).getStartPoint());
+        assertEquals(20, usedSpaces.get(0).getEndPoint());
 
         stateText.marginTop(10);
         stateText.marginBottom(10);
         usedSpaces = stateText.getUsedSpaces(100, 90);
-        assertEquals(0, usedSpaces.get(0)[0]);
-        assertEquals(90, usedSpaces.get(0)[1]);
+        assertEquals(0, usedSpaces.get(0).getStartPoint());
+        assertEquals(90, usedSpaces.get(0).getEndPoint());
     }
 
     @Test
@@ -201,7 +200,7 @@ public class BaseStateTextTest {
                 returns(new Position(0, 30));
 
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 0, 90 })));
+                returns(new LinkedList<>(Arrays.asList(new Space (0, 90))));
 
                 page.getOpenPosition(anyDouble, anyDouble, anyDouble, anyDouble, null, anyDouble);
                 returns(new Position(0, 80), new Position(0, 70));

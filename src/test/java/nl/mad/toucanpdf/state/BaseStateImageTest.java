@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -13,6 +12,7 @@ import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Image;
 import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
@@ -52,11 +52,11 @@ public class BaseStateImageTest {
     public void getUsedSpaces() {
         assertEquals(0, image.getUsedSpaces(150, 200).size());
         image.allowWrapping(true);
-        assertEquals(100, image.getUsedSpaces(100, 200).get(0)[0]);
-        assertEquals(210, image.getUsedSpaces(100, 200).get(0)[1]);
+        assertEquals(100, image.getUsedSpaces(100, 200).get(0).getStartPoint());
+        assertEquals(210, image.getUsedSpaces(100, 200).get(0).getEndPoint());
         image.allowWrapping(false);
-        assertEquals(0, image.getUsedSpaces(100, 200).get(0)[0]);
-        assertEquals(200, image.getUsedSpaces(100, 200).get(0)[1]);
+        assertEquals(0, image.getUsedSpaces(100, 200).get(0).getStartPoint());
+        assertEquals(200, image.getUsedSpaces(100, 200).get(0).getEndPoint());
     }
 
     @Test
@@ -72,13 +72,13 @@ public class BaseStateImageTest {
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
                 returns(new Position(20, 200));
                 page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new LinkedList<int[]>(Arrays.asList(new int[] { 10, 10, 10 })), new LinkedList<int[]>(Arrays.asList(new int[] { 10, 200, 200 })));
+                returns(Arrays.asList(new Space(10, 10, 10)), Arrays.asList(new Space(10, 200, 200)));
             }
         };
         image.on(0, 200);
         image.height(100);
         image.width(100);
-        boolean overflow = image.processContentSize(page);
+        image.processContentSize(page);
         assertEquals(new Position(20, 200), image.getPosition());
         image.align(Alignment.CENTERED);
         image.on(0, 200);

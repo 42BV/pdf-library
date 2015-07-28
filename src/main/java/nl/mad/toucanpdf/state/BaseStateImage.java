@@ -11,6 +11,7 @@ import nl.mad.toucanpdf.model.ImageType;
 import nl.mad.toucanpdf.model.Page;
 import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 import nl.mad.toucanpdf.model.Position;
+import nl.mad.toucanpdf.model.Space;
 import nl.mad.toucanpdf.model.state.StateImage;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
@@ -68,15 +69,15 @@ public class BaseStateImage extends BaseImage implements StateImage {
     }
 
     @Override
-    public List<int[]> getUsedSpaces(double height, int pageWidth) {
+    public List<Space> getUsedSpaces(double height, int pageWidth) {
         Position pos = getPosition();
-        List<int[]> space = new LinkedList<int[]>();
+        List<Space> space = new LinkedList<>();
         if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
                 && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
             if (isWrappingAllowed()) {
-                space.add(new int[] { (int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight) });
+                space.add(new Space((int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight)));
             } else {
-                space.add(new int[] { 0, pageWidth });
+                space.add(new Space (0, pageWidth));
             }
         }
         return space;
@@ -103,7 +104,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
             double requiredSpaceAbove = this.getRequiredSpaceAbove();
             double requiredSpaceBelow = this.getRequiredSpaceBelow();
             Position pos = new Position(this.getPosition());
-            List<int[]> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
+            List<Space> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
             boolean imagePositioned = false;
             while (pos != null && !imagePositioned) {
                 imagePositioned = PlaceImage(processAlignment, pos, openSpaces, imagePositioned);
@@ -124,15 +125,15 @@ public class BaseStateImage extends BaseImage implements StateImage {
         return false;
     }
 
-    private boolean PlaceImage(boolean processAlignment, Position pos, List<int[]> openSpaces, boolean imagePositioned) {
+    private boolean PlaceImage(boolean processAlignment, Position pos, List<Space> openSpaces, boolean imagePositioned) {
         int i = 0;
         while (!imagePositioned && i < openSpaces.size()) {
-            int[] openSpace = openSpaces.get(i);
-            if (pos.getX() < openSpace[0]) {
-                pos.setX(openSpace[0]);
+            Space openSpace = openSpaces.get(i);
+            if (pos.getX() < openSpace.getStartPoint()) {
+                pos.setX(openSpace.getStartPoint());
             }
-            int openSpaceWidth = (openSpace[1] - openSpace[0]);
-            if (openSpaceWidth >= this.getWidth() && openSpace[2] >= this.getHeight()) {
+            int openSpaceWidth = (openSpace.getEndPoint() - openSpace.getStartPoint());
+            if (openSpaceWidth >= this.getWidth() && openSpace.getHeight() >= this.getHeight()) {
                 imagePositioned = true;
                 if (processAlignment) {
                     this.processAlignment(pos, openSpaceWidth);
