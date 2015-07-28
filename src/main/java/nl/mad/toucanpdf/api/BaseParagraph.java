@@ -46,19 +46,27 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
         this.textCollection = new LinkedList<Text>();
         this.align(p.getAlignment());
         if (copyCollection) {
-            for (Text t : p.getTextCollection()) {
-                Text newText = new BaseText(t);
-                textCollection.add(newText);
-                for (Anchor a : p.getAnchorsOn(t)) {
-                    this.addAnchor(new BaseAnchor(a, newText));
-                }
-            }
+            CopyParagraphTextCollection(p);
         }
         this.setPosition(p.getPosition());
         this.marginBottom = p.getMarginBottom();
         this.marginLeft = p.getMarginLeft();
         this.marginTop = p.getMarginTop();
         this.marginBottom = p.getMarginBottom();
+    }
+
+    private void CopyParagraphTextCollection(Paragraph paragraphToCopy) {
+        for (Text originalText : paragraphToCopy.getTextCollection()) {
+            Text newText = new BaseText(originalText);
+            textCollection.add(newText);
+            CopyParagraphAnchors(paragraphToCopy, originalText, newText);
+        }
+    }
+
+    private void CopyParagraphAnchors(Paragraph paragraphToCopy, Text originalText, Text newText) {
+        for (Anchor a : paragraphToCopy.getAnchorsOn(originalText)) {
+            this.addAnchor(new BaseAnchor(a, newText));
+        }
     }
 
     @Override

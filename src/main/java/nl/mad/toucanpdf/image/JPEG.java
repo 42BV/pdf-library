@@ -1,6 +1,6 @@
 package nl.mad.toucanpdf.image;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.ByteArrayOutputStream;
@@ -9,13 +9,12 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.ColorSpace;
 import nl.mad.toucanpdf.model.Compression;
 import nl.mad.toucanpdf.model.ImageParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the default JPEG parsing implementation for the ImageParser interface.
@@ -52,10 +51,7 @@ public class JPEG implements ImageParser {
             BufferedImage image = ImageIO.read(stream);
             image = convertImage(image);
             if (image != null) {
-                retrieveData(image);
-                determineColorSpace(image);
-                retrieveBitsPerComponent(image);
-                retrieveImageSize(image);
+                loadImageData(image);
             }
             filter = Compression.DCT;
             stream.close();
@@ -69,6 +65,13 @@ public class JPEG implements ImageParser {
             }
             LOGGER.warn("Exception occurred during parsing of image stream");
         }
+    }
+
+    private void loadImageData(BufferedImage image) {
+        retrieveData(image);
+        determineColorSpace(image);
+        retrieveBitsPerComponent(image);
+        retrieveImageSize(image);
     }
 
     /**

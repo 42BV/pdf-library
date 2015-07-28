@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.font.parser.AfmParser;
 import nl.mad.toucanpdf.font.parser.PfbParser;
@@ -87,7 +88,7 @@ public class Type1FontMetrics implements FontMetrics {
      * @return byte array containing the parsed file. Will be an empty array if the file could not be found.
      */
     private byte[] parsePfb() {
-        InputStream file = null;
+        InputStream file;
         try {
             file = getFile(".pfb");
         } catch (FileNotFoundException e) {
@@ -195,8 +196,8 @@ public class Type1FontMetrics implements FontMetrics {
     private int getBoundingBoxValueForTextOnIndex(String text, int bbIndex, boolean highest) {
         int value = 0;
         char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length; ++i) {
-            int[] boundingBox = this.getBoundingBoxForCharacter(UnicodeConverter.getPostscriptForUnicode((int) chars[i]));
+        for (char aChar : chars) {
+            int[] boundingBox = this.getBoundingBoxForCharacter(UnicodeConverter.getPostscriptForUnicode((int) aChar));
             if (boundingBox != null) {
                 int bBoxValue = boundingBox[bbIndex];
                 value = highest ? Math.max(value, bBoxValue) : Math.min(value, bBoxValue);
@@ -252,11 +253,7 @@ public class Type1FontMetrics implements FontMetrics {
 
     @Override
     public List<Integer> getWidths() {
-        List<Integer> widths = new ArrayList<Integer>();
-        for (Type1CharacterMetric cm : afm.getCharacterMetrics().values()) {
-            widths.add(cm.getWx());
-        }
-        return widths;
+        return afm.getCharacterMetrics().values().stream().map(Type1CharacterMetric::getWx).collect(Collectors.toList());
     }
 
     @Override

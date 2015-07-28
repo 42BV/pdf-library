@@ -84,14 +84,14 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
      * Creates a new instance of BaseStateParagraph.
      */
     public BaseStateParagraph() {
-        this.textCollection = new LinkedList<StateText>();
+        this.textCollection = new LinkedList<>();
     }
 
     @Override
     public Paragraph processContentSize(StatePage page, boolean fixedPosition) {
         Paragraph overflowParagraph = null;
         for (int i = 0; i < textCollection.size(); ++i) {
-            StateText t = (StateText) textCollection.get(i);
+            StateText t = textCollection.get(i);
             t.marginLeft(t.getMarginLeft() + this.marginLeft);
             t.marginRight(t.getMarginRight() + this.marginRight);
             if (i == 0) {
@@ -303,7 +303,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
      * @param text Text to position.
      * @param page Page to add the text to.
      * @param fixedPosition Whether the text has a fixed position.
-     * @return
+     * @return the X position of the text
      */
     private double processTextPosition(StateText text, StatePage page, boolean fixedPosition) {
         int index = textCollection.indexOf(text);
@@ -336,7 +336,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
      * Processes overflow based on the given index and text.
      * @param index Index of the text object causing overflow.
      * @param text Text object that contains the overflow.
-     * @return
+     * @return the overflow paragraph
      */
     private Paragraph handleOverflow(int index, Text text) {
         List<Text> newTextList = new ArrayList<Text>();
@@ -347,9 +347,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         overflowParagraph.addText(newTextList);
         //TODO: add anchors on overflow! Including beneath anchor from the object causing the overflow
         for (Text t : overflowParagraph.getTextCollection()) {
-            for (Anchor a : this.getAnchorsOn(t)) {
-                overflowParagraph.addAnchor(a);
-            }
+            this.getAnchorsOn(t).forEach(overflowParagraph::addAnchor);
         }
         overflowParagraph.setOriginalObject(this.getOriginalObject());
         return overflowParagraph;
@@ -439,15 +437,12 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
 
     @Override
     public List<Text> getTextCollection() {
-        List<Text> text = textCollection.stream().collect(Collectors.toCollection(LinkedList::new));
-        return text;
+        return textCollection.stream().collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     public Paragraph addText(List<Text> text) {
-        for (Text t : text) {
-            this.addText(t);
-        }
+        text.forEach(this::addText);
         return this;
     }
 

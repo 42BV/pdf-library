@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.utility.ByteEncoder;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
@@ -44,11 +45,7 @@ public class PdfNumber extends AbstractPdfObject {
      * @return List of PdfObjects.
      */
     public static List<AbstractPdfObject> convertListOfValues(List<Integer> values) {
-        List<AbstractPdfObject> list = new ArrayList<AbstractPdfObject>();
-        for (int value : values) {
-            list.add(new PdfNumber(value));
-        }
-        return list;
+        return values.stream().map(PdfNumber::new).collect(Collectors.toList());
     }
 
     /**
@@ -57,7 +54,7 @@ public class PdfNumber extends AbstractPdfObject {
      * @return List of PdfObjects.
      */
     public static List<AbstractPdfObject> convertListOfValues(double[] values) {
-        List<AbstractPdfObject> list = new ArrayList<AbstractPdfObject>();
+        List<AbstractPdfObject> list = new ArrayList<>();
         for (double value : values) {
             list.add(new PdfNumber(value));
         }
@@ -103,7 +100,6 @@ public class PdfNumber extends AbstractPdfObject {
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
         PdfNumber other = (PdfNumber) obj;
-        if (Double.doubleToLongBits(number) != Double.doubleToLongBits(other.number)) return false;
-        return true;
+        return Double.doubleToLongBits(number) == Double.doubleToLongBits(other.number);
     }
 }

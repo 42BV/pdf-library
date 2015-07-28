@@ -170,13 +170,12 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public boolean textMatrixEquals(Text text) {
-        if (FloatEqualityTester.equals(getPosition().getX(), text.getPosition().getX())
-                && FloatEqualityTester.equals(getPosition().getY(), text.getPosition().getY()) && FloatEqualityTester.equals(scaleX, text.getScaleX())
-                && FloatEqualityTester.equals(scaleY, text.getScaleY()) && FloatEqualityTester.equals(shearX, text.getShearX())
-                && FloatEqualityTester.equals(shearY, text.getShearY())) {
-            return true;
-        }
-        return false;
+        return (FloatEqualityTester.equals(getPosition().getX(), text.getPosition().getX())
+                && FloatEqualityTester.equals(getPosition().getY(), text.getPosition().getY())
+                && FloatEqualityTester.equals(scaleX, text.getScaleX())
+                && FloatEqualityTester.equals(scaleY, text.getScaleY())
+                && FloatEqualityTester.equals(shearX, text.getShearX())
+                && FloatEqualityTester.equals(shearY, text.getShearY()));
     }
 
     @Override

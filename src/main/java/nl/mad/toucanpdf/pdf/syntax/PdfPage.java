@@ -105,19 +105,23 @@ public class PdfPage extends PdfDictionary {
         PdfName key = getKeyForType(indirectObject.getObject().getType());
 
         if (!objectInResources(indirectObject, currentResources, key)) {
-            ++resourceCount;
-            String resourceReference = RESOURCE_REFERENCE_PREFIX + this.resourceCount;
-            indirectObject.getReference().setResourceReference(resourceReference);
-            PdfName resourceKey = new PdfName(resourceReference);
+            AddNewResource(indirectObject, currentResources, key);
+        }
+    }
 
-            if (currentResources.get(key) != null) {
-                PdfDictionary keyResourceDictionary = (PdfDictionary) currentResources.get(key);
-                keyResourceDictionary.put(resourceKey, indirectObject.getReference());
-            } else {
-                PdfDictionary newResource = new PdfDictionary(PdfObjectType.DICTIONARY);
-                newResource.put(resourceKey, indirectObject.getReference());
-                currentResources.put(key, newResource);
-            }
+    private void AddNewResource(PdfIndirectObject indirectObject, PdfDictionary currentResources, PdfName key) {
+        ++resourceCount;
+        String resourceReference = RESOURCE_REFERENCE_PREFIX + this.resourceCount;
+        indirectObject.getReference().setResourceReference(resourceReference);
+        PdfName resourceKey = new PdfName(resourceReference);
+
+        if (currentResources.get(key) != null) {
+            PdfDictionary keyResourceDictionary = (PdfDictionary) currentResources.get(key);
+            keyResourceDictionary.put(resourceKey, indirectObject.getReference());
+        } else {
+            PdfDictionary newResource = new PdfDictionary(PdfObjectType.DICTIONARY);
+            newResource.put(resourceKey, indirectObject.getReference());
+            currentResources.put(key, newResource);
         }
     }
 
@@ -164,10 +168,7 @@ public class PdfPage extends PdfDictionary {
      * @return true if the stream is empty, false otherwise
      */
     public boolean streamEmpty() {
-        if (this.currentStream != null && this.currentStream.getContentSize() > 0) {
-            return false;
-        }
-        return true;
+        return !(this.currentStream != null && this.currentStream.getContentSize() > 0);
     }
 
     public int getWidth() {

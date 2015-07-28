@@ -4,11 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.Deflater;
 
+import nl.mad.toucanpdf.model.Compression;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import nl.mad.toucanpdf.api.DocumentState;
-import nl.mad.toucanpdf.model.Compression;
 
 /**
  * This utility class allows for the compression of data.

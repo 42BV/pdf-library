@@ -1,7 +1,7 @@
 package nl.mad.toucanpdf.model;
 
 /**
- * Created by dylan on 17-6-15.
+ * This class can be used to set the color of text. You can either use a custom color by creating a new instance of this class or use one of the default colors.
  */
 public class Color {
     private double red, green, blue;

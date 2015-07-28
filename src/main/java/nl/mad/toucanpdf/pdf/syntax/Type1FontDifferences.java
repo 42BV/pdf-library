@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontMetrics;
@@ -16,7 +17,7 @@ public class Type1FontDifferences implements PdfFontDifferences {
     private static final int OCTAL_CODE_LENGTH = 3;
 
     public Type1FontDifferences() {
-        differences = new LinkedHashMap<String, Integer>();
+        differences = new LinkedHashMap<>();
     }
 
     @Override
@@ -68,25 +69,28 @@ public class Type1FontDifferences implements PdfFontDifferences {
             String postscriptName = UnicodeConverter.getPostscriptForUnicode(charCode);
             if (differences.containsKey(postscriptName)) {
                 int code = differences.get(postscriptName);
-                StringBuilder sCode = new StringBuilder(Integer.toString(code, OCTAL_CODE_CONVERSION));
-                int codeLength = sCode.length();
-                for (int b = OCTAL_CODE_LENGTH; b > codeLength; --b) {
-                    sCode.insert(0, 0);
-                }
                 newString.append("\\");
-                newString.append(sCode.toString());
+                newString.append(generateStringForDifferenceCode(code));
             }
         }
         return newString.toString();
     }
 
+    private String generateStringForDifferenceCode(int code) {
+        StringBuilder stringCode = new StringBuilder(Integer.toString(code, OCTAL_CODE_CONVERSION));
+        int codeLength = stringCode.length();
+        //fill up the code with 0's in case the length of the code is not equal to the required length
+        for (int b = OCTAL_CODE_LENGTH; b > codeLength; --b) {
+            stringCode.insert(0, 0);
+        }
+        return stringCode.toString();
+    }
+
     @Override
     public List<Integer> generateWidthList(Font font) {
         FontMetrics metrics = font.getMetrics();
-        List<Integer> widths = new LinkedList<Integer>();
-        for (Entry<String, Integer> entry : differences.entrySet()) {
-            widths.add(metrics.getWidth(entry.getKey()));
-        }
-        return widths;
+        return differences.entrySet().stream()
+                .map(entry -> metrics.getWidth(entry.getKey()))
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }

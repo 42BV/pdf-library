@@ -354,8 +354,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
         List<Space> spaces = new LinkedList<>();
         List<Entry<Position, String>> entries = getEntriesAtHeight(height);
         FontMetrics metrics = getFont().getMetrics();
-        for (int i = 0; i < entries.size(); ++i) {
-            Entry<Position, String> entry = entries.get(i);
+        for (Entry<Position, String> entry : entries) {
             double stringWidth = metrics.getWidthPointOfString(entry.getValue(), getTextSize(), true);
             if ((entry.equals(getFirstTextSplitEntry()) && this.marginTop > 0) || (entry.equals(getLastTextSplitEntry()) && this.getMarginBottom() > 0)) {
                 spaces.add(new Space(0, pageWidth));

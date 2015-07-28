@@ -2,6 +2,7 @@ package nl.mad.toucanpdf.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.DocumentPartType;
@@ -113,12 +114,16 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Page marginTop(int margin) {
-        if (header != null) {
-            this.marginTop = Math.max(margin, header.getHeight());
-        } else {
-            this.marginTop = Math.max(0, margin);
-        }
+        this.marginTop = limitGivenMarginForPageArea(margin, header);
         return this;
+    }
+
+    private int limitGivenMarginForPageArea(int margin, PageArea relevantArea) {
+        if (relevantArea != null) {
+            return Math.max(margin, relevantArea.getHeight());
+        } else {
+            return Math.max(0, margin);
+        }
     }
 
     @Override
@@ -128,11 +133,7 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public Page marginBottom(int margin) {
-        if (footer != null) {
-            this.marginBottom = Math.max(margin, footer.getHeight());
-        } else {
-            this.marginBottom = Math.max(0, margin);
-        }
+        this.marginBottom = limitGivenMarginForPageArea(margin, footer);
         return this;
     }
 
@@ -160,24 +161,24 @@ public class BasePage extends AbstractDocumentPart implements Page {
 
     @Override
     public List<DocumentPart> getFixedPositionContent() {
-        List<DocumentPart> fixedPositionList = new ArrayList<DocumentPart>();
-        for (DocumentPart p : content) {
-            if (p instanceof PlaceableDocumentPart && ((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
-                fixedPositionList.add((PlaceableDocumentPart) p);
-            }
-        }
-        return fixedPositionList;
+        return content.stream()
+                .filter(p -> partIsPlaceable(p) && partHasCustomPosition(p))
+                .map(p -> (PlaceableDocumentPart) p).collect(Collectors.toList());
     }
 
     @Override
     public List<DocumentPart> getPositionlessContent() {
-        List<DocumentPart> positionlessContent = new ArrayList<DocumentPart>();
-        for (DocumentPart p : content) {
-            if (p instanceof PlaceableDocumentPart && !((PlaceableDocumentPart) p).getPosition().hasCustomPosition()) {
-                positionlessContent.add((PlaceableDocumentPart) p);
-            }
-        }
-        return positionlessContent;
+        return content.stream()
+                .filter(p -> partIsPlaceable(p) && !partHasCustomPosition(p))
+                .map(p -> (PlaceableDocumentPart) p).collect(Collectors.toList());
+    }
+
+    private boolean partHasCustomPosition(DocumentPart part) {
+        return ((PlaceableDocumentPart) part).getPosition().hasCustomPosition();
+    }
+
+    private boolean partIsPlaceable(DocumentPart p) {
+        return p instanceof PlaceableDocumentPart;
     }
 
     @Override

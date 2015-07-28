@@ -95,21 +95,15 @@ public class PdfText extends AbstractPdfObject {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Entry<Position, String> entry : entrySet) {
-            if (!Constants.LINE_SEPARATOR_STRING.equals(entry.getValue())) {
-                if (Alignment.JUSTIFIED.equals(text.getAlignment()) && (i != entrySet.size() - 1)) {
-                    sb.append(justification.get(entry.getKey()) + WORD_SPACING);
+            if (!isNewLineIndicator(entry)) {
+                if (textAlignmentIsJustifiedAndNotLastEntry(entrySet, text, i)) {
+                    sb.append(justification.get(entry.getKey())).append(WORD_SPACING);
                 }
-                String textToProcess = "";
-                if (differences != null) {
-                    textToProcess = differences.convertString(entry.getValue());
-                } else {
-                    textToProcess = getEscapedString(entry.getValue());
-                }
+
+                String textToProcess = determineTextToProcessBasedOnFontDifferences(entry);
                 sb.append(createMatrix(text, entry.getKey()));
-                sb.append(text.getColor().toString() + " rg ");
-                sb.append("[(");
-                sb.append(this.processKerning(textToProcess, text.getFont()));
-                sb.append(")] TJ");
+                sb.append(text.getColor().toString()).append(" rg ");
+                sb.append("[(").append(this.processKerning(textToProcess, text.getFont())).append(")] TJ");
             } else {
                 sb.append(getNewLineStringForText(leading));
             }
@@ -117,6 +111,24 @@ public class PdfText extends AbstractPdfObject {
             sb.append(Constants.LINE_SEPARATOR_STRING);
         }
         this.addToByteRepresentation(sb.toString());
+    }
+
+    private String determineTextToProcessBasedOnFontDifferences(Entry<Position, String> entry) {
+        String textToProcess;
+        if (differences != null) {
+            textToProcess = differences.convertString(entry.getValue());
+        } else {
+            textToProcess = getEscapedString(entry.getValue());
+        }
+        return textToProcess;
+    }
+
+    private boolean textAlignmentIsJustifiedAndNotLastEntry(Set<Entry<Position, String>> entrySet, Text text, int index) {
+        return Alignment.JUSTIFIED.equals(text.getAlignment()) && (index != entrySet.size() - 1);
+    }
+
+    private boolean isNewLineIndicator(Entry<Position, String> entry) {
+        return Constants.LINE_SEPARATOR_STRING.equals(entry.getValue());
     }
 
     private String getEscapedString(String value) {
@@ -152,9 +164,7 @@ public class PdfText extends AbstractPdfObject {
             if (text.length() != i + 1) {
                 int kernWidth = metrics.getKerning((int) text.charAt(i), (int) text.charAt(i + 1));
                 if (kernWidth != 0) {
-                    sb.append(") ");
-                    sb.append(kernWidth);
-                    sb.append(" (");
+                    sb.append(") ").append(kernWidth).append(" (");
                 }
             }
         }
@@ -165,17 +175,15 @@ public class PdfText extends AbstractPdfObject {
         FontMetrics metrics = font.getMetrics();
         StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < text.length(); i += OCTAL_CODE_LENGTH) {
-            String octalCode = text.substring(i + 1, i + OCTAL_CODE_LENGTH);
-            sb.append("\\" + octalCode);
+            String octalCodeForFirstCharacter = text.substring(i + 1, i + OCTAL_CODE_LENGTH);
+            sb.append("\\").append(octalCodeForFirstCharacter);
             if (text.length() != i + OCTAL_CODE_LENGTH) {
-                String octalCode2 = text.substring(i + OCTAL_CODE_LENGTH + 1, i + (2 * OCTAL_CODE_LENGTH));
-                String charName = differences.getNameOf(octalCode);
-                String charName2 = differences.getNameOf(octalCode2);
-                int kernWidth = metrics.getKerning(charName, charName2);
+                String octalCodeForSecondCharacter = text.substring(i + OCTAL_CODE_LENGTH + 1, i + (2 * OCTAL_CODE_LENGTH));
+                String charName = differences.getNameOf(octalCodeForFirstCharacter);
+                String secondCharName = differences.getNameOf(octalCodeForSecondCharacter);
+                int kernWidth = metrics.getKerning(charName, secondCharName);
                 if (kernWidth != 0) {
-                    sb.append(") ");
-                    sb.append(kernWidth);
-                    sb.append(" (");
+                    sb.append(") ").append(kernWidth).append(" (");
                 }
             }
         }

@@ -16,7 +16,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
     private final static int REQUIRED_WIDTH = 10;
     private final static int DEFAULT_TOTAL_WIDTH = 2;
     private DocumentPart originalObject;
-    private double height = 0;
 
     public BaseStateCellText(String text) {
         super(text);
@@ -31,7 +30,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
 
     @Override
     public double calculateContentHeight(double availableWidth, double leading, Position position, boolean processPositioning) {
-        textSplit = new LinkedHashMap<Position, String>();
+        textSplit = new LinkedHashMap<>();
         ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
         strings.add("");
         int textSize = this.getTextSize();
@@ -76,7 +75,7 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
                 processLineAddition(processPositioning, pos, leading, lastLine,
                         metrics.getWidthPointOfString(currentLine.toString(), textSize, true), availableWidth);
             } else {
-                currentLine.append(s + " ");
+                currentLine.append(s).append(" ");
             }
         }
         //content height is equal to the amount of lines times leading and margins, we have to deduct leading once because the first line does not have leading
@@ -124,7 +123,6 @@ public class BaseStateCellText extends AbstractStateText implements StateCellTex
                 contentHeight += (((lineAdditions - 1) * (this.getRequiredSpaceAboveLine() + this.getRequiredSpaceBelowLine()))) + lineAdditions;
             }
         }
-        height = contentHeight;
         return contentHeight;
     }
 

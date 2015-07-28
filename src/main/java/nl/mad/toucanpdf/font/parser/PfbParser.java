@@ -44,7 +44,7 @@ public class PfbParser {
         if (file.length > 0) {
             try {
                 ByteArrayInputStream input = new ByteArrayInputStream(file);
-                pfbData = new byte[(int) (file.length - HEADER_LENGTH)];
+                pfbData = new byte[file.length - HEADER_LENGTH];
                 int recordLength = PFB_RECORD_TYPES.length;
                 int pointer = 0;
                 for (int i = 0; i < recordLength; ++i) {
@@ -86,9 +86,8 @@ public class PfbParser {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (file != null) {
             byte[] tempBuffer = new byte[BUFFER_SIZE];
-            int amountRead = -1;
             try {
-                amountRead = file.read(tempBuffer);
+                int amountRead = file.read(tempBuffer);
                 while (amountRead != -1) {
                     out.write(tempBuffer, 0, amountRead);
                     amountRead = file.read(tempBuffer);

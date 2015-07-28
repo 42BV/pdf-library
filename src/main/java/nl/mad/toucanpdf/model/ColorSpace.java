@@ -23,7 +23,7 @@ public enum ColorSpace {
 
     /**
      * Creates a new instance of PdfNameValue.
-     * @param string How the value should be written to the PDF file.
+     * @param name How the value should be written to the PDF file.
      */
     private ColorSpace(PdfNameValue name) {
         this.pdfName = name;

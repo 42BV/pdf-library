@@ -59,7 +59,7 @@ public class PdfCrossReferenceTable {
      * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
     public PdfCrossReferenceTable(List<PdfIndirectObject> indirectObjects) {
-        crossReferences = new HashMap<Integer, CrossReference>();
+        crossReferences = new HashMap<>();
         this.fillTableWithIndirectObjects(indirectObjects);
     }
 
@@ -69,9 +69,7 @@ public class PdfCrossReferenceTable {
      * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
     public final void fillTableWithIndirectObjects(List<PdfIndirectObject> indirectObjects) {
-        for (PdfIndirectObject indirectObject : indirectObjects) {
-            this.addReferenceToIndirectObject(indirectObject);
-        }
+        indirectObjects.forEach(this::addReferenceToIndirectObject);
     }
 
     /**
@@ -80,7 +78,7 @@ public class PdfCrossReferenceTable {
      * @param indirectObject Object that will be referred to.
      */
     public void addReferenceToIndirectObject(PdfIndirectObject indirectObject) {
-        crossReferences.put(Integer.valueOf(indirectObject.getNumber()), new CrossReference(indirectObject.getStartByte(), indirectObject.getInUse(),
+        crossReferences.put(indirectObject.getNumber(), new CrossReference(indirectObject.getStartByte(), indirectObject.getInUse(),
                 indirectObject.getGeneration()));
         updateLowestObjectNumber(indirectObject.getNumber());
     }
@@ -94,10 +92,7 @@ public class PdfCrossReferenceTable {
     }
 
     public boolean isObjectInTable(int objectNumber) {
-        if (this.crossReferences.containsKey(objectNumber)) {
-            return true;
-        }
-        return false;
+        return this.crossReferences.containsKey(objectNumber);
     }
 
     /**
@@ -129,7 +124,7 @@ public class PdfCrossReferenceTable {
     }
 
     private String getObjectAmountLine() {
-        return lowestObjectNumber.intValue() + " " + (this.crossReferences.size() + 1);
+        return lowestObjectNumber + " " + (this.crossReferences.size() + 1);
     }
 
     /**
@@ -174,8 +169,7 @@ public class PdfCrossReferenceTable {
          * @param generationNumber Generation number of object.
          */
         private void processGeneration(int generationNumber) {
-            String generationNumberString = String.valueOf(generationNumber);
-            this.generation = GENERATION_FORMAT.subSequence(0, GENERATION_FORMAT.length() - generationNumberString.length()) + generationNumberString;
+            this.generation = generateFormattedSubSequenceForString(String.valueOf(generationNumber), GENERATION_FORMAT);
         }
 
         /**
@@ -183,8 +177,11 @@ public class PdfCrossReferenceTable {
          * @param byteStart Byte start of object.
          */
         private void processByteStart(int byteStart) {
-            String bytes = String.valueOf(byteStart);
-            this.startByte = START_BYTE_FORMAT.subSequence(0, START_BYTE_FORMAT.length() - bytes.length()) + bytes;
+            this.startByte = generateFormattedSubSequenceForString(String.valueOf(byteStart), START_BYTE_FORMAT);
+        }
+
+        private String generateFormattedSubSequenceForString(String target, String format) {
+            return format.subSequence(0, format.length() - target.length()) + target;
         }
 
         private void setInUse(boolean inUse) {

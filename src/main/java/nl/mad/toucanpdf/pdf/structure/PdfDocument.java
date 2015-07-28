@@ -115,16 +115,13 @@ public class PdfDocument {
      * @param parts Document parts to add.
      */
     public void add(List<DocumentPart> parts) {
-        for (DocumentPart part : parts) {
-            this.add(part);
-        }
+        parts.forEach(this::add);
     }
 
     private void addTable(StateTable part) {
         PdfTable table = new PdfTable(part);
         PdfStream stream = this.getCurrentPageStream();
         stream.add(table);
-        List<StateCell> coll = part.getStateCellCollection();
         for (StateCell c : part.getStateCellCollection()) {
             StateCellContent content = c.getStateCellContent();
             if (content != null) {
@@ -188,14 +185,19 @@ public class PdfDocument {
         PdfText pdfText = new PdfText(fontObj);
         PdfStream ts = getCurrentPageStream();
 
+        AddTextPropertiesToPdfText(text, overrideMatrix, pdfText);
+
+        ts.add(pdfText);
+        ts.addFilter(text.getCompressionMethod());
+    }
+
+    private void AddTextPropertiesToPdfText(StateSplittableText text, boolean overrideMatrix, PdfText pdfText) {
         if (overrideMatrix) {
             pdfText.addFont(getPdfFont(text.getFont()), text.getTextSize());
             pdfText.addTextString(text, currentPage.getLeading());
         } else {
             pdfText.addText(text, getPdfFont(text.getFont()), currentPage.getLeading());
         }
-        ts.add(pdfText);
-        ts.addFilter(text.getCompressionMethod());
     }
 
     /**
@@ -233,15 +235,7 @@ public class PdfDocument {
         if (!fontList.containsKey(font) && font != null) {
             PdfFontDescriptor newFontDescriptor = new PdfFontDescriptor(font);
             FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
-            byte[] fontProgramFile = metrics.getFontFile();
-            if (fontProgramFile != null) {
-                PdfFontProgram fontProgram = new PdfFontProgram();
-                fontProgram.addFilter(DEFAULT_COMPRESSION_METHOD);
-                fontProgram.setFontProgram(new PdfFile(fontProgramFile));
-                fontProgram.setLengths(metrics.getFontProgramLengths());
-                PdfIndirectObject indirectFontFile = body.addObject(fontProgram);
-                newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getFontFamily().getSubType());
-            }
+            AddFontProgram(font, newFontDescriptor, metrics);
 
             PdfIndirectObject enc = body.addObject(new PdfFontEncoding(font));
             PdfFont newFont = new PdfFont(font, enc);
@@ -254,6 +248,23 @@ public class PdfDocument {
         } else {
             return fontList.get(font);
         }
+    }
+
+    private void AddFontProgram(Font font, PdfFontDescriptor newFontDescriptor, FontMetrics metrics) {
+        byte[] fontProgramFile = metrics.getFontFile();
+        if (fontProgramFile != null) {
+            PdfFontProgram fontProgram = CreateFontProgram(metrics, fontProgramFile);
+            PdfIndirectObject indirectFontFile = body.addObject(fontProgram);
+            newFontDescriptor.setFontFileReference(indirectFontFile.getReference(), font.getFontFamily().getSubType());
+        }
+    }
+
+    private PdfFontProgram CreateFontProgram(FontMetrics metrics, byte[] fontProgramFile) {
+        PdfFontProgram fontProgram = new PdfFontProgram();
+        fontProgram.addFilter(DEFAULT_COMPRESSION_METHOD);
+        fontProgram.setFontProgram(new PdfFile(fontProgramFile));
+        fontProgram.setLengths(metrics.getFontProgramLengths());
+        return fontProgram;
     }
 
     /**

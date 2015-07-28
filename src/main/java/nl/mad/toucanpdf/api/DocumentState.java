@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.DocumentPart;
@@ -61,11 +62,7 @@ public class DocumentState {
         stateLink = new HashMap<DocumentPart, List<DocumentPart>>();
         for (int i = 0; i < builderStateCopy.size(); ++i) {
             Page page = builderStateCopy.get(i);
-
-            StatePage newPage = new BaseStatePage(page);
-            newPage.setOriginalObject(page);
-            AddMasterPageToNewStatePage(page, newPage);
-
+            StatePage newPage = CreateStateInstanceForPage(page);
             state.add(newPage);
             addToStateLink(page, newPage);
             Page overflowPage = processPageContent(page, newPage);
@@ -74,6 +71,13 @@ public class DocumentState {
             }
         }
         processPageAreas();
+    }
+
+    private StatePage CreateStateInstanceForPage(Page page) {
+        StatePage newPage = new BaseStatePage(page);
+        newPage.setOriginalObject(page);
+        AddMasterPageToNewStatePage(page, newPage);
+        return newPage;
     }
 
     private void AddMasterPageToNewStatePage(Page page, StatePage newPage) {
@@ -88,18 +92,18 @@ public class DocumentState {
 
     private void processPageAreas() {
         String totalPageNumbers = String.valueOf(state.size() - 1);
-        for (int i = 1; i < state.size(); ++i) {
-            StatePage sp = (StatePage) state.get(i);
-            PageArea header = sp.getHeader();
-            PageArea footer = sp.getFooter();
-            if (header != null) {
-                addPageNumbersToPageArea(totalPageNumbers, i, header);
-                processPageAreaContent(header, sp);
-            }
-            if (footer != null) {
-                addPageNumbersToPageArea(totalPageNumbers, i, footer);
-                processPageAreaContent(footer, sp);
-            }
+        //we skip the title page, so pagenumber starts at 1
+        for (int pageNumber = 1; pageNumber < state.size(); ++pageNumber) {
+            StatePage page = (StatePage) state.get(pageNumber);
+            ProcessPageAreaContent(totalPageNumbers, pageNumber, page, page.getHeader());
+            ProcessPageAreaContent(totalPageNumbers, pageNumber, page, page.getFooter());
+        }
+    }
+
+    private void ProcessPageAreaContent(String totalPageNumbers, int i, StatePage sp, PageArea header) {
+        if (header != null) {
+            addPageNumbersToPageArea(totalPageNumbers, i, header);
+            processPageAreaContent(header, sp);
         }
     }
 
@@ -110,28 +114,30 @@ public class DocumentState {
 
     private void processPageAreaContent(PageArea area, StatePage sp) {
         List<DocumentPart> content = new ArrayList<DocumentPart>();
-        for (DocumentPart part : area.getContent()) {
-            content.add(createCopyOf(part));
-        }
+        CopyPageAreaContent(area, content);
 
         Map<String, String> attributes = area.getAttributes();
-        for (int i = 0; i < content.size(); ++i) {
-            DocumentPart part = content.get(i);
+        for (DocumentPart part : content) {
             if (part.getType().equals(DocumentPartType.TEXT)) {
                 processAttributes((Text) part, attributes);
             } else if (part.getType().equals(DocumentPartType.TABLE)) {
-                Table table = (Table) part;
-                List<Cell> cells = table.getContent();
-                for (int b = 0; b < cells.size(); ++b) {
-                    Cell c = cells.get(b);
-                    if (c.getContent().getType().equals(DocumentPartType.TEXT)) {
-                        c.content(processAttributes((Text) c.getContent(), attributes));
-                    }
-                }
+                processPageAreaAttributeForTextInTable(attributes, (Table) part);
             }
         }
         processFixedPositionContent(content, sp);
+    }
 
+    private void processPageAreaAttributeForTextInTable(Map<String, String> attributes, Table table) {
+        List<Cell> cells = table.getContent();
+        for (Cell c : cells) {
+            if (c.getContent().getType().equals(DocumentPartType.TEXT)) {
+                c.content(processAttributes((Text) c.getContent(), attributes));
+            }
+        }
+    }
+
+    private void CopyPageAreaContent(PageArea area, List<DocumentPart> content) {
+        content.addAll(area.getContent().stream().map(this::createCopyOf).collect(Collectors.toList()));
     }
 
     private DocumentPart createCopyOf(DocumentPart part) {
@@ -140,14 +146,7 @@ public class DocumentState {
             case PARAGRAPH:
                 return new BaseParagraph((Paragraph) part, true);
             case TABLE:
-                Table table = (Table) part;
-                Table newTable = new BaseTable(table);
-                newTable.removeContent();
-                for (int i = 0; i < table.getContent().size(); ++i) {
-                    Cell c = table.getContent().get(i);
-                    newTable.addCell(new BaseCell(c).content((PlaceableDocumentPart) this.createCopyOf(c.getContent())));
-                }
-                return newTable;
+                return createCopyOfTable((Table) part);
             default:
                 if (part instanceof PlaceableDocumentPart) {
                     return ((PlaceableDocumentPart) part).copy();
@@ -155,6 +154,16 @@ public class DocumentState {
             }
         }
         return null;
+    }
+
+    private DocumentPart createCopyOfTable(Table table) {
+        Table newTable = new BaseTable(table);
+        newTable.removeContent();
+        for (int i = 0; i < table.getContent().size(); ++i) {
+            Cell c = table.getContent().get(i);
+            newTable.addCell(new BaseCell(c).content((PlaceableDocumentPart) this.createCopyOf(c.getContent())));
+        }
+        return newTable;
     }
 
     private Text processAttributes(Text text, Map<String, String> attributes) {
@@ -171,14 +180,13 @@ public class DocumentState {
     }
 
     private void addToStateLink(DocumentPart old, DocumentPart newPart) {
-        DocumentPart oldObject = old;
-        List<DocumentPart> results = this.stateLink.get(oldObject);
+        List<DocumentPart> results = this.stateLink.get(old);
         if (results != null) {
             results.add(newPart);
         } else {
             List<DocumentPart> newList = new LinkedList<DocumentPart>();
             newList.add(newPart);
-            stateLink.put(oldObject, newList);
+            stateLink.put(old, newList);
         }
     }
 
@@ -210,9 +218,7 @@ public class DocumentState {
                 break;
             case TABLE:
                 StateTable table = new BaseStateTable((Table) part);
-                for (Cell c : ((Table) part).getContent()) {
-                    table.addCell(c);
-                }
+                ((Table) part).getContent().forEach(table::addCell);
                 table.setOriginalObject(part);
                 table.processContentSize(page, true, false, true);
                 AddPartToStatePage(page, part, table);
@@ -236,9 +242,7 @@ public class DocumentState {
      * @return Instance of page if there is overflow, null otherwise.
      */
     private Page processPositioning(List<DocumentPart> content, StatePage page) {
-        int i = 0;
-        boolean overflowFound = false;
-        while (!overflowFound && i < content.size()) {
+        for (int i = 0; i < content.size(); ++i) {
             DocumentPart p = content.get(i);
             Page overflow = null;
             switch (p.getType()) {
@@ -261,7 +265,6 @@ public class DocumentState {
             if (overflow != null) {
                 return overflow;
             }
-            ++i;
         }
         return null;
     }
@@ -269,10 +272,8 @@ public class DocumentState {
     private Page addPositionlessTable(List<DocumentPart> content, StatePage page, int i, DocumentPart p) {
         Position position;
         StateTable table = new BaseStateTable((Table) p);
-        StateTable overflow = null;
-        for (Cell c : ((Table) p).getContent()) {
-            table.addCell(c);
-        }
+        StateTable overflow;
+        ((Table) p).getContent().forEach(table::addCell);
         table.setOriginalObject(p);
         table.updateHeight(page);
 
@@ -377,9 +378,7 @@ public class DocumentState {
      * @return Position for the part.
      */
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
-        Position position = null;
-        position = page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow(), part);
-        return position;
+        return page.getOpenPosition(part.getRequiredSpaceAbove(), part.getRequiredSpaceBelow(), part);
     }
 
     /**
@@ -397,17 +396,15 @@ public class DocumentState {
         } else {
             overflowPage.setOriginalObject(page);
         }
-        List<DocumentPart> newContent = new LinkedList<DocumentPart>();
+        List<DocumentPart> newContent = new LinkedList<>();
         if (overflowContent != null) {
             newContent.add(overflowContent);
         }
         newContent.addAll(content.subList(overflowIndex, content.size()));
         page.getContent().removeAll(newContent);
-        for (DocumentPart p : newContent) {
-            if (p instanceof PlaceableDocumentPart) {
-                ((PlaceableDocumentPart) p).setPosition(new Position());
-            }
-        }
+        newContent.stream()
+                .filter(p -> p instanceof PlaceableDocumentPart)
+                .forEach(p -> ((PlaceableDocumentPart) p).setPosition(new Position()));
         overflowPage.addAll(newContent);
         return overflowPage;
     }

@@ -26,7 +26,7 @@ public final class UnicodeConverter {
 
     static {
         Map<Integer, String> unicodeToPostscriptTemp = new HashMap<Integer, String>();
-        InputStream in = null;
+        InputStream in;
         try {
             in = UnicodeConverter.class.getResourceAsStream(Constants.RESOURCES + FILENAME);
             if (in == null) {
@@ -63,7 +63,7 @@ public final class UnicodeConverter {
      * @throws IOException
      */
     private static Map<Integer, String> processGlyphlist(Map<Integer, String> unicodeToPostscriptTemp, InputStream in) throws IOException {
-        String currentLine = "";
+        String currentLine;
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         while ((currentLine = reader.readLine()) != null) {
             if (!currentLine.startsWith("#")) {

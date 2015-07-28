@@ -21,7 +21,7 @@ public class PdfPageTree extends PdfDictionary {
      */
     public PdfPageTree() {
         super(PdfObjectType.PAGETREE);
-        kids = new ArrayList<PdfIndirectObject>();
+        kids = new ArrayList<>();
         initPageTree();
     }
 

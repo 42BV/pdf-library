@@ -4,15 +4,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import nl.mad.toucanpdf.api.BaseText;
-import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Position;
 import nl.mad.toucanpdf.model.Text;
 import nl.mad.toucanpdf.model.state.StateSpacing;
 import nl.mad.toucanpdf.model.state.StateSplittableText;
 
 public abstract class AbstractStateText extends BaseText implements StateSplittableText, StateSpacing {
-    protected Map<Position, String> textSplit = new LinkedHashMap<Position, String>();
-    protected Map<Position, Double> justificationOffset = new LinkedHashMap<Position, Double>();
+    protected Map<Position, String> textSplit = new LinkedHashMap<>();
+    protected Map<Position, Double> justificationOffset = new LinkedHashMap<>();
 
     public AbstractStateText(String text) {
         super(text);

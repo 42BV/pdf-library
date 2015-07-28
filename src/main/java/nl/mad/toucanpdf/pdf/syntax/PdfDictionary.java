@@ -27,7 +27,7 @@ public class PdfDictionary extends AbstractPdfObject {
      */
     public PdfDictionary(PdfObjectType type) {
         super(type);
-        content = new LinkedHashMap<PdfName, AbstractPdfObject>();
+        content = new LinkedHashMap<>();
     }
 
     @Override

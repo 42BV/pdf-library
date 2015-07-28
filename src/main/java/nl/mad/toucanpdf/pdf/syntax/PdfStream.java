@@ -54,13 +54,29 @@ public class PdfStream extends PdfDictionary {
      */
     public PdfStream(PdfObjectType type) {
         super(type);
-        contents = new ArrayList<AbstractPdfObject>();
+        contents = new ArrayList<>();
         this.put(LENGTH, new PdfNumber(0));
     }
 
     @Override
     public void writeToFile(OutputStream os) throws IOException {
-        ByteArrayOutputStream bigBaos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        writeContentToStream(baos);
+        baos.flush();
+        baos.close();
+        byte[] data = processCompression(baos.toByteArray());
+        updateLength(data);
+        super.writeToFile(os);
+        os.write(Constants.LINE_SEPARATOR);
+        os.write(ByteEncoder.getBytes(START_STREAM));
+        os.write(data);
+        if (this.filterList.size() > 0) {
+            os.write(Constants.LINE_SEPARATOR);
+        }
+        os.write(ByteEncoder.getBytes(END_STREAM));
+    }
+
+    private void writeContentToStream(ByteArrayOutputStream bigBaos) throws IOException {
         for (int i = 0; i < contents.size(); ++i) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             if (checkWriteBefore(i)) {
@@ -78,18 +94,6 @@ public class PdfStream extends PdfDictionary {
             bigBaos.write(baos.toByteArray());
             baos.close();
         }
-        bigBaos.flush();
-        bigBaos.close();
-        byte[] data = processCompression(bigBaos.toByteArray());
-        updateLength(data);
-        super.writeToFile(os);
-        os.write(Constants.LINE_SEPARATOR);
-        os.write(ByteEncoder.getBytes(START_STREAM));
-        os.write(data);
-        if (this.filterList.size() > 0) {
-            os.write(Constants.LINE_SEPARATOR);
-        }
-        os.write(ByteEncoder.getBytes(END_STREAM));
     }
 
     private byte[] processCompression(byte[] data) {
@@ -107,10 +111,7 @@ public class PdfStream extends PdfDictionary {
      * @return True if a content indicator should be written, false otherwise.
      */
     private boolean checkWriteBefore(int currentObjectNumber) {
-        if (currentObjectNumber != 0 && contents.get(currentObjectNumber - 1).getType().equals(contents.get(currentObjectNumber).getType())) {
-            return false;
-        }
-        return true;
+        return !(currentObjectNumber != 0 && contents.get(currentObjectNumber - 1).getType().equals(contents.get(currentObjectNumber).getType()));
     }
 
     /**
@@ -121,10 +122,7 @@ public class PdfStream extends PdfDictionary {
      */
     private boolean checkWriteAfter(int currentObjectNumber) {
         boolean lastEntry = currentObjectNumber == (this.getContentSize() - 1);
-        if (!lastEntry && contents.get(currentObjectNumber + 1).getType().equals(contents.get(currentObjectNumber).getType())) {
-            return false;
-        }
-        return true;
+        return !(!lastEntry && contents.get(currentObjectNumber + 1).getType().equals(contents.get(currentObjectNumber).getType()));
     }
 
     /**
@@ -187,7 +185,7 @@ public class PdfStream extends PdfDictionary {
         PdfArray array = getFilterArray();
         boolean nameExists = false;
         for (AbstractPdfObject object : array.getValues()) {
-            if (object instanceof PdfName && ((PdfName) object).equals(name)) {
+            if (object instanceof PdfName && object.equals(name)) {
                 nameExists = true;
             }
         }

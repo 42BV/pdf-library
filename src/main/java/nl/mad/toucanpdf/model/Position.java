@@ -1,7 +1,5 @@
 package nl.mad.toucanpdf.model;
 
-import nl.mad.toucanpdf.utility.FloatEqualityTester;
-
 /**
  * This class stores the position for document parts.
  * @author Dylan de Wolff
@@ -81,7 +79,7 @@ public class Position {
      * @return True if either x or y are not equal to the default unused value, false otherwise.
      */
     public boolean hasCustomPosition() {
-        return (x != UNUSED_VALUE || y != UNUSED_VALUE);
+        return (hasCustomXValue() || hasCustomYValue());
     }
 
     /**
@@ -124,7 +122,6 @@ public class Position {
         if (getClass() != obj.getClass()) return false;
         Position other = (Position) obj;
         if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) return false;
-        if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) return false;
-        return true;
+        return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
     }
 }

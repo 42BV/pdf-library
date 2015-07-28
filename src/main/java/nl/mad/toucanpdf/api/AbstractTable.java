@@ -95,10 +95,6 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table border(double border) {
-        //        DecimalFormat df = new DecimalFormat("0.0");
-        //        String newBorder = df.format(border);
-        //        newBorder = newBorder.replace(',', '.');
-        //        this.borderWidth = Math.max(0, Double.parseDouble(newBorder));
         border = Math.min(border, Constants.MAX_BORDER_SIZE);
         border = Math.max(border, Constants.MIN_BORDER_SIZE);
         this.borderWidth = border;

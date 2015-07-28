@@ -26,7 +26,7 @@ public class PdfArray extends AbstractPdfObject {
      */
     public PdfArray(List<AbstractPdfObject> values) {
         this();
-        this.values = new LinkedList<AbstractPdfObject>(values);
+        this.values = new LinkedList<>(values);
     }
 
     /**
@@ -49,8 +49,8 @@ public class PdfArray extends AbstractPdfObject {
     public void writeToFile(OutputStream os) throws IOException {
         os.write('[');
         os.write(' ');
-        for (int i = 0; i < values.size(); ++i) {
-            values.get(i).writeToFile(os);
+        for (AbstractPdfObject value : values) {
+            value.writeToFile(os);
             os.write(' ');
         }
         os.write(']');

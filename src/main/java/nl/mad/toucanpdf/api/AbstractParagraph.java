@@ -2,6 +2,7 @@ package nl.mad.toucanpdf.api;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nl.mad.toucanpdf.model.Alignment;
 import nl.mad.toucanpdf.model.Anchor;
@@ -28,7 +29,7 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
      */
     public AbstractParagraph() {
         super(DocumentPartType.PARAGRAPH);
-        this.anchors = new LinkedList<Anchor>();
+        this.anchors = new LinkedList<>();
     }
 
     @Override
@@ -60,13 +61,9 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
 
     @Override
     public List<Anchor> getAnchorsOn(Text t) {
-        List<Anchor> anchorsOnText = new LinkedList<Anchor>();
+        List<Anchor> anchorsOnText = new LinkedList<>();
         if (t != null) {
-            for (Anchor a : anchors) {
-                if (t.equals(a.getAnchorPoint())) {
-                    anchorsOnText.add(a);
-                }
-            }
+            anchorsOnText.addAll(anchors.stream().filter(a -> t.equals(a.getAnchorPoint())).collect(Collectors.toList()));
         }
         return anchorsOnText;
     }

@@ -60,20 +60,22 @@ public class BaseStateImage extends BaseImage implements StateImage {
 
     @Override
     public int[] getPositionAt(double height) {
-        Position pos = getPosition();
-        if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
-                && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
-            return new int[] { (int) pos.getX() };
+        if (isImageOnTheGivenHeight(height)) {
+            return new int[] { (int) getPosition().getX() };
         }
         return new int[] {};
     }
 
+    private boolean isImageOnTheGivenHeight(double height) {
+        Position pos = getPosition();
+        return FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
+                && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow());
+    }
+
     @Override
     public List<Space> getUsedSpaces(double height, int pageWidth) {
-        Position pos = getPosition();
         List<Space> space = new LinkedList<>();
-        if (FloatEqualityTester.lessThanOrEqualTo(height, pos.getY() + this.getRequiredSpaceAbove())
-                && FloatEqualityTester.greaterThanOrEqualTo(height, pos.getY() - this.getRequiredSpaceBelow())) {
+        if (isImageOnTheGivenHeight(height)) {
             if (isWrappingAllowed()) {
                 space.add(new Space((int) this.getPosition().getX() - marginLeft, (int) (this.getPosition().getX() + getWidth() + marginRight)));
             } else {
@@ -107,7 +109,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
             List<Space> openSpaces = page.getOpenSpacesIncludingHeight(pos, true, this.getRequiredSpaceAbove(), this.getRequiredSpaceBelow(), this);
             boolean imagePositioned = false;
             while (pos != null && !imagePositioned) {
-                imagePositioned = PlaceImage(processAlignment, pos, openSpaces, imagePositioned);
+                imagePositioned = PlaceImage(processAlignment, pos, openSpaces);
                 if (!imagePositioned) {
                     requiredSpaceAbove += page.getLeading();
                     pos = page.getOpenPosition(requiredSpaceAbove, requiredSpaceBelow, this, this.width);
@@ -125,16 +127,17 @@ public class BaseStateImage extends BaseImage implements StateImage {
         return false;
     }
 
-    private boolean PlaceImage(boolean processAlignment, Position pos, List<Space> openSpaces, boolean imagePositioned) {
+    private boolean PlaceImage(boolean processAlignment, Position pos, List<Space> openSpaces) {
         int i = 0;
-        while (!imagePositioned && i < openSpaces.size()) {
+        boolean positionFound = false;
+        while (!positionFound && i < openSpaces.size()) {
             Space openSpace = openSpaces.get(i);
             if (pos.getX() < openSpace.getStartPoint()) {
                 pos.setX(openSpace.getStartPoint());
             }
             int openSpaceWidth = (openSpace.getEndPoint() - openSpace.getStartPoint());
             if (openSpaceWidth >= this.getWidth() && openSpace.getHeight() >= this.getHeight()) {
-                imagePositioned = true;
+                positionFound = true;
                 if (processAlignment) {
                     this.processAlignment(pos, openSpaceWidth);
                 }
@@ -142,7 +145,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
             }
             ++i;
         }
-        return imagePositioned;
+        return positionFound;
     }
 
     private void adjustFilledHeight(StatePage page) {

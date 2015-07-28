@@ -60,9 +60,6 @@ public class PdfName extends AbstractPdfObject {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof PdfName) {
-            return this.name.equals(((PdfName) (o)).getName());
-        }
-        return false;
+        return o instanceof PdfName && this.name.equals(((PdfName) (o)).getName());
     }
 }

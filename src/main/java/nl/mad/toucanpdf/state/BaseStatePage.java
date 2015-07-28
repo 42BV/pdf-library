@@ -28,7 +28,6 @@ public class BaseStatePage extends BasePage implements StatePage {
     private double filledWidth = 0;
     private double filledHeight = 0;
     private DocumentPart originalObject;
-    private static final int OPEN_SPACE_INCL_HEIGHT_SIZE = 3;
 
     /**
      * Creates a new instance of BaseStatePage with the given width and height.
@@ -93,7 +92,7 @@ public class BaseStatePage extends BasePage implements StatePage {
     }
 
     private double getMinimalWidthForWrapping(StateSpacing spacing) {
-        if (this.getWidthWithoutMargins() > this.MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
+        if (this.getWidthWithoutMargins() > MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING) {
             return MINIMAL_AVAILABLE_SPACE_FOR_WRAPPING;
         } else {
             return this.getWidthWithoutMargins() - spacing.getRequiredSpaceLeft() - spacing.getRequiredSpaceRight();
@@ -109,27 +108,32 @@ public class BaseStatePage extends BasePage implements StatePage {
     @Override
     public Position getOpenPosition(double positionWidth, double positionHeight, double requiredSpaceAbove, double requiredSpaceBelow, StateSpacing spacing,
             double requiredWidth) {
-        boolean openPositionFound = false;
+        boolean positionDetermined = false;
         int marginBottom = getMarginBottom();
         double potentialHeight = positionHeight;
         if (requiredWidth == 0) {
             requiredWidth = this.getMinimalWidthForWrapping(spacing);
         }
+
+        Position position = null;
         if (positionHeight > marginBottom) {
             double potentialWidth = positionWidth + getMarginLeft();
-            Position position = new Position(potentialWidth, potentialHeight);
-            while (!openPositionFound) {
+            position = new Position(potentialWidth, potentialHeight);
+            while (!positionDetermined) {
                 if (potentialHeight - requiredSpaceBelow <= marginBottom) {
-                    return null;
+                    positionDetermined = true;
+                    position = null;
+                } else if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth)) {
+                    positionDetermined = true;
                 }
-                if (getWidestOpenSpaceOn(position, requiredSpaceAbove, requiredSpaceBelow, spacing) >= (requiredWidth)) {
-                    return position;
+
+                if (!positionDetermined) {
+                    potentialHeight -= getLeading();
+                    position = new Position(potentialWidth, potentialHeight);
                 }
-                potentialHeight -= getLeading();
-                position = new Position(potentialWidth, potentialHeight);
             }
         }
-        return null;
+        return position;
     }
 
     /**

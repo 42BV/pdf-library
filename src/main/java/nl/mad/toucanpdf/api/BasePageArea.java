@@ -7,7 +7,6 @@ import java.util.Map;
 
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.PageArea;
-import nl.mad.toucanpdf.model.PlaceableDocumentPart;
 
 public class BasePageArea implements PageArea {
     private int height = 20;

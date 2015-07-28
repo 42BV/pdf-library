@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is reponsible for parsing Afm files (contains Type 1 font metrics) and storing the data found. This is required to embed a Type 1 font.
- * 
+ *
  * @author Dylan de Wolff
  */
 public class AfmParser {
@@ -49,159 +49,62 @@ public class AfmParser {
     private static final Map<String, ParsingAction> ACTION_MAP;
 
     static {
-        ACTION_MAP = new HashMap<String, ParsingAction>();
-        ACTION_MAP.put("FontName", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setFontName(st.nextToken());
-            }
+        ACTION_MAP = new HashMap<>();
+        ACTION_MAP.put("FontName", (parser, st) -> parser.setFontName(st.nextToken()));
+        ACTION_MAP.put("FullName", (parser, st) -> parser.setFullName(st.nextToken()));
+        ACTION_MAP.put("FamilyName", (parser, st) -> parser.setFamilyName(st.nextToken()));
+        ACTION_MAP.put("Weight", (parser, st) -> parser.setWeight(st.nextToken()));
+        ACTION_MAP.put("ItalicAngle", (parser, st) -> parser.setItalicAngle(Double.valueOf(st.nextToken())));
+        ACTION_MAP.put("IsFixedPitch", (parser, st) -> parser.setFixedPitch("true".equals(st.nextToken())));
+        ACTION_MAP.put("CharacterSet", (parser, st) -> parser.setCharacterSet(st.nextToken()));
+        ACTION_MAP.put("FontBBox", (parser, st) -> {
+            double[] fontBoundingBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
+                    Double.valueOf(st.nextToken()) };
+            parser.setFontBBox(fontBoundingBox);
         });
-        ACTION_MAP.put("FullName", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setFullName(st.nextToken());
-            }
+        ACTION_MAP.put("UnderLinePosition", (parser, st) -> parser.setUnderlinePosition(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("UnderlinePosition", (parser, st) -> parser.setUnderlinePosition(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("UnderlineThickness", (parser, st) -> parser.setUnderlineThickness(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("EncodingScheme", (parser, st) -> parser.setEncodingScheme(st.nextToken()));
+        ACTION_MAP.put("CapHeight", (parser, st) -> parser.setCapHeight(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("XHeight", (parser, st) -> parser.setXHeight(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("Ascender", (parser, st) -> parser.setAscender(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("Descender", (parser, st) -> parser.setDescender(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("StdHW", (parser, st) -> parser.setStdHW(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("StdVW", (parser, st) -> parser.setStdVW(Integer.valueOf(st.nextToken())));
+        ACTION_MAP.put("EndCharMetrics", (parser, st) -> {
+            parser.updateWidthAttributes();
+            parser.updateCharAttributes();
+            parser.updateFlags();
         });
-        ACTION_MAP.put("FamilyName", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setFamilyName(st.nextToken());
-            }
-        });
-        ACTION_MAP.put("Weight", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setWeight(st.nextToken());
-            }
-        });
-        ACTION_MAP.put("ItalicAngle", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setItalicAngle(Double.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("IsFixedPitch", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setFixedPitch("true".equals(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("CharacterSet", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setCharacterSet(st.nextToken());
-            }
-        });
-        ACTION_MAP.put("FontBBox", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                double[] fontBoundingBox = { Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()), Double.valueOf(st.nextToken()),
-                        Double.valueOf(st.nextToken()) };
-                parser.setFontBBox(fontBoundingBox);
-            }
-        });
-        ACTION_MAP.put("UnderLinePosition", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setUnderlinePosition(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("UnderlinePosition", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setUnderlinePosition(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("UnderlineThickness", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setUnderlineThickness(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("EncodingScheme", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setEncodingScheme(st.nextToken());
-            }
-        });
-        ACTION_MAP.put("CapHeight", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setCapHeight(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("XHeight", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setXHeight(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("Ascender", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setAscender(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("Descender", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setDescender(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("StdHW", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setStdHW(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("StdVW", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.setStdVW(Integer.valueOf(st.nextToken()));
-            }
-        });
-        ACTION_MAP.put("EndCharMetrics", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                parser.updateWidthAttributes();
-                parser.updateCharAttributes();
-                parser.updateFlags();
-            }
-        });
-        ACTION_MAP.put("C", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                String token = st.nextToken();
-                int c = Integer.valueOf(token);
-                int wx = Type1CharacterMetric.DEFAULT_WX_VALUE;
-                String name = "";
-                int[] boundingBox = null;
+        ACTION_MAP.put("C", (parser, st) -> {
+            String token = st.nextToken();
+            int c = Integer.valueOf(token);
+            int wx = Type1CharacterMetric.DEFAULT_WX_VALUE;
+            String name = "";
+            int[] boundingBox = null;
 
-                while (st.hasMoreTokens()) {
-                    if ("WX".equalsIgnoreCase(token)) {
-                        wx = Integer.valueOf(st.nextToken());
-                    } else if ("N".equalsIgnoreCase(token)) {
-                        name = st.nextToken();
-                    } else if ("B".equalsIgnoreCase(token)) {
-                        boundingBox = new int[] { Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()),
-                                Integer.parseInt(st.nextToken()) };
-                    }
-                    if (st.hasMoreTokens()) {
-                        token = st.nextToken();
-                    }
+            while (st.hasMoreTokens()) {
+                if ("WX".equalsIgnoreCase(token)) {
+                    wx = Integer.valueOf(st.nextToken());
+                } else if ("N".equalsIgnoreCase(token)) {
+                    name = st.nextToken();
+                } else if ("B".equalsIgnoreCase(token)) {
+                    boundingBox = new int[] { Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()),
+                            Integer.parseInt(st.nextToken()) };
                 }
-                Type1CharacterMetric cm = new Type1CharacterMetric(c, wx, name, boundingBox);
-                parser.characterMetrics.put(name, cm);
+                if (st.hasMoreTokens()) {
+                    token = st.nextToken();
+                }
             }
+            Type1CharacterMetric cm = new Type1CharacterMetric(c, wx, name, boundingBox);
+            parser.characterMetrics.put(name, cm);
         });
-        ACTION_MAP.put("KPX", new ParsingAction() {
-            @Override
-            public void execute(AfmParser parser, StringTokenizer st) {
-                String firstCharacter = st.nextToken();
-                String secondCharacter = st.nextToken();
-                int widthOffset = -Integer.valueOf(st.nextToken());
-                parser.createKerningEntry(firstCharacter, secondCharacter, widthOffset);
-            }
+        ACTION_MAP.put("KPX", (parser, st) -> {
+            String firstCharacter = st.nextToken();
+            String secondCharacter = st.nextToken();
+            int widthOffset = -Integer.valueOf(st.nextToken());
+            parser.createKerningEntry(firstCharacter, secondCharacter, widthOffset);
         });
 
     }
@@ -219,8 +122,8 @@ public class AfmParser {
      * Creates a new instance of AfmParser.
      */
     public AfmParser() {
-        characterMetrics = new LinkedHashMap<String, Type1CharacterMetric>();
-        kerningPairs = new LinkedHashMap<KerningKey, Integer>();
+        characterMetrics = new LinkedHashMap<>();
+        kerningPairs = new LinkedHashMap<>();
     }
 
     /**
@@ -526,7 +429,7 @@ public class AfmParser {
     public Integer getKerning(String characterName, String secondCharacterName) {
         Integer offset = kerningPairs.get(new KerningKey(characterName, secondCharacterName));
         if (offset != null) {
-            return offset.intValue();
+            return offset;
         }
         return 0;
     }

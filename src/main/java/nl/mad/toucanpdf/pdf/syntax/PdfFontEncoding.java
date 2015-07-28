@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import nl.mad.toucanpdf.api.DocumentState;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.PdfNameValue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PdfFontEncoding extends PdfDictionary {
     private static final Logger LOGGER = LoggerFactory.getLogger(PdfFontEncoding.class);

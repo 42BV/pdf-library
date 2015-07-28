@@ -2,9 +2,7 @@ package nl.mad.toucanpdf.pdf.syntax;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontFamily;
@@ -89,17 +87,29 @@ public class PdfFont extends PdfDictionary {
     private void addWidthsEntry() {
         FontMetrics metrics = font.getFontFamily().getMetricsForStyle(font.getStyle());
         List<Integer> widths;
-        if (encoding != null && encoding.getEncodingDifferences() != null) {
-            //if we're using a custom encoding, make it a subset
+        if (isFontUsingCustomEncoding()) {
             widths = encoding.getEncodingDifferences().generateWidthList(font);
-            put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
-            put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1));
-            put(PdfNameValue.BASE_FONT,
-                    new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, SUBSET_INDICATOR_LENGTH) + "+"
-                            + font.getFontFamily().getNameOfStyle(font.getStyle())));
+            CreateFontSubset(widths);
         } else {
             widths = metrics.getWidths(metrics.getFirstCharCode(), metrics.getLastCharCode());
         }
         put(PdfNameValue.WIDTHS, new PdfArray(PdfNumber.convertListOfValues(widths)));
+    }
+
+    /**
+     * Creates a font subset, meaning we manually decide the characters order of the font and which characters are actually used
+     * This is required whenever we use custom encoding.
+     * @param widths character widths
+     */
+    private void CreateFontSubset(List<Integer> widths) {
+        put(PdfNameValue.FIRST_CHAR, new PdfNumber(0));
+        put(PdfNameValue.LAST_CHAR, new PdfNumber(widths.size() - 1));
+        put(PdfNameValue.BASE_FONT,
+                new PdfName(RandomStringGenerator.generateRandomString(RandomStringGenerator.DEFAULT_CAPS_CHARACTERS, SUBSET_INDICATOR_LENGTH) + "+"
+                        + font.getFontFamily().getNameOfStyle(font.getStyle())));
+    }
+
+    private boolean isFontUsingCustomEncoding() {
+        return encoding != null && encoding.getEncodingDifferences() != null;
     }
 }

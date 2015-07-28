@@ -41,7 +41,7 @@ public class PdfBody {
      * Creates a new instance of the PdfBody. This will also result in the creation of the page tree and catalog.
      */
     public PdfBody() {
-        indirectObjects = new ArrayList<PdfIndirectObject>();
+        indirectObjects = new ArrayList<>();
         pageTree = createPageTree();
         catalog = createCatalog(pageTree.getReference());
     }
@@ -112,7 +112,7 @@ public class PdfBody {
     /**
      * Creates the catalog object. The catalog forms the root of the PDF file and refers to the first page tree of the api.
      * 
-     * @param pages The first page node that the catalog should refer to.
+     * @param pageTreeReference The first page node that the catalog should refer to.
      * @return The indirect object for the catalog.
      */
     private PdfIndirectObject createCatalog(PdfIndirectObjectReference pageTreeReference) {

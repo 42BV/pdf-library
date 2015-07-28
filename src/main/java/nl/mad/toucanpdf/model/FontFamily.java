@@ -24,7 +24,7 @@ public class FontFamily {
      */
     private static final Map<FontFamilyType, FontFamily> DEFAULT_FONT_FAMILIES;
     static {
-        DEFAULT_FONT_FAMILIES = new HashMap<FontFamilyType, FontFamily>();
+        DEFAULT_FONT_FAMILIES = new HashMap<>();
         DEFAULT_FONT_FAMILIES.put(FontFamilyType.TIMES_ROMAN, new FontFamily(FontType.TYPE1, "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic"));
         DEFAULT_FONT_FAMILIES.put(FontFamilyType.HELVETICA, new FontFamily(FontType.TYPE1, "Helvetica", "Helvetica-Bold", "Helvetica-Oblique",
                 "Helvetica-BoldOblique"));
@@ -63,7 +63,7 @@ public class FontFamily {
         this.boldName = boldName;
         this.italicName = italicName;
         this.boldItalicName = boldItalicName;
-        metrics = new HashMap<String, FontMetrics>();
+        metrics = new HashMap<>();
         this.fillAllMetrics();
     }
 
@@ -84,7 +84,6 @@ public class FontFamily {
      */
     private void fillMetrics(String filename) {
         try {
-            //do this without if (map with subtype, parser?)
             if (subType == FontType.TYPE1) {
                 metrics.put(filename, new Type1FontMetrics(filename));
             }
