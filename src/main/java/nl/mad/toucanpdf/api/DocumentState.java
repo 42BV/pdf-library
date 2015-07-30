@@ -30,7 +30,7 @@ import nl.mad.toucanpdf.model.state.StateText;
 import nl.mad.toucanpdf.state.BaseStateImage;
 import nl.mad.toucanpdf.state.BaseStatePage;
 import nl.mad.toucanpdf.state.BaseStateParagraph;
-import nl.mad.toucanpdf.state.BaseStateTable;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 import nl.mad.toucanpdf.state.BaseStateText;
 
 import org.slf4j.Logger;

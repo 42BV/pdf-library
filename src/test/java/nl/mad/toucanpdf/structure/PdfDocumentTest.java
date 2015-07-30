@@ -12,7 +12,6 @@ import mockit.MockUp;
 import nl.mad.toucanpdf.api.BaseCell;
 import nl.mad.toucanpdf.api.BaseFont;
 import nl.mad.toucanpdf.api.BasePage;
-import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.DocumentPart;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontFamilyType;
@@ -29,7 +28,7 @@ import nl.mad.toucanpdf.pdf.syntax.PdfObjectType;
 import nl.mad.toucanpdf.pdf.syntax.PdfTable;
 import nl.mad.toucanpdf.state.BaseStateImage;
 import nl.mad.toucanpdf.state.BaseStateParagraph;
-import nl.mad.toucanpdf.state.BaseStateTable;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 import nl.mad.toucanpdf.state.BaseStateText;
 
 import org.junit.Before;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import nl.mad.toucanpdf.model.PlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.Table;
-import nl.mad.toucanpdf.state.BaseStateTable;
+import nl.mad.toucanpdf.state.Table.StateTableRow;
 
 public interface StateTable extends Table, StatePlaceableDocumentPart, PlaceableFixedSizeDocumentPart {
     List<StateCell> getStateCellCollection();
@@ -34,7 +34,7 @@ public interface StateTable extends Table, StatePlaceableDocumentPart, Placeable
 
     double[] getOriginalWidths();
 
-    void setHeader(BaseStateTable.TableRow header);
+    void setHeader(StateTableRow header);
 
-    BaseStateTable.TableRow getHeader();
+    StateTableRow getHeader();
 }

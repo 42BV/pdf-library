@@ -7,7 +7,7 @@ import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateTable;
 import nl.mad.toucanpdf.pdf.syntax.PdfTable;
 import nl.mad.toucanpdf.state.BaseStateCell;
-import nl.mad.toucanpdf.state.BaseStateTable;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 import nl.mad.toucanpdf.utility.ByteEncoder;
 
 import org.junit.Test;

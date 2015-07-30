@@ -24,6 +24,7 @@ import nl.mad.toucanpdf.model.state.StateParagraph;
 import nl.mad.toucanpdf.model.state.StatePlaceableDocumentPart;
 import nl.mad.toucanpdf.model.state.StatePlaceableFixedSizeDocumentPart;
 import nl.mad.toucanpdf.model.state.StateText;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 import org.slf4j.Logger;

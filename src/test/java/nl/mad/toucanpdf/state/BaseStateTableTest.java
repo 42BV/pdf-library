@@ -20,6 +20,7 @@ import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.model.state.StateCellText;
 import nl.mad.toucanpdf.model.state.StatePage;
 import nl.mad.toucanpdf.model.state.StateTable;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 import nl.mad.toucanpdf.utility.FloatEqualityTester;
 
 import org.junit.Assert;

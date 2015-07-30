@@ -6,6 +6,7 @@ import nl.mad.toucanpdf.api.BaseText;
 import nl.mad.toucanpdf.model.Font;
 import nl.mad.toucanpdf.model.FontFamilyType;
 import nl.mad.toucanpdf.model.FontStyle;
+import nl.mad.toucanpdf.state.Table.BaseStateTable;
 
 import org.junit.Before;
 import org.junit.Test;
