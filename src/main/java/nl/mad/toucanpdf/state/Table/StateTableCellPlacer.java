@@ -4,9 +4,6 @@ import java.util.List;
 
 import nl.mad.toucanpdf.model.state.StateCell;
 
-/**
- * This class places cells
- */
 public class StateTableCellPlacer {
     private List<StateCell> content;
     private int columnAmount;

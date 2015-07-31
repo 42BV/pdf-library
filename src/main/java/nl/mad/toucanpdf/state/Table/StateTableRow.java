@@ -7,9 +7,6 @@ import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.state.StateCell;
 import nl.mad.toucanpdf.state.BaseStateCell;
 
-/**
- * Created by dylan on 30-7-15.
- */
 public class StateTableRow {
     private Cell[] content;
     private double maxHeight = 0;

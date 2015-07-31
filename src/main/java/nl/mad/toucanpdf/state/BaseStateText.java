@@ -271,14 +271,18 @@ public class BaseStateText extends AbstractStateText implements StateText {
         this.text(sb.toString());
 
         sb = new StringBuilder();
-        for (int i = overflowStart; i < strings.size(); ++i) {
-            sb.append(strings.get(i));
-            sb.append(" ");
-        }
+        appendOverflowStrings(overflowStart, strings, sb);
         StateText overflowText = new BaseStateText(this);
         overflowText.setOriginalObject(this.getOriginalObject());
         overflowText.text(sb.toString()).on(new Position());
         return overflowText;
+    }
+
+    private void appendOverflowStrings(int overflowStart, List<String> strings, StringBuilder sb) {
+        for (int i = overflowStart; i < strings.size(); ++i) {
+            sb.append(strings.get(i));
+            sb.append(" ");
+        }
     }
 
     @Override
@@ -332,14 +336,8 @@ public class BaseStateText extends AbstractStateText implements StateText {
         int i = 0;
         for (Entry<Position, String> entry : textSplit.entrySet()) {
             Position linePos = entry.getKey();
-            double requiredSpaceAbove = this.getRequiredSpaceAboveLine();
-            double requiredSpaceBelow = this.getRequiredSpaceBelowLine();
-            if (i == 0) {
-                requiredSpaceAbove = this.getRequiredSpaceAbove();
-            }
-            if (i == (textSplit.size() - 1)) {
-                requiredSpaceBelow = this.getRequiredSpaceBelow();
-            }
+            double requiredSpaceAbove = (i != 0) ? this.getRequiredSpaceAboveLine() : this.getRequiredSpaceAbove();
+            double requiredSpaceBelow = (i != (textSplit.size() - 1)) ? this.getRequiredSpaceBelowLine() : this.getRequiredSpaceBelow();
             if (FloatEqualityTester.lessThanOrEqualTo(height, linePos.getY() + requiredSpaceAbove)
                     && FloatEqualityTester.greaterThanOrEqualTo(height, linePos.getY() - requiredSpaceBelow)) {
                 entries.add(entry);

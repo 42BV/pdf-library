@@ -4,9 +4,6 @@ import java.util.List;
 
 import nl.mad.toucanpdf.model.Cell;
 
-/**
- * Created by dylan on 30-7-15.
- */
 public class StateTableColumnUsageDetector {
 
     private int columnAmount;

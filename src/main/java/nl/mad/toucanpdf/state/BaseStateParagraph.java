@@ -51,23 +51,27 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
      */
     public BaseStateParagraph(Paragraph p, boolean copyCollection) {
         super();
-        this.textCollection = new LinkedList<StateText>();
+        this.textCollection = new LinkedList<>();
         this.align(p.getAlignment());
         if (copyCollection) {
-            for (Text t : p.getTextCollection()) {
-                StateText newText = new BaseStateText(t);
-                textCollection.add(newText);
-                for (Anchor a : p.getAnchorsOn(t)) {
-                    Anchor newAnchor = this.addAnchor(new BaseAnchor(a, newText));
-                    newAnchor.part(convertAnchorPart(newAnchor.getPart()));
-                }
-            }
+            copyCollectionFromParagraph(p);
         }
         this.marginBottom = p.getMarginBottom();
         this.marginLeft = p.getMarginLeft();
         this.marginRight = p.getMarginRight();
         this.marginTop = p.getMarginTop();
         this.setPosition(p.getPosition());
+    }
+
+    private void copyCollectionFromParagraph(Paragraph p) {
+        for (Text t : p.getTextCollection()) {
+            StateText newText = new BaseStateText(t);
+            textCollection.add(newText);
+            for (Anchor a : p.getAnchorsOn(t)) {
+                Anchor newAnchor = this.addAnchor(new BaseAnchor(a, newText));
+                newAnchor.part(convertAnchorPart(newAnchor.getPart()));
+            }
+        }
     }
 
     private PlaceableFixedSizeDocumentPart convertAnchorPart(PlaceableDocumentPart part) {
@@ -93,16 +97,10 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         Paragraph overflowParagraph = null;
         for (int i = 0; i < textCollection.size(); ++i) {
             StateText t = textCollection.get(i);
-            t.marginLeft(t.getMarginLeft() + this.marginLeft);
-            t.marginRight(t.getMarginRight() + this.marginRight);
-            if (i == 0) {
-                t.marginTop(t.getMarginTop() + this.marginTop);
-            }
-            if (i == (textCollection.size() - 1)) {
-                t.marginBottom(t.getMarginBottom() + this.marginBottom);
-            }
+            setMarginsForText(i, t);
             t.align(this.getAlignment());
             double posX = 0;
+
             if (this.getAnchorsOn(t).size() > 0) {
                 overflowParagraph = processAnchors(textCollection.get(i), page, fixedPosition);
             } else {
@@ -121,6 +119,17 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             }
         }
         return overflowParagraph;
+    }
+
+    private void setMarginsForText(int i, StateText t) {
+        t.marginLeft(t.getMarginLeft() + this.marginLeft);
+        t.marginRight(t.getMarginRight() + this.marginRight);
+        if (i == 0) {
+            t.marginTop(t.getMarginTop() + this.marginTop);
+        }
+        if (i == (textCollection.size() - 1)) {
+            t.marginBottom(t.getMarginBottom() + this.marginBottom);
+        }
     }
 
     /**

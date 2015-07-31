@@ -9,9 +9,6 @@ import java.util.stream.Collectors;
 import nl.mad.toucanpdf.model.Cell;
 import nl.mad.toucanpdf.model.state.StateCell;
 
-/**
- * Created by dylan on 30-7-15.
- */
 public class StateTableColumnWidthCalculator {
     //columns that require a width less than the table width * this percentage will be prioritized during the dividing of width
     private static final double PRIORITY_COLUMN_WIDTH_PERCENTAGE = 0.2;
