@@ -12,9 +12,8 @@ public class StateTableCellPlacer {
     private int columnAmount;
     private StateTableColumnUsageDetector columnUsageDetector;
 
-    private int currentColumn = 0;
-    private double widthUsedInRow = 0;
-    private int currentRow = 0;
+    private int currentColumn;
+    private int currentRow;
 
     public StateTableCellPlacer(List<StateCell> content, int columnAmount) {
         this.content = content;
@@ -24,7 +23,7 @@ public class StateTableCellPlacer {
 
     public List<StateTableRow> divideColumnsOverRows(List<StateTableRow> rows) {
         currentColumn = 0;
-        widthUsedInRow = 0;
+        double widthUsedInRow = 0;
         addRowTo(rows);
         currentRow = rows.size() - 1;
 
@@ -38,7 +37,7 @@ public class StateTableCellPlacer {
                     rows.get(currentRow).getContent()[currentColumn] = c;
                     widthUsedInRow += c.getRequiredWidth();
                     currentColumn += c.getColumnSpan();
-                    addCelltoRow(rows, currentRow, c);
+                    addCellToRow(rows, currentRow, c);
                 } else if (contentFits) {
                     //if content does fit but the column is in use, try again on next column
                     currentColumn++;
@@ -60,7 +59,7 @@ public class StateTableCellPlacer {
         currentColumn = 0;
     }
 
-    private void addCelltoRow(List<StateTableRow> rows, int currentRow, StateCell cell) {
+    private void addCellToRow(List<StateTableRow> rows, int currentRow, StateCell cell) {
         //if the cell in question has no custom width specified
         if (cell.getStateCellContent() != null && cell.getStateCellContent().getSpecifiedWidth() == 0) {
             rows.get(currentRow).addNoWidthSpecifiedCell(cell);

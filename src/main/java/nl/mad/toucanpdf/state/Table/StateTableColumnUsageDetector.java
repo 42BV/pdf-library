@@ -22,8 +22,8 @@ public class StateTableColumnUsageDetector {
             for (int column = 0; column < this.columnAmount; ++column) {
                 Cell cell = row[column];
                 if (cell != null &&
-                        (rowNumber == checkedRow && cellOccupiesCheckedColumn(checkedColumn, column, cell.getColumnSpan())) ||
-                        (column <= checkedColumn && cellOccupiesCheckedCell(checkedColumn, checkedColumnSpan, checkedRow, rowNumber, column, cell))) {
+                        (rowNumber == checkedRow && cellOccupiesCheckedColumn(checkedColumn, column, cell.getColumnSpan()) ||
+                        (column <= checkedColumn && cellOccupiesCheckedCell(checkedColumn, checkedColumnSpan, checkedRow, rowNumber, column, cell)))) {
                     return false;
                 }
             }

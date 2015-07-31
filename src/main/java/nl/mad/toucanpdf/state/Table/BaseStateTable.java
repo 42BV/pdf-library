@@ -166,6 +166,11 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             fillEmptyCells(rows, tableContent);
         }
 
+        return applyCellSize(page, processPositioning, fixed, ignoreOverflow, availableHeight, cellPos, widths);
+    }
+
+    private StateTable applyCellSize(StatePage page, boolean processPositioning, boolean fixed, boolean ignoreOverflow, int availableHeight, Position cellPos,
+            double[] widths) {
         StateTable overflow = null;
         boolean overflowDetected = false;
         int index = 0;
@@ -192,11 +197,9 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 overflowRow = Math.min(rows.size(), index + 1);
             } else {
                 applyColumnHeights(row);
-                //adjust the cell position for the next row, meaning going down on the y axis and resetting the x axis
                 double heightIncrease = row.getMaxHeight();
                 this.height += heightIncrease;
-                cellPos.adjustY(-heightIncrease);
-                cellPos.setX(this.getPosition().getX());
+                adjustCellPositionForNextRow(cellPos, heightIncrease);
                 index++;
             }
         }
@@ -214,6 +217,11 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             this.height = Math.min((int) (MINIMUM_PAGE_HEIGHT_REQUIRED * page.getHeight()), this.height);
         }
         return overflow;
+    }
+
+    private void adjustCellPositionForNextRow(Position cellPos, double heightIncrease) {
+        cellPos.adjustY(-heightIncrease);
+        cellPos.setX(this.getPosition().getX());
     }
 
     private double[] determineCellWidths() {
@@ -337,13 +345,17 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             }
 
             for (int i = rowSize - 1; i >= index; --i) {
-                for (Cell cell : rows.get(i).getContent()) {
-                    this.content.remove(cell);
-                }
-                rows.remove(i);
+                removeRow(rows, i);
             }
         }
         return overflow;
+    }
+
+    private void removeRow(List<StateTableRow> rows, int i) {
+        for (Cell cell : rows.get(i).getContent()) {
+            this.content.remove(cell);
+        }
+        rows.remove(i);
     }
 
     private boolean isHeightCausingOverflow(StateTableRow current, int availableHeight) {
