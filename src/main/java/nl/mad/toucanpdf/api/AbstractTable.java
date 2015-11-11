@@ -15,6 +15,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     private boolean repeatHeader = false;
     protected double padding = 5;
     private boolean verticalAlignment = false;
+    private boolean prioritizeHeaderWidth = false;
 
     public AbstractTable(int pageWidth) {
         super(DocumentPartType.TABLE);
@@ -40,6 +41,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.repeatHeader = table.isRepeatingHeader();
         this.padding = table.getPadding();
         this.verticalAlignment = table.isVerticalAligned();
+        this.prioritizeHeaderWidth = table.isPrioritizingHeaderWidth();
     }
 
     @Override
@@ -169,8 +171,19 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
     }
 
     @Override
+    public boolean isPrioritizingHeaderWidth() {
+        return this.prioritizeHeaderWidth;
+    }
+
+    @Override
     public Table verticalAlign(boolean verticalAlignment) {
         this.verticalAlignment = verticalAlignment;
+        return this;
+    }
+
+    @Override
+    public Table prioritizeHeaderWidth(boolean prioritizeHeaderWidth) {
+        this.prioritizeHeaderWidth = prioritizeHeaderWidth;
         return this;
     }
 

@@ -21,14 +21,13 @@ public class StateTableColumnWidthCalculator {
         this.width = width;
     }
 
-    public double[] calculateColumnWidths(List<StateTableRow> rowList) {
+    public double[] calculateColumnWidths(List<StateTableRow> rowList, boolean prioritizeHeaderWidth) {
         double[] columnWidths = getDefaultWidths();
         this.rows = rowList;
 
         determineMaxWidths(columnWidths);
         double remainingWidth = width - determineWidthUsed(columnWidths);
-        remainingWidth = divideWidthToAchieveMinRequiredWidths(rows, columnWidths, remainingWidth);
-
+        remainingWidth = divideWidthToAchieveMinRequiredWidths(rows, columnWidths, remainingWidth, prioritizeHeaderWidth);
         if (remainingWidth > 0) {
             matchTotalRequiredWidths(columnWidths, remainingWidth);
         }
@@ -55,14 +54,14 @@ public class StateTableColumnWidthCalculator {
         return widthUsed;
     }
 
-    private double divideWidthToAchieveMinRequiredWidths(List<StateTableRow> rows, double[] columnWidths, double remainingWidth) {
+    private double divideWidthToAchieveMinRequiredWidths(List<StateTableRow> rows, double[] columnWidths, double remainingWidth, boolean prioritizeHeaderWidth) {
         ColumnPossibleWidth[] minColumnWidths = new ColumnPossibleWidth[this.columnAmount];
-        rows.stream().forEach(row -> determineMinWidthsForRow(minColumnWidths, row.getContent()));
+        determineMinWidthsForTable(rows, prioritizeHeaderWidth, minColumnWidths);
 
         //first we'll add width to each cell, that has no specified width, to make sure they reach the minimum value that they require
         List<ColumnPossibleWidth> allMinPossibleWidths = new ArrayList<>();
         Collections.addAll(allMinPossibleWidths, minColumnWidths);
-        
+
         //filter out all columns that have a width specified by the user
         Predicate<ColumnPossibleWidth> defaultFilter = (minWidth) -> minWidth != null && minWidth.getWidth() > columnWidths[minWidth.getColumn()];
         boolean enoughSpace = checkRequiredSpaceAvailable(remainingWidth, allMinPossibleWidths, defaultFilter);
@@ -71,7 +70,6 @@ public class StateTableColumnWidthCalculator {
         List<ColumnPossibleWidth> requiredSortedMinWidths = getFilteredMinRequiredWidthsSortedBySize(allMinPossibleWidths, minFilter);
 
         remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, requiredSortedMinWidths);
-
         //if there is not enough space to meet all min required values, we'll spread the remainder percentage wise
         if(!enoughSpace && remainingWidth > 0) {
             remainingWidth = spreadRemainderPercentageWiseOverMinPossibleWidths(columnWidths, remainingWidth, allMinPossibleWidths, defaultFilter);
@@ -79,12 +77,20 @@ public class StateTableColumnWidthCalculator {
         return remainingWidth;
     }
 
+    private void determineMinWidthsForTable(List<StateTableRow> rows, boolean prioritizeHeaderWidth, ColumnPossibleWidth[] minColumnWidths) {
+        if(prioritizeHeaderWidth) {
+            determineMinWidthsForRow(minColumnWidths, rows.get(0).getContent());
+        } else {
+            rows.stream().forEach(row -> determineMinWidthsForRow(minColumnWidths, row.getContent()));
+        }
+    }
+
     private double spreadRemainderPercentageWiseOverMinPossibleWidths(double[] columnWidths, double remainingWidth,
             List<ColumnPossibleWidth> allMinPossibleWidths, Predicate<ColumnPossibleWidth> defaultFilter) {
         List<ColumnPossibleWidth> largeWidths = getMinPossibleWidthsExceedingThreshold(allMinPossibleWidths, defaultFilter);
         double totalExtraWidthRequired = largeWidths.stream().mapToDouble(ColumnPossibleWidth::getWidth).sum();
-        spreadRemainingWidthPercentageWise(columnWidths, remainingWidth, largeWidths, totalExtraWidthRequired);
-        return 0;
+        remainingWidth = spreadRemainingWidthPercentageWise(columnWidths, remainingWidth, largeWidths, totalExtraWidthRequired);
+        return remainingWidth;
     }
 
     private List<ColumnPossibleWidth> getMinPossibleWidthsExceedingThreshold(List<ColumnPossibleWidth> allMinPossibleWidths,
@@ -139,11 +145,11 @@ public class StateTableColumnWidthCalculator {
 
         List<ColumnPossibleWidth> allMaxPossibleWidths = new ArrayList<>();
         Collections.addAll(allMaxPossibleWidths, maxColumnWidthsPossible);
-        //for the first two steps we'll only want to add width to columns for which the width was not specified by the user
+        //we'll only want to add width to columns for which the width was not specified by the user
         List<ColumnPossibleWidth> maxPossibleWidthsNotSpecifiedByUser = getMaxPossibleWidthsNotSpecifiedByUser(columnWidths, allMaxPossibleWidths);
         //filter the columns by length, we want to add the extra width to the small ones first to avoid small sentences to be spread out over two lines and such
         List<ColumnPossibleWidth> smallMaxPossibleWidths = filterByWidthSmallerThanPriorityWidth(maxPossibleWidthsNotSpecifiedByUser);
-        
+
         //try to reach the small max possible widths
         remainingWidth = addExtraWidthToColumns(columnWidths, remainingWidth, smallMaxPossibleWidths);
 
@@ -241,14 +247,16 @@ public class StateTableColumnWidthCalculator {
         return remainingWidth;
     }
 
-    private void spreadRemainingWidthPercentageWise(double[] columnWidths, double remainingWidth, List<ColumnPossibleWidth> possibleWidths,
+    private double spreadRemainingWidthPercentageWise(double[] columnWidths, double remainingWidth, List<ColumnPossibleWidth> possibleWidths,
             double totalExtraWidthRequired) {
         double increasePerWidthUnit = remainingWidth / totalExtraWidthRequired;
         for (ColumnPossibleWidth possibleWidth : possibleWidths) {
             double columnWidth = columnWidths[possibleWidth.getColumn()];
             double extraWidthRequired = possibleWidth.getWidth() - columnWidth;
             columnWidths[possibleWidth.getColumn()] = columnWidth + (increasePerWidthUnit * extraWidthRequired);
+            remainingWidth -= (increasePerWidthUnit * extraWidthRequired);
         }
+        return remainingWidth;
     }
 
     private void spreadRemainingWidth(double[] columnWidths, double remainingWidth, List<ColumnPossibleWidth> maxPossibleWidths) {

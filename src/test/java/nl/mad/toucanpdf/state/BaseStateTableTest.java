@@ -70,24 +70,24 @@ public class BaseStateTableTest {
         Cell c5 = cells.get(4);
 
         assertEquals(new Position(20, 797), table.getPosition());
-        assertEquals(83.728, table.getContentHeight(page), FloatEqualityTester.EPSILON);
+        assertEquals(58.296, table.getContentHeight(page), FloatEqualityTester.EPSILON);
         assertEquals(100, table.getContentWidth(page, table.getPosition()), FloatEqualityTester.EPSILON);
         //header position is always null, width and height are also undetermined
         assertEquals(new Position(20, 797), c1.getPosition());
-        assertEquals(29.60028, c1.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(31.864, c1.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(49.60028382213813, 797), c2.getPosition());
-        assertEquals(31.864, c2.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(34.92194, c2.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 765.136), c3.getPosition());
-        assertEquals(31.864, c3.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(29.60028, c3.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(49.60028382213813, 765.136), c4.getPosition());
-        assertEquals(31.864, c4.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(34.92194, c4.getWidth(), FloatEqualityTester.EPSILON);
-        assertEquals(new Position(20, 733.2719999999999), c5.getPosition());
+        assertEquals(47, c1.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(19.232, c1.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(67, 797), c2.getPosition());
+        assertEquals(19.232, c2.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(53, c2.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 777.768), c3.getPosition());
+        assertEquals(19.064, c3.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(47.0, c3.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(67, 777.768), c4.getPosition());
+        assertEquals(19.064, c4.getHeight(), FloatEqualityTester.EPSILON);
+        assertEquals(53, c4.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(new Position(20, 758.7040000000001), c5.getPosition());
         assertEquals(20, c5.getHeight(), FloatEqualityTester.EPSILON);
-        assertEquals(29.60028, c5.getWidth(), FloatEqualityTester.EPSILON);
+        assertEquals(47.0, c5.getWidth(), FloatEqualityTester.EPSILON);
         assertEquals(new Position(), text.getPosition());
         assertEquals(new Position(), text2.getPosition());
     }
@@ -206,17 +206,17 @@ public class BaseStateTableTest {
                 returns(new ArrayList<>(Arrays.asList(new Space(0, 110))));
             }
         };
-        
+
         StateTable table = new BaseStateTable(100);
         table.columns(1);
-        table.addCell("jantje");   
-        table.addCell("jantje");   
-        table.addCell("jantje");   
-        table.addCell("jantje");   
-        table.addCell("jantje");   
-        table.addCell("jantje");   
-        table.addCell("jantje"); 
-        
+        table.addCell("jantje");
+        table.addCell("jantje");
+        table.addCell("jantje");
+        table.addCell("jantje");
+        table.addCell("jantje");
+        table.addCell("jantje");
+        table.addCell("jantje");
+
         StateTable overflow = table.processContentSize(page, false, true, false);
         Assert.assertNotNull(overflow);
         Assert.assertEquals(2, table.getContent().size());
@@ -230,7 +230,7 @@ public class BaseStateTableTest {
         Assert.assertEquals(2, content.size());
         Assert.assertEquals(1, overflowContent.size());
         Assert.assertEquals(content.get(0).getWidth(), overflowContent.get(0).getWidth(), 0.01);
-        
+
         overflow.processContentSize(page, false, true, false);
         Assert.assertEquals(2, overflow.getContent().size());
     }
@@ -248,7 +248,7 @@ public class BaseStateTableTest {
                 page.getHeightWithoutMargins();
                 returns(400, 0);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
-                returns(new ArrayList<Space>(Arrays.asList(new Space(0, 200), new Space(250, 500))));
+                returns(new ArrayList<>(Arrays.asList(new Space(0, 200), new Space(250, 500))));
             }
         };
         table.width(50);

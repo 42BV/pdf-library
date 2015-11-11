@@ -227,7 +227,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     private double[] determineCellWidths() {
         if (original) {
             StateTableColumnWidthCalculator calculator = new StateTableColumnWidthCalculator(this.columnAmount, this.width);
-            this.originalColumnWidths = calculator.calculateColumnWidths(rows);
+            this.originalColumnWidths = calculator.calculateColumnWidths(rows, this.isPrioritizingHeaderWidth());
         }
         return this.originalColumnWidths;
     }
@@ -242,7 +242,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     }
 
     private void addHeaderToRows(List<StateTableRow> rows) {
-        if (header != null && (original || !original && this.isRepeatingHeader())) {
+        if (header != null && (original || this.isRepeatingHeader())) {
             rows.add(0, header);
         }
     }

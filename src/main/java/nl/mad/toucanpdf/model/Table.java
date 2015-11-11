@@ -191,4 +191,25 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      */
     Table verticalAlign(boolean verticalAlign);
 
+    /**
+     * Returns whether the header (first row) of the table will be prioritized during the width determination.
+     * If enabled the width calculator will try to spread the width in such a way that each header will fit without cutoff.
+     * If disabled (default) the minimal width for each cell will be determined by the largest word or piece of content in the column.
+     * The preferred option is to leave this option disabled unless dealing with very large tables for which the header row won't fit properly,
+     * in that case this option will at least make the header row look better (usually at the cost of how well the rest of the table content looks!).
+     * @return true if the header width will be prioritized, false otherwise
+     */
+    boolean isPrioritizingHeaderWidth();
+
+    /**
+     * Sets whether the table should prioritize the header (first row) minimal widths during width determination.
+     * If enabled the width calculator will try to spread the width in such a way that each header will fit without cutoff.
+     * If disabled (default) the minimal width for each cell will be determined by the largest word or piece of content in the column.
+     * The preferred option is to leave this option disabled unless dealing with very large tables for which the header row won't fit properly,
+     * in that case this option will at least make the header row look better (usually at the cost of how well the rest of the table content looks!).
+     * @param prioritizeHeaderWidth true if the header rows widths should be prioritized, false otherwise
+     * @return thist able instance
+     */
+    Table prioritizeHeaderWidth(boolean prioritizeHeaderWidth);
+
 }
