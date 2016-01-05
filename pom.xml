@@ -1,13 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>nl.mad</groupId>
+    
+    <groupId>org.toucanpdf</groupId>
     <artifactId>toucanpdf</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-
+    <inceptionYear>2015</inceptionYear>
     <name>Toucan-PDF</name>
     <description>Java library for the creation of PDF files</description>
+    <url>http://www.toucanpdf.org</url>
 
     <licenses>
         <license>
@@ -42,7 +44,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
