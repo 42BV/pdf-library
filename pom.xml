@@ -6,7 +6,7 @@
     <artifactId>toucanpdf</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <inceptionYear>2015</inceptionYear>
+    <inceptionYear>2014</inceptionYear>
     <name>Toucan-PDF</name>
     <description>Java library for the creation of PDF files</description>
     <url>http://www.toucanpdf.org</url>
