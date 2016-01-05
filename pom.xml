@@ -2,12 +2,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.mad</groupId>
-    <artifactId>pdflibrary</artifactId>
+    <artifactId>toucanpdf</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>Toucan-PDF</name>
-    <description>Library for generating PDF files from Java</description>
+    <description>Java library for the creation of PDF files</description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <scm>
         <connection>scm:git:https://github.com/42BV/pdf-library</connection>
@@ -15,6 +23,11 @@
         <url>https://github.com/42BV/pdf-library</url>
         <tag>HEAD</tag>
     </scm>
+
+    <organization>
+        <name>42 BV</name>
+        <url>http://blog.42.nl/</url>
+    </organization>
 
     <properties>
         <jmockit.version>1.7</jmockit.version>
