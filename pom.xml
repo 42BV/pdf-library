@@ -25,6 +25,13 @@
         <url>https://github.com/42BV/pdf-library</url>
         <tag>HEAD</tag>
     </scm>
+ 
+    <developers>
+         <developer>
+	         <name>Dylan de Wolff</name>
+		<email>dylan.de.wolff@42.nl</email>
+	</developer>
+    </developers>
 
     <organization>
         <name>42 BV</name>
