@@ -43,7 +43,7 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
             Position pos = new Position(position);
             pos.adjustX(marginLeft);
             pos.adjustY(-requiredSpaceAbove);
-            this.setPosition(pos);
+            this.on(pos);
         }
         return requiredHeight;
     }
@@ -72,7 +72,7 @@ public class BaseStateCellImage extends BaseImage implements StateCellContent {
     public void processVerticalAlignment(double height) {
         double diff = height - getRequiredHeight();
         if (diff > 0) {
-            this.setPosition(new Position(this.getPosition().getX(), this.getPosition().getY() - (diff / 2)));
+            this.on(new Position(this.getPosition().getX(), this.getPosition().getY() - (diff / 2)));
         }
     }
 

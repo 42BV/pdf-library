@@ -17,7 +17,7 @@ public class PdfTableTest {
     public void testDrawing() {
 
         StateTable table = new BaseStateTable(500);
-        table.width(110).border(0).setPosition(new Position(100, 100));
+        table.width(110).border(0).on(new Position(100, 100));
 
         StateCell cell = new BaseStateCell();
         cell.setPosition(new Position(110, 110)).width(11).height(10);

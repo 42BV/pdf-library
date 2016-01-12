@@ -374,7 +374,7 @@ public class DocumentState {
 
     /**
      * @param page Page to place the part on.
-     * @param p The part to add.
+     * @param part The part to add.
      * @return Position for the part.
      */
     private Position getPositionForPart(StatePage page, StatePlaceableDocumentPart part) {
@@ -404,7 +404,7 @@ public class DocumentState {
         page.getContent().removeAll(newContent);
         newContent.stream()
                 .filter(p -> p instanceof PlaceableDocumentPart)
-                .forEach(p -> ((PlaceableDocumentPart) p).setPosition(new Position()));
+                .forEach(p -> ((PlaceableDocumentPart) p).on(new Position()));
         overflowPage.addAll(newContent);
         return overflowPage;
     }

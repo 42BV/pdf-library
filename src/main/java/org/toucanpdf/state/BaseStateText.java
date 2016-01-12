@@ -176,7 +176,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
      */
     private void addTextSplitEntry(Position position, String string) {
         if (textSplit.isEmpty()) {
-            this.setPosition(new Position(position.getX(), position.getY()));
+            this.on(new Position(position.getX(), position.getY()));
         }
         textSplit.put(position, string);
     }

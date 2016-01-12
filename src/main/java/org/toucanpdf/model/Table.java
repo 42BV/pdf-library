@@ -8,6 +8,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param alignment Alignment to use.
      * @return this table instance.
      */
+    @Override
     Table align(Alignment alignment);
 
     /**
@@ -23,6 +24,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param y The y value of the position.
      * @return this table instance.
      */
+    @Override
     Table on(int x, int y);
 
     /**
@@ -30,6 +32,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param position The position to use.
      * @return this table instance.
      */
+    @Override
     Table on(Position position);
 
     /**
@@ -57,6 +60,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param marginTop the top margin to set
      * @return This table.
      */
+    @Override
     Table marginTop(int marginTop);
 
     /**
@@ -64,6 +68,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param marginBottom the bottom margin to set
      * @return This image.
      */
+    @Override
     Table marginBottom(int marginBottom);
 
     /**
@@ -71,6 +76,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param marginRight the right margin to set
      * @return This table.
      */
+    @Override
     Table marginRight(int marginRight);
 
     /**
@@ -78,6 +84,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
      * @param marginLeft the left margin to set
      * @return This table.
      */
+    @Override
     Table marginLeft(int marginLeft);
 
     /**

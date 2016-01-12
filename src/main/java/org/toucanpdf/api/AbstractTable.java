@@ -32,7 +32,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
         this.wrappingAllowed = table.isWrappingAllowed();
         this.borderWidth = table.getBorderWidth();
         this.align(table.getAlignment());
-        this.setPosition(table.getPosition());
+        this.on(table.getPosition());
         this.marginBottom = table.getMarginBottom();
         this.marginLeft = table.getMarginLeft();
         this.marginTop = table.getMarginTop();
@@ -52,7 +52,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table align(Alignment alignment) {
-        this.setAlignment(alignment);
+        super.align(alignment);
         return this;
     }
 
@@ -69,7 +69,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table on(Position position) {
-        this.setPosition(position);
+        super.on(position);
         return this;
     }
 
@@ -110,25 +110,25 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table marginTop(int marginTop) {
-        this.setMarginTop(marginTop);
+        super.marginTop(marginTop);
         return this;
     }
 
     @Override
     public Table marginBottom(int marginBottom) {
-        this.setMarginBottom(marginBottom);
+        super.marginBottom(marginBottom);
         return this;
     }
 
     @Override
     public Table marginRight(int marginRight) {
-        this.setMarginRight(marginRight);
+        super.marginRight(marginRight);
         return this;
     }
 
     @Override
     public Table marginLeft(int marginLeft) {
-        this.setMarginLeft(marginLeft);
+        super.marginLeft(marginLeft);
         return this;
     }
 

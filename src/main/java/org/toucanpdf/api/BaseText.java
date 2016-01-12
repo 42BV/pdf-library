@@ -63,8 +63,8 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
         this.scaleY = copyFrom.getScaleY();
         this.shearX = copyFrom.getShearX();
         this.shearY = copyFrom.getShearY();
-        this.setAlignment(copyFrom.getAlignment());
-        this.setPosition(copyFrom.getPosition());
+        this.align(copyFrom.getAlignment());
+        this.on(copyFrom.getPosition());
         this.marginBottom = copyFrom.getMarginBottom();
         this.marginLeft = copyFrom.getMarginLeft();
         this.marginTop = copyFrom.getMarginTop();
@@ -180,13 +180,12 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public Text on(int x, int y) {
-        this.setPosition(new Position(x, y));
-        return this;
+        return this.on(new Position(x, y));
     }
 
     @Override
     public Text on(Position position) {
-        this.setPosition(position);
+        super.on(position);
         return this;
     }
 
@@ -197,7 +196,7 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public Text align(Alignment alignment) {
-        this.setAlignment(alignment);
+        super.align(alignment);
         return this;
     }
 
@@ -214,25 +213,25 @@ public class BaseText extends AbstractPlaceableDocumentPart implements Text {
 
     @Override
     public Text marginTop(int marginTop) {
-        this.setMarginTop(marginTop);
+        super.marginTop(marginTop);
         return this;
     }
 
     @Override
     public Text marginBottom(int marginBottom) {
-        this.setMarginBottom(marginBottom);
+        super.marginBottom(marginBottom);
         return this;
     }
 
     @Override
     public Text marginRight(int marginRight) {
-        this.setMarginRight(marginRight);
+        super.marginRight(marginRight);
         return this;
     }
 
     @Override
     public Text marginLeft(int marginLeft) {
-        this.setMarginLeft(marginLeft);
+        super.marginLeft(marginLeft);
         return this;
     }
 

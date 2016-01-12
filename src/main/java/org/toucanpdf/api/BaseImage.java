@@ -122,8 +122,8 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
         this.width = image.getWidth();
         this.image = image.getImageParser();
         this.setWrappingAllowed(image.isWrappingAllowed());
-        this.setAlignment(image.getAlignment());
-        this.setPosition(image.getPosition());
+        this.align(image.getAlignment());
+        this.on(image.getPosition());
         this.marginBottom = image.getMarginBottom();
         this.marginLeft = image.getMarginLeft();
         this.marginTop = image.getMarginTop();
@@ -139,13 +139,13 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
 
     @Override
     public Image align(Alignment alignment) {
-        this.setAlignment(alignment);
+        super.align(alignment);
         return this;
     }
 
     @Override
     public Image on(Position position) {
-        this.setPosition(position);
+        super.on(position);
         return this;
     }
 
@@ -206,25 +206,25 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
 
     @Override
     public Image marginTop(int marginTop) {
-        this.setMarginTop(marginTop);
+        super.marginTop(marginTop);
         return this;
     }
 
     @Override
     public Image marginBottom(int marginBottom) {
-        this.setMarginBottom(marginBottom);
+        super.marginBottom(marginBottom);
         return this;
     }
 
     @Override
     public Image marginRight(int marginRight) {
-        this.setMarginRight(marginRight);
+        super.marginRight(marginRight);
         return this;
     }
 
     @Override
     public Image marginLeft(int marginLeft) {
-        this.setMarginLeft(marginLeft);
+        super.marginLeft(marginLeft);
         return this;
     }
 

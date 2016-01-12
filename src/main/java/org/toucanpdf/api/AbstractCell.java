@@ -14,7 +14,6 @@ public abstract class AbstractCell implements Cell {
     protected Position position;
 
     public AbstractCell() {
-
     }
 
     public AbstractCell(Cell c) {

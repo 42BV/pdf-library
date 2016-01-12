@@ -14,10 +14,26 @@ public interface PlaceableDocumentPart extends DocumentPart {
     Position getPosition();
 
     /**
-     * Sets the position to the given position.
-     * @param position Position to use.
+     * Sets the position of the document part.
+     * @param x The x value of the position.
+     * @param y The y value of the position.
+     * @return this image instance.
      */
-    void setPosition(Position position);
+    PlaceableDocumentPart on(int x, int y);
+
+    /**
+     * Sets the position of the image.
+     * @param position The position to use.
+     * @return this image instance.
+     */
+    PlaceableDocumentPart on(Position position);
+
+    /**
+     * Sets the alignment of the document part.
+     * @param alignment Alignment to use.
+     * @return this document part instance.
+     */
+    PlaceableDocumentPart align(Alignment alignment);
 
     /**
      * Returns the alignment of the part.
@@ -56,26 +72,30 @@ public interface PlaceableDocumentPart extends DocumentPart {
     int getMarginBottom();
 
     /**
-     * Sets the left margin for this object.
-     * @param marginLeft Margin to use.
+     * Sets the top margin of the document part.
+     * @param marginTop the top margin to set
+     * @return This document part instance.
      */
-    void setMarginLeft(int marginLeft);
+    PlaceableDocumentPart marginTop(int marginTop);
 
     /**
-     * Sets the right margin for this object.
-     * @param marginRight Margin to use.
+     * Sets the bottom margin of the document part.
+     * @param marginBottom the bottom margin to set
+     * @return This document part instance.
      */
-    void setMarginRight(int marginRight);
+    PlaceableDocumentPart marginBottom(int marginBottom);
 
     /**
-     * Sets the top margin for this object.
-     * @param marginTop Margin to use.
+     * Sets the right margin of the document part.
+     * @param marginRight the right margin to set
+     * @return This document part instance.
      */
-    void setMarginTop(int marginTop);
+    PlaceableDocumentPart marginRight(int marginRight);
 
     /**
-     * Sets the bottom margin for this object.
-     * @param marginBottom Margin to use.
+     * Sets the left margin of the document part.
+     * @param marginLeft the left margin to set
+     * @return This document part instance.
      */
-    void setMarginBottom(int marginBottom);
+    PlaceableDocumentPart marginLeft(int marginLeft);
 }

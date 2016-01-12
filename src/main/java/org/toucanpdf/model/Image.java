@@ -15,6 +15,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param alignment Alignment to use.
      * @return this image instance.
      */
+    @Override
     Image align(Alignment alignment);
 
     /**
@@ -53,6 +54,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param y The y value of the position.
      * @return this image instance.
      */
+    @Override
     Image on(int x, int y);
 
     /**
@@ -60,6 +62,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param position The position to use.
      * @return this image instance.
      */
+    @Override
     Image on(Position position);
 
     /**
@@ -95,6 +98,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param marginTop the top margin to set
      * @return This image.
      */
+    @Override
     Image marginTop(int marginTop);
 
     /**
@@ -102,6 +106,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param marginBottom the bottom margin to set
      * @return This image.
      */
+    @Override
     Image marginBottom(int marginBottom);
 
     /**
@@ -109,6 +114,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param marginRight the right margin to set
      * @return This image.
      */
+    @Override
     Image marginRight(int marginRight);
 
     /**
@@ -116,6 +122,7 @@ public interface Image extends PlaceableFixedSizeDocumentPart {
      * @param marginLeft the left margin to set
      * @return This image.
      */
+    @Override
     Image marginLeft(int marginLeft);
 
     /**

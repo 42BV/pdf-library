@@ -205,7 +205,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         }
 
         //after all individual rows have been processed, increase the height of cells that occupy more than one row
-        //TODO: Test that this is not going to cause issues in overflow detection (if second row of cell with rowspawn 2 causes the overflow)
         applyRowSpanHeights(rows);
 
         ProcessContentSizeOfCells(page, overflowRow);
@@ -258,7 +257,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         Position p = calculatePosition(page);
         if (p != null) {
             applyAlignmentToPosition(page, processAlignment, processPositioning, p);
-            this.setPosition(p);
+            this.on(p);
         }
         return p;
     }
@@ -538,7 +537,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
                 int openSpaceWidth = (openSpace.getEndPoint() - openSpace.getStartPoint());
                 if (openSpaceWidth >= this.getWidth() && openSpace.getHeight() >= this.getHeight()) {
                     tablePositioned = true;
-                    this.setPosition(pos);
+                    this.on(pos);
                 }
                 ++i;
             }

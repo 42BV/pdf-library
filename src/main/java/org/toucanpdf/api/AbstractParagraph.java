@@ -34,12 +34,12 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
 
     @Override
     public Paragraph on(int x, int y) {
-        return on(new Position(x, y));
+        return this.on(new Position(x, y));
     }
 
     @Override
     public Paragraph on(Position position) {
-        this.setPosition(position);
+        super.on(position);
         return this;
     }
 
@@ -90,31 +90,31 @@ public abstract class AbstractParagraph extends AbstractPlaceableDocumentPart im
 
     @Override
     public Paragraph align(Alignment alignment) {
-        this.setAlignment(alignment);
+        super.align(alignment);
         return this;
     }
 
     @Override
     public Paragraph marginTop(int marginTop) {
-        this.setMarginTop(marginTop);
+        super.marginTop(marginTop);
         return this;
     }
 
     @Override
     public Paragraph marginBottom(int marginBottom) {
-        this.setMarginBottom(marginBottom);
+        super.marginBottom(marginBottom);
         return this;
     }
 
     @Override
     public Paragraph marginRight(int marginRight) {
-        this.setMarginRight(marginRight);
+        super.marginRight(marginRight);
         return this;
     }
 
     @Override
     public Paragraph marginLeft(int marginLeft) {
-        this.setMarginLeft(marginLeft);
+        super.marginLeft(marginLeft);
         return this;
     }
 }

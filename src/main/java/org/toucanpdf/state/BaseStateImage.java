@@ -141,7 +141,7 @@ public class BaseStateImage extends BaseImage implements StateImage {
                 if (processAlignment) {
                     this.processAlignment(pos, openSpaceWidth);
                 }
-                this.setPosition(new Position(pos));
+                this.on(new Position(pos));
             }
             ++i;
         }

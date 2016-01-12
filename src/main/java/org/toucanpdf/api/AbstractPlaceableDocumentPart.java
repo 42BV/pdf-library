@@ -1,9 +1,6 @@
 package org.toucanpdf.api;
 
-import org.toucanpdf.model.Alignment;
-import org.toucanpdf.model.DocumentPartType;
-import org.toucanpdf.model.PlaceableDocumentPart;
-import org.toucanpdf.model.Position;
+import org.toucanpdf.model.*;
 
 /**
  * AbstractPlaceableDocumentPart is an extension of AbstractDocumentPart that allows for positioning of the object.
@@ -33,9 +30,16 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
         return position;
     }
 
+
     @Override
-    public void setPosition(Position position) {
+    public PlaceableDocumentPart on(Position position) {
         this.position = position;
+        return this;
+    }
+
+    @Override
+    public PlaceableDocumentPart on(int x, int y) {
+        return this.on(new Position(x, y));
     }
 
     @Override
@@ -43,8 +47,10 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
         return alignment;
     }
 
-    protected void setAlignment(Alignment alignment) {
+    @Override
+    public PlaceableDocumentPart align(Alignment alignment) {
         this.alignment = alignment;
+        return this;
     }
 
     @Override
@@ -68,30 +74,34 @@ public abstract class AbstractPlaceableDocumentPart extends AbstractDocumentPart
     }
 
     @Override
-    public void setMarginLeft(int marginLeft) {
+    public PlaceableDocumentPart marginLeft(int marginLeft) {
         if (marginLeft >= 0) {
             this.marginLeft = marginLeft;
         }
+        return this;
     }
 
     @Override
-    public void setMarginRight(int marginRight) {
+    public PlaceableDocumentPart marginRight(int marginRight) {
         if (marginRight >= 0) {
             this.marginRight = marginRight;
         }
+        return this;
     }
 
     @Override
-    public void setMarginTop(int marginTop) {
+    public PlaceableDocumentPart marginTop(int marginTop) {
         if (marginTop >= 0) {
             this.marginTop = marginTop;
         }
+        return this;
     }
 
     @Override
-    public void setMarginBottom(int marginBottom) {
+    public PlaceableDocumentPart marginBottom(int marginBottom) {
         if (marginBottom >= 0) {
             this.marginBottom = marginBottom;
         }
+        return this;
     }
 }

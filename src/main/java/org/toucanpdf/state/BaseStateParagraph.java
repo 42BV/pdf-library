@@ -60,7 +60,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         this.marginLeft = p.getMarginLeft();
         this.marginRight = p.getMarginRight();
         this.marginTop = p.getMarginTop();
-        this.setPosition(p.getPosition());
+        this.on(p.getPosition());
     }
 
     private void copyCollectionFromParagraph(Paragraph p) {
@@ -273,7 +273,7 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
             PlaceableFixedSizeDocumentPart anchorPart = anchor.getPart();
             newPos.adjustX(anchorPart.getMarginLeft());
             newPos.adjustY(-anchorPart.getMarginTop());
-            anchorPart.setPosition(newPos);
+            anchorPart.on(newPos);
             boolean wrapping = true;
             boolean alignment = false;
             //Text should not wrap around images that are above or below a text.

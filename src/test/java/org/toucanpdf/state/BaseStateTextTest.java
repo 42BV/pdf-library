@@ -63,7 +63,7 @@ public class BaseStateTextTest {
         };
 
         Position pos = page.getOpenPosition(stateText.getRequiredSpaceAbove(), stateText.getRequiredSpaceBelow(), stateText, 10);
-        stateText.setPosition(pos);
+        stateText.on(pos);
 
         //test wrapping around fixed text
         stateText.processContentSize(page, 0, false);
@@ -90,7 +90,7 @@ public class BaseStateTextTest {
         assertNotEquals(null, overflow);
 
         StateText fixed = new BaseStateText("Fixed test");
-        fixed.setPosition(new Position(30, 90));
+        fixed.on(new Position(30, 90));
         fixed.processContentSize(page, 0, true);
         assertEquals(new Position(30, 90), fixed.getPosition());
     }
@@ -159,7 +159,7 @@ public class BaseStateTextTest {
     public void testUsedSpaces(@Mocked final StatePage page) {
         text.text("Test");
         BaseStateText stateText = new BaseStateText(text);
-        stateText.setPosition(new Position(0, 100));
+        stateText.on(new Position(0, 100));
         new NonStrictExpectations() {
             {
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
@@ -194,7 +194,7 @@ public class BaseStateTextTest {
     public void testContentSizes(@Mocked final StatePage page) {
         text.text("Test test test test test test test test test test ");
         BaseStateText stateText = new BaseStateText(text);
-        stateText.setPosition(new Position(0, 100));
+        stateText.on(new Position(0, 100));
         new NonStrictExpectations() {
             {
                 page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
@@ -221,7 +221,7 @@ public class BaseStateTextTest {
         assertEquals(32.387, stateText.getContentHeightUnderBaseLine(page), FloatEqualityTester.EPSILON);
         assertEquals(77.0, stateText.getContentWidth(page, new Position(0, 100)), FloatEqualityTester.EPSILON);
         assertEquals(0, stateText.getPositionAt(100)[0]);
-        stateText.setMarginLeft(5);
+        stateText.marginLeft(5);
         Assert.assertEquals(5, stateText.getMarginLeft());
     }
 }

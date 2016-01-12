@@ -110,10 +110,7 @@ public class DocumentBuilder {
 
     private void setDefaultMargins(PlaceableDocumentPart part) {
         if (part != null) {
-            part.setMarginBottom(defaultMarginBottom);
-            part.setMarginLeft(defaultMarginLeft);
-            part.setMarginRight(defaultMarginRight);
-            part.setMarginTop(defaultMarginTop);
+            part.marginBottom(defaultMarginBottom).marginLeft(defaultMarginLeft).marginRight(defaultMarginRight).marginTop(defaultMarginTop);
         }
     }
 

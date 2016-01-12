@@ -120,6 +120,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param y Position y of the text.
      * @return the Text object
      */
+    @Override
     Text on(int x, int y);
 
     /**
@@ -127,6 +128,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param position Position of the text.
      * @return the Text object
      */
+    @Override
     Text on(Position position);
 
     /**
@@ -141,6 +143,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param alignment The alignment to use.
      * @return the Text object.
      */
+    @Override
     Text align(Alignment alignment);
 
     /**
@@ -161,6 +164,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param marginTop the top margin to set
      * @return This text.
      */
+    @Override
     Text marginTop(int marginTop);
 
     /**
@@ -168,6 +172,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param marginBottom the bottom margin to set
      * @return This text.
      */
+    @Override
     Text marginBottom(int marginBottom);
 
     /**
@@ -175,6 +180,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param marginRight the right margin to set
      * @return This text.
      */
+    @Override
     Text marginRight(int marginRight);
 
     /**
@@ -182,6 +188,7 @@ public interface Text extends PlaceableDocumentPart {
      * @param marginLeft the left margin to set
      * @return This text.
      */
+    @Override
     Text marginLeft(int marginLeft);
 
     /**

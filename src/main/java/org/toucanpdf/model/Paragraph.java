@@ -20,12 +20,14 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param y The y position to place the paragraph.
      * @return the paragraph.
      */
+    @Override
     Paragraph on(int x, int y);
 
     /**
      * @param position The position to place the paragraph.
      * @return the paragraph.
      */
+    @Override
     Paragraph on(Position position);
 
     /**
@@ -67,6 +69,7 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param alignment The alignment to use.
      * @return the Paragraph object.
      */
+    @Override
     Paragraph align(Alignment alignment);
 
     /**
@@ -80,6 +83,7 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param marginTop the top margin to set
      * @return This paragraph.
      */
+    @Override
     Paragraph marginTop(int marginTop);
 
     /**
@@ -87,6 +91,7 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param marginBottom the bottom margin to set
      * @return This paragraph.
      */
+    @Override
     Paragraph marginBottom(int marginBottom);
 
     /**
@@ -94,6 +99,7 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param marginRight the right margin to set
      * @return This paragraph.
      */
+    @Override
     Paragraph marginRight(int marginRight);
 
     /**
@@ -101,5 +107,6 @@ public interface Paragraph extends PlaceableDocumentPart {
      * @param marginLeft the left margin to set
      * @return This paragraph.
      */
+    @Override
     Paragraph marginLeft(int marginLeft);
 }

@@ -33,7 +33,7 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
     public BaseParagraph(Position position) {
         super();
         textCollection = new LinkedList<Text>();
-        this.setPosition(position);
+        this.on(position);
     }
 
     /**
@@ -48,7 +48,7 @@ public class BaseParagraph extends AbstractParagraph implements Paragraph {
         if (copyCollection) {
             CopyParagraphTextCollection(p);
         }
-        this.setPosition(p.getPosition());
+        this.on(p.getPosition());
         this.marginBottom = p.getMarginBottom();
         this.marginLeft = p.getMarginLeft();
         this.marginTop = p.getMarginTop();
