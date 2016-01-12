@@ -21,7 +21,7 @@ import org.toucanpdf.utility.FloatEqualityTester;
 /**
  * Base implementation of the StateText interface. This class offers the same functionality as the BaseText class.
  * On top of that this class offers methods for calculating the position, determining new lines, handling overflow and processing cutoff.
- * 
+ *
  * @author Dylan de Wolff
  */
 public class BaseStateText extends AbstractStateText implements StateText {
@@ -36,6 +36,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Creates a new instance of BaseStateText.
+     *
      * @param text Text this object will represent.
      */
     public BaseStateText(String text) {
@@ -44,6 +45,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Creates a copy of the given text object.
+     *
      * @param part Text to copy from.
      */
     public BaseStateText(Text part) {
@@ -52,7 +54,8 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     @Override
     public StateText processContentSize(StatePage page, double positionX, boolean fixedPosition) {
-        ArrayList<String> strings = new ArrayList<String>(Arrays.asList(getText().split(" ")));
+        String textWithNewLinesReplaced = getText().replace("\n", " ");
+        ArrayList<String> strings = new ArrayList<String>(Arrays.asList(textWithNewLinesReplaced.split(" ")));
         double leading = page.getLeading() + getRequiredSpaceBelowLine();
         this.textSplit = new LinkedHashMap<Position, String>();
         int i = 0;
@@ -82,8 +85,9 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Returns the open spaces on the given position and page.
-     * @param pos Position to check.
-     * @param page Page the text will be on.
+     *
+     * @param pos           Position to check.
+     * @param page          Page the text will be on.
      * @param fixedPosition Whether the text has a fixed position.
      * @return List of int arrays. Each int array contains two values specifying the x-value of the start and end of a single open space.
      */
@@ -100,10 +104,11 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Splits the given text over the given open spaces.
+     *
      * @param openSpaces Open spaces that can be filled.
-     * @param strings Strings to fill the open spaces with.
-     * @param pos Position of the text.
-     * @param page The page to add the text to.
+     * @param strings    Strings to fill the open spaces with.
+     * @param pos        Position of the text.
+     * @param page       The page to add the text to.
      * @return index determining how many strings have been processed.
      */
     private int splitText(List<Space> openSpaces, List<String> strings, Position pos, Page page) {
@@ -165,8 +170,9 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Adds a new line to the textSplit map.
+     *
      * @param position Position the line is on.
-     * @param string The line itself.
+     * @param string   The line itself.
      */
     private void addTextSplitEntry(Position position, String string) {
         if (textSplit.isEmpty()) {
@@ -177,12 +183,13 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Processes text cutoff. Determines whether or not cutting off text is required and does so if it is.
-     * @param width Width of the current line.
-     * @param widthLimit Width of the open space being filled.
-     * @param currentLine The current line being processed.
-     * @param text The text list being processed.
+     *
+     * @param width            Width of the current line.
+     * @param widthLimit       Width of the open space being filled.
+     * @param currentLine      The current line being processed.
+     * @param text             The text list being processed.
      * @param currentTextIndex The current index being processed of the text list.
-     * @param page The page the text will be added to.
+     * @param page             The page the text will be added to.
      * @return
      */
     private String processCutOff(double width, int widthLimit, String currentLine, List<String> text, int currentTextIndex, Page page) {
@@ -229,10 +236,11 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Processes the addition of text by adjusting the filled height of the page and calculating a new position for the upcoming text.
-     * @param page Page the text has been added to.
-     * @param leading Leading between each line.
-     * @param pos Position the text has been added on.
-     * @param positionX Default X offset of this text.
+     *
+     * @param page          Page the text has been added to.
+     * @param leading       Leading between each line.
+     * @param pos           Position the text has been added on.
+     * @param positionX     Default X offset of this text.
      * @param fixedPosition Whether the text has a fixed position.
      * @return
      */
@@ -256,8 +264,9 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Processes the overflow by removing all overflowing content and adding it to another text object.
+     *
      * @param overflowStart Index determining which string caused the overflow.
-     * @param strings The text split into a list of strings.
+     * @param strings       The text split into a list of strings.
      * @return a new StateText object that contains all the overflowing content of this object.
      */
     private StateText handleOverflow(int overflowStart, List<String> strings) {
@@ -328,6 +337,7 @@ public class BaseStateText extends AbstractStateText implements StateText {
 
     /**
      * Returns all entries from the textSplit map that are positioned at the given height.
+     *
      * @param height Height to check.
      * @return List of entries that are positioned at the given height.
      */

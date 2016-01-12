@@ -3,19 +3,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 
-import nl.mad.toucanpdf.DocumentBuilder;
-import nl.mad.toucanpdf.api.BaseCell;
-import nl.mad.toucanpdf.api.DocumentState;
-import nl.mad.toucanpdf.model.Alignment;
-import nl.mad.toucanpdf.model.Color;
-import nl.mad.toucanpdf.model.Image;
-import nl.mad.toucanpdf.model.ImageType;
-import nl.mad.toucanpdf.model.Page;
-import nl.mad.toucanpdf.model.Paragraph;
-import nl.mad.toucanpdf.model.Position;
-import nl.mad.toucanpdf.model.Table;
-import nl.mad.toucanpdf.model.Text;
-import nl.mad.toucanpdf.utility.FloatEqualityTester;
+import org.toucanpdf.DocumentBuilder;
+import org.toucanpdf.api.BaseCell;
+import org.toucanpdf.api.DocumentState;
+import org.toucanpdf.model.Alignment;
+import org.toucanpdf.model.Color;
+import org.toucanpdf.model.Image;
+import org.toucanpdf.model.ImageType;
+import org.toucanpdf.model.Page;
+import org.toucanpdf.model.Paragraph;
+import org.toucanpdf.model.Position;
+import org.toucanpdf.model.Table;
+import org.toucanpdf.model.Text;
+import org.toucanpdf.utility.FloatEqualityTester;
 
 import org.junit.Test;
 
