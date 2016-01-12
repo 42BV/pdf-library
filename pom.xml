@@ -10,6 +10,12 @@
     <name>Toucan-PDF</name>
     <description>Java library for the creation of PDF files</description>
     <url>http://www.toucanpdf.org</url>
+    
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
     <licenses>
         <license>
