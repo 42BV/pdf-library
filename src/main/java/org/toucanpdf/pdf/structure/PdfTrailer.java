@@ -39,6 +39,7 @@ public class PdfTrailer extends PdfDictionary {
      * @param objectAmount Amount of objects in the body.
      * @param crossReferenceStartByte The start position of the cross reference table.
      * @param catalogReference The catalog object reference.
+     * @param info The info object reference.
      */
     public PdfTrailer(int objectAmount, byte[] crossReferenceStartByte, PdfIndirectObjectReference catalogReference, PdfIndirectObject info) {
         super(PdfObjectType.TRAILER);
@@ -77,7 +78,7 @@ public class PdfTrailer extends PdfDictionary {
      * Writes the trailer to the given OutputStream.
      * @see PdfDictionary#writeToFile(java.io.OutputStream)
      * @param os OutputStream which will be written to.
-     * @throws IOException throws an IOException if an error occured during the writing.
+     * @throws IOException throws an IOException if an error occurred during the writing.
      */
     @Override
     public void writeToFile(OutputStream os) throws IOException {

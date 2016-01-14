@@ -69,7 +69,6 @@ public class DocumentBuilderTest {
 
     @Test
     public void testImage() {
-        //TODO: this
         byte[] imageData = new byte[0];
         ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
 

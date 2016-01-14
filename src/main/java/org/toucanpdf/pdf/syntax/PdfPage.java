@@ -33,6 +33,7 @@ public class PdfPage extends PdfDictionary {
      * @param width Width of page.
      * @param height Height of page.
      * @param leading the space between lines.
+     * @param rotation the rotation of the page.
      */
     public PdfPage(int width, int height, int leading, int rotation) {
         super(PdfObjectType.PAGE);
@@ -45,6 +46,7 @@ public class PdfPage extends PdfDictionary {
 
     /**
      * Initializes the page by adding type, mediabox, resources and content.
+     * @param rotation the rotation of the page.
      */
     private void initPage(int rotation) {
         put(PdfNameValue.TYPE, PdfNameValue.PAGE);
@@ -57,7 +59,7 @@ public class PdfPage extends PdfDictionary {
     /**
      * Creates a new Mediabox PdfArray based on the height and width of the page.
      * The mediabox is responsible for specifying the size/visible area of the page
-     * @return
+     * @return PdfArray containing the mediabox
      */
     private PdfArray createMediabox() {
         PdfArray mediabox = new PdfArray();

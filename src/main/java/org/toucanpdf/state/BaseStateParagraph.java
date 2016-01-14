@@ -355,7 +355,6 @@ public class BaseStateParagraph extends AbstractParagraph implements StateParagr
         this.textCollection.removeAll(newTextList);
         BaseStateParagraph overflowParagraph = new BaseStateParagraph(this, false);
         overflowParagraph.addText(newTextList);
-        //TODO: add anchors on overflow! Including beneath anchor from the object causing the overflow
         for (Text t : overflowParagraph.getTextCollection()) {
             this.getAnchorsOn(t).forEach(overflowParagraph::addAnchor);
         }

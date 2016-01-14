@@ -55,7 +55,6 @@ public class PdfCrossReferenceTable {
 
     /**
      * Creates a new instance of the cross reference table and directly filling it with the given objects.
-     * 
      * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
     public PdfCrossReferenceTable(List<PdfIndirectObject> indirectObjects) {
@@ -65,7 +64,6 @@ public class PdfCrossReferenceTable {
 
     /**
      * Fills the table with the given indirect objects.
-     * 
      * @param indirectObjects The indirect objects that will be referred to in the xref table.
      */
     public final void fillTableWithIndirectObjects(List<PdfIndirectObject> indirectObjects) {
@@ -74,7 +72,6 @@ public class PdfCrossReferenceTable {
 
     /**
      * Adds the reference from the given indirect object to the table.
-     * 
      * @param indirectObject Object that will be referred to.
      */
     public void addReferenceToIndirectObject(PdfIndirectObject indirectObject) {
@@ -98,7 +95,7 @@ public class PdfCrossReferenceTable {
     /**
      * Writes the xref table to the given output stream.
      * @param os OutputStream that will be written to.
-     * @throws IOException 
+     * @throws IOException if writing to the outputstream caused an exception
      */
     public void writeToFile(DataOutputStream os) throws IOException {
         setStartByte(os.size());
@@ -191,7 +188,7 @@ public class PdfCrossReferenceTable {
         /**
          * Writes the cross reference to the given OutputStream.
          * @param os OutputStream which will be written to.
-         * @throws IOException
+         * @throws IOException if writing to the outputstream caused an exception
          */
         public void writeToFile(OutputStream os) throws IOException {
             String line = startByte + " " + generation + " " + getInUseSyntax();

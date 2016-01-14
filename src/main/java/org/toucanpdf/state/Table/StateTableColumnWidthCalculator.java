@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.toucanpdf.model.Cell;
 import org.toucanpdf.model.state.StateCell;
 
 public class StateTableColumnWidthCalculator {
     //columns that require a width less than the table width * this percentage will be prioritized during the dividing of width
     private static final double PRIORITY_COLUMN_WIDTH_PERCENTAGE = 0.2;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StateTableColumnWidthCalculator.class);
+
     private int columnAmount;
     private double width;
     private List<StateTableRow> rows;
@@ -55,8 +59,7 @@ public class StateTableColumnWidthCalculator {
     }
 
     private double divideWidthToAchieveMinRequiredWidths(List<StateTableRow> rows, double[] columnWidths, double remainingWidth, boolean prioritizeHeaderWidth) {
-        ColumnPossibleWidth[] minColumnWidths = new ColumnPossibleWidth[this.columnAmount];
-        determineMinWidthsForTable(rows, prioritizeHeaderWidth, minColumnWidths);
+        ColumnPossibleWidth[] minColumnWidths = determineMinWidthsForTable(rows, prioritizeHeaderWidth);
 
         //first we'll add width to each cell, that has no specified width, to make sure they reach the minimum value that they require
         List<ColumnPossibleWidth> allMinPossibleWidths = new ArrayList<>();
@@ -77,12 +80,14 @@ public class StateTableColumnWidthCalculator {
         return remainingWidth;
     }
 
-    private void determineMinWidthsForTable(List<StateTableRow> rows, boolean prioritizeHeaderWidth, ColumnPossibleWidth[] minColumnWidths) {
+    private ColumnPossibleWidth[] determineMinWidthsForTable(List<StateTableRow> rows, boolean prioritizeHeaderWidth) {
+        ColumnPossibleWidth[] minColumnWidths = new ColumnPossibleWidth[this.columnAmount];
         if(prioritizeHeaderWidth) {
             determineMinWidthsForRow(minColumnWidths, rows.get(0).getContent());
         } else {
             rows.stream().forEach(row -> determineMinWidthsForRow(minColumnWidths, row.getContent()));
         }
+        return minColumnWidths;
     }
 
     private double spreadRemainderPercentageWiseOverMinPossibleWidths(double[] columnWidths, double remainingWidth,
@@ -266,5 +271,33 @@ public class StateTableColumnWidthCalculator {
                     .filter(expandableColumn -> expandableColumn != null)
                     .forEach(expandableColumn -> columnWidths[expandableColumn.getColumn()] = columnWidths[expandableColumn.getColumn()] + widthPerColumn);
         }
+    }
+
+
+    public List<StateTableRow> removeCellContentWithLargestMinimalWidth(boolean prioritizeHeaderWidth) {
+        int endIndex = prioritizeHeaderWidth ? 1 : this.rows.size();
+
+        int rowOfLargestMinRequiredWidth = 0;
+        int columnOfLargestMinRequiredWidth = 0;
+        double largestMinRequiredWidth = 0;
+
+        for(int i = 0; i < endIndex; ++i) {
+            ColumnPossibleWidth[] minColumnWidths = new ColumnPossibleWidth[this.columnAmount];
+            determineMinWidthsForRow(minColumnWidths, rows.get(i).getContent());
+            for(ColumnPossibleWidth minColumnWidth : minColumnWidths) {
+                if(minColumnWidth.getWidth() > largestMinRequiredWidth) {
+                    rowOfLargestMinRequiredWidth = i;
+                    columnOfLargestMinRequiredWidth = minColumnWidth.getColumn();
+                    largestMinRequiredWidth = minColumnWidth.getWidth();
+                }
+            }
+        }
+
+        LOGGER.warn("The minimal required width of the columns is larger than the width of the table. " +
+                "Removing largest piece of fixed size content from the table on row " + rowOfLargestMinRequiredWidth +
+                " and column " + columnOfLargestMinRequiredWidth + " and will proceed with recalculation of " +
+                "required width after this removal.");
+        ((StateCell) rows.get(rowOfLargestMinRequiredWidth).getContent()[columnOfLargestMinRequiredWidth]).setContent(null);
+        return rows;
     }
 }

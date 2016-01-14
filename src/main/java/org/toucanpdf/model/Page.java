@@ -8,6 +8,7 @@ import java.util.List;
  *
  */
 public interface Page extends DocumentPart {
+    int DEFAULT_MARGIN = 20;
     /**
      * Percentage of the page that should be filled.
      */

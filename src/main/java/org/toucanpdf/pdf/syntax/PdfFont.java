@@ -22,6 +22,7 @@ public class PdfFont extends PdfDictionary {
     /**
      * Creates a new PdfFont instance from the given font.
      * @param font Font to use.
+     * @param encoding Encoding to use.
      */
     public PdfFont(Font font, PdfIndirectObject encoding) {
         super(PdfObjectType.FONT);

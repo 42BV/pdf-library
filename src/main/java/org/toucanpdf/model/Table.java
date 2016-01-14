@@ -162,7 +162,7 @@ public interface Table extends PlaceableFixedSizeDocumentPart {
     /**
      * Whether or not headers should be repeated in case the table does not fit and has to be spread over multiple pages.
      * @param repeat True if the header should be repeated, false otherwise.
-     * @return
+     * @return the table instance.
      */
     Table repeatHeader(boolean repeat);
 

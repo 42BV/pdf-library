@@ -2,6 +2,7 @@ package org.toucanpdf.state;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,13 +10,10 @@ import java.util.List;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.toucanpdf.api.BaseCell;
+import org.toucanpdf.api.BaseImage;
 import org.toucanpdf.api.BaseTable;
 import org.toucanpdf.api.BaseText;
-import org.toucanpdf.model.Alignment;
-import org.toucanpdf.model.Cell;
-import org.toucanpdf.model.Position;
-import org.toucanpdf.model.Space;
-import org.toucanpdf.model.Table;
+import org.toucanpdf.model.*;
 import org.toucanpdf.model.state.StateCell;
 import org.toucanpdf.model.state.StateCellText;
 import org.toucanpdf.model.state.StatePage;
@@ -222,17 +220,54 @@ public class BaseStateTableTest {
         Assert.assertEquals(2, table.getContent().size());
         Assert.assertEquals(5, overflow.getContent().size());
 
+        table = new BaseStateTable(100);
+        table.columns(1);
+        table.addCell("header");
+        table.addCell("jantje");
+        table.addCell("jantje");
+
         table.repeatHeader(true);
         overflow = table.processContentSize(page, false, true, false);
         Assert.assertNotNull(overflow);
         List<Cell> content = table.getContent();
         List<Cell> overflowContent = overflow.getContent();
         Assert.assertEquals(2, content.size());
+        //header should've been set but not yet added to the overflow content
         Assert.assertEquals(1, overflowContent.size());
         Assert.assertEquals(content.get(0).getWidth(), overflowContent.get(0).getWidth(), 0.01);
 
+        //after processing the overflow table the header should've been added, resulting in a content size of 2
         overflow.processContentSize(page, false, true, false);
         Assert.assertEquals(2, overflow.getContent().size());
+    }
+
+    @Test
+    public void testTooLargeContentRemoval(@Mocked final StatePage page) {
+        new NonStrictExpectations() {
+            {
+                page.getOpenSpacesIncludingHeight(null, anyBoolean, anyDouble, anyDouble, null);
+                returns(new ArrayList<Space>(), new ArrayList<>(Arrays.asList(new Space(0, 500, 500))));
+                page.getLeading();
+                returns(0);
+                page.getOpenPosition(anyDouble, anyDouble, null, anyDouble);
+                returns(new Position(0, 0));
+                page.getHeightWithoutMargins();
+                returns(500, 0);
+                page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
+                returns(new ArrayList<>(Arrays.asList(new Space(0, 500))));
+            }
+        };
+
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream("hammock.jpg");
+        Image i = new BaseImage(input, ImageType.JPEG).align(Alignment.CENTERED).width(120);
+
+        table.columns(2);
+        table.addCell("test");
+        table.addCell(new BaseCell(i));
+
+        table.processContentSize(page, false, false, true, false, false);
+        Assert.assertTrue(table.getContent().get(1).getContent() == null);
+        Assert.assertFalse(table.getContent().get(0).getContent().equals(null));
     }
 
     @Test

@@ -6,13 +6,7 @@ import java.util.stream.Collectors;
 
 import org.toucanpdf.api.AbstractTable;
 import org.toucanpdf.api.BaseCell;
-import org.toucanpdf.model.Cell;
-import org.toucanpdf.model.DocumentPart;
-import org.toucanpdf.model.Page;
-import org.toucanpdf.model.PlaceableDocumentPart;
-import org.toucanpdf.model.Position;
-import org.toucanpdf.model.Space;
-import org.toucanpdf.model.Table;
+import org.toucanpdf.model.*;
 import org.toucanpdf.model.state.StateCell;
 import org.toucanpdf.model.state.StateCellContent;
 import org.toucanpdf.model.state.StatePage;
@@ -25,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseStateTable extends AbstractTable implements StateTable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStateTable.class);
     private static final double MINIMUM_PAGE_HEIGHT_REQUIRED = 0.25;
     private DocumentPart originalObject;
     private List<StateCell> content = new LinkedList<StateCell>();
@@ -137,6 +130,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
     public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed,
             boolean ignoreOverflow) {
         List<StateCell> tableContent = copyContent();
+        StateTableColumnWidthCalculator calculator = new StateTableColumnWidthCalculator(this.columnAmount, this.width);
+
         rows = new LinkedList<>();
         int availableHeight = 0;
         height = marginBottom + marginTop;
@@ -159,7 +154,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         //finalize the cell widths, heights and execute positioning
         Position cellPos = new Position(this.getPosition());
 
-        double[] widths = determineCellWidths();
+        double[] widths = determineCellWidths(calculator);
+        double totalWidth = calculateTotalWidth(widths);
+
+        while(totalWidth > this.width) {
+            this.rows = calculator.removeCellContentWithLargestMinimalWidth(isPrioritizingHeaderWidth());
+            widths = determineCellWidths(calculator);
+            totalWidth = calculateTotalWidth(widths);
+        }
 
         //add cells to fill up empty columns in the table
         if (getDrawFiller()) {
@@ -167,6 +169,14 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         }
 
         return applyCellSize(page, processPositioning, fixed, ignoreOverflow, availableHeight, cellPos, widths);
+    }
+
+    private double calculateTotalWidth(double[] widths) {
+        double totalWidth = 0;
+        for (double width : widths) {
+            totalWidth += width;
+        }
+        return totalWidth;
     }
 
     private StateTable applyCellSize(StatePage page, boolean processPositioning, boolean fixed, boolean ignoreOverflow, int availableHeight, Position cellPos,
@@ -223,9 +233,8 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         cellPos.setX(this.getPosition().getX());
     }
 
-    private double[] determineCellWidths() {
+    private double[] determineCellWidths(StateTableColumnWidthCalculator calculator) {
         if (original) {
-            StateTableColumnWidthCalculator calculator = new StateTableColumnWidthCalculator(this.columnAmount, this.width);
             this.originalColumnWidths = calculator.calculateColumnWidths(rows, this.isPrioritizingHeaderWidth());
         }
         return this.originalColumnWidths;
@@ -427,7 +436,6 @@ public class BaseStateTable extends AbstractTable implements StateTable {
             double adjustX = widths[rowNumber];
             if (cell != null) {
                 cell.setPosition(new Position(cellPos));
-                // adjustX += cell.getBorderWidth();
             }
             cellPos.adjustX(adjustX);
         }

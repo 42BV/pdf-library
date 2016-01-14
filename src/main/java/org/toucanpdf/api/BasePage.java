@@ -20,10 +20,10 @@ public class BasePage extends AbstractDocumentPart implements Page {
     private static final int ROTATION_LIMIT = 90;
     private int width;
     private int height;
-    private int marginTop = 20;
-    private int marginBottom = 20;
-    private int marginLeft = 20;
-    private int marginRight = 20;
+    private int marginTop = DEFAULT_MARGIN;
+    private int marginBottom = DEFAULT_MARGIN;
+    private int marginLeft = DEFAULT_MARGIN;
+    private int marginRight = DEFAULT_MARGIN;
     private Page masterPage;
     private List<DocumentPart> content;
     private int leading = DEFAULT_NEW_LINE_SIZE;

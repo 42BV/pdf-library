@@ -34,7 +34,7 @@ public class Type1FontMetrics implements FontMetrics {
     /**
      * Creates a new instance of Type1FontMetrics and immediately parses the file corresponding to the given filename.
      * @param filename Font file to be parsed.
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException if the font afm file couldn't be found
      */
     public Type1FontMetrics(String filename) throws FileNotFoundException {
         this.filename = filename;
@@ -43,7 +43,7 @@ public class Type1FontMetrics implements FontMetrics {
 
     /**
      * Creates a new AFMParser, which starts the parsing of the afm file, and stores the parser.
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException if the font afm file could not be found
      */
     public void parseAfm() throws FileNotFoundException {
         InputStream file;
@@ -55,7 +55,7 @@ public class Type1FontMetrics implements FontMetrics {
      * Finds the file by the given file name and returns it.
      * @param extension File extension to look for.
      * @return InputStream for the given filename. Null if the file could not be found.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the font afm file couldn't be found
      */
     private InputStream getFile(String extension) throws FileNotFoundException {
         String localFilename = filename;

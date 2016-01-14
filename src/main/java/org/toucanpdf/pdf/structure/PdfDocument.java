@@ -303,7 +303,7 @@ public class PdfDocument {
      * Writes the document to the given OutputStream.
      * 
      * @param os OutputStream to write to.
-     * @throws IOException 
+     * @throws IOException if writing to the outputstream caused an exception
      */
     public void write(OutputStream os) throws IOException {
         DataOutputStream dos = new DataOutputStream(os);

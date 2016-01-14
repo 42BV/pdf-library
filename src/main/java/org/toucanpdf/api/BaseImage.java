@@ -177,7 +177,7 @@ public class BaseImage extends AbstractPlaceableFixedSizeDocumentPart implements
     public Image width(int width, boolean scaleHeight) {
         this.width = Math.max(1, width);
         if (scaleHeight) {
-            this.height = this.width * scale;
+            this.height = this.width / scale;
         }
         return this;
     }

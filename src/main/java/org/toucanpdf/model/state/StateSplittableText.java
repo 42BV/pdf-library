@@ -8,7 +8,7 @@ import org.toucanpdf.model.Text;
 public interface StateSplittableText extends Text {
     /**
      * Returns map of positions and strings, each string represents a single line in the document based on the text from this object.
-     * @return Map<Position, String> String map containing the lines and position of the lines.
+     * @return Map containing positions as key and the text lines as values.
      */
     Map<Position, String> getTextSplit();
 

@@ -4,9 +4,9 @@ import org.toucanpdf.model.DocumentPart;
 import org.toucanpdf.model.DocumentPartType;
 
 /**
- * AbstractDocumentPart is the abstract class for all the different document parts that can be added to an instance of Document.
+ * AbstractDocumentPart is the abstract class for all the different document parts that can be added to an instance of DocumentBuilder.
  * @author Dylan de Wolff
- * @see Document
+ * @see org.toucanpdf.DocumentBuilder
  */
 public abstract class AbstractDocumentPart implements DocumentPart {
     /**

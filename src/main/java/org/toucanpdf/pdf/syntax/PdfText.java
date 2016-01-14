@@ -27,7 +27,7 @@ public class PdfText extends AbstractPdfObject {
 
     /**
      * Creates a new instance of PdfText.
-     * @param fontObj 
+     * @param fontObj font to use for this text
      */
     public PdfText(PdfFont fontObj) {
         super(PdfObjectType.TEXT);

@@ -539,7 +539,7 @@ public class DocumentBuilder {
      * @see Table
      */
     public Table createTable() {
-        int width = defaultPageWidth;
+        int width = defaultPageWidth - (Page.DEFAULT_MARGIN * 2);
         if (currentPageNumber != 0 && pages.size() >= currentPageNumber) {
             width = pages.get(currentPageNumber - 1).getWidthWithoutMargins();
         }
