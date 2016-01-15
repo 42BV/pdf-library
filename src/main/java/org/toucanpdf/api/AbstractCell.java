@@ -56,9 +56,7 @@ public abstract class AbstractCell implements Cell {
 
     @Override
     public Cell border(double borderSize) {
-        borderSize = Math.min(borderSize, Constants.MAX_BORDER_SIZE);
-        borderSize = Math.max(borderSize, Constants.MIN_BORDER_SIZE);
-        this.border = borderSize;
+        this.border = Math.max(Constants.MIN_BORDER_SIZE, Math.min(borderSize, Constants.MAX_BORDER_SIZE));
         return this;
     }
 
@@ -99,7 +97,7 @@ public abstract class AbstractCell implements Cell {
 
     @Override
     public Cell padding(double padding) {
-        this.padding = padding;
+        this.padding = Math.max(Constants.MIN_PADDING_SIZE, Math.min(padding, Constants.MAX_PADDING_SIZE));
         return this;
     }
 }
