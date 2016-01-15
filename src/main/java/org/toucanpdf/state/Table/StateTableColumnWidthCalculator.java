@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.toucanpdf.model.Cell;
 import org.toucanpdf.model.state.StateCell;
+import org.toucanpdf.model.state.StateCellContent;
+import org.toucanpdf.model.state.StatePlaceableFixedSizeDocumentPart;
 
 public class StateTableColumnWidthCalculator {
     //columns that require a width less than the table width * this percentage will be prioritized during the dividing of width
@@ -133,6 +135,7 @@ public class StateTableColumnWidthCalculator {
         for (int i = 0; i < content.length; ++i) {
             StateCell cell = (StateCell) content[i];
             if (cell != null) {
+                //TODO: will this work if the image width is larger than the cell width
                 double minWidth = cell.getWidth();
                 if (minWidth == 0) {
                     minWidth = cell.getStateCellContent() != null ? cell.getStateCellContent().getMinimumWidth() + (cell.getPadding() * 2)
@@ -285,7 +288,7 @@ public class StateTableColumnWidthCalculator {
             ColumnPossibleWidth[] minColumnWidths = new ColumnPossibleWidth[this.columnAmount];
             determineMinWidthsForRow(minColumnWidths, rows.get(i).getContent());
             for(ColumnPossibleWidth minColumnWidth : minColumnWidths) {
-                if(minColumnWidth.getWidth() > largestMinRequiredWidth) {
+                if(minColumnWidth != null && minColumnWidth.getWidth() > largestMinRequiredWidth) {
                     rowOfLargestMinRequiredWidth = i;
                     columnOfLargestMinRequiredWidth = minColumnWidth.getColumn();
                     largestMinRequiredWidth = minColumnWidth.getWidth();
@@ -293,11 +296,23 @@ public class StateTableColumnWidthCalculator {
             }
         }
 
-        LOGGER.warn("The minimal required width of the columns is larger than the width of the table. " +
-                "Removing largest piece of fixed size content from the table on row " + rowOfLargestMinRequiredWidth +
-                " and column " + columnOfLargestMinRequiredWidth + " and will proceed with recalculation of " +
-                "required width after this removal.");
-        ((StateCell) rows.get(rowOfLargestMinRequiredWidth).getContent()[columnOfLargestMinRequiredWidth]).setContent(null);
+        StateCell largestMinWidthCell = (StateCell) rows.get(rowOfLargestMinRequiredWidth).getContent()[columnOfLargestMinRequiredWidth];
+        StateCellContent largestMinWidthCellContent = (StateCellContent) largestMinWidthCell.getContent();
+
+        if(largestMinWidthCell.getWidth() > 0 && !(largestMinWidthCellContent instanceof StatePlaceableFixedSizeDocumentPart)){
+            LOGGER.warn("The minimal required width of the columns is larger than the width of the table. " +
+                    "Removing user specified width from table on row " + rowOfLargestMinRequiredWidth +
+                    " and column " + columnOfLargestMinRequiredWidth + " and will proceed with recalculation of " +
+                    "required width after this removal.");
+            largestMinWidthCell.width(0);
+        } else {
+            LOGGER.warn("The minimal required width of the columns is larger than the width of the table. " +
+                    "Removing largest piece of content from the table on row " + rowOfLargestMinRequiredWidth +
+                    " and column " + columnOfLargestMinRequiredWidth + " and will proceed with recalculation of " +
+                    "required width after this removal.");
+            largestMinWidthCell.setContent(null);
+        }
+
         return rows;
     }
 }

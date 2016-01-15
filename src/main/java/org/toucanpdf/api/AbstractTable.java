@@ -10,10 +10,10 @@ import org.toucanpdf.utility.Constants;
 public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPart implements Table {
     protected int columnAmount = 1;
     protected Compression compression;
-    protected double borderWidth = 1.0;
+    protected double borderWidth = Table.DEFAULT_BORDER_WIDTH;
     private boolean drawFillerCells = true;
     private boolean repeatHeader = false;
-    protected double padding = 5;
+    protected double padding = Table.DEFAULT_PADDING;
     private boolean verticalAlignment = false;
     private boolean prioritizeHeaderWidth = false;
 
@@ -97,9 +97,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table border(double border) {
-        border = Math.min(border, Constants.MAX_BORDER_SIZE);
-        border = Math.max(border, Constants.MIN_BORDER_SIZE);
-        this.borderWidth = border;
+        this.borderWidth = Math.max(Constants.MIN_BORDER_SIZE, Math.min(border, Constants.MAX_BORDER_SIZE));
         return this;
     }
 
@@ -156,7 +154,7 @@ public abstract class AbstractTable extends AbstractPlaceableFixedSizeDocumentPa
 
     @Override
     public Table padding(double padding) {
-        this.padding = padding;
+        this.padding = Math.max(Constants.MIN_PADDING_SIZE, Math.min(padding, Constants.MAX_PADDING_SIZE));
         return this;
     }
 

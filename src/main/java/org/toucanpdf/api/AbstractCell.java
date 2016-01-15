@@ -28,7 +28,7 @@ public abstract class AbstractCell implements Cell {
 
     @Override
     public Cell width(double newWidth) {
-        if (newWidth > 0) {
+        if (newWidth >= 0) {
             this.width = newWidth;
         }
         return this;

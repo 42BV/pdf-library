@@ -3,6 +3,9 @@ package org.toucanpdf.model;
 import java.util.List;
 
 public interface Table extends PlaceableFixedSizeDocumentPart {
+    double DEFAULT_BORDER_WIDTH = 1.0;
+    double DEFAULT_PADDING = 5.0;
+
     /**
      * Sets the alignment of the table.
      * @param alignment Alignment to use.

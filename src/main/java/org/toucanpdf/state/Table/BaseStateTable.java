@@ -129,6 +129,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
      */
     public StateTable processContentSize(StatePage page, boolean wrapping, boolean processAlignment, boolean processPositioning, boolean fixed,
             boolean ignoreOverflow) {
+        this.width = Math.min(width, page.getWidthWithoutMargins() - this.marginRight - this.marginLeft);
         List<StateCell> tableContent = copyContent();
         StateTableColumnWidthCalculator calculator = new StateTableColumnWidthCalculator(this.columnAmount, this.width);
 
@@ -157,7 +158,7 @@ public class BaseStateTable extends AbstractTable implements StateTable {
         double[] widths = determineCellWidths(calculator);
         double totalWidth = calculateTotalWidth(widths);
 
-        while(totalWidth > this.width) {
+        while(Math.floor(totalWidth) > this.width) {
             this.rows = calculator.removeCellContentWithLargestMinimalWidth(isPrioritizingHeaderWidth());
             widths = determineCellWidths(calculator);
             totalWidth = calculateTotalWidth(widths);

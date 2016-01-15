@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.toucanpdf.DocumentBuilder;
 import org.toucanpdf.api.BaseCell;
+import org.toucanpdf.api.BaseText;
 import org.toucanpdf.api.DocumentState;
 import org.toucanpdf.model.Alignment;
 import org.toucanpdf.model.Color;
@@ -18,8 +19,35 @@ import org.toucanpdf.model.Text;
 import org.toucanpdf.utility.FloatEqualityTester;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class documentCreationTest {
+
+    @Test
+    public void testDocument() {
+        DocumentBuilder builder = new DocumentBuilder();
+        builder.addPage().marginLeft(48).marginRight(48).marginTop(48).marginBottom(48);
+
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream("hammock.jpg");
+        Image i = builder.createImage(input, ImageType.JPEG).width(95);
+
+        Table table = builder.addTable().columns(4).padding(5).align(Alignment.RIGHT);
+        double cellWidth = (builder.getPage(1).getWidthWithoutMargins() / 4) - Table.DEFAULT_BORDER_WIDTH - (Table.DEFAULT_PADDING * 2) ;
+
+        table.addCell(new BaseCell(i));
+        table.addCell(new BaseCell().height(100));
+        table.addCell(new BaseCell().height(100));
+        table.addCell(new BaseCell().height(100));
+
+        table.addCell("Lala Lalala").width(cellWidth);
+        table.addCell("Nana nanana").width(cellWidth);
+        table.addCell("bababa bbaeed").width(cellWidth);
+        table.addCell("bababa ba bababa").width(cellWidth);
+
+        table.addCell(new BaseText("jajaja"));
+
+        builder.finish();
+    }
 
     @Test
     public void testDocumentCreation() {

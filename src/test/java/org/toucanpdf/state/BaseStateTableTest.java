@@ -202,6 +202,8 @@ public class BaseStateTableTest {
                 returns(50, 0);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
                 returns(new ArrayList<>(Arrays.asList(new Space(0, 110))));
+                page.getWidthWithoutMargins();
+                returns(100);
             }
         };
 
@@ -255,6 +257,8 @@ public class BaseStateTableTest {
                 returns(500, 0);
                 page.getOpenSpacesOn(null, anyBoolean, anyDouble, anyDouble, null);
                 returns(new ArrayList<>(Arrays.asList(new Space(0, 500))));
+                page.getWidthWithoutMargins();
+                returns(100);
             }
         };
 
@@ -293,11 +297,11 @@ public class BaseStateTableTest {
         assertEquals(100, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.align(Alignment.RIGHT);
         table.processContentSize(page, false, true, true, false, true);
-        assertEquals(300, table.getPosition().getX(), FloatEqualityTester.EPSILON);
+        assertEquals(350, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.on(100, 100);
         table.align(Alignment.CENTERED);
         table.processContentSize(page, false, true, true, false, true);
-        assertEquals(200, table.getPosition().getX(), FloatEqualityTester.EPSILON);
+        assertEquals(225, table.getPosition().getX(), FloatEqualityTester.EPSILON);
         table.on(100, 100);
         table.align(Alignment.JUSTIFIED);
         table.processContentSize(page, false, true, true, false, true);
